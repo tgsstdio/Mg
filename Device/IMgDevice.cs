@@ -11,7 +11,7 @@ namespace Magnesium
 		Result DeviceWaitIdle();
 		Result AllocateMemory(MgMemoryAllocateInfo pAllocateInfo, MgAllocationCallbacks allocator, out MgDeviceMemory pMemory);
 		void FreeMemory(MgDeviceMemory memory, MgAllocationCallbacks allocator);
-		Result MapMemory(MgDeviceMemory memory, UInt64 offset, UInt64 size, UInt32 flags, IntPtr ppData);
+		Result MapMemory(MgDeviceMemory memory, UInt64 offset, UInt64 size, UInt32 flags, out IntPtr ppData);
 		void UnmapMemory(MgDeviceMemory memory);
 		Result FlushMappedMemoryRanges(MgMappedMemoryRange[] pMemoryRanges);
 		Result InvalidateMappedMemoryRanges(MgMappedMemoryRange[] pMemoryRanges);
