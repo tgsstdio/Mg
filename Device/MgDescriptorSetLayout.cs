@@ -1,8 +1,8 @@
 namespace Magnesium
 {
-    public class MgDescriptorSetLayout
+    public interface IMgDescriptorSetLayout
 	{
-		
+		void DestroyDescriptorSetLayout(IMgDevice device, MgAllocationCallbacks allocator);
 	}
 }
 

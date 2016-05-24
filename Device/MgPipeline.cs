@@ -1,10 +1,8 @@
 ﻿namespace Magnesium
 {
-    public class MgPipeline
+    public interface IMgPipeline
 	{
-		public MgPipeline ()
-		{
-		}
+		void DestroyPipeline(IMgDevice device, MgAllocationCallbacks allocator);
 	}
 }
 

@@ -10,7 +10,7 @@
     <AssemblyName>Magnesium</AssemblyName>
     <TargetFrameworkProfile>Profile259</TargetFrameworkProfile>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <ReleaseVersion>2.0.0</ReleaseVersion>
+    <ReleaseVersion>3.0.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -72,7 +72,6 @@
     <Compile Include="Device\MgEvent.cs" />
     <Compile Include="Device\MgPipelineBindPoint.cs" />
     <Compile Include="Device\MgPipelineLayout.cs" />
-    <Compile Include="Device\MgDescriptorSet.cs" />
     <Compile Include="Enums\MgImageLayout.cs" />
     <Compile Include="CommandBuffer\MgImageResolve.cs" />
     <Compile Include="Device\MgImageSubresourceRange.cs" />
@@ -258,6 +257,7 @@
     <Compile Include="Queue\MgBindSparseInfo.cs" />
     <Compile Include="Queue\MgPresentInfoKHR.cs" />
     <Compile Include="Queue\MgSubmitInfoWaitSemaphoreInfo.cs" />
+    <Compile Include="Device\MgDescriptorSet.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>

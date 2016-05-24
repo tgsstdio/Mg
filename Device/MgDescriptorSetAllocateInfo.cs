@@ -3,8 +3,8 @@ namespace Magnesium
     // Device
     public class MgDescriptorSetAllocateInfo
 	{
-		public MgDescriptorPool DescriptorPool { get; set; }
-		public MgDescriptorSetLayout[] SetLayouts { get; set; }
+		public IMgDescriptorPool DescriptorPool { get; set; }
+		public IMgDescriptorSetLayout[] SetLayouts { get; set; }
 	}
 }
 

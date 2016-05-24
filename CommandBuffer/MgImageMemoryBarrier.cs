@@ -10,7 +10,7 @@ namespace Magnesium
 		public MgImageLayout NewLayout { get; set; }
 		public UInt32 SrcQueueFamilyIndex { get; set; }
 		public UInt32 DstQueueFamilyIndex { get; set; }
-		public MgImage Image { get; set; }
+		public IMgImage Image { get; set; }
 		public MgImageSubresourceRange SubresourceRange { get; set; }
 	}
 }

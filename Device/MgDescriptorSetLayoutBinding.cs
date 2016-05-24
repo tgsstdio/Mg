@@ -8,7 +8,7 @@ namespace Magnesium
 		public MgDescriptorType DescriptorType { get; set; }
 		public UInt32 DescriptorCount { get; set; }
 		public UInt32 StageFlags { get; set; }
-		public MgSampler[] ImmutableSamplers { get; set; }
+		public IMgSampler[] ImmutableSamplers { get; set; }
 	}
 }
 

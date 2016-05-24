@@ -2,7 +2,7 @@
 {
     public class MgSparseImageOpaqueMemoryBindInfo
 	{
-		public MgImage Image { get; set; }
+		public IMgImage Image { get; set; }
 		public MgSparseMemoryBind[] Binds { get; set; }
 	}
 }

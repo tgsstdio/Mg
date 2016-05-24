@@ -15,10 +15,10 @@ namespace Magnesium
 		public MgPipelineDepthStencilStateCreateInfo DepthStencilState { get; set; }
 		public MgPipelineColorBlendStateCreateInfo ColorBlendState { get; set; }
 		public MgPipelineDynamicStateCreateInfo DynamicState { get; set; }
-		public MgPipelineLayout Layout { get; set; }
+		public IMgPipelineLayout Layout { get; set; }
 		public MgRenderPass RenderPass { get; set; }
 		public UInt32 Subpass { get; set; }
-		public MgPipeline BasePipelineHandle { get; set; }
+		public IMgPipeline BasePipelineHandle { get; set; }
 		public Int32 BasePipelineIndex { get; set; }
 	}
 }

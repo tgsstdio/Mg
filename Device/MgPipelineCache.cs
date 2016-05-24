@@ -1,8 +1,8 @@
 ﻿namespace Magnesium
 {
-    public class MgPipelineCache
+    public interface IMgPipelineCache
 	{
-
+		void DestroyPipelineCache(IMgDevice device, MgAllocationCallbacks allocator);
 	}
 }
 

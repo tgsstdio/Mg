@@ -1,8 +1,8 @@
 ﻿namespace Magnesium
 {
-    public class MgImage
+    public interface IMgImage
 	{
-
+		void DestroyImage(IMgDevice device, MgAllocationCallbacks allocator);
 	}
 }
 
