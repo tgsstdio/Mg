@@ -9,25 +9,25 @@ namespace Magnesium
 		void DestroyDevice(MgAllocationCallbacks allocator);
 		void GetDeviceQueue(UInt32 queueFamilyIndex, UInt32 queueIndex, out IMgQueue pQueue);
 		Result DeviceWaitIdle();
-		Result AllocateMemory(MgMemoryAllocateInfo pAllocateInfo, MgAllocationCallbacks allocator, out MgDeviceMemory pMemory);
-		void FreeMemory(MgDeviceMemory memory, MgAllocationCallbacks allocator);
-		Result MapMemory(MgDeviceMemory memory, UInt64 offset, UInt64 size, UInt32 flags, out IntPtr ppData);
-		void UnmapMemory(MgDeviceMemory memory);
+		Result AllocateMemory(MgMemoryAllocateInfo pAllocateInfo, MgAllocationCallbacks allocator, out IMgDeviceMemory pMemory);
+		//void FreeMemory(MgDeviceMemory memory, MgAllocationCallbacks allocator);
+		//Result MapMemory(MgDeviceMemory memory, UInt64 offset, UInt64 size, UInt32 flags, out IntPtr ppData);
+		//void UnmapMemory(MgDeviceMemory memory);
 		Result FlushMappedMemoryRanges(MgMappedMemoryRange[] pMemoryRanges);
 		Result InvalidateMappedMemoryRanges(MgMappedMemoryRange[] pMemoryRanges);
-		void GetDeviceMemoryCommitment(MgDeviceMemory memory, ref UInt64 pCommittedMemoryInBytes);
-		void GetBufferMemoryRequirements(MgBuffer buffer, out MgMemoryRequirements pMemoryRequirements);
-		Result BindBufferMemory(MgBuffer buffer, MgDeviceMemory memory, UInt64 memoryOffset);
+		void GetDeviceMemoryCommitment(IMgDeviceMemory memory, ref UInt64 pCommittedMemoryInBytes);
+		void GetBufferMemoryRequirements(IMgBuffer buffer, out MgMemoryRequirements pMemoryRequirements);
+		//Result BindBufferMemory(IMgBuffer buffer, IMgDeviceMemory memory, UInt64 memoryOffset);
 		void GetImageMemoryRequirements(IMgImage image, out MgMemoryRequirements memoryRequirements);
-		Result BindImageMemory(IMgImage image, MgDeviceMemory memory, UInt64 memoryOffset);
+		Result BindImageMemory(IMgImage image, IMgDeviceMemory memory, UInt64 memoryOffset);
 		void GetImageSparseMemoryRequirements(IMgImage image, out MgSparseImageMemoryRequirements[] sparseMemoryRequirements);
 		Result CreateFence(MgFenceCreateInfo pCreateInfo, MgAllocationCallbacks allocator, out MgFence fence);
 		void DestroyFence(MgFence fence, MgAllocationCallbacks allocator);
 		Result ResetFences(MgFence[] pFences);
 		Result GetFenceStatus(MgFence fence);
 		Result WaitForFences(MgFence[] pFences, bool waitAll, UInt64 timeout);
-		Result CreateSemaphore(MgSemaphoreCreateInfo pCreateInfo, MgAllocationCallbacks allocator, out MgSemaphore pSemaphore);
-		void DestroySemaphore(MgSemaphore semaphore, MgAllocationCallbacks allocator);
+		Result CreateSemaphore(MgSemaphoreCreateInfo pCreateInfo, MgAllocationCallbacks allocator, out IMgSemaphore pSemaphore);
+		//void DestroySemaphore(MgSemaphore semaphore, MgAllocationCallbacks allocator);
 		Result CreateEvent(MgEventCreateInfo pCreateInfo, MgAllocationCallbacks allocator, out MgEvent @event);
 		void DestroyEvent(MgEvent @event, MgAllocationCallbacks allocator);
 		Result GetEventStatus(MgEvent @event);
@@ -36,8 +36,8 @@ namespace Magnesium
 		Result CreateQueryPool(MgQueryPoolCreateInfo pCreateInfo, MgAllocationCallbacks allocator, out MgQueryPool queryPool);
 		void DestroyQueryPool(MgQueryPool queryPool, MgAllocationCallbacks allocator);
 		Result GetQueryPoolResults(MgQueryPool queryPool, UInt32 firstQuery, UInt32 queryCount, IntPtr dataSize, IntPtr pData, UInt64 stride, MgQueryResultFlagBits flags);
-		Result CreateBuffer(MgBufferCreateInfo pCreateInfo, MgAllocationCallbacks allocator, out MgBuffer pBuffer);
-		void DestroyBuffer(MgBuffer buffer, MgAllocationCallbacks allocator);
+		Result CreateBuffer(MgBufferCreateInfo pCreateInfo, MgAllocationCallbacks allocator, out IMgBuffer pBuffer);
+		//void DestroyBuffer(MgBuffer buffer, MgAllocationCallbacks allocator);
 		Result CreateBufferView(MgBufferViewCreateInfo pCreateInfo, MgAllocationCallbacks allocator, out MgBufferView pView);
 		void DestroyBufferView(MgBufferView bufferView, MgAllocationCallbacks allocator);
 		Result CreateImage(MgImageCreateInfo pCreateInfo, MgAllocationCallbacks allocator, out IMgImage pImage);
@@ -80,7 +80,7 @@ namespace Magnesium
 		Result CreateSwapchainKHR(MgSwapchainCreateInfoKHR pCreateInfo, MgAllocationCallbacks allocator, out MgSwapchainKHR pSwapchain);
 		void DestroySwapchainKHR(MgSwapchainKHR swapchain, MgAllocationCallbacks allocator);
 		Result GetSwapchainImagesKHR(MgSwapchainKHR swapchain, out IMgImage[] pSwapchainImages);
-		Result AcquireNextImageKHR(MgSwapchainKHR swapchain, UInt64 timeout, MgSemaphore semaphore, MgFence fence, out UInt32 pImageIndex);
+		Result AcquireNextImageKHR(MgSwapchainKHR swapchain, UInt64 timeout, IMgSemaphore semaphore, MgFence fence, out UInt32 pImageIndex);
 	}
 }
 

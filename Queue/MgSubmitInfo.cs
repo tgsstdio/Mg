@@ -4,7 +4,7 @@
 	{
 		public MgSubmitInfoWaitSemaphoreInfo[] WaitSemaphores { get; set; }
 		public IMgCommandBuffer[] CommandBuffers { get; set; }
-		public MgSemaphore[] SignalSemaphores { get; set; }
+		public IMgSemaphore[] SignalSemaphores { get; set; }
 	}
 }
 

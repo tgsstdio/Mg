@@ -1,8 +1,8 @@
 ﻿namespace Magnesium
 {
-    public class MgSemaphore
+    public interface IMgSemaphore
 	{
-
+		void DestroySemaphore(IMgDevice device, MgAllocationCallbacks allocator);
 	}
 }
 

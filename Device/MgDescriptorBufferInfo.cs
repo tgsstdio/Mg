@@ -2,7 +2,7 @@ using System;
 
 namespace Magnesium
 {
-    using VkBuffer = Magnesium.MgBuffer;
+    using VkBuffer = Magnesium.IMgBuffer;
 
     // Device
     public class MgDescriptorBufferInfo

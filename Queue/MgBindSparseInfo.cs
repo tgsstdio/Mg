@@ -5,7 +5,7 @@ namespace Magnesium
     public class MgBindSparseInfo
 	{
 		public UInt32 WaitSemaphoreCount { get; set; }
-		public MgSemaphore[] WaitSemaphores { get; set; }
+		public IMgSemaphore[] WaitSemaphores { get; set; }
 		public UInt32 BufferBindCount { get; set; }
 		public MgSparseBufferMemoryBindInfo[] BufferBinds { get; set; }
 		public UInt32 ImageOpaqueBindCount { get; set; }
@@ -13,7 +13,7 @@ namespace Magnesium
 		public UInt32 ImageBindCount { get; set; }
 		public MgSparseImageMemoryBindInfo[] ImageBinds { get; set; }
 		public UInt32 SignalSemaphoreCount { get; set; }
-		public MgSemaphore[] SignalSemaphores { get; set; }
+		public IMgSemaphore[] SignalSemaphores { get; set; }
 	}
 }
 

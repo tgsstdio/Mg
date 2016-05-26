@@ -2,7 +2,7 @@
 {
     public class MgSubmitInfoWaitSemaphoreInfo
 	{
-		public MgSemaphore WaitSemaphore { get; set; }
+		public IMgSemaphore WaitSemaphore { get; set; }
 		public MgPipelineStageFlagBits WaitDstStageMask { get; set;}
 	}
 }
