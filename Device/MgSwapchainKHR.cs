@@ -1,9 +1,9 @@
 namespace Magnesium
 {
     // Device
-    public class MgSwapchainKHR
+    public interface IMgSwapchainKHR
 	{
-		
+		void DestroySwapchainKHR(IMgDevice device, MgAllocationCallbacks allocator);
 	}
 }
 

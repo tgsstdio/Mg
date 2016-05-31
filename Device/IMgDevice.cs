@@ -21,11 +21,11 @@ namespace Magnesium
 		void GetImageMemoryRequirements(IMgImage image, out MgMemoryRequirements memoryRequirements);
 		Result BindImageMemory(IMgImage image, IMgDeviceMemory memory, UInt64 memoryOffset);
 		void GetImageSparseMemoryRequirements(IMgImage image, out MgSparseImageMemoryRequirements[] sparseMemoryRequirements);
-		Result CreateFence(MgFenceCreateInfo pCreateInfo, MgAllocationCallbacks allocator, out MgFence fence);
-		void DestroyFence(MgFence fence, MgAllocationCallbacks allocator);
-		Result ResetFences(MgFence[] pFences);
-		Result GetFenceStatus(MgFence fence);
-		Result WaitForFences(MgFence[] pFences, bool waitAll, UInt64 timeout);
+		Result CreateFence(MgFenceCreateInfo pCreateInfo, MgAllocationCallbacks allocator, out IMgFence fence);
+		//void DestroyFence(IMgFence fence, MgAllocationCallbacks allocator);
+		Result ResetFences(IMgFence[] pFences);
+		Result GetFenceStatus(IMgFence fence);
+		Result WaitForFences(IMgFence[] pFences, bool waitAll, UInt64 timeout);
 		Result CreateSemaphore(MgSemaphoreCreateInfo pCreateInfo, MgAllocationCallbacks allocator, out IMgSemaphore pSemaphore);
 		//void DestroySemaphore(MgSemaphore semaphore, MgAllocationCallbacks allocator);
 		Result CreateEvent(MgEventCreateInfo pCreateInfo, MgAllocationCallbacks allocator, out MgEvent @event);
@@ -76,11 +76,11 @@ namespace Magnesium
 		//Result ResetCommandPool(MgCommandPool commandPool, MgCommandPoolResetFlagBits flags);
 		Result AllocateCommandBuffers(MgCommandBufferAllocateInfo pAllocateInfo, IMgCommandBuffer[] pCommandBuffers);
 		void FreeCommandBuffers(IMgCommandPool commandPool, IMgCommandBuffer[] pCommandBuffers);
-		Result CreateSharedSwapchainsKHR(MgSwapchainCreateInfoKHR[] pCreateInfos, MgAllocationCallbacks allocator, out MgSwapchainKHR[] pSwapchains);
-		Result CreateSwapchainKHR(MgSwapchainCreateInfoKHR pCreateInfo, MgAllocationCallbacks allocator, out MgSwapchainKHR pSwapchain);
-		void DestroySwapchainKHR(MgSwapchainKHR swapchain, MgAllocationCallbacks allocator);
-		Result GetSwapchainImagesKHR(MgSwapchainKHR swapchain, out IMgImage[] pSwapchainImages);
-		Result AcquireNextImageKHR(MgSwapchainKHR swapchain, UInt64 timeout, IMgSemaphore semaphore, MgFence fence, out UInt32 pImageIndex);
+		Result CreateSharedSwapchainsKHR(MgSwapchainCreateInfoKHR[] pCreateInfos, MgAllocationCallbacks allocator, out IMgSwapchainKHR[] pSwapchains);
+		Result CreateSwapchainKHR(MgSwapchainCreateInfoKHR pCreateInfo, MgAllocationCallbacks allocator, out IMgSwapchainKHR pSwapchain);
+		void DestroySwapchainKHR(IMgSwapchainKHR swapchain, MgAllocationCallbacks allocator);
+		Result GetSwapchainImagesKHR(IMgSwapchainKHR swapchain, out IMgImage[] pSwapchainImages);
+		Result AcquireNextImageKHR(IMgSwapchainKHR swapchain, UInt64 timeout, IMgSemaphore semaphore, IMgFence fence, out UInt32 pImageIndex);
 	}
 }
 

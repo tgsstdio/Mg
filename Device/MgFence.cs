@@ -1,8 +1,8 @@
 ﻿namespace Magnesium
 {
-    public class MgFence
+    public interface IMgFence
 	{
-
+		void DestroyFence(IMgDevice device, MgAllocationCallbacks allocator);
 	}
 }
 

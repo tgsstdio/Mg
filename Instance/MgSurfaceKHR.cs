@@ -1,8 +1,8 @@
 ﻿namespace Magnesium
 {
-    public class MgSurfaceKHR
+    public interface IMgSurfaceKHR
 	{
-
+		void DestroySurfaceKHR(IMgInstance instance, MgAllocationCallbacks allocator);
 	}
 }
 

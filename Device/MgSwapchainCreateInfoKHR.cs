@@ -5,7 +5,7 @@ namespace Magnesium
     public class MgSwapchainCreateInfoKHR
 	{
 		public UInt32 Flags { get; set; }
-		public MgSurfaceKHR Surface { get; set; }
+		public IMgSurfaceKHR Surface { get; set; }
 		public UInt32 MinImageCount { get; set; }
 		public MgFormat ImageFormat { get; set; }
 		public MgColorSpaceKHR ImageColorSpace { get; set; }
@@ -18,7 +18,7 @@ namespace Magnesium
 		public MgCompositeAlphaFlagBitsKHR CompositeAlpha { get; set; }
 		public MgPresentModeKHR PresentMode { get; set; }
 		public bool Clipped { get; set; }
-		public MgSwapchainKHR OldSwapchain { get; set; }
+		public IMgSwapchainKHR OldSwapchain { get; set; }
 	}
 
 }

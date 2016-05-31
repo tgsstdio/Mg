@@ -20,10 +20,10 @@ namespace Magnesium
 		Result GetDisplayModePropertiesKHR(MgDisplayKHR display, out MgDisplayModePropertiesKHR[] pProperties);
 		//Result CreateDisplayModeKHR(DisplayKHR display, DisplayModeCreateInfoKHR pCreateInfo, AllocationCallbacks allocator, out DisplayModeKHR pMode);
 		Result GetDisplayPlaneCapabilitiesKHR(MgDisplayModeKHR mode, UInt32 planeIndex, out MgDisplayPlaneCapabilitiesKHR pCapabilities);
-		Result GetPhysicalDeviceSurfaceSupportKHR(UInt32 queueFamilyIndex, MgSurfaceKHR surface, ref bool pSupported);
-		Result GetPhysicalDeviceSurfaceCapabilitiesKHR(MgSurfaceKHR surface, out MgSurfaceCapabilitiesKHR pSurfaceCapabilities);
-		Result GetPhysicalDeviceSurfaceFormatsKHR(MgSurfaceKHR surface, out MgSurfaceFormatKHR[] pSurfaceFormats);
-		Result GetPhysicalDeviceSurfacePresentModesKHR(MgSurfaceKHR surface, out MgPresentModeKHR[] pPresentModes);
+		Result GetPhysicalDeviceSurfaceSupportKHR(UInt32 queueFamilyIndex, IMgSurfaceKHR surface, ref bool pSupported);
+		Result GetPhysicalDeviceSurfaceCapabilitiesKHR(IMgSurfaceKHR surface, out MgSurfaceCapabilitiesKHR pSurfaceCapabilities);
+		Result GetPhysicalDeviceSurfaceFormatsKHR(IMgSurfaceKHR surface, out MgSurfaceFormatKHR[] pSurfaceFormats);
+		Result GetPhysicalDeviceSurfacePresentModesKHR(IMgSurfaceKHR surface, out MgPresentModeKHR[] pPresentModes);
 		bool GetPhysicalDeviceWin32PresentationSupportKHR(UInt32 queueFamilyIndex);
 	}
 }
