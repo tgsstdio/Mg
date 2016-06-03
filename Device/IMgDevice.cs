@@ -45,8 +45,8 @@ namespace Magnesium
 		void GetImageSubresourceLayout(IMgImage image, MgImageSubresource pSubresource, out MgSubresourceLayout pLayout);
 		Result CreateImageView(MgImageViewCreateInfo pCreateInfo, MgAllocationCallbacks allocator, out IMgImageView pView);
 		//void DestroyImageView(MgImageView imageView, MgAllocationCallbacks allocator);
-		Result CreateShaderModule(MgShaderModuleCreateInfo pCreateInfo, MgAllocationCallbacks allocator, out MgShaderModule pShaderModule);
-		void DestroyShaderModule(MgShaderModule shaderModule, MgAllocationCallbacks allocator);
+		Result CreateShaderModule(MgShaderModuleCreateInfo pCreateInfo, MgAllocationCallbacks allocator, out IMgShaderModule pShaderModule);
+		//void DestroyShaderModule(MgShaderModule shaderModule, MgAllocationCallbacks allocator);
 		Result CreatePipelineCache(MgPipelineCacheCreateInfo pCreateInfo, MgAllocationCallbacks allocator, out IMgPipelineCache pPipelineCache);
 		//void DestroyPipelineCache(IMgPipelineCache pipelineCache, MgAllocationCallbacks allocator);
 		Result GetPipelineCacheData(IMgPipelineCache pipelineCache, UIntPtr pDataSize, IntPtr pData);

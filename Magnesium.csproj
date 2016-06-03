@@ -48,7 +48,6 @@
     <Compile Include="Callbacks\MgInternalAllocationType.cs" />
     <Compile Include="Callbacks\MgSystemAllocationScope.cs" />
     <Compile Include="CommandBuffer\MgBufferCopy.cs" />
-    <Compile Include="Device\MgBuffer.cs" />
     <Compile Include="CommandBuffer\MgBufferMemoryBarrier.cs" />
     <Compile Include="CommandBuffer\MgBufferImageCopy.cs" />
     <Compile Include="CommandBuffer\MgImageSubresourceLayers.cs" />
@@ -67,11 +66,9 @@
     <Compile Include="CommandBuffer\MgCommandBufferUsageFlagBits.cs" />
     <Compile Include="CommandBuffer\MgCommandBufferInheritanceInfo.cs" />
     <Compile Include="CommandBuffer\MgCommandBufferResetFlagBits.cs" />
-    <Compile Include="Device\MgImage.cs" />
     <Compile Include="CommandBuffer\MgStencilFaceFlagBits.cs" />
     <Compile Include="Device\MgEvent.cs" />
     <Compile Include="Device\MgPipelineBindPoint.cs" />
-    <Compile Include="Device\MgPipelineLayout.cs" />
     <Compile Include="Enums\MgImageLayout.cs" />
     <Compile Include="CommandBuffer\MgImageResolve.cs" />
     <Compile Include="Device\MgImageSubresourceRange.cs" />
@@ -146,9 +143,7 @@
     <Compile Include="Device\MgAttachmentLoadOp.cs" />
     <Compile Include="Device\MgBufferCreateFlagBits.cs" />
     <Compile Include="Device\MgMappedMemoryRange.cs" />
-    <Compile Include="Device\MgDeviceMemory.cs" />
     <Compile Include="Device\MgSemaphoreCreateInfo.cs" />
-    <Compile Include="Device\MgSemaphore.cs" />
     <Compile Include="Device\MgEventCreateInfo.cs" />
     <Compile Include="Device\MgQueryResultFlagBits.cs" />
     <Compile Include="Device\MgQueryPool.cs" />
@@ -157,12 +152,10 @@
     <Compile Include="Device\MgFenceCreateInfo.cs" />
     <Compile Include="Device\MgFramebufferCreateInfo.cs" />
     <Compile Include="Device\MgRenderPass.cs" />
-    <Compile Include="Device\MgImageView.cs" />
     <Compile Include="Device\MgFramebuffer.cs" />
     <Compile Include="Device\MgFenceCreateFlagBits.cs" />
     <Compile Include="Device\MgGraphicsPipelineCreateInfo.cs" />
     <Compile Include="Device\MgPipelineCreateFlagBits.cs" />
-    <Compile Include="Device\MgPipeline.cs" />
     <Compile Include="Device\MgPipelineDynamicStateCreateInfo.cs" />
     <Compile Include="Device\MgPipelineColorBlendStateCreateInfo.cs" />
     <Compile Include="Device\MgPipelineDepthStencilStateCreateInfo.cs" />
@@ -204,9 +197,7 @@
     <Compile Include="Device\MgDescriptorPoolCreateInfo.cs" />
     <Compile Include="Device\MgDescriptorPoolCreateFlagBits.cs" />
     <Compile Include="Device\MgDescriptorPoolSize.cs" />
-    <Compile Include="Device\MgFence.cs" />
     <Compile Include="Device\MgDescriptorSetAllocateInfo.cs" />
-    <Compile Include="Device\MgDescriptorPool.cs" />
     <Compile Include="Device\MgDescriptorSetLayout.cs" />
     <Compile Include="Device\MgImageCreateInfo.cs" />
     <Compile Include="Device\MgImageSubresource.cs" />
@@ -215,18 +206,15 @@
     <Compile Include="Device\MgMemoryAllocateInfo.cs" />
     <Compile Include="Device\MgRenderPassCreateInfo.cs" />
     <Compile Include="Device\MgSubpassDependency.cs" />
-    <Compile Include="Device\MgSampler.cs" />
     <Compile Include="Device\MgSamplerAddressMode.cs" />
     <Compile Include="Device\MgSamplerCreateInfo.cs" />
     <Compile Include="Device\MgSamplerMipmapMode.cs" />
-    <Compile Include="Device\MgShaderModule.cs" />
     <Compile Include="Device\MgSparseImageMemoryRequirements.cs" />
     <Compile Include="Device\MgSpecializationInfo.cs" />
     <Compile Include="Device\MgSpecializationMapEntry.cs" />
     <Compile Include="Device\MgStencilOpState.cs" />
     <Compile Include="Device\MgSubresourceLayout.cs" />
     <Compile Include="Device\MgSwapchainCreateInfoKHR.cs" />
-    <Compile Include="Device\MgSwapchainKHR.cs" />
     <Compile Include="Device\MgVertexInputBindingDescription.cs" />
     <Compile Include="Device\MgVertexInputRate.cs" />
     <Compile Include="Device\MgViewport.cs" />
@@ -235,7 +223,6 @@
     <Compile Include="Device\MgDescriptorImageInfo.cs" />
     <Compile Include="Device\MgComputePipelineCreateInfo.cs" />
     <Compile Include="Device\MgCommandPoolCreateFlagBits.cs" />
-    <Compile Include="Device\MgCommandPool.cs" />
     <Compile Include="Device\MgCopyDescriptorSet.cs" />
     <Compile Include="Device\MgCommandBufferLevel.cs" />
     <Compile Include="Device\MgBufferCreateInfo.cs" />
@@ -269,9 +256,22 @@
     <Compile Include="Driver\MgQueueInfo.cs" />
     <Compile Include="Driver\MgThreadPartition.cs" />
     <Compile Include="Driver\Win32Swapchain.cs" />
-    <Compile Include="Driver\IMagnesiumDriver.cs" />
     <Compile Include="Driver\MgLogicalDevice.cs" />
     <Compile Include="Driver\MgDriver.cs" />
+    <Compile Include="Driver\IMgDriver.cs" />
+    <Compile Include="Device\IMgDeviceMemory.cs" />
+    <Compile Include="Device\IMgBuffer.cs" />
+    <Compile Include="Device\IMgCommandPool.cs" />
+    <Compile Include="Device\IMgImage.cs" />
+    <Compile Include="Device\IMgSampler.cs" />
+    <Compile Include="Device\IMgSemaphore.cs" />
+    <Compile Include="Device\IMgSwapchainKHR.cs" />
+    <Compile Include="Device\IMgDescriptorPool.cs" />
+    <Compile Include="Device\IMgPipeline.cs" />
+    <Compile Include="Device\IMgFence.cs" />
+    <Compile Include="Device\IMgImageView.cs" />
+    <Compile Include="Device\IMgPipelineLayout.cs" />
+    <Compile Include="Device\IMgShaderModule.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
