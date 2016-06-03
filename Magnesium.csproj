@@ -258,6 +258,20 @@
     <Compile Include="Queue\MgPresentInfoKHR.cs" />
     <Compile Include="Queue\MgSubmitInfoWaitSemaphoreInfo.cs" />
     <Compile Include="Device\MgDescriptorSet.cs" />
+    <Compile Include="Driver\IMgImageTools.cs" />
+    <Compile Include="Driver\IMgLogicalDevice.cs" />
+    <Compile Include="Driver\IMgPresentationLayer.cs" />
+    <Compile Include="Driver\IMgQueueInfo.cs" />
+    <Compile Include="Driver\IMgSwapchain.cs" />
+    <Compile Include="Driver\IMgThreadPartition.cs" />
+    <Compile Include="Driver\MgImageTools.cs" />
+    <Compile Include="Driver\MgQueueAllocation.cs" />
+    <Compile Include="Driver\MgQueueInfo.cs" />
+    <Compile Include="Driver\MgThreadPartition.cs" />
+    <Compile Include="Driver\Win32Swapchain.cs" />
+    <Compile Include="Driver\IMagnesiumDriver.cs" />
+    <Compile Include="Driver\MgLogicalDevice.cs" />
+    <Compile Include="Driver\MgDriver.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
@@ -271,5 +285,6 @@
     <Folder Include="Device\" />
     <Folder Include="Queue\" />
     <Folder Include="CommandBuffer\" />
+    <Folder Include="Driver\" />
   </ItemGroup>
 </Project>
