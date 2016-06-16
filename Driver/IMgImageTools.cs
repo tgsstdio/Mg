@@ -9,6 +9,16 @@
 			MgImageAspectFlagBits aspectMask,
 			MgImageLayout oldImageLayout,
 			MgImageLayout newImageLayout);
+
+		void SetImageLayout (
+			IMgCommandBuffer cmdbuffer, 
+			IMgImage image, 
+			MgImageAspectFlagBits aspectMask, 
+			MgImageLayout oldImageLayout, 
+			MgImageLayout newImageLayout,
+			uint mipLevel,
+			uint mipLevelCount		
+		);
 	}
 }
 

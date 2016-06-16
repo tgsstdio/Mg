@@ -7,13 +7,19 @@ namespace Magnesium
 	{
 		private readonly IMgPhysicalDevice mPhysicalDevice;
 		private readonly IMgDevice mDevice;
-		public MgThreadPartition (IMgPhysicalDevice physicalDevice, IMgDevice device, IMgQueue queue, IMgCommandPool commandPool, IMgDescriptorPool descPool)
+		public MgThreadPartition (
+			IMgPhysicalDevice physicalDevice,
+			IMgDevice device, IMgQueue queue, 
+			IMgCommandPool commandPool,
+			IMgDescriptorPool descPool, 
+			MgPhysicalDeviceMemoryProperties deviceMemoryProperties)
 		{
 			mPhysicalDevice = physicalDevice;
 			mDevice = device;
 			this.Queue = queue;
 			this.CommandPool = commandPool;
 			this.DescriptorPool = descPool;
+			mDeviceMemoryProperties = deviceMemoryProperties;
 		}
 
 		#region IDisposable implementation
@@ -58,6 +64,30 @@ namespace Magnesium
 		#endregion
 
 		#region IMgThreadPartition implementation
+
+		private MgPhysicalDeviceMemoryProperties mDeviceMemoryProperties;
+		public bool GetMemoryType(uint typeBits, MgMemoryPropertyFlagBits memoryPropertyFlags, out uint typeIndex)
+		{
+			uint requirements = (uint)memoryPropertyFlags;
+
+			// Search memtypes to find first index with those properties
+			for (UInt32 i = 0; i < mDeviceMemoryProperties.MemoryTypes.Length; i++)
+			{
+				if ((typeBits & 1) == 1)
+				{
+					// Type is available, does it match user properties?
+					if ((mDeviceMemoryProperties.MemoryTypes[i].PropertyFlags & requirements) == requirements)
+					{
+						typeIndex = i;
+						return true;
+					}
+				}
+				typeBits >>= 1;
+			}
+			// No memory types matched, return failure
+			typeIndex = 0;
+			return false;
+		}
 
 		public IMgPhysicalDevice PhysicalDevice {
 			get {

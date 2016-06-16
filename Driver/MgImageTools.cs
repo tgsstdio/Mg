@@ -22,6 +22,10 @@ namespace Magnesium
 			PushImageMemoryBarrier(cmdbuffer, image, aspectMask, oldImageLayout, newImageLayout, subresourceRange);
 		}
 
+		public void SetImageLayout (IMgCommandBuffer cmdbuffer, IMgImage image, MgImageAspectFlagBits aspectMask, MgImageLayout oldImageLayout, MgImageLayout newImageLayout, uint mipLevel, uint mipLevelCount)
+		{
+			throw new NotImplementedException ();
+		}
 
 		// Create an image memory barrier for changing the layout of
 		// an image and put it into an active command buffer

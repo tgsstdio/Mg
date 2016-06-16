@@ -10,6 +10,9 @@ namespace Magnesium
 		IMgQueue Queue { get; }
 		IMgDevice Device { get; }
 		IMgPhysicalDevice PhysicalDevice { get; }
+
+		// UTILITY FUNCTION
+		bool GetMemoryType(uint typeBits, MgMemoryPropertyFlagBits memoryPropertyFlags, out uint typeIndex);
 	}
 }
 

@@ -19,7 +19,7 @@ namespace Magnesium
 		void GetBufferMemoryRequirements(IMgBuffer buffer, out MgMemoryRequirements pMemoryRequirements);
 		//Result BindBufferMemory(IMgBuffer buffer, IMgDeviceMemory memory, UInt64 memoryOffset);
 		void GetImageMemoryRequirements(IMgImage image, out MgMemoryRequirements memoryRequirements);
-		Result BindImageMemory(IMgImage image, IMgDeviceMemory memory, UInt64 memoryOffset);
+		//Result BindImageMemory(IMgImage image, IMgDeviceMemory memory, UInt64 memoryOffset);
 		void GetImageSparseMemoryRequirements(IMgImage image, out MgSparseImageMemoryRequirements[] sparseMemoryRequirements);
 		Result CreateFence(MgFenceCreateInfo pCreateInfo, MgAllocationCallbacks allocator, out IMgFence fence);
 		//void DestroyFence(IMgFence fence, MgAllocationCallbacks allocator);

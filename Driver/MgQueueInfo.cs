@@ -51,7 +51,10 @@ namespace Magnesium
 			errCode = Device.CreateDescriptorPool (descPoolCreateInfo, null, out descPool);
 			Debug.Assert (errCode == Result.SUCCESS);
 
-			var result = new MgThreadPartition (mParent, Device, this.Queue, commandPool, descPool);
+			MgPhysicalDeviceMemoryProperties prop;
+			mParent.GetPhysicalDeviceMemoryProperties (out prop);
+
+			var result = new MgThreadPartition (mParent, Device, this.Queue, commandPool, descPool, prop);
 			return result;
 		}
 

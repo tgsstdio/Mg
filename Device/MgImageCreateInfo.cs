@@ -12,7 +12,7 @@ namespace Magnesium
 		public UInt32 ArrayLayers { get; set; }
 		public MgSampleCountFlagBits Samples { get; set; }
 		public MgImageTiling Tiling { get; set; }
-		public UInt32 Usage { get; set; }
+		public MgImageUsageFlagBits Usage { get; set; }
 		public MgSharingMode SharingMode { get; set; }
 		public UInt32[] QueueFamilyIndices { get; set; }
 		public MgImageLayout InitialLayout { get; set; }

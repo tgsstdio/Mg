@@ -5,39 +5,73 @@ namespace Magnesium
     [Flags] 
 	public enum MgPipelineStageFlagBits : UInt32
 	{
-		// Before subsequent commands are processed
+		/// <summary>
+		/// Before subsequent commands are processed
+		/// </summary>
 		TOP_OF_PIPE_BIT = 1 << 0,
-		// Draw/DispatchIndirect command fetch
+		/// <summary>
+		/// Draw/DispatchIndirect command fetch
+		/// </summary>
 		DRAW_INDIRECT_BIT = 1 << 1,
-		// Vertex/index fetch
+		/// <summary>
+		/// Vertex/index fetch
+		/// </summary>
 		VERTEX_INPUT_BIT = 1 << 2,
-		// Vertex shading
+		/// <summary>
+		/// Vertex shading
+		/// </summary>
 		VERTEX_SHADER_BIT = 1 << 3,
-		// Tessellation control shading
+		/// <summary>
+		/// Tessellation control shading
+		/// </summary>
 		TESSELLATION_CONTROL_SHADER_BIT = 1 << 4,
-		// Tessellation evaluation shading
+		/// <summary>
+		/// Tessellation evaluation shading
+		/// </summary>
 		TESSELLATION_EVALUATION_SHADER_BIT = 1 << 5,
-		// Geometry shading
+		/// <summary>
+		/// Geometry shading
+		/// </summary>
 		GEOMETRY_SHADER_BIT = 1 << 6,
-		// Fragment shading
+		/// <summary>
+		/// Fragment shading
+		/// </summary>
 		FRAGMENT_SHADER_BIT = 1 << 7,
-		// Early fragment (depth and stencil) tests
+		/// <summary>
+		/// Early fragment (depth and stencil) tests
+		/// </summary>
 		EARLY_FRAGMENT_TESTS_BIT = 1 << 8,
-		// Late fragment (depth and stencil) tests
+		/// <summary>
+		/// Late fragment (depth and stencil) tests
+		/// </summary>
 		LATE_FRAGMENT_TESTS_BIT = 1 << 9,
-		// Color attachment writes
+		/// <summary>
+		/// Color attachment writes
+		/// </summary>
 		COLOR_ATTACHMENT_OUTPUT_BIT = 1 << 10,
-		// Compute shading
+		/// <summary>
+		/// Compute shading
+		/// </summary>
 		COMPUTE_SHADER_BIT = 1 << 11,
-		// Transfer/copy operations
+		/// <summary>
+		/// Transfer/copy operations
+		/// </summary>
 		TRANSFER_BIT = 1 << 12,
-		// After previous commands have completed
+		/// <summary>
+		/// After previous commands have completed
+		/// </summary>
 		BOTTOM_OF_PIPE_BIT = 1 << 13,
-		// Indicates host (CPU) is a source/sink of the dependency
+		/// <summary>
+		/// Indicates host (CPU) is a source/sink of the dependency
+		/// </summary>
 		HOST_BIT = 1 << 14,
-		// All stages of the graphics pipeline
+		/// <summary>
+		/// All stages of the graphics pipeline
+		/// </summary>
 		ALL_GRAPHICS_BIT = 1 << 15,
-		// All stages supported on the queue
+		/// <summary>
+		/// All stages supported on the queue
+		/// </summary>
 		ALL_COMMANDS_BIT = 1 << 16,
 	};
 }
