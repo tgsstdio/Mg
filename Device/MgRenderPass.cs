@@ -1,8 +1,8 @@
 ﻿namespace Magnesium
 {
-    public class MgRenderPass
+    public interface IMgRenderPass
 	{
-
+		void DestroyRenderPass(IMgDevice device, MgAllocationCallbacks allocator);
 	}
 }
 

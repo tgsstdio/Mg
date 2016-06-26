@@ -1,8 +1,8 @@
 ﻿namespace Magnesium
 {
-    public class MgQueryPool
+    public interface IMgQueryPool
 	{
-
+		void DestroyQueryPool(IMgDevice device, MgAllocationCallbacks allocator);
 	}
 }
 

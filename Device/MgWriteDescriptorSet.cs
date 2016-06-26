@@ -12,7 +12,7 @@ namespace Magnesium
 		public MgDescriptorType DescriptorType { get; set; }
 		public MgDescriptorImageInfo[] ImageInfo { get; set; }
 		public MgDescriptorBufferInfo[] BufferInfo { get; set; }
-		public MgBufferView[] TexelBufferView { get; set; }
+		public IMgBufferView[] TexelBufferView { get; set; }
 	}
 }
 

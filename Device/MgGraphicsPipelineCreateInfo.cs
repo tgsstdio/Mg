@@ -16,7 +16,7 @@ namespace Magnesium
 		public MgPipelineColorBlendStateCreateInfo ColorBlendState { get; set; }
 		public MgPipelineDynamicStateCreateInfo DynamicState { get; set; }
 		public IMgPipelineLayout Layout { get; set; }
-		public MgRenderPass RenderPass { get; set; }
+		public IMgRenderPass RenderPass { get; set; }
 		public UInt32 Subpass { get; set; }
 		public IMgPipeline BasePipelineHandle { get; set; }
 		public Int32 BasePipelineIndex { get; set; }

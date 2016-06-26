@@ -1,8 +1,8 @@
 ﻿namespace Magnesium
 {
-    public class MgBufferView
+    public interface IMgBufferView
 	{
-
+		void DestroyBufferView(IMgDevice device, MgAllocationCallbacks allocator);
 	}
 }
 
