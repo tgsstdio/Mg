@@ -9,11 +9,11 @@ namespace Magnesium
 		Result EndCommandBuffer();
 		Result ResetCommandBuffer(MgCommandBufferResetFlagBits flags);
 		void CmdBindPipeline(MgPipelineBindPoint pipelineBindPoint, IMgPipeline pipeline);
-		void CmdSetViewport(UInt32 firstViewport, UInt32 viewportCount, MgViewport[] pViewports);
-		void CmdSetScissor(UInt32 firstScissor, UInt32 scissorCount, MgRect2D[] pScissors);
+		void CmdSetViewport(UInt32 firstViewport, MgViewport[] pViewports);
+		void CmdSetScissor(UInt32 firstScissor, MgRect2D[] pScissors);
 		void CmdSetLineWidth(float lineWidth);
 		void CmdSetDepthBias(float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor);
-		void CmdSetBlendConstants(float[] blendConstants); // 4
+		void CmdSetBlendConstants(MgColor4f blendConstants); // 4
 		void CmdSetDepthBounds(float minDepthBounds, float maxDepthBounds);
 		void CmdSetStencilCompareMask(MgStencilFaceFlagBits faceMask, UInt32 compareMask);
 		void CmdSetStencilWriteMask(MgStencilFaceFlagBits faceMask, UInt32 writeMask);

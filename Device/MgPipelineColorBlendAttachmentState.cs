@@ -11,7 +11,7 @@ namespace Magnesium
 		public MgBlendFactor SrcAlphaBlendFactor { get; set; }
 		public MgBlendFactor DstAlphaBlendFactor { get; set; }
 		public MgBlendOp AlphaBlendOp { get; set; }
-		public UInt32 ColorWriteMask { get; set; }
+		public MgColorComponentFlagBits  ColorWriteMask { get; set; }
 	}
 }
 

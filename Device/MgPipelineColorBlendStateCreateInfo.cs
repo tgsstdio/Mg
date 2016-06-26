@@ -8,7 +8,7 @@ namespace Magnesium
 		public bool LogicOpEnable { get; set; }
 		public MgLogicOp LogicOp { get; set; }
 		public MgPipelineColorBlendAttachmentState[] Attachments { get; set; }
-		public MgVec4f BlendConstants { get; set; } // 4
+		public MgColor4f BlendConstants { get; set; } // 4
 	}
 }
 

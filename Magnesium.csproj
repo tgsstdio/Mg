@@ -272,6 +272,8 @@
     <Compile Include="Device\IMgImageView.cs" />
     <Compile Include="Device\IMgPipelineLayout.cs" />
     <Compile Include="Device\IMgShaderModule.cs" />
+    <Compile Include="Core\MgColor4f.cs" />
+    <Compile Include="Device\MgColorComponentFlagBits.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
