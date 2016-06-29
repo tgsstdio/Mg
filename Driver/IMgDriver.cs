@@ -8,8 +8,8 @@ namespace Magnesium
 		void Initialize (MgApplicationInfo appInfo);
 		void Initialize (MgApplicationInfo appInfo, string[] extensionLayers, string[] extensionNames);
 
-		IMgLogicalDevice CreateGraphicsDevice ();
-		IMgLogicalDevice CreateGraphicsDevice(IMgSurfaceKHR presentationSurface);
+		IMgLogicalDevice CreateLogicalDevice ();
+		IMgLogicalDevice CreateLogicalDevice(IMgSurfaceKHR presentationSurface);
 		IMgLogicalDevice CreateDevice(uint physicalDevice, IMgSurfaceKHR presentationSurface, MgQueueAllocation requestCount, MgQueueFlagBits requestedQueueType);
 		IMgLogicalDevice CreateDevice(IMgPhysicalDevice gpu, MgDeviceQueueCreateInfo queueCreateInfo);
 	}

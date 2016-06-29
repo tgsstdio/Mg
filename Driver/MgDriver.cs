@@ -37,12 +37,12 @@ namespace Magnesium
 			Debug.Assert (errorCode == Result.SUCCESS);
 		}
 
-		public IMgLogicalDevice CreateGraphicsDevice(IMgSurfaceKHR presentationSurface)
+		public IMgLogicalDevice CreateLogicalDevice(IMgSurfaceKHR presentationSurface)
 		{
 			return CreateDevice (0, presentationSurface, MgQueueAllocation.One, MgQueueFlagBits.GRAPHICS_BIT);
 		}
 
-		public IMgLogicalDevice CreateGraphicsDevice()
+		public IMgLogicalDevice CreateLogicalDevice()
 		{
 			return CreateDevice (0, null, MgQueueAllocation.One, MgQueueFlagBits.GRAPHICS_BIT);
 		}
