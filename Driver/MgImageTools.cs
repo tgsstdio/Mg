@@ -22,10 +22,81 @@ namespace Magnesium
 			PushImageMemoryBarrier(cmdbuffer, image, aspectMask, oldImageLayout, newImageLayout, subresourceRange);
 		}
 
-		public void SetImageLayout (IMgCommandBuffer cmdbuffer, IMgImage image, MgImageAspectFlagBits aspectMask, MgImageLayout oldImageLayout, MgImageLayout newImageLayout, uint mipLevel, uint mipLevelCount)
+		// Create an image memory barrier for changing the layout of
+		// an image and put it into an active command buffer
+		public void SetImageLayout(
+			IMgCommandBuffer cmdBuffer,
+			IMgImage image, 
+			MgImageAspectFlagBits aspectMask,
+			MgImageLayout oldImageLayout,
+			MgImageLayout newImageLayout,
+			uint mipLevel,
+			uint mipLevelCount)
 		{
-			throw new NotImplementedException ();
+			// Create an image barrier object
+			var imageMemoryBarrier = new MgImageMemoryBarrier () {
+				OldLayout = oldImageLayout,
+				NewLayout = newImageLayout,
+				Image = image,
+				SubresourceRange = new MgImageSubresourceRange {
+					AspectMask = aspectMask,
+					BaseMipLevel = mipLevel,
+					LevelCount = mipLevelCount,
+					LayerCount = 1,
+				},
+			};
+
+			// Only sets masks for layouts used in this example
+			// For a more complete version that can be used with
+			// other layouts see vkTools::setImageLayout
+
+			// Source layouts (new)
+
+			if (oldImageLayout == MgImageLayout.PREINITIALIZED)
+			{
+				imageMemoryBarrier.SrcAccessMask = MgAccessFlagBits.HOST_WRITE_BIT | MgAccessFlagBits.TRANSFER_WRITE_BIT;
+			}
+
+			// Target layouts (new)
+
+			// New layout is transfer destination (copy, blit)
+			// Make sure any reads from and writes to the image have been finished
+			if (newImageLayout == MgImageLayout.TRANSFER_DST_OPTIMAL)
+			{
+				imageMemoryBarrier.DstAccessMask = MgAccessFlagBits.TRANSFER_READ_BIT | MgAccessFlagBits.HOST_WRITE_BIT | MgAccessFlagBits.TRANSFER_WRITE_BIT;
+			}
+
+			// New layout is shader read (sampler, input attachment)
+			// Make sure any writes to the image have been finished
+			if (newImageLayout == MgImageLayout.SHADER_READ_ONLY_OPTIMAL)
+			{
+				imageMemoryBarrier.SrcAccessMask = MgAccessFlagBits.HOST_WRITE_BIT | MgAccessFlagBits.TRANSFER_WRITE_BIT;
+				imageMemoryBarrier.DstAccessMask = MgAccessFlagBits.SHADER_READ_BIT;
+			}
+
+			// New layout is transfer source (copy, blit)
+			// Make sure any reads from and writes to the image have been finished
+			if (newImageLayout == MgImageLayout.TRANSFER_SRC_OPTIMAL)
+			{
+				imageMemoryBarrier.DstAccessMask = MgAccessFlagBits.TRANSFER_READ_BIT | MgAccessFlagBits.HOST_WRITE_BIT | MgAccessFlagBits.TRANSFER_WRITE_BIT;
+			}
+
+			// Put barrier on top
+			MgPipelineStageFlagBits srcStageFlags = MgPipelineStageFlagBits.TOP_OF_PIPE_BIT;
+			MgPipelineStageFlagBits destStageFlags = MgPipelineStageFlagBits.TOP_OF_PIPE_BIT;
+
+			const int VK_FLAGS_NONE  = 0;
+
+			// Put barrier inside setup command buffer
+			cmdBuffer.CmdPipelineBarrier(
+				srcStageFlags, 
+				destStageFlags, 
+				VK_FLAGS_NONE, 
+				null,
+				null,
+				new []{imageMemoryBarrier});
 		}
+
 
 		// Create an image memory barrier for changing the layout of
 		// an image and put it into an active command buffer

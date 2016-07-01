@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Magnesium</RootNamespace>
     <AssemblyName>Magnesium</AssemblyName>
-    <TargetFrameworkProfile>Profile259</TargetFrameworkProfile>
+    <TargetFrameworkProfile>Profile111</TargetFrameworkProfile>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <ReleaseVersion>3.0.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
@@ -274,6 +274,12 @@
     <Compile Include="Device\IMgShaderModule.cs" />
     <Compile Include="Core\MgColor4f.cs" />
     <Compile Include="Device\MgColorComponentFlagBits.cs" />
+    <Compile Include="Driver\IMgTextureGenerator.cs" />
+    <Compile Include="Driver\MgTextureInfo.cs" />
+    <Compile Include="Driver\MgImageMipmap.cs" />
+    <Compile Include="Driver\MgImageSource.cs" />
+    <Compile Include="Driver\MgLinearImageOptimizer.cs" />
+    <Compile Include="Driver\MgStagingBufferOptimizer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
