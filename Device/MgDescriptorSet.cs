@@ -1,6 +1,6 @@
 namespace Magnesium
 {
-    public class MgDescriptorSet
+    public interface IMgDescriptorSet
 	{
 
 	}

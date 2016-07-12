@@ -280,6 +280,10 @@
     <Compile Include="Driver\MgImageSource.cs" />
     <Compile Include="Driver\MgLinearImageOptimizer.cs" />
     <Compile Include="Driver\MgStagingBufferOptimizer.cs" />
+    <Compile Include="Driver\MgSwapchainBuffer.cs" />
+    <Compile Include="Driver\IMgDepthStencilBuffer.cs" />
+    <Compile Include="Driver\MgDefaultDepthStencilBuffer.cs" />
+    <Compile Include="Queue\MgPresentInfoKHRImage.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>

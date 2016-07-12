@@ -63,8 +63,8 @@ namespace Magnesium
 		Result CreateDescriptorPool(MgDescriptorPoolCreateInfo pCreateInfo, MgAllocationCallbacks allocator, out IMgDescriptorPool pDescriptorPool);
 		//void DestroyDescriptorPool(IMgDescriptorPool descriptorPool, MgAllocationCallbacks allocator);
 		//Result ResetDescriptorPool(IMgDescriptorPool descriptorPool, UInt32 flags);
-		Result AllocateDescriptorSets(MgDescriptorSetAllocateInfo pAllocateInfo, out MgDescriptorSet[] pDescriptorSets);
-		Result FreeDescriptorSets(IMgDescriptorPool descriptorPool, MgDescriptorSet[] pDescriptorSets);
+		Result AllocateDescriptorSets(MgDescriptorSetAllocateInfo pAllocateInfo, out IMgDescriptorSet[] pDescriptorSets);
+		Result FreeDescriptorSets(IMgDescriptorPool descriptorPool, IMgDescriptorSet[] pDescriptorSets);
 		void UpdateDescriptorSets(MgWriteDescriptorSet[] pDescriptorWrites, MgCopyDescriptorSet[] pDescriptorCopies);
 		Result CreateFramebuffer(MgFramebufferCreateInfo pCreateInfo, MgAllocationCallbacks allocator, out IMgFramebuffer pFramebuffer);
 		//void DestroyFramebuffer(MgFramebuffer framebuffer, MgAllocationCallbacks allocator);

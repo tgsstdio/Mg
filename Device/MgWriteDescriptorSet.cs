@@ -5,7 +5,7 @@ namespace Magnesium
     // Device
     public class MgWriteDescriptorSet
 	{
-		public MgDescriptorSet DstSet { get; set; }
+		public IMgDescriptorSet DstSet { get; set; }
 		public UInt32 DstBinding { get; set; }
 		public UInt32 DstArrayElement { get; set; }
 		public UInt32 DescriptorCount { get; set; }

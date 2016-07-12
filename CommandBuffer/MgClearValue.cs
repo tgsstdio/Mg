@@ -6,9 +6,9 @@ namespace Magnesium
 	public struct MgClearValue
 	{
 		[FieldOffset(0)]
-		MgClearColorValue Color; 
+		public MgClearColorValue Color;
 		[FieldOffset(0)]
-		MgClearDepthStencilValue DepthStencil; 
+		public MgClearDepthStencilValue DepthStencil;
 	}
 }
 

@@ -5,12 +5,12 @@ using System.Diagnostics;
 namespace Magnesium
 {
 	// CODE taken from vulkanswapchain.hpp by Sascha Willems 2016 (licensed under the MIT license)	
-	public class Win32Swapchain : IMgSwapchain
+	public class MgSwapchainCollection : IMgSwapchainCollection
 	{
 		private readonly IMgImageTools mImageTools;
 		private readonly IMgThreadPartition mPartition;
-		private readonly IMgPresentationLayer mLayer;
-		public Win32Swapchain (IMgPresentationLayer layer, IMgThreadPartition partition, IMgImageTools imageTools)
+		private readonly IMgPresentationSurface mLayer;
+		public MgSwapchainCollection (IMgPresentationSurface layer, IMgThreadPartition partition, IMgImageTools imageTools)
 		{
 			mLayer = layer;
 			mPartition = partition;
@@ -43,11 +43,31 @@ namespace Magnesium
 		private MgFormat mFormat;
 		private MgColorSpaceKHR mColorSpace;
 
-		private IMgSwapchainKHR mSwapChain;
-		private uint mWidth;
-		private uint mHeight;
+		private IMgSwapchainKHR mSwapChain = null;
 
-		public void Create (IMgCommandBuffer cmd, uint width, uint height)
+		public IMgSwapchainKHR Swapchain 
+		{
+			get { 
+				return mSwapChain;
+			}
+		}
+
+		private uint mWidth = 0;
+		private uint mHeight = 0;
+		
+		public uint Width {
+			get {
+				return mWidth;
+			}
+		}
+
+		public uint Height {
+			get {
+				return mHeight;
+			}
+		}
+
+		public void Create(IMgCommandBuffer cmd, UInt32 width, UInt32 height)
 		{
 			mWidth = width;
 			mHeight = height;
@@ -151,10 +171,10 @@ namespace Magnesium
 
 			// Get the swap chain buffers containing the image and imageview
 			mImageCount = (uint)mImages.Length;
-			mBuffers = new SwapChainBuffer[mImageCount];
+			mBuffers = new MgSwapchainBuffer[mImageCount];
 			for (uint i = 0; i < mImageCount; i++)
 			{
-				var buffer = new SwapChainBuffer ();
+				var buffer = new MgSwapchainBuffer ();
 				var colorAttachmentView = new MgImageViewCreateInfo{
 					Format = mFormat,
 					Components = new MgComponentMapping{
@@ -188,14 +208,16 @@ namespace Magnesium
 
 				colorAttachmentView.Image = buffer.Image;
 
-				err = mPartition.Device.CreateImageView(colorAttachmentView, null, out buffer.View);
+				IMgImageView bufferView;
+				err = mPartition.Device.CreateImageView(colorAttachmentView, null, out bufferView);
 				Debug.Assert(err == Result.SUCCESS);
+				buffer.View = bufferView;
 
 				mBuffers [i] = buffer;
 			}
 		}
 
-		~Win32Swapchain()
+		~MgSwapchainCollection()
 		{
 			Dispose (false);
 		}
@@ -222,15 +244,14 @@ namespace Magnesium
 			mIsDisposed = true;
 		}
 
-		private class SwapChainBuffer
-		{
-			public IMgImage Image;
-			public IMgImageView View;
-		}
-
 		private IMgImage[] mImages;
 		private uint mImageCount;
-		private SwapChainBuffer[] mBuffers;
+		private MgSwapchainBuffer[] mBuffers;
+		public MgSwapchainBuffer[] Buffers { 
+			get {
+				return mBuffers;
+			}
+		}
 
 		#endregion
 	}
