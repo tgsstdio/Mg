@@ -255,7 +255,6 @@
     <Compile Include="Driver\MgQueueAllocation.cs" />
     <Compile Include="Driver\MgQueueInfo.cs" />
     <Compile Include="Driver\MgThreadPartition.cs" />
-    <Compile Include="Driver\Win32Swapchain.cs" />
     <Compile Include="Driver\MgLogicalDevice.cs" />
     <Compile Include="Driver\MgDriver.cs" />
     <Compile Include="Driver\IMgDriver.cs" />

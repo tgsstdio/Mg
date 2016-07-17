@@ -2,8 +2,8 @@
 {
 	public class MgSwapchainBuffer
 	{
-		public IMgImage Image { get; internal set; }
-		public IMgImageView View { get; internal set; }
+		public IMgImage Image { get; set; }
+		public IMgImageView View { get; set; }
 	}
 }
 
