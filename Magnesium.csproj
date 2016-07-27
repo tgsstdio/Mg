@@ -249,7 +249,6 @@
     <Compile Include="Driver\IMgLogicalDevice.cs" />
     <Compile Include="Driver\IMgPresentationLayer.cs" />
     <Compile Include="Driver\IMgQueueInfo.cs" />
-    <Compile Include="Driver\IMgSwapchain.cs" />
     <Compile Include="Driver\IMgThreadPartition.cs" />
     <Compile Include="Driver\MgImageTools.cs" />
     <Compile Include="Driver\MgQueueAllocation.cs" />
@@ -280,9 +279,12 @@
     <Compile Include="Driver\MgLinearImageOptimizer.cs" />
     <Compile Include="Driver\MgStagingBufferOptimizer.cs" />
     <Compile Include="Driver\MgSwapchainBuffer.cs" />
-    <Compile Include="Driver\IMgDepthStencilBuffer.cs" />
-    <Compile Include="Driver\MgDefaultDepthStencilBuffer.cs" />
     <Compile Include="Queue\MgPresentInfoKHRImage.cs" />
+    <Compile Include="Driver\MgGraphicsDeviceCreateInfo.cs" />
+    <Compile Include="Driver\IMgGraphicsDevice.cs" />
+    <Compile Include="Driver\MgSwapchainCollection.cs" />
+    <Compile Include="Driver\MgDefaultGraphicsDevice.cs" />
+    <Compile Include="Driver\IMgSwapchainCollection.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>

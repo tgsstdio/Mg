@@ -10,7 +10,6 @@ namespace Magnesium
 		IMgSwapchainKHR Swapchain { get; }
 		UInt32 Width { get; }
 		UInt32 Height { get; }
-		void Setup();
 		void Create(IMgCommandBuffer cmd, UInt32 width, UInt32 height);
 		MgSwapchainBuffer[] Buffers { get; }
 	}
