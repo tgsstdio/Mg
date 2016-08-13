@@ -96,6 +96,7 @@ namespace Magnesium
 
 		public void Create (MgGraphicsDeviceCreateInfo createInfo)
 		{
+
 			if (createInfo == null)
 			{
 				throw new ArgumentNullException ("createInfo");
@@ -121,6 +122,8 @@ namespace Magnesium
 			}
 
 			ReleaseUnmanagedResources ();
+			mDeviceCreated = false;
+
 			Setup ();
 
 			CreateDepthStencil (createInfo);
@@ -142,6 +145,7 @@ namespace Magnesium
 				MinDepth = 0f,
 				MaxDepth = 1f,
 			};
+			mDeviceCreated = true;
 		}
 
 		public MgViewport CurrentViewport {
@@ -332,6 +336,12 @@ namespace Magnesium
 			mFramebuffers = frameBuffers;
 		}
 
+		private bool mDeviceCreated = false;
+		public bool DeviceCreated ()
+		{
+			return mDeviceCreated;
+		}
+
 		#endregion
 
 		~MgDefaultGraphicsDevice()
@@ -343,6 +353,11 @@ namespace Magnesium
 		{
 			Dispose (true);
 			GC.SuppressFinalize (this);
+		}
+
+		public bool IsDisposed()
+		{
+			return mIsDisposed;
 		}
 
 		private bool mIsDisposed = false;

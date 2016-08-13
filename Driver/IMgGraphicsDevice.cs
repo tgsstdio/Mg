@@ -27,6 +27,9 @@ namespace Magnesium
 		}
 
 		void Create(MgGraphicsDeviceCreateInfo createInfo);
+
+		bool DeviceCreated();
+		bool IsDisposed();
 	}
 }
 
