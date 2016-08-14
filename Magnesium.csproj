@@ -285,6 +285,7 @@
     <Compile Include="Driver\MgSwapchainCollection.cs" />
     <Compile Include="Driver\MgDefaultGraphicsDevice.cs" />
     <Compile Include="Driver\IMgSwapchainCollection.cs" />
+    <Compile Include="Instance\MgAndroidSurfaceCreateInfoKHR.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
