@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{AD2FE9EA-C1D4-4DC6-84C7-3D8DA5516E72}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>CommandGen.UnitTests</RootNamespace>
+    <AssemblyName>CommandGen.UnitTests</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\packages\NUnit.3.4.1\lib\net45\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FunctionCallTests.cs" />
+    <Compile Include="VariableDeclarationTests.cs" />
+    <Compile Include="CommandInfoTests.cs" />
+    <Compile Include="CallArgumentTests.cs" />
+    <Compile Include="ReturnTypeCheckTests.cs" />
+    <Compile Include="NativeInterfaceTests.cs" />
+    <Compile Include="MethodSignatureTests.cs" />
+    <Compile Include="InterfaceTests.cs" />
+    <Compile Include="MockVkEntityInspector.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Content Include="TestData\vk.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\MonoGame\Magnesium\Magnesium.csproj">
+      <Project>{9F9AC448-9D17-43E5-8889-285426290891}</Project>
+      <Name>Magnesium</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CommandGen\CommandGen.csproj">
+      <Project>{53D2DC5C-CC72-4F02-B538-3033AD8FD536}</Project>
+      <Name>CommandGen</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="TestData\" />
+  </ItemGroup>
+</Project>

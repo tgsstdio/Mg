@@ -1,0 +1,67 @@
+﻿<Properties StartupItem="tools\CommandGen\CommandGen\CommandGen.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="D:\Magnesium.Vulkan\tools\CommandGen\CommandGen.UnitTests\NativeInterfaceTests.cs" line="17" column="21" />
+      <Breakpoint file="D:\Magnesium.Vulkan\tools\CommandGen\CommandGen\Program.cs" line="36" column="9" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.Workbench ActiveDocument="tools\CommandGen\CommandGen.UnitTests\CommandInfoTests.cs">
+    <Files>
+      <File FileName="tools\CommandGen\CommandGen.UnitTests\NativeInterfaceTests.cs" Line="10" Column="1" />
+      <File FileName="tools\CommandGen\CommandGen.UnitTests\InterfaceTests.cs" Line="22" Column="3" />
+      <File FileName="tools\CommandGen\CommandGen.UnitTests\CommandInfoTests.cs" Line="526" Column="41" />
+      <File FileName="tools\CommandGen\CommandGen.UnitTests\FunctionCallTests.cs" Line="1" Column="1" />
+      <File FileName="tools\CommandGen\CommandGen.UnitTests\CallArgumentTests.cs" Line="11" Column="24" />
+      <File FileName="tools\CommandGen\CommandGen\Program.cs" Line="32" Column="49" />
+      <File FileName="tools\CommandGen\CommandGen.UnitTests\ReturnTypeCheckTests.cs" Line="1" Column="1" />
+      <File FileName="tools\CommandGen\CommandGen.UnitTests\packages.config" Line="1" Column="1" />
+      <File FileName="tools\CommandGen\CommandGen\VkVariableDeclaration.cs" Line="1" Column="1" />
+      <File FileName="tools\CommandGen\CommandGen\VkCommandParser.cs" Line="231" Column="38" />
+      <File FileName="tools\CommandGen\CommandGen\VkFunctionCall.cs" Line="8" Column="32" />
+      <File FileName="tools\CommandGen\CommandGen\VkNativeInterface.cs" Line="14" Column="1" />
+      <File FileName="tools\CommandGen\CommandGen\VkCommandInfo.cs" Line="13" Column="1" />
+      <File FileName="tools\CommandGen\CommandGen\VkCallArgument.cs" Line="1" Column="1" />
+      <File FileName="tools\CommandGen\CommandGen\HandleInfo.cs" Line="8" Column="18" />
+      <File FileName="tools\CommandGen\CommandGen\VkEntityInspector.cs" Line="8" Column="32" />
+      <File FileName="tools\CommandGen\CommandGen\IVkEntityInspector.cs" Line="12" Column="51" />
+      <File FileName="tools\CommandGen\CommandGen\IVkMethodImplementation.cs" Line="1" Column="1" />
+      <File FileName="tools\CommandGen\CommandGen\StructInfo.cs" Line="1" Column="1" />
+      <File FileName="tools\CommandGen\CommandGen.UnitTests\MockVkEntityInspector.cs" Line="40" Column="1" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="Magnesium.Vulkan" expanded="True">
+            <Node name="CommandGen" expanded="True">
+              <Node name="References" expanded="True" />
+              <Node name="Properties" expanded="True" />
+              <Node name="TestData" expanded="True" />
+            </Node>
+            <Node name="CommandGen.UnitTests" expanded="True">
+              <Node name="References" expanded="True" />
+              <Node name="Packages" expanded="True" />
+              <Node name="CommandInfoTests.cs" selected="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="MonoDevelop.UnitTesting.TestPad">
+        <State name="__root__">
+          <Node name="Magnesium.Vulkan" expanded="True" selected="True">
+            <Node name="CommandGen.UnitTests" expanded="True">
+              <Node name="CommandGen" expanded="True">
+                <Node name="UnitTests" expanded="True">
+                  <Node name="CommandInfoTests" expanded="True" />
+                  <Node name="InterfaceTests" expanded="True" />
+                </Node>
+              </Node>
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.ItemProperties.CommandGen PreferredExecutionTarget="MonoDevelop.Default" />
+</Properties>
