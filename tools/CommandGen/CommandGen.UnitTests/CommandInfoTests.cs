@@ -22,7 +22,7 @@ namespace CommandGen.UnitTests
 
 			var inspector = new VkEntityInspector();
 
-			inspector.Handles.Add("Instance", new HandleInfo { name = "Instance", type = "VK_DEFINE_HANDLE" });
+			inspector.Handles.Add("Instance", new VkHandleInfo { name = "Instance", type = "VK_DEFINE_HANDLE" });
 			Assert.AreEqual(1, inspector.Handles.Keys.Count);
 
 			var parser = new VkCommandParser (inspector);
@@ -60,6 +60,7 @@ namespace CommandGen.UnitTests
 				Assert.IsNull   (arg_0.LengthVariable);
 				Assert.IsNull   (arg_0.ArrayConstant);
 				Assert.IsFalse  (arg_0.UseOut);
+				Assert.IsFalse	(arg_0.ByReference);
 			}
 
 			{
@@ -78,6 +79,7 @@ namespace CommandGen.UnitTests
 				Assert.IsNull   (arg_1.LengthVariable);
 				Assert.IsNull   (arg_1.ArrayConstant);
 				Assert.IsFalse  (arg_1.UseOut);
+				Assert.IsFalse	(arg_1.ByReference);
 			}
 
 			{
@@ -96,6 +98,7 @@ namespace CommandGen.UnitTests
 				Assert.IsNull   (arg_2.LengthVariable);
 				Assert.IsNull   (arg_2.ArrayConstant);
 				Assert.IsTrue   (arg_2.UseOut);
+				Assert.IsFalse  (arg_2.ByReference);
 			}
 
 			// METHOD SIGNATURE
@@ -169,9 +172,8 @@ namespace CommandGen.UnitTests
 			XElement top = XElement.Parse (xml, LoadOptions.PreserveWhitespace);
 
 			var inspector = new VkEntityInspector();
-			inspector.Handles.Add("PhysicalDevice", new HandleInfo { name = "PhysicalDevice", type = "VK_DEFINE_HANDLE" });
-			inspector.Handles.Add("Instance", new HandleInfo { name = "Instance", type = "VK_DEFINE_HANDLE" });
-
+			inspector.Handles.Add("PhysicalDevice", new VkHandleInfo { name = "PhysicalDevice", type = "VK_DEFINE_HANDLE" });
+			inspector.Handles.Add("Instance", new VkHandleInfo { name = "Instance", type = "VK_DEFINE_HANDLE" });
 			Assert.AreEqual(2, inspector.Handles.Keys.Count);
 
 			var parser = new VkCommandParser (inspector);
@@ -207,6 +209,8 @@ namespace CommandGen.UnitTests
 				Assert.IsNull   (arg_0.LengthVariable);
 				Assert.IsNull   (arg_0.ArrayConstant);
 				Assert.IsFalse  (arg_0.UseOut);
+				Assert.IsTrue	(arg_0.IsBlittable);
+				Assert.IsFalse  (arg_0.ByReference);
 			}
 
 			{
@@ -225,6 +229,8 @@ namespace CommandGen.UnitTests
 				Assert.IsNull   (arg_1.LengthVariable);
 				Assert.IsNull   (arg_1.ArrayConstant);
 				Assert.IsTrue   (arg_1.UseOut);
+				Assert.IsTrue	(arg_1.IsBlittable);
+				Assert.IsTrue   (arg_1.ByReference);
 			}
 
 			{
@@ -243,6 +249,8 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual ("pPhysicalDeviceCount", arg_2.LengthVariable);
 				Assert.IsNull   (arg_2.ArrayConstant);
 				Assert.IsTrue   (arg_2.UseOut);
+				Assert.IsTrue	(arg_2.IsBlittable);
+				Assert.IsFalse  (arg_2.ByReference);
 			}
 
 			// METHOD SIGNATURE
@@ -296,7 +304,7 @@ namespace CommandGen.UnitTests
 
 			var inspector = new VkEntityInspector();
 
-			inspector.Handles.Add("PhysicalDevice", new HandleInfo { name = "PhysicalDevice", type = "VK_DEFINE_HANDLE" });
+			inspector.Handles.Add("PhysicalDevice", new VkHandleInfo { name = "PhysicalDevice", type = "VK_DEFINE_HANDLE" });
 			Assert.AreEqual(1, inspector.Handles.Keys.Count);
 
 			var parser = new VkCommandParser (inspector);
@@ -333,6 +341,7 @@ namespace CommandGen.UnitTests
 				Assert.IsNull   (arg_0.LengthVariable);
 				Assert.IsNull   (arg_0.ArrayConstant);
 				Assert.IsFalse  (arg_0.UseOut);
+				Assert.IsTrue   (arg_0.ByReference);
 			}
 
 			{
@@ -351,6 +360,7 @@ namespace CommandGen.UnitTests
 				Assert.IsNull   (arg_1.LengthVariable);
 				Assert.IsNull   (arg_1.ArrayConstant);
 				Assert.IsTrue   (arg_1.UseOut);
+				Assert.IsTrue   (arg_1.ByReference);
 			}
 
 			{
@@ -369,6 +379,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual ("pPropertyCount", arg_2.LengthVariable);
 				Assert.IsNull   (arg_2.ArrayConstant);
 				Assert.IsTrue   (arg_2.UseOut);
+				Assert.IsFalse  (arg_2.ByReference);
 			}
 
 			// METHOD SIGNATURE
@@ -455,6 +466,7 @@ namespace CommandGen.UnitTests
 				Assert.IsNull   (arg_0.LengthVariable);
 				Assert.IsNull   (arg_0.ArrayConstant);
 				Assert.IsTrue   (arg_0.UseOut);
+				Assert.IsTrue   (arg_0.ByReference);
 			}
 
 			{
@@ -473,6 +485,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual ("pPropertyCount", arg_1.LengthVariable);
 				Assert.IsNull   (arg_1.ArrayConstant);
 				Assert.IsTrue   (arg_1.UseOut);
+				Assert.IsFalse	(arg_1.ByReference);
 			}
 
 			// METHOD SIGNATURE
@@ -524,7 +537,7 @@ namespace CommandGen.UnitTests
 			XElement top = XElement.Parse (xml, LoadOptions.PreserveWhitespace);
 
 			var inspector = new VkEntityInspector();
-			inspector.Handles.Add("CommandBuffer", new HandleInfo { name = "CommandBuffer", type = "VK_DEFINE_HANDLE" });
+			inspector.Handles.Add("CommandBuffer", new VkHandleInfo { name = "CommandBuffer", type = "VK_DEFINE_HANDLE" });
 			Assert.AreEqual(1, inspector.Handles.Keys.Count);
 
 			var parser = new VkCommandParser (inspector);
@@ -561,6 +574,7 @@ namespace CommandGen.UnitTests
 				Assert.IsNull   (arg_0.LengthVariable);
 				Assert.IsNull   (arg_0.ArrayConstant);
 				Assert.IsFalse  (arg_0.UseOut);
+				Assert.IsFalse	(arg_0.ByReference);
 			}
 
 			{
@@ -579,6 +593,7 @@ namespace CommandGen.UnitTests
 				Assert.IsNull   (arg_1.LengthVariable);
 				Assert.AreEqual ("4", arg_1.ArrayConstant);
 				Assert.IsFalse  (arg_1.UseOut);
+				Assert.IsFalse	(arg_1.ByReference);
 			}
 
 			// METHOD SIGNATURE
@@ -626,9 +641,9 @@ namespace CommandGen.UnitTests
 
 			var inspector = new VkEntityInspector();
 
-			inspector.Handles.Add("Device", new HandleInfo { name = "Device", type = "VK_DEFINE_HANDLE" });
-			inspector.Handles.Add("CommandBuffer", new HandleInfo { name = "CommandBuffer", type = "VK_DEFINE_HANDLE" });
-			inspector.Handles.Add("QueryPool", new HandleInfo { name = "CommandBuffer", type = "VK_DEFINE_NON_DISPATCHABLE_HANDLE" });
+			inspector.Handles.Add("Device", new VkHandleInfo { name = "Device", type = "VK_DEFINE_HANDLE" });
+			inspector.Handles.Add("CommandBuffer", new VkHandleInfo { name = "CommandBuffer", type = "VK_DEFINE_HANDLE" });
+			inspector.Handles.Add("QueryPool", new VkHandleInfo { name = "CommandBuffer", type = "VK_DEFINE_NON_DISPATCHABLE_HANDLE" });
 			Assert.AreEqual(3, inspector.Handles.Keys.Count);
 
 			var parser = new VkCommandParser (inspector);
@@ -665,6 +680,7 @@ namespace CommandGen.UnitTests
 				Assert.IsNull   (arg_0.LengthVariable);
 				Assert.IsNull   (arg_0.ArrayConstant);
 				Assert.IsFalse  (arg_0.UseOut);
+				Assert.IsFalse	(arg_0.ByReference);
 			}
 
 			{
@@ -683,6 +699,7 @@ namespace CommandGen.UnitTests
 				Assert.IsNull   (arg_1.LengthVariable);
 				Assert.IsNull   (arg_1.ArrayConstant);
 				Assert.IsFalse  (arg_1.UseOut);
+				Assert.IsFalse	(arg_1.ByReference);
 			}
 
 			{
@@ -701,6 +718,7 @@ namespace CommandGen.UnitTests
 				Assert.IsNull   (arg_2.LengthVariable);
 				Assert.IsNull   (arg_2.ArrayConstant);
 				Assert.IsFalse  (arg_2.UseOut);
+				Assert.IsFalse	(arg_2.ByReference);
 			}
 
 			{
@@ -718,7 +736,8 @@ namespace CommandGen.UnitTests
 				Assert.IsFalse  (arg_3.IsFixedArray);
 				Assert.IsNull   (arg_3.LengthVariable);
 				Assert.IsNull   (arg_3.ArrayConstant);
-				Assert.IsTrue  (arg_3.UseOut);
+				Assert.IsTrue  	(arg_3.UseOut);
+				Assert.IsFalse	(arg_3.ByReference);
 			}
 
 			Assert.AreEqual (2, command.Lines.Count);

@@ -26,12 +26,20 @@ namespace CommandGen.UnitTests
 			}
 		}
 
-		private Dictionary<string, HandleInfo> mHandles = new Dictionary<string, HandleInfo>();
-		public IDictionary<string, HandleInfo> Handles
+		private Dictionary<string, VkHandleInfo> mHandles = new Dictionary<string, VkHandleInfo>();
+		public IDictionary<string, VkHandleInfo> Handles
 		{
 			get
 			{
 				return mHandles;
+			}
+		}
+
+		public IDictionary<string, VkEnumInfo> Enums
+		{
+			get
+			{
+				throw new NotImplementedException();
 			}
 		}
 

@@ -1,11 +1,10 @@
 ﻿using System;
-
 namespace CommandGen
 {
-	public class HandleInfo
+	public class VkEnumInfo
 	{
 		public string name;
-		public string type;
+		internal bool UseFlags;
 	}
 }
 

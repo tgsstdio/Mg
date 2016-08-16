@@ -3,58 +3,54 @@
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
-      <Breakpoint file="D:\Magnesium.Vulkan\tools\CommandGen\CommandGen.UnitTests\NativeInterfaceTests.cs" line="17" column="21" />
-      <Breakpoint file="D:\Magnesium.Vulkan\tools\CommandGen\CommandGen\Program.cs" line="36" column="9" />
+      <Breakpoint file="D:\Magnesium.Vulkan\tools\CommandGen\CommandGen\Program.cs" line="37" column="9" />
+      <Breakpoint file="D:\Magnesium.Vulkan\tools\CommandGen\CommandGen.UnitTests\NativeInterfaceTests.cs" line="16" column="13" />
+      <Breakpoint file="D:\Magnesium.Vulkan\tools\CommandGen\CommandGen\VkCommandParser.cs" line="108" column="30" />
+      <Breakpoint file="D:\Magnesium.Vulkan\tools\CommandGen\CommandGen.UnitTests\CommandInfoTests.cs" line="212" column="17" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.Workbench ActiveDocument="tools\CommandGen\CommandGen.UnitTests\CommandInfoTests.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="tools\CommandGen\CommandGen\VkCommandParser.cs">
     <Files>
-      <File FileName="tools\CommandGen\CommandGen.UnitTests\NativeInterfaceTests.cs" Line="10" Column="1" />
+      <File FileName="tools\CommandGen\CommandGen.UnitTests\NativeInterfaceTests.cs" Line="153" Column="11" />
       <File FileName="tools\CommandGen\CommandGen.UnitTests\InterfaceTests.cs" Line="22" Column="3" />
-      <File FileName="tools\CommandGen\CommandGen.UnitTests\CommandInfoTests.cs" Line="526" Column="41" />
-      <File FileName="tools\CommandGen\CommandGen.UnitTests\FunctionCallTests.cs" Line="1" Column="1" />
+      <File FileName="tools\CommandGen\CommandGen.UnitTests\CommandInfoTests.cs" Line="212" Column="17" />
+      <File FileName="tools\CommandGen\CommandGen.UnitTests\FunctionCallTests.cs" Line="9" Column="1" />
       <File FileName="tools\CommandGen\CommandGen.UnitTests\CallArgumentTests.cs" Line="11" Column="24" />
-      <File FileName="tools\CommandGen\CommandGen\Program.cs" Line="32" Column="49" />
+      <File FileName="tools\CommandGen\CommandGen\Program.cs" Line="21" Column="1" />
       <File FileName="tools\CommandGen\CommandGen.UnitTests\ReturnTypeCheckTests.cs" Line="1" Column="1" />
       <File FileName="tools\CommandGen\CommandGen.UnitTests\packages.config" Line="1" Column="1" />
       <File FileName="tools\CommandGen\CommandGen\VkVariableDeclaration.cs" Line="1" Column="1" />
-      <File FileName="tools\CommandGen\CommandGen\VkCommandParser.cs" Line="231" Column="38" />
+      <File FileName="tools\CommandGen\CommandGen\VkCommandParser.cs" Line="99" Column="7" />
       <File FileName="tools\CommandGen\CommandGen\VkFunctionCall.cs" Line="8" Column="32" />
-      <File FileName="tools\CommandGen\CommandGen\VkNativeInterface.cs" Line="14" Column="1" />
+      <File FileName="tools\CommandGen\CommandGen\VkNativeInterface.cs" Line="34" Column="1" />
       <File FileName="tools\CommandGen\CommandGen\VkCommandInfo.cs" Line="13" Column="1" />
       <File FileName="tools\CommandGen\CommandGen\VkCallArgument.cs" Line="1" Column="1" />
-      <File FileName="tools\CommandGen\CommandGen\HandleInfo.cs" Line="8" Column="18" />
-      <File FileName="tools\CommandGen\CommandGen\VkEntityInspector.cs" Line="8" Column="32" />
-      <File FileName="tools\CommandGen\CommandGen\IVkEntityInspector.cs" Line="12" Column="51" />
+      <File FileName="tools\CommandGen\CommandGen\VkHandleInfo.cs" Line="5" Column="27" />
+      <File FileName="tools\CommandGen\CommandGen\VkEntityInspector.cs" Line="194" Column="5" />
+      <File FileName="tools\CommandGen\CommandGen\IVkEntityInspector.cs" Line="11" Column="49" />
       <File FileName="tools\CommandGen\CommandGen\IVkMethodImplementation.cs" Line="1" Column="1" />
-      <File FileName="tools\CommandGen\CommandGen\StructInfo.cs" Line="1" Column="1" />
-      <File FileName="tools\CommandGen\CommandGen.UnitTests\MockVkEntityInspector.cs" Line="40" Column="1" />
+      <File FileName="tools\CommandGen\CommandGen\VkStructInfo.cs" Line="3" Column="20" />
+      <File FileName="tools\CommandGen\CommandGen.UnitTests\MockVkEntityInspector.cs" Line="7" Column="44" />
+      <File FileName="tools\CommandGen\CommandGen\VkEnumInfo.cs" Line="4" Column="2" />
+      <File FileName="tools\CommandGen\CommandGen\VkFunctionArgument.cs" Line="17" Column="34" />
+      <File FileName="tools\CommandGen\CommandGen.UnitTests\MethodSignatureTests.cs" Line="1" Column="1" />
+      <File FileName="tools\CommandGen\CommandGen\TestData\vk.xml" Line="4603" Column="122" />
     </Files>
     <Pads>
-      <Pad Id="ProjectPad">
-        <State name="__root__">
-          <Node name="Magnesium.Vulkan" expanded="True">
-            <Node name="CommandGen" expanded="True">
-              <Node name="References" expanded="True" />
-              <Node name="Properties" expanded="True" />
-              <Node name="TestData" expanded="True" />
-            </Node>
-            <Node name="CommandGen.UnitTests" expanded="True">
-              <Node name="References" expanded="True" />
-              <Node name="Packages" expanded="True" />
-              <Node name="CommandInfoTests.cs" selected="True" />
-            </Node>
-          </Node>
-        </State>
-      </Pad>
       <Pad Id="MonoDevelop.UnitTesting.TestPad">
         <State name="__root__">
-          <Node name="Magnesium.Vulkan" expanded="True" selected="True">
+          <Node name="Magnesium.Vulkan" expanded="True">
             <Node name="CommandGen.UnitTests" expanded="True">
               <Node name="CommandGen" expanded="True">
                 <Node name="UnitTests" expanded="True">
-                  <Node name="CommandInfoTests" expanded="True" />
+                  <Node name="CommandInfoTests" expanded="True" selected="True" />
+                  <Node name="FunctionCallTests" expanded="True">
+                    <Node name="NoArguments_1" expanded="True" />
+                  </Node>
                   <Node name="InterfaceTests" expanded="True" />
+                  <Node name="NativeInterfaceTests" expanded="True">
+                    <Node name="UsePointer" expanded="True" />
+                  </Node>
                 </Node>
               </Node>
             </Node>

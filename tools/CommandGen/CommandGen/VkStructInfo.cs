@@ -1,6 +1,6 @@
 ﻿namespace CommandGen
 {
-	class StructInfo
+	class VkStructInfo
 	{
 		public string name;
 		public bool needsMarshalling;

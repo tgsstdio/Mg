@@ -8,10 +8,15 @@ namespace CommandGen
 			set;
 		}
 
-		public string ArgumentCsType {
+		public string ArgumentCsType
+		{
 			get;
 			set;
 		}
+
+		public bool ByReference { get; set; }
+
+		public bool IsBlittable { get; set; }
 
 		public bool IsPointer {
 			get;

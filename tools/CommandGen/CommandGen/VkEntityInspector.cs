@@ -9,7 +9,7 @@ namespace CommandGen
 	{
 		#region Parse Struct info
 
-		Dictionary<string, string> mTypesTranslation = new Dictionary<string, string>() { { "ANativeWindow", "IntPtr" }, { "HWND", "IntPtr" }, { "HINSTANCE", "IntPtr" } };
+		readonly Dictionary<string, string> mTypesTranslation = new Dictionary<string, string>() { { "ANativeWindow", "IntPtr" }, { "HWND", "IntPtr" }, { "HINSTANCE", "IntPtr" } };
 
 		public ISet<string> BlittableTypes
 		{
@@ -19,7 +19,7 @@ namespace CommandGen
 			}
 		}
 
-		public IDictionary<string, HandleInfo> Handles
+		public IDictionary<string, VkHandleInfo> Handles
 		{
 			get
 			{
@@ -35,23 +35,32 @@ namespace CommandGen
 			}
 		}
 
+		public IDictionary<string, VkEnumInfo> Enums
+		{
+			get
+			{
+				return mEnums;
+			}
+		}
+
 		public void Inspect(XElement root)
 		{
 			GenerateType(root, "handle", InspectHandle);
+			GenerateType(root, "enum", InspectEnum);
 			GenerateType(root, "struct", InspectStructure);
 			GenerateType(root, "union", InspectStructure);
 		}
 
 
-		Dictionary<string, string> mExtensions = new Dictionary<string, string> {
+		readonly Dictionary<string, string> mExtensions = new Dictionary<string, string> {
 			{ "EXT", "Ext" },
 			{ "IMG", "Img" },
 			{ "KHR", "Khr" }
 		};
 
-		Dictionary<string, HandleInfo> mHandles = new Dictionary<string, HandleInfo>();
+		readonly Dictionary<string, VkHandleInfo> mHandles = new Dictionary<string, VkHandleInfo>();
 
-		HashSet<string> mBlittableTypes = new HashSet<string>()
+		readonly HashSet<string> mBlittableTypes = new HashSet<string>()
 		{
 			"Byte",
 			"SByte",
@@ -68,7 +77,7 @@ namespace CommandGen
 		};
 
 		// TODO: validate this mapping
-		Dictionary<string, string> mBasicTypesMap = new Dictionary<string, string> {
+		readonly Dictionary<string, string> mBasicTypesMap = new Dictionary<string, string> {
 			{ "int32_t", "Int32" },
 			{ "uint32_t", "UInt32" },
 			{ "uint64_t", "UInt64" },
@@ -126,17 +135,17 @@ namespace CommandGen
 			string csName = GetTypeCsName(name, "struct");
 			string type = handleElement.Element("type").Value;
 
-			mHandles.Add(csName, new HandleInfo { name = csName, type = type });
+			mHandles.Add(csName, new VkHandleInfo { name = csName, type = type });
 		}
 
-		Dictionary<string, StructInfo> mStructures = new Dictionary<string, StructInfo>();
+		Dictionary<string, VkStructInfo> mStructures = new Dictionary<string, VkStructInfo>();
 		void InspectStructure(XElement structElement)
 		{
 			string name = structElement.Attribute("name").Value;
 			string csName = GetTypeCsName(name, "struct");
 
 			mTypesTranslation[name] = csName;
-			mStructures[csName] = new StructInfo() { name = name, needsMarshalling = InspectStructureMembers(structElement) };
+			mStructures[csName] = new VkStructInfo() { name = name, needsMarshalling = InspectStructureMembers(structElement) };
 
 			IsStructBlittable(structElement, csName);
 		}
@@ -178,6 +187,58 @@ namespace CommandGen
 			}
 
 			return false;
+		}
+
+		readonly Dictionary<string, VkEnumInfo> mEnums = new Dictionary<string, VkEnumInfo>();
+
+		void InspectEnum(XElement enumElement)
+		{
+			string name = enumElement.Attribute("name").Value;
+			string csName = GetTypeCsName(name, "enum");
+
+			var values = from el in enumElement.Parent.Elements("enums")
+						 where (string)el.Attribute("name") == name
+						 select el;
+
+			if (values.Count() < 1)
+			{
+				Console.WriteLine("warning: not adding empty enum {0}", csName);
+				return;
+			}
+
+			var enumsElement = values.First();
+
+			var typeAttribute = enumsElement.Attribute("type");
+			var useFlags = typeAttribute != null && typeAttribute.Value == "bitmask";
+			if (useFlags)
+			{
+				string suffix = null;
+				foreach (var ext in mExtensions)
+					if (csName.EndsWith(ext.Value, StringComparison.InvariantCulture))
+					{
+						suffix = ext.Value + suffix;
+						csName = csName.Substring(0, csName.Length - ext.Value.Length);
+					}
+				if (csName.EndsWith("FlagBits", StringComparison.InvariantCulture))
+					csName = csName.Substring(0, csName.Length - 4) + "s";
+				if (suffix != null)
+					csName += suffix;
+			}
+
+			mTypesTranslation[name] = csName;
+			// enums are blittable too
+			mBlittableTypes.Add(csName);
+
+			//foreach (var e in values.Elements("enum"))
+			//	WriteEnumField(e, csName);
+			//WriteEnumExtensions(csName);
+
+			mEnums.Add(csName,
+	          	new VkEnumInfo { 
+					name = csName,
+					UseFlags = useFlags,
+				}
+		    );
 		}
 
 		#endregion

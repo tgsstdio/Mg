@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Xml.Linq;
 
@@ -43,10 +44,22 @@ namespace CommandGen
 					}
 				}
 
-				foreach (var command in output)
+				int noOfUnsafe = 0;
+				int totalNativeInterfaces = 0;
+
+				using (var writer = new StreamWriter("Interfaces.txt", false))
 				{
-					Console.WriteLine(command.NativeFunction.GetImplementation());
+					foreach (var command in output)
+					{
+						++totalNativeInterfaces;
+						if (command.NativeFunction.UseUnsafe)
+							++noOfUnsafe;
+						writer.WriteLine(command.NativeFunction.GetImplementation());
+					}
 				}
+
+				Console.WriteLine("totalNativeInterfaces :" + totalNativeInterfaces);
+				Console.WriteLine("noOfUnsafe :" + noOfUnsafe);
 			}
 			catch (Exception ex)
 			{

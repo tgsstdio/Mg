@@ -56,13 +56,12 @@ namespace CommandGen
 
 				arg.Name = param.Element ("name").Value;
 
-
-
-
 				arg.BaseCppType = param.Element ("type").Value;
 				arg.BaseCsType = mInspector.GetTypeCsName (arg.BaseCppType, "type");
 				XAttribute optionalAttr = param.Attribute ("optional");
 				arg.IsOptional = optionalAttr != null && optionalAttr.Value == "true";
+				arg.ByReference = optionalAttr != null && optionalAttr.Value == "false,true";
+
 				XAttribute lengthAttr = param.Attribute ("len");
 				if (lengthAttr != null)
 				{
@@ -89,7 +88,7 @@ namespace CommandGen
 				} 
 				else 
 				{
-					HandleInfo found;
+					VkHandleInfo found;
 					if (mInspector.Handles.TryGetValue(arg.BaseCsType, out found))
 					{
 						arg.ArgumentCsType = (found.type == "VK_DEFINE_HANDLE") ? "IntPtr" : "UInt64";
@@ -101,9 +100,21 @@ namespace CommandGen
 				}	
 
 				arg.UseOut = !arg.IsConst && arg.IsPointer;
+				arg.IsBlittable = mInspector.BlittableTypes.Contains(arg.ArgumentCsType);
 
 				++index;
 			}
+			bool useUnsafe = function.Arguments.Count > 0;
+			foreach (var arg in function.Arguments)
+			{
+				if (!arg.IsBlittable)
+				{
+					useUnsafe = false;
+					break;
+				}
+			}
+			function.UseUnsafe = useUnsafe;
+
 			result.NativeFunction = function;
 		}
 
