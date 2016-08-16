@@ -36,7 +36,7 @@ namespace Magnesium.Vulkan
 		[DllImport("vulkan-1", CallingConvention=CallingConvention.Winapi)]
 		extern static Result vkCreateInstance([In] InstanceCreateInfo createInfo, IntPtr allocator, out IntPtr instance);
 
-		public Result CreateInstance (MgInstanceCreateInfo createInfo, MgAllocationCallbacks allocator, out IMgInstance instance)
+		public Result CreateInstance (MgInstanceCreateInfo createInfo, IMgAllocationCallbacks allocator, out IMgInstance instance)
 		{
 			var ici = new InstanceCreateInfo {
 				sType = 0,

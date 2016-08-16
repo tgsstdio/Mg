@@ -43,6 +43,14 @@ namespace CommandGen
 			}
 		}
 
+		public IDictionary<string, VkStructInfo> Structs
+		{
+			get
+			{
+				return mStructures;
+			}
+		}
+
 		public void Inspect(XElement root)
 		{
 			GenerateType(root, "handle", InspectHandle);
@@ -144,8 +152,15 @@ namespace CommandGen
 			string name = structElement.Attribute("name").Value;
 			string csName = GetTypeCsName(name, "struct");
 
+			var returnOnly = structElement.Attribute("returnedonly");
+
 			mTypesTranslation[name] = csName;
-			mStructures[csName] = new VkStructInfo() { name = name, needsMarshalling = InspectStructureMembers(structElement) };
+			mStructures[csName] = new VkStructInfo()
+			{
+				name = name,
+				needsMarshalling = InspectStructureMembers(structElement),
+				returnedonly = returnOnly != null && returnOnly.Value == "true"
+			};
 
 			IsStructBlittable(structElement, csName);
 		}

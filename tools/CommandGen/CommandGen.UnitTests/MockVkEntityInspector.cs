@@ -43,6 +43,14 @@ namespace CommandGen.UnitTests
 			}
 		}
 
+		public IDictionary<string, VkStructInfo> Structs
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+		}
+
 		public string GetTypeCsName(string name, string label)
 		{
 			throw new NotImplementedException();

@@ -99,6 +99,10 @@ namespace CommandGen
 					{
 						builder.Append("*");
 					}
+					else if (!UseUnsafe && (arg.IsFixedArray))
+					{
+						builder.Append("[]");
+					}
 				}
 
 				builder.Append (" ");

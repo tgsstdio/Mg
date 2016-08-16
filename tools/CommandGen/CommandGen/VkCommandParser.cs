@@ -61,6 +61,7 @@ namespace CommandGen
 				XAttribute optionalAttr = param.Attribute ("optional");
 				arg.IsOptional = optionalAttr != null && optionalAttr.Value == "true";
 				arg.ByReference = optionalAttr != null && optionalAttr.Value == "false,true";
+				arg.IsStruct = mInspector.Structs.ContainsKey(arg.BaseCsType);
 
 				XAttribute lengthAttr = param.Attribute ("len");
 				if (lengthAttr != null)
@@ -78,6 +79,8 @@ namespace CommandGen
 				}
 				function.Arguments.Add (arg);
 
+				arg.IsOptionalPointer = arg.IsOptional && arg.IsPointer && !arg.IsFixedArray && arg.LengthVariable == null;
+
 				// DETERMINE CSHARP TYPE 
 				if (arg.ArgumentCppType == "char*")
 				{
@@ -93,6 +96,11 @@ namespace CommandGen
 					{
 						arg.ArgumentCsType = (found.type == "VK_DEFINE_HANDLE") ? "IntPtr" : "UInt64";
 					}
+					else if (arg.IsOptionalPointer)
+					{
+						// REQUIRES MARSHALLING FOR NULLS IN ALLOCATOR
+						arg.ArgumentCsType = "IntPtr";
+					}
 					else
 					{
 						arg.ArgumentCsType = arg.BaseCsType;
@@ -104,16 +112,50 @@ namespace CommandGen
 
 				++index;
 			}
+
+			// USE POINTER / unsafe ONLY IF
+			// ALL ARGUMENTS ARE BLITTABLE
+			// && >= 1 ARGUMENTS
+			// && >= 1 BLITTABLE STRUCT && NOT OPTIONAL POINTER
+
 			bool useUnsafe = function.Arguments.Count > 0;
+			uint noOfBlittableStructs = 0;
 			foreach (var arg in function.Arguments)
 			{
 				if (!arg.IsBlittable)
 				{
 					useUnsafe = false;
-					break;
+				}
+
+				if (arg.IsStruct && arg.IsBlittable && !arg.IsOptionalPointer)
+				{
+					noOfBlittableStructs++;
 				}
 			}
-			function.UseUnsafe = useUnsafe;
+			function.UseUnsafe = useUnsafe && noOfBlittableStructs > 0;
+
+			// Add [In, Out] attribute to struct array variables
+			if (!function.UseUnsafe)
+			{
+				foreach (var arg in function.Arguments)
+				{
+					if (arg.LengthVariable != null && arg.IsStruct && !arg.IsBlittable)
+					{
+						// SINGULAR MARSHALLED STRUCT ARRAY INSTANCES
+						arg.Attribute = "[In, Out]";
+					}
+					else if (arg.IsFixedArray && !arg.IsStruct && arg.IsBlittable)
+					{
+						// PRETTY MUCH FOR BLENDCONSTANTS
+						arg.Attribute = string.Format("[MarshalAs(UnmanagedType.LPArray, SizeConst = {0})]", arg.ArrayConstant);
+					}
+					else if (arg.IsStruct && !arg.IsBlittable && !arg.IsOptionalPointer)
+					{
+						// SINGULAR MARSHALLED STRUCT INSTANCES
+						arg.Attribute = "[In, Out]";
+					}
+				}
+			}
 
 			result.NativeFunction = function;
 		}

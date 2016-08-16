@@ -161,6 +161,95 @@ namespace CommandGen.UnitTests
 			Assert.AreEqual("internal external static UInt32 vkEnumerateInstanceLayerProperties(ref UInt32 pPropertyCount, [In, Out] LayerProperties[] pProperties);", native.GetImplementation());
 		}
 
+		[TestCase]
+		public void Example_3()
+		{
+			var native = new VkNativeInterface { Name = "vkCmdSetBlendConstants", ReturnType = "void" };
+			native.UseUnsafe = false;
+			native.Arguments.Add(
+				new VkFunctionArgument
+				{
+					Name = "commandBuffer",
+					ArgumentCsType = "IntPtr",
+					ByReference = false,
+					UseOut = false,
+				});
+			native.Arguments.Add(
+				new VkFunctionArgument
+				{
+					Name = "blendConstants",
+					Attribute = "[MarshalAs(UnmanagedType.LPArray, SizeConst = 4)]",
+					ArgumentCsType = "float",
+					IsFixedArray = true,
+					LengthVariable = "4",
+					ByReference = false,
+					UseOut = false,
+				}
+			);
+			Assert.AreEqual("internal external static void vkCmdSetBlendConstants(IntPtr commandBuffer, [MarshalAs(UnmanagedType.LPArray, SizeConst = 4)] float[] blendConstants);", native.GetImplementation());
+		}
+
+		[TestCase]
+		public void Example_4()
+		{
+			var native = new VkNativeInterface { Name = "vkDestroyInstance", ReturnType = "void" };
+			native.UseUnsafe = false;
+			native.Arguments.Add(
+				new VkFunctionArgument
+				{
+					Name = "instance",
+					ArgumentCsType = "IntPtr",
+					ByReference = false,
+					UseOut = false,
+				});
+			native.Arguments.Add(
+				new VkFunctionArgument
+				{
+					Name = "pAllocator",
+					ArgumentCsType = "IntPtr",
+					ByReference = false,
+					IsOptional = true,
+				});
+
+			Assert.AreEqual("internal external static void vkDestroyInstance(IntPtr instance, IntPtr pAllocator);", native.GetImplementation());
+		}
+
+		[TestCase]
+		public void Example_5()
+		{
+			var native = new VkNativeInterface { Name = "vkQueuePresentKHR", ReturnType = "Result" };
+			native.UseUnsafe = false;
+			native.Arguments.Add(
+				new VkFunctionArgument
+				{
+					Name = "queue",
+					ArgumentCsType = "IntPtr",
+					ByReference = false,
+					UseOut = false,
+				});
+			native.Arguments.Add(
+				new VkFunctionArgument
+				{
+					Name = "pPresentInfo",
+					ArgumentCsType = "PresentInfoKhr",
+					Attribute = "[In, Out]",
+					ByReference = false,
+					IsOptional = true,
+				});
+
+			Assert.AreEqual("internal external static Result vkQueuePresentKHR(IntPtr queue, [In, Out] PresentInfoKhr pPresentInfo);", native.GetImplementation());
+		}
+
+		[TestCase]
+		public void Example_6()
+		{
+			var native = new VkNativeInterface { Name = "vkQueuePresentKHR", ReturnType = "Result" };
+			native.UseUnsafe = false;
+
+			// TODO : 
+
+			Assert.AreEqual("internal external static void vkGetPhysicalDeviceMemoryProperties(IntPtr physicalDevice, [In, Out] PhysicalDeviceMemoryProperties pMemoryProperties);", native.GetImplementation()); 
+       }
 	}
 }
 

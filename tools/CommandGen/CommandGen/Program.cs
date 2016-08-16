@@ -20,6 +20,9 @@ namespace CommandGen
 		[DllImport("vulkan-1", CallingConvention=CallingConvention.Winapi)]
 		extern static unsafe UInt32 vkEnumerateInstanceLayerProperties(ref UInt32 pPropertyCount, [In, Out] LayerProperties[] pProperties);
 
+		[DllImport("vulkan-1", CallingConvention = CallingConvention.Winapi)]
+		extern static unsafe void vkCmdSetBlendConstants(IntPtr commandBuffer, [MarshalAs(UnmanagedType.LPArray, SizeConst = 4)] float[] blendConstants);
+
 		public unsafe static void Main (string[] args)
 		{
 			//NativeVk();
