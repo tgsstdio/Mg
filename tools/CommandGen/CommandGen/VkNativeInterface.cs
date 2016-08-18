@@ -83,14 +83,14 @@ namespace CommandGen
 				}
 				else
 				{
-					if (arg.ByReference && !UseUnsafe)
+					if (!UseUnsafe && (arg.UseOut || arg.ByReference))
 					{
 						builder.Append("ref ");
 					}
-					else if (arg.UseOut && !UseUnsafe)
-					{
-						builder.Append("out ");
-					}
+					//else if (arg.UseOut && !UseUnsafe)
+					//{
+					//	builder.Append("out ");
+					//}
 
 					builder.Append(arg.ArgumentCsType);
 

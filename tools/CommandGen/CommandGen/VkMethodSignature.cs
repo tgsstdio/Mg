@@ -63,7 +63,7 @@ namespace CommandGen
 					builder.Append ("ref ");
 				}
 
-				builder.Append (param.CsType);
+				builder.Append (param.BaseCsType);
 				builder.Append (" ");
 				builder.Append (param.Name);
 			}

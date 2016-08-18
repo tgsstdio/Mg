@@ -20,30 +20,18 @@ namespace CommandGen.UnitTests
 		}
 
 		[TestCase]
-		public void TestMethod()
+		public void NoOfInterfaces()
 		{
-			var interfaces = new Type[] { typeof(IMgInstance) };
+			var collection = new VkInterfaceCollection();
 
-			var implementation = new List<VkContainerClass>();
-
-			foreach (var i in interfaces)
-			{
-				var container = new VkContainerClass { Name = i.Name.Replace("IMg", "Vk") };
-				foreach (var info in i.GetMethods())
-				{
-					
-				}
-				implementation.Add(container);
-			}
-
-			Assert.AreEqual(1, implementation.Count);
-			Assert.AreEqual("VkInstance", implementation[0].Name);
+			Assert.AreEqual(29, collection.Interfaces.Count);
+			var internalClass = collection.Interfaces[0];
+			Assert.AreEqual("VkInstance", internalClass.Name);
+			Assert.AreEqual("IMgInstance", internalClass.InterfaceName);
 		}
+
+
 	}
 
-	class VkContainerClass
-	{
-		public string Name { get; set;}
-	}
 }
 

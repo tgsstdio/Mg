@@ -10,7 +10,13 @@ namespace CommandGen
 			set;
 		}
 
-		public string CsType {
+		public string BaseCsType {
+			get;
+			set;
+		}
+
+		public string ArgumentCsType
+		{
 			get;
 			set;
 		}

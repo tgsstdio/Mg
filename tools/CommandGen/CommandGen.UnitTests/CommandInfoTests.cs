@@ -119,7 +119,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(0, param_0.Source.Index);
 				Assert.AreEqual("pCreateInfo", param_0.Name);
 				Assert.IsFalse(param_0.IsNullableType);
-				Assert.AreEqual("InstanceCreateInfo", param_0.CsType);
+				Assert.AreEqual("InstanceCreateInfo", param_0.BaseCsType);
 				Assert.IsFalse(param_0.UseRef);
 				Assert.IsFalse(param_0.IsFixedArray);
 			}
@@ -131,7 +131,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(1, param_1.Source.Index);
 				Assert.AreEqual("pAllocator", param_1.Name);
 				Assert.IsTrue(param_1.IsNullableType);
-				Assert.AreEqual("AllocationCallbacks", param_1.CsType);
+				Assert.AreEqual("AllocationCallbacks", param_1.BaseCsType);
 				Assert.IsFalse(param_1.UseRef);
 				Assert.IsFalse(param_1.IsFixedArray);
 				Assert.IsFalse(param_1.IsArrayParameter);
@@ -144,8 +144,8 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(2, param_1.Source.Index);
 				Assert.AreEqual("pInstance", param_1.Name);
 				Assert.IsFalse(param_1.IsNullableType);
-				Assert.AreEqual("Instance", param_1.CsType);
-				Assert.IsFalse(param_1.UseRef);
+				Assert.AreEqual("Instance", param_1.BaseCsType);
+				Assert.IsTrue(param_1.UseRef);
 				Assert.IsFalse(param_1.IsFixedArray);
 				Assert.IsFalse(param_1.IsArrayParameter);
 			}
@@ -273,7 +273,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(2, param_0.Source.Index);
 				Assert.AreEqual("pPhysicalDevices", param_0.Name);
 				Assert.IsTrue(param_0.IsNullableType);
-				Assert.AreEqual("PhysicalDevice", param_0.CsType);
+				Assert.AreEqual("PhysicalDevice", param_0.BaseCsType);
 				Assert.IsFalse(param_0.UseRef);
 				Assert.IsFalse(param_0.IsFixedArray);
 				Assert.IsTrue(param_0.IsArrayParameter);
@@ -408,7 +408,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(2, param_0.Source.Index);
 				Assert.AreEqual("pProperties", param_0.Name);
 				Assert.IsTrue(param_0.IsNullableType);
-				Assert.AreEqual("LayerProperties", param_0.CsType);
+				Assert.AreEqual("LayerProperties", param_0.BaseCsType);
 				Assert.IsFalse(param_0.UseRef);
 				Assert.IsFalse(param_0.IsFixedArray);
 				Assert.IsTrue(param_0.IsArrayParameter);
@@ -523,7 +523,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(1, param_0.Source.Index);
 				Assert.AreEqual("pProperties", param_0.Name);
 				Assert.IsTrue(param_0.IsNullableType);
-				Assert.AreEqual("LayerProperties", param_0.CsType);
+				Assert.AreEqual("LayerProperties", param_0.BaseCsType);
 				Assert.IsFalse(param_0.UseRef);
 				Assert.IsFalse(param_0.IsFixedArray);
 				Assert.IsTrue(param_0.IsArrayParameter);
@@ -634,7 +634,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(1, param_0.Source.Index);
 				Assert.AreEqual("blendConstants", param_0.Name);
 				Assert.IsFalse(param_0.IsNullableType);
-				Assert.AreEqual("float", param_0.CsType);
+				Assert.AreEqual("float", param_0.BaseCsType);
 				Assert.IsFalse(param_0.UseRef);
 				Assert.IsTrue(param_0.IsFixedArray);
 				Assert.IsFalse(param_0.IsArrayParameter);
@@ -856,6 +856,382 @@ namespace CommandGen.UnitTests
 				Assert.IsFalse(arg_1.UseOut);
 				Assert.IsFalse(arg_1.ByReference);
 				Assert.AreEqual("[In, Out]", arg_1.Attribute);
+			}
+
+			// METHOD SIGNATURE
+			var method = command.MethodSignature;
+			Assert.IsNotNull(method, "command.MethodSignature is not null");
+			Assert.AreEqual("QueuePresentKHR", method.Name);
+			Assert.AreEqual(1, method.Parameters.Count);
+
+			{
+				const int index = 0;
+				var param_0 = method.Parameters[index];
+				Assert.IsNotNull(param_0);
+				Assert.AreEqual(1, param_0.Source.Index);
+				Assert.AreEqual("pPresentInfo", param_0.Name);
+				Assert.IsFalse(param_0.IsNullableType);
+				Assert.AreEqual("PresentInfoKhr", param_0.BaseCsType);
+				Assert.IsFalse(param_0.UseRef);
+				Assert.IsFalse(param_0.IsFixedArray);
+				Assert.IsFalse(param_0.IsArrayParameter);
+			}
+
+			Assert.AreEqual(1, command.Lines.Count);
+			Assert.AreEqual(1, command.Calls.Count);
+
+			{
+				var call = command.Calls[0];
+				Assert.IsNotNull(call);
+				Assert.AreEqual(2, call.Arguments.Count);
+			}
+		}
+
+		[Test()]
+		public void TestCase8()
+		{
+			const string xml = @"
+		        <command>
+		            <proto><type>void</type> <name>vkGetPhysicalDeviceProperties</name></proto>
+		            <param><type>VkPhysicalDevice</type> <name>physicalDevice</name></param>
+		            <param><type>VkPhysicalDeviceProperties</type>* <name>pProperties</name></param>
+		        </command>";
+
+			XElement top = XElement.Parse(xml, LoadOptions.PreserveWhitespace);
+
+			var inspector = new VkEntityInspector();
+
+			inspector.Handles.Add("PhysicalDevice", new VkHandleInfo { name = "PhysicalDevice", type = "VK_DEFINE_HANDLE" });
+			Assert.AreEqual(1, inspector.Handles.Keys.Count);
+
+			inspector.Structs.Add("PhysicalDeviceProperties", new VkStructInfo { name = "PhysicalDeviceProperties", returnedonly = true });
+			Assert.AreEqual(1, inspector.Structs.Keys.Count);
+
+			var parser = new VkCommandParser(inspector);
+
+			VkCommandInfo command;
+			bool actual = parser.Parse(top, out command);
+			Assert.IsTrue(actual);
+			Assert.IsNotNull(command);
+			Assert.AreEqual("vkGetPhysicalDeviceProperties", command.Name);
+			Assert.AreEqual("void", command.CppReturnType);
+			Assert.AreEqual("void", command.CsReturnType);
+			Assert.IsNotNull(command.FirstInstance);
+
+			// NATIVE FUNCTION
+			var function = command.NativeFunction;
+			Assert.IsNotNull(function, "command.NativeFunction is not null");
+			Assert.AreEqual("vkGetPhysicalDeviceProperties", function.Name);
+			Assert.AreEqual("void", function.ReturnType);
+			Assert.AreEqual(2, function.Arguments.Count);
+			Assert.IsFalse(function.UseUnsafe);
+
+			{
+				const int index = 0;
+				var arg_0 = function.Arguments[index];
+				Assert.IsNotNull(arg_0);
+				Assert.AreEqual(index, arg_0.Index);
+				Assert.AreEqual("physicalDevice", arg_0.Name);
+				Assert.AreEqual("VkPhysicalDevice", arg_0.BaseCppType);
+				Assert.AreEqual("PhysicalDevice", arg_0.BaseCsType);
+				Assert.AreEqual("VkPhysicalDevice", arg_0.ArgumentCppType);
+				Assert.AreEqual("IntPtr", arg_0.ArgumentCsType);
+				Assert.IsFalse(arg_0.IsConst);
+				Assert.IsFalse(arg_0.IsOptional);
+				Assert.IsFalse(arg_0.IsFixedArray);
+				Assert.IsNull(arg_0.LengthVariable);
+				Assert.IsNull(arg_0.ArrayConstant);
+				Assert.IsFalse(arg_0.UseOut);
+				Assert.IsFalse(arg_0.ByReference);
+				Assert.IsNull(arg_0.Attribute);
+			}
+
+			{
+				const int index = 1;
+				var arg_1 = function.Arguments[index];
+				Assert.IsNotNull(arg_1);
+				Assert.AreEqual(index, arg_1.Index);
+				Assert.AreEqual("pProperties", arg_1.Name);
+				Assert.AreEqual("VkPhysicalDeviceProperties", arg_1.BaseCppType);
+				Assert.AreEqual("PhysicalDeviceProperties", arg_1.BaseCsType);
+				Assert.AreEqual("VkPhysicalDeviceProperties*", arg_1.ArgumentCppType);
+				Assert.AreEqual("PhysicalDeviceProperties", arg_1.ArgumentCsType);
+				Assert.IsFalse(arg_1.IsConst);
+				Assert.IsFalse(arg_1.IsOptional);
+				Assert.IsFalse(arg_1.IsFixedArray);
+				Assert.IsNull(arg_1.LengthVariable);
+				Assert.IsNull(arg_1.ArrayConstant);
+				Assert.IsFalse(arg_1.UseOut);
+				Assert.IsFalse(arg_1.ByReference);
+				Assert.AreEqual("[In, Out]", arg_1.Attribute);
+			}
+
+			// METHOD SIGNATURE
+			var method = command.MethodSignature;
+			Assert.IsNotNull(method, "command.MethodSignature is not null");
+			Assert.AreEqual("GetPhysicalDeviceProperties", method.Name);
+			Assert.AreEqual(1, method.Parameters.Count);
+
+			{
+				const int index = 0;
+				var param_0 = method.Parameters[index];
+				Assert.IsNotNull(param_0);
+				Assert.AreEqual(1, param_0.Source.Index);
+				Assert.AreEqual("pProperties", param_0.Name);
+				Assert.IsFalse(param_0.IsNullableType);
+				Assert.AreEqual("PhysicalDeviceProperties", param_0.BaseCsType);
+				Assert.IsFalse(param_0.UseRef);
+				Assert.IsFalse(param_0.IsFixedArray);
+				Assert.IsFalse(param_0.IsArrayParameter);
+			}
+		}
+
+
+		[TestCase]
+		public void TestCase9()
+		{
+			const string xml = @"
+		        <command successcodes=""VK_SUCCESS"" errorcodes=""VK_ERROR_OUT_OF_HOST_MEMORY,VK_ERROR_OUT_OF_DEVICE_MEMORY,VK_ERROR_MEMORY_MAP_FAILED"">
+		            <proto><type>VkResult</type> <name>vkMapMemory</name></proto>
+		            <param><type>VkDevice</type> <name>device</name></param>
+		            <param externsync=""true""><type>VkDeviceMemory</type> <name>memory</name></param>
+		            <param><type>VkDeviceSize</type> <name>offset</name></param>
+		            <param><type>VkDeviceSize</type> <name>size</name></param>
+		            <param optional=""true""><type>VkMemoryMapFlags</type> <name>flags</name></param>
+		            <param><type>void</type>** <name>ppData</name></param>
+		            <validity>
+		                <usage>pname:memory mustnot: currently be mapped</usage>
+		                <usage>pname:offset must: be less than the size of pname:memory</usage>
+		                <usage>If pname:size is not equal to ename:VK_WHOLE_SIZE, pname:size must: be greater than `0`</usage>
+		                <usage>If pname:size is not equal to ename:VK_WHOLE_SIZE, pname:size must: be less than or equal to the size of the pname:memory minus pname:offset</usage>
+		                <usage>pname:memory must: have been created with a memory type that reports ename:VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT</usage>
+		            </validity>
+		        </command>";
+
+			XElement top = XElement.Parse(xml, LoadOptions.PreserveWhitespace);
+
+			var inspector = new VkEntityInspector();
+
+			inspector.Handles.Add("Device", new VkHandleInfo { name = "Device", type = "VK_DEFINE_HANDLE" });
+			inspector.Handles.Add("DeviceMemory", new VkHandleInfo { name = "DeviceMemory", type = "VK_DEFINE_HANDLE" });
+			Assert.AreEqual(2, inspector.Handles.Keys.Count);
+
+			inspector.Structs.Add("DeviceSize", new VkStructInfo { name = "DeviceSize" });
+			Assert.AreEqual(1, inspector.Structs.Keys.Count);
+
+			inspector.Enums.Add("MemoryMapFlags", new VkEnumInfo {  name = "MemoryMapFlags" });
+			Assert.AreEqual(1, inspector.Enums.Keys.Count);
+
+			var parser = new VkCommandParser(inspector);
+
+			VkCommandInfo command;
+			bool actual = parser.Parse(top, out command);
+			Assert.IsTrue(actual);
+			Assert.IsNotNull(command);
+			Assert.AreEqual("vkMapMemory", command.Name);
+			Assert.AreEqual("VkResult", command.CppReturnType);
+			Assert.AreEqual("Result", command.CsReturnType);
+			Assert.IsNotNull(command.FirstInstance);
+
+			// NATIVE FUNCTION
+			var function = command.NativeFunction;
+			Assert.IsNotNull(function, "command.NativeFunction is not null");
+			Assert.AreEqual("vkMapMemory", function.Name);
+			Assert.AreEqual("Result", function.ReturnType);
+			Assert.AreEqual(6, function.Arguments.Count);
+			Assert.IsFalse(function.UseUnsafe);
+
+			{
+				const int index = 0;
+				var arg_0 = function.Arguments[index];
+				Assert.IsNotNull(arg_0);
+				Assert.AreEqual(index, arg_0.Index);
+				Assert.AreEqual("device", arg_0.Name);
+				Assert.AreEqual("VkDevice", arg_0.BaseCppType);
+				Assert.AreEqual("Device", arg_0.BaseCsType);
+				Assert.AreEqual("VkDevice", arg_0.ArgumentCppType);
+				Assert.AreEqual("IntPtr", arg_0.ArgumentCsType);
+				Assert.IsFalse(arg_0.IsConst);
+				Assert.IsFalse(arg_0.IsOptional);
+				Assert.IsFalse(arg_0.IsFixedArray);
+				Assert.IsNull(arg_0.LengthVariable);
+				Assert.IsNull(arg_0.ArrayConstant);
+				Assert.IsFalse(arg_0.UseOut);
+				Assert.IsFalse(arg_0.ByReference);
+				Assert.IsNull(arg_0.Attribute);
+			}
+
+			{
+				const int index = 1;
+				var arg_1 = function.Arguments[index];
+				Assert.IsNotNull(arg_1);
+				Assert.AreEqual(index, arg_1.Index);
+				Assert.AreEqual("memory", arg_1.Name);
+				Assert.AreEqual("VkDeviceMemory", arg_1.BaseCppType);
+				Assert.AreEqual("DeviceMemory", arg_1.BaseCsType);
+				Assert.AreEqual("VkDeviceMemory", arg_1.ArgumentCppType);
+				Assert.AreEqual("IntPtr", arg_1.ArgumentCsType);
+				Assert.IsFalse(arg_1.IsConst);
+				Assert.IsFalse(arg_1.IsOptional);
+				Assert.IsFalse(arg_1.IsFixedArray);
+				Assert.IsNull(arg_1.LengthVariable);
+				Assert.IsNull(arg_1.ArrayConstant);
+				Assert.IsFalse(arg_1.UseOut);
+				Assert.IsFalse(arg_1.ByReference);
+				Assert.IsNull(arg_1.Attribute);
+			}
+
+			{
+				const int index = 2;
+				var arg_1 = function.Arguments[index];
+				Assert.IsNotNull(arg_1);
+				Assert.AreEqual(index, arg_1.Index);
+				Assert.AreEqual("offset", arg_1.Name);
+				Assert.AreEqual("VkDeviceSize", arg_1.BaseCppType);
+				Assert.AreEqual("DeviceSize", arg_1.BaseCsType);
+				Assert.AreEqual("VkDeviceSize", arg_1.ArgumentCppType);
+				Assert.AreEqual("DeviceSize", arg_1.ArgumentCsType);
+				Assert.IsFalse(arg_1.IsConst);
+				Assert.IsFalse(arg_1.IsOptional);
+				Assert.IsFalse(arg_1.IsFixedArray);
+				Assert.IsNull(arg_1.LengthVariable);
+				Assert.IsNull(arg_1.ArrayConstant);
+				Assert.IsFalse(arg_1.UseOut);
+				Assert.IsFalse(arg_1.ByReference);
+				Assert.IsNull(arg_1.Attribute);
+			}
+
+			{
+				const int index = 3;
+				var arg_1 = function.Arguments[index];
+				Assert.IsNotNull(arg_1);
+				Assert.AreEqual(index, arg_1.Index);
+				Assert.AreEqual("size", arg_1.Name);
+				Assert.AreEqual("VkDeviceSize", arg_1.BaseCppType);
+				Assert.AreEqual("DeviceSize", arg_1.BaseCsType);
+				Assert.AreEqual("VkDeviceSize", arg_1.ArgumentCppType);
+				Assert.AreEqual("DeviceSize", arg_1.ArgumentCsType);
+				Assert.IsFalse(arg_1.IsConst);
+				Assert.IsFalse(arg_1.IsOptional);
+				Assert.IsFalse(arg_1.IsFixedArray);
+				Assert.IsNull(arg_1.LengthVariable);
+				Assert.IsNull(arg_1.ArrayConstant);
+				Assert.IsFalse(arg_1.UseOut);
+				Assert.IsFalse(arg_1.ByReference);
+				Assert.IsNull(arg_1.Attribute);
+			}
+
+			{
+				const int index = 4;
+				var arg_1 = function.Arguments[index];
+				Assert.IsNotNull(arg_1);
+				Assert.AreEqual(index, arg_1.Index);
+				Assert.AreEqual("flags", arg_1.Name);
+				Assert.AreEqual("VkMemoryMapFlags", arg_1.BaseCppType);
+				Assert.AreEqual("MemoryMapFlags", arg_1.BaseCsType);
+				Assert.AreEqual("VkMemoryMapFlags", arg_1.ArgumentCppType);
+				Assert.AreEqual("MemoryMapFlags", arg_1.ArgumentCsType);
+				Assert.IsFalse(arg_1.IsConst);
+				Assert.IsTrue(arg_1.IsOptional);
+				Assert.IsFalse(arg_1.IsFixedArray);
+				Assert.IsNull(arg_1.LengthVariable);
+				Assert.IsNull(arg_1.ArrayConstant);
+				Assert.IsFalse(arg_1.UseOut);
+				Assert.IsFalse(arg_1.ByReference);
+				Assert.IsNull(arg_1.Attribute);
+			}
+
+			{
+				const int index = 5;
+				var arg_1 = function.Arguments[index];
+				Assert.IsNotNull(arg_1);
+				Assert.AreEqual(index, arg_1.Index);
+				Assert.AreEqual("ppData", arg_1.Name);
+				Assert.AreEqual("void", arg_1.BaseCppType);
+				Assert.AreEqual("void", arg_1.BaseCsType);
+				Assert.AreEqual("void**", arg_1.ArgumentCppType);
+				Assert.AreEqual("IntPtr", arg_1.ArgumentCsType);
+				Assert.IsFalse(arg_1.IsConst);
+				Assert.IsFalse(arg_1.IsOptional);
+				Assert.IsFalse(arg_1.IsFixedArray);
+				Assert.IsNull(arg_1.LengthVariable);
+				Assert.IsNull(arg_1.ArrayConstant);
+				Assert.IsTrue(arg_1.UseOut);
+				Assert.IsFalse(arg_1.ByReference);
+				Assert.IsNull(arg_1.Attribute);
+			}
+
+			// FIXME: figure out what required
+
+			// METHOD SIGNATURE
+			var method = command.MethodSignature;
+			Assert.IsNotNull(method, "command.MethodSignature is not null");
+			Assert.AreEqual("MapMemory", method.Name);
+			Assert.AreEqual(5, method.Parameters.Count);
+
+			{
+				const int index = 0;
+				var param_0 = method.Parameters[index];
+				Assert.IsNotNull(param_0);
+				Assert.AreEqual(1, param_0.Source.Index);
+				Assert.AreEqual("memory", param_0.Name);
+				Assert.IsFalse(param_0.IsNullableType);
+				Assert.AreEqual("DeviceMemory", param_0.BaseCsType);
+				Assert.IsFalse(param_0.UseRef);
+				Assert.IsFalse(param_0.IsFixedArray);
+				Assert.IsFalse(param_0.IsArrayParameter);
+			}
+
+			{
+				const int index = 1;
+				var param_0 = method.Parameters[index];
+				Assert.IsNotNull(param_0);
+				Assert.AreEqual(2, param_0.Source.Index);
+				Assert.AreEqual("offset", param_0.Name);
+				Assert.IsFalse(param_0.IsNullableType);
+				Assert.AreEqual("DeviceSize", param_0.BaseCsType);
+				Assert.IsFalse(param_0.UseRef);
+				Assert.IsFalse(param_0.IsFixedArray);
+				Assert.IsFalse(param_0.IsArrayParameter);
+			}
+
+			{
+				const int index = 2;
+				var param_0 = method.Parameters[index];
+				Assert.IsNotNull(param_0);
+				Assert.AreEqual(3, param_0.Source.Index);
+				Assert.AreEqual("size", param_0.Name);
+				Assert.IsFalse(param_0.IsNullableType);
+				Assert.AreEqual("DeviceSize", param_0.BaseCsType);
+				Assert.IsFalse(param_0.UseRef);
+				Assert.IsFalse(param_0.IsFixedArray);
+				Assert.IsFalse(param_0.IsArrayParameter);
+			}
+
+			{
+				const int index = 3;
+				var param_0 = method.Parameters[index];
+				Assert.IsNotNull(param_0);
+				Assert.AreEqual(4, param_0.Source.Index);
+				Assert.AreEqual("flags", param_0.Name);
+				Assert.IsFalse(param_0.IsNullableType);
+				Assert.AreEqual("MemoryMapFlags", param_0.BaseCsType);
+				Assert.IsFalse(param_0.UseRef);
+				Assert.IsFalse(param_0.IsFixedArray);
+				Assert.IsFalse(param_0.IsArrayParameter);
+			}
+
+			{
+				const int index = 4;
+				var param_0 = method.Parameters[index];
+				Assert.IsNotNull(param_0);
+				Assert.AreEqual(5, param_0.Source.Index);
+				Assert.AreEqual("ppData", param_0.Name);
+				Assert.IsFalse(param_0.IsNullableType);
+				Assert.AreEqual("void", param_0.BaseCsType);
+				Assert.IsTrue(param_0.UseRef);
+				Assert.IsFalse(param_0.IsFixedArray);
+				Assert.IsFalse(param_0.IsArrayParameter);
 			}
 		}
 	}

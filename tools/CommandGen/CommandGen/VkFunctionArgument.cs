@@ -17,7 +17,7 @@ namespace CommandGen
 		public bool IsStruct { get; set; }
 
 		public bool ByReference { get; set; }
-		public bool IsOptionalPointer { get; set; }
+		public bool IsNullableIntPtr { get; set; }
 
 		public bool IsBlittable { get; set; }
 

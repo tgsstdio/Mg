@@ -6,6 +6,7 @@ namespace CommandGen
 	{
 		public string name;
 		public string type;
+		public string csType;
 	}
 }
 

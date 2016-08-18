@@ -51,6 +51,8 @@
     <Compile Include="IVkEntityInspector.cs" />
     <Compile Include="VkStructInfo.cs" />
     <Compile Include="VkEnumInfo.cs" />
+    <Compile Include="VkContainerClass.cs" />
+    <Compile Include="VkInterfaceCollection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="TestData\vk.xml">
@@ -65,6 +67,12 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml.Serialization" />
     <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\MonoGame\Magnesium\Magnesium.csproj">
+      <Project>{9F9AC448-9D17-43E5-8889-285426290891}</Project>
+      <Name>Magnesium</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

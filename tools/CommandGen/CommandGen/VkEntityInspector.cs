@@ -143,7 +143,7 @@ namespace CommandGen
 			string csName = GetTypeCsName(name, "struct");
 			string type = handleElement.Element("type").Value;
 
-			mHandles.Add(csName, new VkHandleInfo { name = csName, type = type });
+			mHandles.Add(csName, new VkHandleInfo { name = csName, type = type, csType = (type == "VK_DEFINE_HANDLE") ? "IntPtr" : "UInt64" });
 		}
 
 		Dictionary<string, VkStructInfo> mStructures = new Dictionary<string, VkStructInfo>();

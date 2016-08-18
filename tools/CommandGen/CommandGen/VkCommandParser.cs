@@ -58,10 +58,13 @@ namespace CommandGen
 
 				arg.BaseCppType = param.Element ("type").Value;
 				arg.BaseCsType = mInspector.GetTypeCsName (arg.BaseCppType, "type");
+
 				XAttribute optionalAttr = param.Attribute ("optional");
 				arg.IsOptional = optionalAttr != null && optionalAttr.Value == "true";
 				arg.ByReference = optionalAttr != null && optionalAttr.Value == "false,true";
-				arg.IsStruct = mInspector.Structs.ContainsKey(arg.BaseCsType);
+
+				VkStructInfo structFound;
+				arg.IsStruct = mInspector.Structs.TryGetValue(arg.BaseCsType, out structFound);
 
 				XAttribute lengthAttr = param.Attribute ("len");
 				if (lengthAttr != null)
@@ -79,16 +82,21 @@ namespace CommandGen
 				}
 				function.Arguments.Add (arg);
 
-				arg.IsOptionalPointer = arg.IsOptional && arg.IsPointer && !arg.IsFixedArray && arg.LengthVariable == null;
+				arg.IsNullableIntPtr = arg.IsOptional && arg.IsPointer && !arg.IsFixedArray && arg.LengthVariable == null;
 
 				// DETERMINE CSHARP TYPE 
 				if (arg.ArgumentCppType == "char*")
 				{
 					arg.ArgumentCsType = "string";
-				} else if (arg.ArgumentCppType == "void*")
+				}
+				else if (arg.ArgumentCppType == "void*")
 				{
 					arg.ArgumentCsType = "IntPtr";
-				} 
+				}
+				else if (arg.ArgumentCppType == "void**")
+				{
+					arg.ArgumentCsType = "IntPtr";
+				}
 				else 
 				{
 					VkHandleInfo found;
@@ -96,7 +104,7 @@ namespace CommandGen
 					{
 						arg.ArgumentCsType = (found.type == "VK_DEFINE_HANDLE") ? "IntPtr" : "UInt64";
 					}
-					else if (arg.IsOptionalPointer)
+					else if (arg.IsNullableIntPtr)
 					{
 						// REQUIRES MARSHALLING FOR NULLS IN ALLOCATOR
 						arg.ArgumentCsType = "IntPtr";
@@ -105,9 +113,13 @@ namespace CommandGen
 					{
 						arg.ArgumentCsType = arg.BaseCsType;
 					}
-				}	
+				}
 
-				arg.UseOut = !arg.IsConst && arg.IsPointer;
+				if (structFound != null && structFound.returnedonly)
+					arg.UseOut = false;
+				else
+					arg.UseOut = !arg.IsConst && arg.IsPointer;
+				
 				arg.IsBlittable = mInspector.BlittableTypes.Contains(arg.ArgumentCsType);
 
 				++index;
@@ -127,7 +139,7 @@ namespace CommandGen
 					useUnsafe = false;
 				}
 
-				if (arg.IsStruct && arg.IsBlittable && !arg.IsOptionalPointer)
+				if (arg.IsStruct && arg.IsBlittable && !arg.IsNullableIntPtr)
 				{
 					noOfBlittableStructs++;
 				}
@@ -149,11 +161,18 @@ namespace CommandGen
 						// PRETTY MUCH FOR BLENDCONSTANTS
 						arg.Attribute = string.Format("[MarshalAs(UnmanagedType.LPArray, SizeConst = {0})]", arg.ArrayConstant);
 					}
-					else if (arg.IsStruct && !arg.IsBlittable && !arg.IsOptionalPointer)
+					else if (arg.IsStruct && !arg.IsBlittable && !arg.IsNullableIntPtr)
 					{
 						// SINGULAR MARSHALLED STRUCT INSTANCES
 						arg.Attribute = "[In, Out]";
 					}
+					//else 
+					//{
+					//	// Add attribute
+					//	VkStructInfo readOnlyStruct;
+					//	if (!arg.IsOptional && mInspector.Structs.TryGetValue(arg.BaseCsType, out readOnlyStruct) && readOnlyStruct.returnedonly)
+					//		arg.Attribute = "[In, Out]";
+					//}
 				}
 			}
 
@@ -181,9 +200,8 @@ namespace CommandGen
 					if (arg.Index == 0)
 					{
 						result.FirstInstance = arg;
+						arguments.Remove(arg.Name);
 					}
-
-					arguments.Remove (arg.Name);
 				}
 
 				VkFunctionArgument localLength;
@@ -200,12 +218,13 @@ namespace CommandGen
 
 			foreach (var param in signature.Parameters)
 			{				
-				param.CsType = param.Source.BaseCsType;
+				param.BaseCsType = param.Source.BaseCsType;
+				param.ArgumentCsType = param.Source.ArgumentCsType;
 				param.UseOut = param.Source.UseOut;
 				param.IsFixedArray = param.Source.IsFixedArray;
 				param.IsArrayParameter = !param.Source.IsConst && param.Source.LengthVariable != null;
 				param.IsNullableType = param.Source.IsPointer && param.Source.IsOptional;
-				param.UseRef = param.Source.UseOut && mInspector.BlittableTypes.Contains (param.CsType);
+				param.UseRef = param.Source.UseOut && param.Source.IsBlittable && !param.IsArrayParameter;
 			}
 
 			result.MethodSignature = signature;

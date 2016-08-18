@@ -38,7 +38,7 @@ namespace CommandGen.UnitTests
 		public void OneArgument_0 ()
 		{
 			var signature = new VkMethodSignature { Name = "CreateInstance", ReturnType = "void" };	
-			signature.Parameters.Add (new VkMethodParameter{Name = "pCount", CsType = "UInt32"});
+			signature.Parameters.Add (new VkMethodParameter{Name = "pCount", BaseCsType = "UInt32"});
 			Assert.AreEqual (1, signature.Parameters.Count);
 			Assert.AreEqual ("public void CreateInstance(UInt32 pCount)", signature.GetImplementation());
 		}
@@ -47,7 +47,7 @@ namespace CommandGen.UnitTests
 		public void OneArgument_1_Out ()
 		{
 			var signature = new VkMethodSignature { Name = "CreateInstance", ReturnType = "void" };	
-			signature.Parameters.Add (new VkMethodParameter{Name = "pCount", CsType = "UInt32", UseOut = true});
+			signature.Parameters.Add (new VkMethodParameter{Name = "pCount", BaseCsType = "UInt32", UseOut = true});
 			Assert.AreEqual (1, signature.Parameters.Count);
 			Assert.AreEqual ("public void CreateInstance(out UInt32 pCount)", signature.GetImplementation());
 		}
@@ -56,7 +56,7 @@ namespace CommandGen.UnitTests
 		public void OneArgument_1_Ref ()
 		{
 			var signature = new VkMethodSignature { Name = "CreateInstance", ReturnType = "void" };	
-			signature.Parameters.Add (new VkMethodParameter{Name = "pCount", CsType = "UInt32", UseRef = true});
+			signature.Parameters.Add (new VkMethodParameter{Name = "pCount", BaseCsType = "UInt32", UseRef = true});
 			Assert.AreEqual (1, signature.Parameters.Count);
 			Assert.AreEqual ("public void CreateInstance(ref UInt32 pCount)", signature.GetImplementation());
 		}
