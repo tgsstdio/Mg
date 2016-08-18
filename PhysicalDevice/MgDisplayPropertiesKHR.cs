@@ -4,7 +4,7 @@ namespace Magnesium
 {
     public class MgDisplayPropertiesKHR
 	{
-		public MgDisplayKHR Display { get; set; }
+		public IMgDisplayKHR Display { get; set; }
 		public String DisplayName { get; set; }
 		public MgExtent2D PhysicalDimensions { get; set; }
 		public MgExtent2D PhysicalResolution { get; set; }

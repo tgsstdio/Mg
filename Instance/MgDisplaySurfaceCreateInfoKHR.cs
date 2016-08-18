@@ -5,7 +5,7 @@ namespace Magnesium
     public class MgDisplaySurfaceCreateInfoKHR
 	{
 		public UInt32 Flags { get; set; }
-		public MgDisplayModeKHR DisplayMode { get; set; }
+		public IMgDisplayModeKHR DisplayMode { get; set; }
 		public UInt32 PlaneIndex { get; set; }
 		public UInt32 PlaneStackIndex { get; set; }
 		public MgSurfaceTransformFlagBitsKHR Transform { get; set; }

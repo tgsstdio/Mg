@@ -40,12 +40,9 @@
     <Compile Include="Entrypoint\MgApplicationInfo.cs" />
     <Compile Include="Entrypoint\MgInstanceCreateInfo.cs" />
     <Compile Include="Entrypoint\IMgEntrypoint.cs" />
-    <Compile Include="Callbacks\MgAllocationCallbacks.cs" />
     <Compile Include="ReturnedOnly\MgExtensionProperties.cs" />
     <Compile Include="ReturnedOnly\MgLayerProperties.cs" />
     <Compile Include="PhysicalDevice\MgDeviceCreateInfo.cs" />
-    <Compile Include="PhysicalDevice\MgDisplayKHR.cs" />
-    <Compile Include="Callbacks\MgInternalAllocationType.cs" />
     <Compile Include="Callbacks\MgSystemAllocationScope.cs" />
     <Compile Include="CommandBuffer\MgBufferCopy.cs" />
     <Compile Include="CommandBuffer\MgBufferMemoryBarrier.cs" />
@@ -67,7 +64,6 @@
     <Compile Include="CommandBuffer\MgCommandBufferInheritanceInfo.cs" />
     <Compile Include="CommandBuffer\MgCommandBufferResetFlagBits.cs" />
     <Compile Include="CommandBuffer\MgStencilFaceFlagBits.cs" />
-    <Compile Include="Device\MgEvent.cs" />
     <Compile Include="Device\MgPipelineBindPoint.cs" />
     <Compile Include="Enums\MgImageLayout.cs" />
     <Compile Include="CommandBuffer\MgImageResolve.cs" />
@@ -82,7 +78,7 @@
     <Compile Include="PhysicalDevice\MgDisplayModeParametersKHR.cs" />
     <Compile Include="PhysicalDevice\MgDisplayPlaneAlphaFlagBitsKHR.cs" />
     <Compile Include="PhysicalDevice\MgDisplayModePropertiesKHR.cs" />
-    <Compile Include="Instance\MgDisplayModeKHR.cs" />
+    <Compile Include="Instance\IMgDisplayModeKHR.cs" />
     <Compile Include="PhysicalDevice\MgDisplayPlaneCapabilitiesKHR.cs" />
     <Compile Include="Core\MgOffset2D.cs" />
     <Compile Include="Core\MgExtent2D.cs" />
@@ -108,7 +104,6 @@
     <Compile Include="PhysicalDevice\MgMemoryPropertyFlagBits.cs" />
     <Compile Include="PhysicalDevice\MgDisplayPlanePropertiesKHR.cs" />
     <Compile Include="PhysicalDevice\MgDisplayPropertiesKHR.cs" />
-    <Compile Include="Instance\MgSurfaceKHR.cs" />
     <Compile Include="Enums\MgImageTiling.cs" />
     <Compile Include="Enums\MgImageType.cs" />
     <Compile Include="Enums\MgImageUsageFlagBits.cs" />
@@ -146,13 +141,10 @@
     <Compile Include="Device\MgSemaphoreCreateInfo.cs" />
     <Compile Include="Device\MgEventCreateInfo.cs" />
     <Compile Include="Device\MgQueryResultFlagBits.cs" />
-    <Compile Include="Device\MgQueryPool.cs" />
     <Compile Include="Device\MgCommandPoolCreateInfo.cs" />
     <Compile Include="Device\MgCommandBufferAllocateInfo.cs" />
     <Compile Include="Device\MgFenceCreateInfo.cs" />
     <Compile Include="Device\MgFramebufferCreateInfo.cs" />
-    <Compile Include="Device\MgRenderPass.cs" />
-    <Compile Include="Device\MgFramebuffer.cs" />
     <Compile Include="Device\MgFenceCreateFlagBits.cs" />
     <Compile Include="Device\MgGraphicsPipelineCreateInfo.cs" />
     <Compile Include="Device\MgPipelineCreateFlagBits.cs" />
@@ -168,7 +160,6 @@
     <Compile Include="Device\MgPipelineShaderStageCreateInfo.cs" />
     <Compile Include="Device\MgDescriptorSetLayoutCreateInfo.cs" />
     <Compile Include="Device\MgDynamicState.cs" />
-    <Compile Include="Device\MgPipelineCache.cs" />
     <Compile Include="Device\MgPipelineCacheCreateInfo.cs" />
     <Compile Include="Device\MgPipelineColorBlendAttachmentState.cs" />
     <Compile Include="Device\MgPipelineLayoutCreateInfo.cs" />
@@ -286,6 +277,15 @@
     <Compile Include="Driver\MgDefaultGraphicsDevice.cs" />
     <Compile Include="Driver\IMgSwapchainCollection.cs" />
     <Compile Include="Instance\MgAndroidSurfaceCreateInfoKHR.cs" />
+    <Compile Include="Callbacks\IMgAllocationCallbacks.cs" />
+    <Compile Include="Device\IMgRenderPass.cs" />
+    <Compile Include="Device\IMgQueryPool.cs" />
+    <Compile Include="Device\IMgEvent.cs" />
+    <Compile Include="Device\IMgFramebuffer.cs" />
+    <Compile Include="Callbacks\MgInternalAllocationType.cs" />
+    <Compile Include="Device\IMgPipelineCache.cs" />
+    <Compile Include="Instance\IMgSurfaceKHR.cs" />
+    <Compile Include="PhysicalDevice\IMgDisplayKHR.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>

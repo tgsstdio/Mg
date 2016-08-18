@@ -1,6 +1,6 @@
 ﻿namespace Magnesium
 {
-    public class MgDisplayKHR
+    public interface IMgDisplayKHR
 	{
 
 	}

@@ -2,7 +2,7 @@
 {
     public class MgDisplayModePropertiesKHR
 	{
-		public MgDisplayModeKHR DisplayMode { get; set; }
+		public IMgDisplayModeKHR DisplayMode { get; set; }
 		public MgDisplayModeParametersKHR Parameters { get; set; }
 	}
 }
