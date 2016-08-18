@@ -2,7 +2,7 @@
 {
     public interface IMgBufferView
 	{
-		void DestroyBufferView(IMgDevice device, MgAllocationCallbacks allocator);
+		void DestroyBufferView(IMgDevice device, IMgAllocationCallbacks allocator);
 	}
 }
 

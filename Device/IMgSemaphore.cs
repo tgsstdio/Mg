@@ -2,7 +2,7 @@
 {
     public interface IMgSemaphore
 	{
-		void DestroySemaphore(IMgDevice device, MgAllocationCallbacks allocator);
+		void DestroySemaphore(IMgDevice device, IMgAllocationCallbacks allocator);
 	}
 }
 

@@ -2,7 +2,7 @@ namespace Magnesium
 {
     public interface IMgSampler
 	{
-		void DestroySampler(IMgDevice device, MgAllocationCallbacks allocator);
+		void DestroySampler(IMgDevice device, IMgAllocationCallbacks allocator);
 	}
 }
 

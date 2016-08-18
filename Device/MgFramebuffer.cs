@@ -2,7 +2,7 @@ namespace Magnesium
 {
     public interface IMgFramebuffer
 	{
-		void DestroyFramebuffer(IMgDevice device, MgAllocationCallbacks allocator);
+		void DestroyFramebuffer(IMgDevice device, IMgAllocationCallbacks allocator);
 	}
 }
 

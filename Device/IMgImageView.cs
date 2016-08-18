@@ -2,7 +2,7 @@
 {
     public interface IMgImageView
 	{
-		void DestroyImageView(IMgDevice device, MgAllocationCallbacks allocator);
+		void DestroyImageView(IMgDevice device, IMgAllocationCallbacks allocator);
 	}
 }
 

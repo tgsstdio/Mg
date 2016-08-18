@@ -14,7 +14,7 @@ namespace Magnesium
 			mImageTools = imageTools;
 		}
 
-		public MgTextureInfo Load (byte[] imageData, MgImageSource source, MgAllocationCallbacks allocator, IMgFence fence)
+		public MgTextureInfo Load (byte[] imageData, MgImageSource source, IMgAllocationCallbacks allocator, IMgFence fence)
 		{
 			// Prefer using optimal tiling, as linear tiling 
 			// may support only a small set of features 

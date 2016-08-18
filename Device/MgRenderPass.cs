@@ -2,7 +2,7 @@
 {
     public interface IMgRenderPass
 	{
-		void DestroyRenderPass(IMgDevice device, MgAllocationCallbacks allocator);
+		void DestroyRenderPass(IMgDevice device, IMgAllocationCallbacks allocator);
 	}
 }
 

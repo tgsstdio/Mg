@@ -10,7 +10,7 @@ namespace Magnesium
 		void GetPhysicalDeviceFeatures(out MgPhysicalDeviceFeatures pFeatures);
 		void GetPhysicalDeviceFormatProperties(MgFormat format, out MgFormatProperties pFormatProperties);
 		Result GetPhysicalDeviceImageFormatProperties(MgFormat format, MgImageType type, MgImageTiling tiling, MgImageUsageFlagBits usage, MgImageCreateFlagBits flags, out MgImageFormatProperties pImageFormatProperties);
-		Result CreateDevice(MgDeviceCreateInfo pCreateInfo, MgAllocationCallbacks allocator, out IMgDevice pDevice);
+		Result CreateDevice(MgDeviceCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDevice pDevice);
 		Result EnumerateDeviceLayerProperties(out MgLayerProperties[] pProperties);
 		Result EnumerateDeviceExtensionProperties(string layerName, out MgExtensionProperties[] pProperties);
 		void GetPhysicalDeviceSparseImageFormatProperties(MgFormat format, MgImageType type, MgSampleCountFlagBits samples, MgImageUsageFlagBits usage, MgImageTiling tiling, out MgSparseImageFormatProperties[] pProperties);

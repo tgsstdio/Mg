@@ -2,7 +2,7 @@ namespace Magnesium
 {
     public interface IMgSwapchainKHR
 	{
-		void DestroySwapchainKHR(IMgDevice device, MgAllocationCallbacks allocator);
+		void DestroySwapchainKHR(IMgDevice device, IMgAllocationCallbacks allocator);
 	}
 }
 

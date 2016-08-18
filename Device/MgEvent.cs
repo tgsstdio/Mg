@@ -6,7 +6,7 @@
 		Result SetEvent(IMgDevice device);
 		Result ResetEvent(IMgDevice device);
 
-		void DestroyEvent(IMgDevice device, MgAllocationCallbacks allocator);
+		void DestroyEvent(IMgDevice device, IMgAllocationCallbacks allocator);
 	}
 }
 

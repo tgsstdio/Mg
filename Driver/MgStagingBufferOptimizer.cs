@@ -19,7 +19,7 @@ namespace Magnesium
 		#region IMgImageOptimizer implementation
 
 		// FROM texture.cpp (2016) Sascha Williams
-		public MgTextureInfo Load (byte[] imageData, MgImageSource source, MgAllocationCallbacks allocator, IMgFence fence)
+		public MgTextureInfo Load (byte[] imageData, MgImageSource source, IMgAllocationCallbacks allocator, IMgFence fence)
 		{
 			var device = mPartition.Device;
 			var queue = mPartition.Queue;

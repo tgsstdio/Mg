@@ -44,14 +44,14 @@ namespace Magnesium
 		String pMessage,
 		IntPtr pUserData);
 
-	public class MgAllocationCallbacks
+	public interface IMgAllocationCallbacks
 	{
-		public IntPtr UserData { get; set; }
-		public PFN_vkAllocationFunction PfnAllocation { get; set; }
-		public PFN_vkReallocationFunction PfnReallocation { get; set; }
-		public PFN_vkFreeFunction PfnFree { get; set; }
-		public PFN_vkInternalAllocationNotification PfnInternalAllocation { get; set; }
-		public PFN_vkInternalFreeNotification PfnInternalFree { get; set; }
+		IntPtr UserData { get; set; }
+		PFN_vkAllocationFunction PfnAllocation { get; set; }
+		PFN_vkReallocationFunction PfnReallocation { get; set; }
+		PFN_vkFreeFunction PfnFree { get; set; }
+		PFN_vkInternalAllocationNotification PfnInternalAllocation { get; set; }
+		PFN_vkInternalFreeNotification PfnInternalFree { get; set; }
 	}
 }
 

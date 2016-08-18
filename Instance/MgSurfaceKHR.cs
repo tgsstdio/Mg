@@ -2,7 +2,7 @@
 {
     public interface IMgSurfaceKHR
 	{
-		void DestroySurfaceKHR(IMgInstance instance, MgAllocationCallbacks allocator);
+		void DestroySurfaceKHR(IMgInstance instance, IMgAllocationCallbacks allocator);
 	}
 }
 

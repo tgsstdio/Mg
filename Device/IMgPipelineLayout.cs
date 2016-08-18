@@ -2,7 +2,7 @@
 {
     public interface IMgPipelineLayout
 	{
-		void DestroyPipelineLayout(IMgDevice device, MgAllocationCallbacks allocator);
+		void DestroyPipelineLayout(IMgDevice device, IMgAllocationCallbacks allocator);
 	}
 }
 

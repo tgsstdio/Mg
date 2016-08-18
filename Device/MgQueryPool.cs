@@ -2,7 +2,7 @@
 {
     public interface IMgQueryPool
 	{
-		void DestroyQueryPool(IMgDevice device, MgAllocationCallbacks allocator);
+		void DestroyQueryPool(IMgDevice device, IMgAllocationCallbacks allocator);
 	}
 }
 
