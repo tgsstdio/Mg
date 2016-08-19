@@ -55,6 +55,7 @@ namespace CommandGen
 				var implementation = new VkInterfaceCollection();
 				GenerateInterops(DLLNAME, lookup, ref noOfUnsafe, ref totalNativeInterfaces);
 				GenerateImplementation(implementation, inspector);
+				GenerateVkStructs(inspector);
 
 				Console.WriteLine("totalNativeInterfaces :" + totalNativeInterfaces);
 				Console.WriteLine("noOfUnsafe :" + noOfUnsafe);
@@ -62,6 +63,35 @@ namespace CommandGen
 			catch (Exception ex)
 			{
 				Console.WriteLine(ex);
+			}
+		}
+
+		static void GenerateVkStructs(IVkEntityInspector inspector)
+		{
+			foreach (var container in inspector.Structs.Values)
+			{
+				using (var interfaceFile = new StreamWriter(container.Name + ".cs", false))
+				{
+					interfaceFile.WriteLine("using Magnesium;");
+					interfaceFile.WriteLine("using System.Runtime.InteropServices;");
+					interfaceFile.WriteLine("");
+					interfaceFile.WriteLine("namespace Magnesium.Vulkan");
+					interfaceFile.WriteLine("{");
+					string tabbedField = "\t";
+
+					interfaceFile.WriteLine(tabbedField + "[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Ansi)]");
+					interfaceFile.WriteLine(tabbedField + "internal struct {0}", container.Name);
+					interfaceFile.WriteLine(tabbedField + "{");
+
+					var methodTabs = tabbedField + "\t";
+
+					foreach (var member in container.Members)
+					{
+						interfaceFile.WriteLine(methodTabs + member.GetImplementation());
+					}
+					interfaceFile.WriteLine(tabbedField + "}");
+					interfaceFile.WriteLine("}");
+				}
 			}
 		}
 

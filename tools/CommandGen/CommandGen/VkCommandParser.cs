@@ -102,7 +102,7 @@ namespace CommandGen
 					VkHandleInfo found;
 					if (mInspector.Handles.TryGetValue(arg.BaseCsType, out found))
 					{
-						arg.ArgumentCsType = (found.type == "VK_DEFINE_HANDLE") ? "IntPtr" : "UInt64";
+						arg.ArgumentCsType = found.csType;
 					}
 					else if (arg.IsNullableIntPtr)
 					{

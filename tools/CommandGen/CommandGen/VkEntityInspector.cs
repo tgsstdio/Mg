@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Xml.Linq;
 
 namespace CommandGen
@@ -53,12 +54,31 @@ namespace CommandGen
 
 		public void Inspect(XElement root)
 		{
+			ExtractAPIConstants(root);
 			GenerateType(root, "handle", InspectHandle);
 			GenerateType(root, "enum", InspectEnum);
 			GenerateType(root, "struct", InspectStructure);
 			GenerateType(root, "union", InspectStructure);
 		}
 
+		private Dictionary<string, string> mAPIConstants = new Dictionary<string, string>();
+		void ExtractAPIConstants(XElement root)
+		{
+			var constants = root.Elements("enums");
+
+			if (constants == null)
+				return;
+						
+			var api = constants.FirstOrDefault(e => e.Attribute("name").Value == "API Constants");
+			foreach (var field in constants.Elements("enum"))
+			{
+				var attr = field.Attribute("name");
+				var define = field.Attribute("value");
+
+				if (attr != null && define != null)
+					mAPIConstants.Add(attr.Value, define.Value);
+			}
+		}
 
 		readonly Dictionary<string, string> mExtensions = new Dictionary<string, string> {
 			{ "EXT", "Ext" },
@@ -80,8 +100,8 @@ namespace CommandGen
 			"double",
 			"IntPtr",
 			"UIntPtr",
-			"Bool32",
-			"DeviceSize",
+			"VkBool32",
+			"VkDeviceSize",
 		};
 
 		// TODO: validate this mapping
@@ -104,7 +124,7 @@ namespace CommandGen
 			string csName;
 
 			if (name.StartsWith("Vk", StringComparison.InvariantCulture))
-				csName = name.Substring(2);
+				csName = name;
 			else if (name.EndsWith("_t", StringComparison.InvariantCulture))
 			{
 				if (!mBasicTypesMap.ContainsKey(name))
@@ -143,7 +163,9 @@ namespace CommandGen
 			string csName = GetTypeCsName(name, "struct");
 			string type = handleElement.Element("type").Value;
 
-			mHandles.Add(csName, new VkHandleInfo { name = csName, type = type, csType = (type == "VK_DEFINE_HANDLE") ? "IntPtr" : "UInt64" });
+			mHandles.Add(csName, new VkHandleInfo { name = csName,
+				//type = type, 
+				csType = (type == "VK_DEFINE_HANDLE") ? "IntPtr" : "UInt64" });
 		}
 
 		Dictionary<string, VkStructInfo> mStructures = new Dictionary<string, VkStructInfo>();
@@ -155,54 +177,126 @@ namespace CommandGen
 			var returnOnly = structElement.Attribute("returnedonly");
 
 			mTypesTranslation[name] = csName;
-			mStructures[csName] = new VkStructInfo()
+
+			var container = new VkStructInfo()
 			{
-				name = name,
-				needsMarshalling = InspectStructureMembers(structElement),
+				Name = name,
+				//needsMarshalling = InspectStructureMembers(structElement),
 				returnedonly = returnOnly != null && returnOnly.Value == "true"
 			};
 
-			IsStructBlittable(structElement, csName);
-		}
+			mStructures[csName] = container;
 
-		void IsStructBlittable(XElement structElement, string csName)
-		{
+
+			bool isStructBlittable = true;
+
 			// check all members
 			foreach (var member in structElement.Elements("member"))
 			{
-				string type = member.Element("type").Value;
-				string memberName = member.Element("name").Value;
-				string csTypeName = GetTypeCsName(type);
-				string memberValue = member.Value;
+				//if (memberValue.IndexOf('[') > 0)
+				//{
+				//	isBlittable = false;
+				//}
+				//else if (!mBlittableTypes.Contains(csTypeName))
+				//{
+				//	isBlittable = false;
+				//}
+
+				var memberInfo = new VkStructMember();
+				memberInfo.MemberType = member.Element("type").Value;
+
+				var tokens = member.Value.Split(new[] {
+					' ',
+					'[',
+					']'
+				}, StringSplitOptions.RemoveEmptyEntries);
+				if (tokens.Length == 2)
+				{
+					// usually instance
+					memberInfo.BaseCppType = tokens[0];
+				}
+				else if (tokens.Length == 3)
+				{
+					// possible const pointer
+					//arg.IsConst = (tokens[0] == "const");
+					memberInfo.BaseCppType = tokens[1];
+				}
+				else if (tokens.Length == 4)
+				{
+					// const float array
+					//arg.IsConst = (tokens[0] == "const");
+					memberInfo.BaseCppType = tokens[1];
+					//arg.ArrayConstant = tokens[3];
+					//arg.IsFixedArray = true;
+				}
+				else
+				{
+					memberInfo.BaseCppType = memberInfo.MemberType;
+				}
+
+				memberInfo.Name = member.Element("name").Value;
+				memberInfo.CsType = GetTypeCsName(memberInfo.MemberType, "struct");
+
+				if (memberInfo.BaseCppType == "char*")
+				{
+					memberInfo.CsType = "string";
+				}
+				else if (memberInfo.BaseCppType == "void*")
+				{
+					memberInfo.CsType = "IntPtr";
+				}
+				else if (memberInfo.BaseCppType == "void**")
+				{
+					memberInfo.CsType = "IntPtr";
+				}
+				else
+				{
+					VkHandleInfo found;
+					if (Handles.TryGetValue(memberInfo.MemberType, out found))
+					{
+						memberInfo.CsType = found.csType;
+					}	
+				}
 
 				// detect if array
-				if (memberValue.IndexOf('[') > 0)
+				memberInfo.IsArray = (member.Value.IndexOf('[') > 0);
+				if (memberInfo.IsArray)
+					memberInfo.ArrayLength = GetArrayLength(member);
+				memberInfo.IsBlittable = mBlittableTypes.Contains(memberInfo.CsType) && !memberInfo.IsArray;
+
+				if (!memberInfo.IsBlittable)
 				{
-					return;
+					isStructBlittable = false;
 				}
-				else if (!mBlittableTypes.Contains(csTypeName))
+
+				if (memberInfo.IsArray && memberInfo.ArrayLength != null && memberInfo.IsBlittable)
 				{
-					return;
+					memberInfo.Attribute = string.Format("[MarshalAs(UnmanagedType.LPArray, SizeConst = {0})]", memberInfo.ArrayLength);
 				}
+				else if (memberInfo.CsType == "string" && memberInfo.ArrayLength != null)
+				{
+					memberInfo.Attribute = string.Format("[MarshalAs(UnmanagedType.ByValTStr, SizeConst = {0})]", memberInfo.ArrayLength);
+				}
+					
+
+				container.Members.Add(memberInfo); 
 			}
 
-			mBlittableTypes.Add(csName);
+			if (isStructBlittable)
+				mBlittableTypes.Add(csName);
 		}
 
-		bool InspectStructureMembers(XElement structElement)
+		string GetArrayLength(XElement member)
 		{
-			foreach (var memberElement in structElement.Elements("member"))
-			{
-				string member = memberElement.Value;
-				var typeElement = memberElement.Element("type");
-				var csMemberType = GetTypeCsName(typeElement.Value, "member");
+			var enumElement = member.Element("enum");
+			string found;
+			if (enumElement != null && mAPIConstants.TryGetValue(enumElement.Value, out found))
+				return found;
 
-				if (member.Contains("*") || member.Contains("[") || (mStructures.ContainsKey(csMemberType) && mStructures[csMemberType].needsMarshalling) || mHandles.ContainsKey(csMemberType))
-					return true;
-			}
-
-			return false;
+			string len = member.Value.Substring(member.Value.IndexOf('[') + 1);
+			return len.Substring(0, len.IndexOf(']'));
 		}
+
 
 		readonly Dictionary<string, VkEnumInfo> mEnums = new Dictionary<string, VkEnumInfo>();
 

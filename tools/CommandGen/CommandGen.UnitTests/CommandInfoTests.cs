@@ -22,7 +22,7 @@ namespace CommandGen.UnitTests
 
 			var inspector = new VkEntityInspector();
 
-			inspector.Handles.Add("Instance", new VkHandleInfo { name = "Instance", type = "VK_DEFINE_HANDLE" });
+			inspector.Handles.Add("VkInstance", new VkHandleInfo { name = "VkInstance", csType = "IntPtr" });
 			Assert.AreEqual(1, inspector.Handles.Keys.Count);
 
 			var parser = new VkCommandParser(inspector);
@@ -35,13 +35,13 @@ namespace CommandGen.UnitTests
 			Assert.IsNotNull(command);
 			Assert.AreEqual("vkCreateInstance", command.Name);
 			Assert.AreEqual("VkResult", command.CppReturnType);
-			Assert.AreEqual("Result", command.CsReturnType);
+			Assert.AreEqual("VkResult", command.CsReturnType);
 			Assert.IsNull(command.FirstInstance);
 
 			// NATIVE FUNCTION
 			var function = command.NativeFunction;
 			Assert.IsNotNull(function, "command.NativeFunction is not null");
-			Assert.AreEqual("Result", function.ReturnType);
+			Assert.AreEqual("VkResult", function.ReturnType);
 			Assert.AreEqual(3, function.Arguments.Count);
 
 			{
@@ -51,9 +51,9 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(index, arg_0.Index);
 				Assert.AreEqual("pCreateInfo", arg_0.Name);
 				Assert.AreEqual("VkInstanceCreateInfo", arg_0.BaseCppType);
-				Assert.AreEqual("InstanceCreateInfo", arg_0.BaseCsType);
+				Assert.AreEqual("VkInstanceCreateInfo", arg_0.BaseCsType);
 				Assert.AreEqual("VkInstanceCreateInfo*", arg_0.ArgumentCppType);
-				Assert.AreEqual("InstanceCreateInfo", arg_0.ArgumentCsType);
+				Assert.AreEqual("VkInstanceCreateInfo", arg_0.ArgumentCsType);
 				Assert.IsTrue(arg_0.IsConst);
 				Assert.IsFalse(arg_0.IsOptional);
 				Assert.IsFalse(arg_0.IsFixedArray);
@@ -71,7 +71,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(index, arg_1.Index);
 				Assert.AreEqual("pAllocator", arg_1.Name);
 				Assert.AreEqual("VkAllocationCallbacks", arg_1.BaseCppType);
-				Assert.AreEqual("AllocationCallbacks", arg_1.BaseCsType);
+				Assert.AreEqual("VkAllocationCallbacks", arg_1.BaseCsType);
 				Assert.AreEqual("VkAllocationCallbacks*", arg_1.ArgumentCppType);
 				Assert.AreEqual("IntPtr", arg_1.ArgumentCsType);
 				Assert.IsTrue(arg_1.IsConst);
@@ -91,7 +91,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(index, arg_2.Index);
 				Assert.AreEqual("pInstance", arg_2.Name);
 				Assert.AreEqual("VkInstance", arg_2.BaseCppType);
-				Assert.AreEqual("Instance", arg_2.BaseCsType);
+				Assert.AreEqual("VkInstance", arg_2.BaseCsType);
 				Assert.AreEqual("VkInstance*", arg_2.ArgumentCppType);
 				Assert.AreEqual("IntPtr", arg_2.ArgumentCsType);
 				Assert.IsFalse(arg_2.IsConst);
@@ -109,7 +109,7 @@ namespace CommandGen.UnitTests
 			var method = command.MethodSignature;
 			Assert.IsNotNull(method, "command.MethodSignature is not null");
 			Assert.AreEqual("CreateInstance", method.Name);
-			Assert.AreEqual("Result", method.ReturnType);
+			Assert.AreEqual("VkResult", method.ReturnType);
 			Assert.AreEqual(3, method.Parameters.Count);
 
 			{
@@ -119,7 +119,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(0, param_0.Source.Index);
 				Assert.AreEqual("pCreateInfo", param_0.Name);
 				Assert.IsFalse(param_0.IsNullableType);
-				Assert.AreEqual("InstanceCreateInfo", param_0.BaseCsType);
+				Assert.AreEqual("VkInstanceCreateInfo", param_0.BaseCsType);
 				Assert.IsFalse(param_0.UseRef);
 				Assert.IsFalse(param_0.IsFixedArray);
 			}
@@ -131,7 +131,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(1, param_1.Source.Index);
 				Assert.AreEqual("pAllocator", param_1.Name);
 				Assert.IsTrue(param_1.IsNullableType);
-				Assert.AreEqual("AllocationCallbacks", param_1.BaseCsType);
+				Assert.AreEqual("VkAllocationCallbacks", param_1.BaseCsType);
 				Assert.IsFalse(param_1.UseRef);
 				Assert.IsFalse(param_1.IsFixedArray);
 				Assert.IsFalse(param_1.IsArrayParameter);
@@ -144,7 +144,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(2, param_1.Source.Index);
 				Assert.AreEqual("pInstance", param_1.Name);
 				Assert.IsFalse(param_1.IsNullableType);
-				Assert.AreEqual("Instance", param_1.BaseCsType);
+				Assert.AreEqual("VkInstance", param_1.BaseCsType);
 				Assert.IsTrue(param_1.UseRef);
 				Assert.IsFalse(param_1.IsFixedArray);
 				Assert.IsFalse(param_1.IsArrayParameter);
@@ -175,8 +175,8 @@ namespace CommandGen.UnitTests
 			XElement top = XElement.Parse(xml, LoadOptions.PreserveWhitespace);
 
 			var inspector = new VkEntityInspector();
-			inspector.Handles.Add("PhysicalDevice", new VkHandleInfo { name = "PhysicalDevice", type = "VK_DEFINE_HANDLE" });
-			inspector.Handles.Add("Instance", new VkHandleInfo { name = "Instance", type = "VK_DEFINE_HANDLE" });
+			inspector.Handles.Add("VkPhysicalDevice", new VkHandleInfo { name = "VkPhysicalDevice", csType = "IntPtr" });
+			inspector.Handles.Add("VkInstance", new VkHandleInfo { name = "VkInstance", csType = "IntPtr" });
 			Assert.AreEqual(2, inspector.Handles.Keys.Count);
 
 			var parser = new VkCommandParser(inspector);
@@ -187,13 +187,13 @@ namespace CommandGen.UnitTests
 			Assert.IsNotNull(command);
 			Assert.AreEqual("vkEnumeratePhysicalDevices", command.Name);
 			Assert.AreEqual("VkResult", command.CppReturnType);
-			Assert.AreEqual("Result", command.CsReturnType);
+			Assert.AreEqual("VkResult", command.CsReturnType);
 			Assert.IsNotNull(command.FirstInstance);
 
 			// NATIVE FUNCTION
 			var function = command.NativeFunction;
 			Assert.IsNotNull(function, "command.NativeFunction is not null");
-			Assert.AreEqual("Result", function.ReturnType);
+			Assert.AreEqual("VkResult", function.ReturnType);
 			Assert.AreEqual(3, function.Arguments.Count);
 
 			{
@@ -203,7 +203,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(index, arg_0.Index);
 				Assert.AreEqual("instance", arg_0.Name);
 				Assert.AreEqual("VkInstance", arg_0.BaseCppType);
-				Assert.AreEqual("Instance", arg_0.BaseCsType);
+				Assert.AreEqual("VkInstance", arg_0.BaseCsType);
 				Assert.AreEqual("VkInstance", arg_0.ArgumentCppType);
 				Assert.AreEqual("IntPtr", arg_0.ArgumentCsType);
 				Assert.IsFalse(arg_0.IsConst);
@@ -245,7 +245,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(index, arg_2.Index);
 				Assert.AreEqual("pPhysicalDevices", arg_2.Name);
 				Assert.AreEqual("VkPhysicalDevice", arg_2.BaseCppType);
-				Assert.AreEqual("PhysicalDevice", arg_2.BaseCsType);
+				Assert.AreEqual("VkPhysicalDevice", arg_2.BaseCsType);
 				Assert.AreEqual("VkPhysicalDevice*", arg_2.ArgumentCppType);
 				Assert.AreEqual("IntPtr", arg_2.ArgumentCsType);
 				Assert.IsFalse(arg_2.IsConst);
@@ -263,7 +263,7 @@ namespace CommandGen.UnitTests
 			var method = command.MethodSignature;
 			Assert.IsNotNull(method, "command.MethodSignature is not null");
 			Assert.AreEqual("EnumeratePhysicalDevices", method.Name);
-			Assert.AreEqual("Result", method.ReturnType);
+			Assert.AreEqual("VkResult", method.ReturnType);
 			Assert.AreEqual(1, method.Parameters.Count);
 
 			{
@@ -273,7 +273,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(2, param_0.Source.Index);
 				Assert.AreEqual("pPhysicalDevices", param_0.Name);
 				Assert.IsTrue(param_0.IsNullableType);
-				Assert.AreEqual("PhysicalDevice", param_0.BaseCsType);
+				Assert.AreEqual("VkPhysicalDevice", param_0.BaseCsType);
 				Assert.IsFalse(param_0.UseRef);
 				Assert.IsFalse(param_0.IsFixedArray);
 				Assert.IsTrue(param_0.IsArrayParameter);
@@ -310,10 +310,10 @@ namespace CommandGen.UnitTests
 
 			var inspector = new VkEntityInspector();
 
-			inspector.Handles.Add("PhysicalDevice", new VkHandleInfo { name = "PhysicalDevice", type = "VK_DEFINE_HANDLE" });
+			inspector.Handles.Add("VkPhysicalDevice", new VkHandleInfo { name = "VkPhysicalDevice", csType = "IntPtr" });
 			Assert.AreEqual(1, inspector.Handles.Keys.Count);
 
-			inspector.Structs.Add("LayerProperties", new VkStructInfo { name = "LayerProperties" });
+			inspector.Structs.Add("VkLayerProperties", new VkStructInfo { Name = "VkLayerProperties" });
 			Assert.AreEqual(1, inspector.Structs.Keys.Count);
 
 			var parser = new VkCommandParser(inspector);
@@ -324,14 +324,14 @@ namespace CommandGen.UnitTests
 			Assert.IsNotNull(command);
 			Assert.AreEqual("vkEnumerateDeviceLayerProperties", command.Name);
 			Assert.AreEqual("VkResult", command.CppReturnType);
-			Assert.AreEqual("Result", command.CsReturnType);
+			Assert.AreEqual("VkResult", command.CsReturnType);
 			Assert.IsNotNull(command.FirstInstance);
 
 			// NATIVE FUNCTION
 			var function = command.NativeFunction;
 			Assert.IsNotNull(function, "command.NativeFunction is not null");
 			Assert.AreEqual("vkEnumerateDeviceLayerProperties", function.Name);
-			Assert.AreEqual("Result", function.ReturnType);
+			Assert.AreEqual("VkResult", function.ReturnType);
 			Assert.AreEqual(3, function.Arguments.Count);
 
 			{
@@ -341,7 +341,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(index, arg_0.Index);
 				Assert.AreEqual("physicalDevice", arg_0.Name);
 				Assert.AreEqual("VkPhysicalDevice", arg_0.BaseCppType);
-				Assert.AreEqual("PhysicalDevice", arg_0.BaseCsType);
+				Assert.AreEqual("VkPhysicalDevice", arg_0.BaseCsType);
 				Assert.AreEqual("VkPhysicalDevice", arg_0.ArgumentCppType);
 				Assert.AreEqual("IntPtr", arg_0.ArgumentCsType);
 				Assert.IsFalse(arg_0.IsConst);
@@ -381,9 +381,9 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(index, arg_2.Index);
 				Assert.AreEqual("pProperties", arg_2.Name);
 				Assert.AreEqual("VkLayerProperties", arg_2.BaseCppType);
-				Assert.AreEqual("LayerProperties", arg_2.BaseCsType);
+				Assert.AreEqual("VkLayerProperties", arg_2.BaseCsType);
 				Assert.AreEqual("VkLayerProperties*", arg_2.ArgumentCppType);
-				Assert.AreEqual("LayerProperties", arg_2.ArgumentCsType);
+				Assert.AreEqual("VkLayerProperties", arg_2.ArgumentCsType);
 				Assert.IsFalse(arg_2.IsConst);
 				Assert.IsTrue(arg_2.IsOptional);
 				Assert.IsFalse(arg_2.IsFixedArray);
@@ -398,7 +398,7 @@ namespace CommandGen.UnitTests
 			var method = command.MethodSignature;
 			Assert.IsNotNull(method, "command.MethodSignature is not null");
 			Assert.AreEqual("EnumerateDeviceLayerProperties", method.Name);
-			Assert.AreEqual("Result", method.ReturnType);
+			Assert.AreEqual("VkResult", method.ReturnType);
 			Assert.AreEqual(1, method.Parameters.Count);
 
 			{
@@ -408,7 +408,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(2, param_0.Source.Index);
 				Assert.AreEqual("pProperties", param_0.Name);
 				Assert.IsTrue(param_0.IsNullableType);
-				Assert.AreEqual("LayerProperties", param_0.BaseCsType);
+				Assert.AreEqual("VkLayerProperties", param_0.BaseCsType);
 				Assert.IsFalse(param_0.UseRef);
 				Assert.IsFalse(param_0.IsFixedArray);
 				Assert.IsTrue(param_0.IsArrayParameter);
@@ -445,11 +445,11 @@ namespace CommandGen.UnitTests
 			var inspector = new VkEntityInspector();
 			Assert.AreEqual(0, inspector.Handles.Keys.Count);
 
-			inspector.Structs.Add("LayerProperties", new VkStructInfo { name = "LayerProperties" });
+			inspector.Structs.Add("VkLayerProperties", new VkStructInfo { Name = "VkLayerProperties" });
 			Assert.AreEqual(1, inspector.Structs.Keys.Count);
 
 			// LayerProperties IS NOT BLITTABLE
-			Assert.IsFalse(inspector.BlittableTypes.Contains("LayerProperties"));
+			Assert.IsFalse(inspector.BlittableTypes.Contains("VkLayerProperties"));
 
 			var parser = new VkCommandParser(inspector);
 
@@ -459,13 +459,13 @@ namespace CommandGen.UnitTests
 			Assert.IsNotNull(command);
 			Assert.AreEqual("vkEnumerateInstanceLayerProperties", command.Name);
 			Assert.AreEqual("VkResult", command.CppReturnType);
-			Assert.AreEqual("Result", command.CsReturnType);
+			Assert.AreEqual("VkResult", command.CsReturnType);
 			Assert.IsNull(command.FirstInstance);
 
 			// NATIVE FUNCTION
 			var function = command.NativeFunction;
 			Assert.IsNotNull(function, "command.NativeFunction is not null");
-			Assert.AreEqual("Result", function.ReturnType);
+			Assert.AreEqual("VkResult", function.ReturnType);
 			Assert.AreEqual(2, function.Arguments.Count);
 			Assert.IsFalse(function.UseUnsafe);
 
@@ -496,9 +496,9 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(index, arg_1.Index);
 				Assert.AreEqual("pProperties", arg_1.Name);
 				Assert.AreEqual("VkLayerProperties", arg_1.BaseCppType);
-				Assert.AreEqual("LayerProperties", arg_1.BaseCsType);
+				Assert.AreEqual("VkLayerProperties", arg_1.BaseCsType);
 				Assert.AreEqual("VkLayerProperties*", arg_1.ArgumentCppType);
-				Assert.AreEqual("LayerProperties", arg_1.ArgumentCsType);
+				Assert.AreEqual("VkLayerProperties", arg_1.ArgumentCsType);
 				Assert.IsFalse(arg_1.IsConst);
 				Assert.IsTrue(arg_1.IsOptional);
 				Assert.IsFalse(arg_1.IsFixedArray);
@@ -513,7 +513,7 @@ namespace CommandGen.UnitTests
 			var method = command.MethodSignature;
 			Assert.IsNotNull(method, "command.MethodSignature is not null");
 			Assert.AreEqual("EnumerateInstanceLayerProperties", method.Name);
-			Assert.AreEqual("Result", method.ReturnType);
+			Assert.AreEqual("VkResult", method.ReturnType);
 			Assert.AreEqual(1, method.Parameters.Count);
 
 			{
@@ -523,7 +523,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(1, param_0.Source.Index);
 				Assert.AreEqual("pProperties", param_0.Name);
 				Assert.IsTrue(param_0.IsNullableType);
-				Assert.AreEqual("LayerProperties", param_0.BaseCsType);
+				Assert.AreEqual("VkLayerProperties", param_0.BaseCsType);
 				Assert.IsFalse(param_0.UseRef);
 				Assert.IsFalse(param_0.IsFixedArray);
 				Assert.IsTrue(param_0.IsArrayParameter);
@@ -558,7 +558,7 @@ namespace CommandGen.UnitTests
 			XElement top = XElement.Parse(xml, LoadOptions.PreserveWhitespace);
 
 			var inspector = new VkEntityInspector();
-			inspector.Handles.Add("CommandBuffer", new VkHandleInfo { name = "CommandBuffer", type = "VK_DEFINE_HANDLE" });
+			inspector.Handles.Add("VkCommandBuffer", new VkHandleInfo { name = "VkCommandBuffer", csType = "IntPtr" });
 			Assert.AreEqual(1, inspector.Handles.Keys.Count);
 
 			var parser = new VkCommandParser(inspector);
@@ -587,7 +587,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(index, arg_0.Index);
 				Assert.AreEqual("commandBuffer", arg_0.Name);
 				Assert.AreEqual("VkCommandBuffer", arg_0.BaseCppType);
-				Assert.AreEqual("CommandBuffer", arg_0.BaseCsType);
+				Assert.AreEqual("VkCommandBuffer", arg_0.BaseCsType);
 				Assert.AreEqual("VkCommandBuffer", arg_0.ArgumentCppType);
 				Assert.AreEqual("IntPtr", arg_0.ArgumentCsType);
 				Assert.IsFalse(arg_0.IsConst);
@@ -666,9 +666,9 @@ namespace CommandGen.UnitTests
 
 			var inspector = new VkEntityInspector();
 
-			inspector.Handles.Add("Device", new VkHandleInfo { name = "Device", type = "VK_DEFINE_HANDLE" });
-			inspector.Handles.Add("CommandBuffer", new VkHandleInfo { name = "CommandBuffer", type = "VK_DEFINE_HANDLE" });
-			inspector.Handles.Add("QueryPool", new VkHandleInfo { name = "CommandBuffer", type = "VK_DEFINE_NON_DISPATCHABLE_HANDLE" });
+			inspector.Handles.Add("VkDevice", new VkHandleInfo { name = "VkDevice", csType = "IntPtr" });
+			inspector.Handles.Add("VkCommandBuffer", new VkHandleInfo { name = "VkCommandBuffer", csType = "IntPtr" });
+			inspector.Handles.Add("VkQueryPool", new VkHandleInfo { name = "VkQueryPool", csType = "UInt64" });
 			Assert.AreEqual(3, inspector.Handles.Keys.Count);
 
 			var parser = new VkCommandParser(inspector);
@@ -679,14 +679,14 @@ namespace CommandGen.UnitTests
 			Assert.IsNotNull(command);
 			Assert.AreEqual("vkCreateQueryPool", command.Name);
 			Assert.AreEqual("VkResult", command.CppReturnType);
-			Assert.AreEqual("Result", command.CsReturnType);
+			Assert.AreEqual("VkResult", command.CsReturnType);
 			Assert.IsNotNull(command.FirstInstance);
 
 			// NATIVE FUNCTION
 			var function = command.NativeFunction;
 			Assert.IsNotNull(function, "command.NativeFunction is not null");
 			Assert.AreEqual("vkCreateQueryPool", function.Name);
-			Assert.AreEqual("Result", function.ReturnType);
+			Assert.AreEqual("VkResult", function.ReturnType);
 			Assert.AreEqual(4, function.Arguments.Count);
 			Assert.IsFalse(function.UseUnsafe);
 
@@ -697,7 +697,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(index, arg_0.Index);
 				Assert.AreEqual("device", arg_0.Name);
 				Assert.AreEqual("VkDevice", arg_0.BaseCppType);
-				Assert.AreEqual("Device", arg_0.BaseCsType);
+				Assert.AreEqual("VkDevice", arg_0.BaseCsType);
 				Assert.AreEqual("VkDevice", arg_0.ArgumentCppType);
 				Assert.AreEqual("IntPtr", arg_0.ArgumentCsType);
 				Assert.IsFalse(arg_0.IsConst);
@@ -716,9 +716,9 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(index, arg_1.Index);
 				Assert.AreEqual("pCreateInfo", arg_1.Name);
 				Assert.AreEqual("VkQueryPoolCreateInfo", arg_1.BaseCppType);
-				Assert.AreEqual("QueryPoolCreateInfo", arg_1.BaseCsType);
+				Assert.AreEqual("VkQueryPoolCreateInfo", arg_1.BaseCsType);
 				Assert.AreEqual("VkQueryPoolCreateInfo*", arg_1.ArgumentCppType);
-				Assert.AreEqual("QueryPoolCreateInfo", arg_1.ArgumentCsType);
+				Assert.AreEqual("VkQueryPoolCreateInfo", arg_1.ArgumentCsType);
 				Assert.IsTrue(arg_1.IsConst);
 				Assert.IsFalse(arg_1.IsOptional);
 				Assert.IsFalse(arg_1.IsFixedArray);
@@ -735,7 +735,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(index, arg_2.Index);
 				Assert.AreEqual("pAllocator", arg_2.Name);
 				Assert.AreEqual("VkAllocationCallbacks", arg_2.BaseCppType);
-				Assert.AreEqual("AllocationCallbacks", arg_2.BaseCsType);
+				Assert.AreEqual("VkAllocationCallbacks", arg_2.BaseCsType);
 				Assert.AreEqual("VkAllocationCallbacks*", arg_2.ArgumentCppType);
 				Assert.AreEqual("IntPtr", arg_2.ArgumentCsType);
 				Assert.IsTrue(arg_2.IsConst);
@@ -754,7 +754,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(index, arg_3.Index);
 				Assert.AreEqual("pQueryPool", arg_3.Name);
 				Assert.AreEqual("VkQueryPool", arg_3.BaseCppType);
-				Assert.AreEqual("QueryPool", arg_3.BaseCsType);
+				Assert.AreEqual("VkQueryPool", arg_3.BaseCsType);
 				Assert.AreEqual("VkQueryPool*", arg_3.ArgumentCppType);
 				Assert.AreEqual("UInt64", arg_3.ArgumentCsType);
 				Assert.IsFalse(arg_3.IsConst);
@@ -793,10 +793,10 @@ namespace CommandGen.UnitTests
 
 			var inspector = new VkEntityInspector();
 
-			inspector.Handles.Add("Queue", new VkHandleInfo { name = "Queue", type = "VK_DEFINE_HANDLE" });
+			inspector.Handles.Add("VkQueue", new VkHandleInfo { name = "VkQueue", csType = "IntPtr" });
 			Assert.AreEqual(1, inspector.Handles.Keys.Count);
 
-			inspector.Structs.Add("PresentInfoKhr", new VkStructInfo { name = "PresentInfoKhr" });
+			inspector.Structs.Add("VkPresentInfoKhr", new VkStructInfo { Name = "VkPresentInfoKhr" });
 			Assert.AreEqual(1, inspector.Structs.Keys.Count);
 
 			var parser = new VkCommandParser(inspector);
@@ -807,14 +807,14 @@ namespace CommandGen.UnitTests
 			Assert.IsNotNull(command);
 			Assert.AreEqual("vkQueuePresentKHR", command.Name);
 			Assert.AreEqual("VkResult", command.CppReturnType);
-			Assert.AreEqual("Result", command.CsReturnType);
+			Assert.AreEqual("VkResult", command.CsReturnType);
 			Assert.IsNotNull(command.FirstInstance);
 
 			// NATIVE FUNCTION
 			var function = command.NativeFunction;
 			Assert.IsNotNull(function, "command.NativeFunction is not null");
 			Assert.AreEqual("vkQueuePresentKHR", function.Name);
-			Assert.AreEqual("Result", function.ReturnType);
+			Assert.AreEqual("VkResult", function.ReturnType);
 			Assert.AreEqual(2, function.Arguments.Count);
 			Assert.IsFalse(function.UseUnsafe);
 
@@ -825,7 +825,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(index, arg_0.Index);
 				Assert.AreEqual("queue", arg_0.Name);
 				Assert.AreEqual("VkQueue", arg_0.BaseCppType);
-				Assert.AreEqual("Queue", arg_0.BaseCsType);
+				Assert.AreEqual("VkQueue", arg_0.BaseCsType);
 				Assert.AreEqual("VkQueue", arg_0.ArgumentCppType);
 				Assert.AreEqual("IntPtr", arg_0.ArgumentCsType);
 				Assert.IsFalse(arg_0.IsConst);
@@ -845,9 +845,9 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(index, arg_1.Index);
 				Assert.AreEqual("pPresentInfo", arg_1.Name);
 				Assert.AreEqual("VkPresentInfoKHR", arg_1.BaseCppType);
-				Assert.AreEqual("PresentInfoKhr", arg_1.BaseCsType);
+				Assert.AreEqual("VkPresentInfoKhr", arg_1.BaseCsType);
 				Assert.AreEqual("VkPresentInfoKHR*", arg_1.ArgumentCppType);
-				Assert.AreEqual("PresentInfoKhr", arg_1.ArgumentCsType);
+				Assert.AreEqual("VkPresentInfoKhr", arg_1.ArgumentCsType);
 				Assert.IsTrue(arg_1.IsConst);
 				Assert.IsFalse(arg_1.IsOptional);
 				Assert.IsFalse(arg_1.IsFixedArray);
@@ -871,7 +871,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(1, param_0.Source.Index);
 				Assert.AreEqual("pPresentInfo", param_0.Name);
 				Assert.IsFalse(param_0.IsNullableType);
-				Assert.AreEqual("PresentInfoKhr", param_0.BaseCsType);
+				Assert.AreEqual("VkPresentInfoKhr", param_0.BaseCsType);
 				Assert.IsFalse(param_0.UseRef);
 				Assert.IsFalse(param_0.IsFixedArray);
 				Assert.IsFalse(param_0.IsArrayParameter);
@@ -901,10 +901,10 @@ namespace CommandGen.UnitTests
 
 			var inspector = new VkEntityInspector();
 
-			inspector.Handles.Add("PhysicalDevice", new VkHandleInfo { name = "PhysicalDevice", type = "VK_DEFINE_HANDLE" });
+			inspector.Handles.Add("VkPhysicalDevice", new VkHandleInfo { name = "VkPhysicalDevice", csType = "IntPtr" });
 			Assert.AreEqual(1, inspector.Handles.Keys.Count);
 
-			inspector.Structs.Add("PhysicalDeviceProperties", new VkStructInfo { name = "PhysicalDeviceProperties", returnedonly = true });
+			inspector.Structs.Add("VkPhysicalDeviceProperties", new VkStructInfo { Name = "VkPhysicalDeviceProperties", returnedonly = true });
 			Assert.AreEqual(1, inspector.Structs.Keys.Count);
 
 			var parser = new VkCommandParser(inspector);
@@ -933,7 +933,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(index, arg_0.Index);
 				Assert.AreEqual("physicalDevice", arg_0.Name);
 				Assert.AreEqual("VkPhysicalDevice", arg_0.BaseCppType);
-				Assert.AreEqual("PhysicalDevice", arg_0.BaseCsType);
+				Assert.AreEqual("VkPhysicalDevice", arg_0.BaseCsType);
 				Assert.AreEqual("VkPhysicalDevice", arg_0.ArgumentCppType);
 				Assert.AreEqual("IntPtr", arg_0.ArgumentCsType);
 				Assert.IsFalse(arg_0.IsConst);
@@ -953,9 +953,9 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(index, arg_1.Index);
 				Assert.AreEqual("pProperties", arg_1.Name);
 				Assert.AreEqual("VkPhysicalDeviceProperties", arg_1.BaseCppType);
-				Assert.AreEqual("PhysicalDeviceProperties", arg_1.BaseCsType);
+				Assert.AreEqual("VkPhysicalDeviceProperties", arg_1.BaseCsType);
 				Assert.AreEqual("VkPhysicalDeviceProperties*", arg_1.ArgumentCppType);
-				Assert.AreEqual("PhysicalDeviceProperties", arg_1.ArgumentCsType);
+				Assert.AreEqual("VkPhysicalDeviceProperties", arg_1.ArgumentCsType);
 				Assert.IsFalse(arg_1.IsConst);
 				Assert.IsFalse(arg_1.IsOptional);
 				Assert.IsFalse(arg_1.IsFixedArray);
@@ -979,7 +979,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(1, param_0.Source.Index);
 				Assert.AreEqual("pProperties", param_0.Name);
 				Assert.IsFalse(param_0.IsNullableType);
-				Assert.AreEqual("PhysicalDeviceProperties", param_0.BaseCsType);
+				Assert.AreEqual("VkPhysicalDeviceProperties", param_0.BaseCsType);
 				Assert.IsFalse(param_0.UseRef);
 				Assert.IsFalse(param_0.IsFixedArray);
 				Assert.IsFalse(param_0.IsArrayParameter);
@@ -1012,14 +1012,14 @@ namespace CommandGen.UnitTests
 
 			var inspector = new VkEntityInspector();
 
-			inspector.Handles.Add("Device", new VkHandleInfo { name = "Device", type = "VK_DEFINE_HANDLE" });
-			inspector.Handles.Add("DeviceMemory", new VkHandleInfo { name = "DeviceMemory", type = "VK_DEFINE_HANDLE" });
+			inspector.Handles.Add("VkDevice", new VkHandleInfo { name = "VkDevice", csType = "IntPtr" });
+			inspector.Handles.Add("VkDeviceMemory", new VkHandleInfo { name = "VkDeviceMemory", csType = "IntPtr" });
 			Assert.AreEqual(2, inspector.Handles.Keys.Count);
 
-			inspector.Structs.Add("DeviceSize", new VkStructInfo { name = "DeviceSize" });
+			inspector.Structs.Add("VkDeviceSize", new VkStructInfo { Name = "VkDeviceSize" });
 			Assert.AreEqual(1, inspector.Structs.Keys.Count);
 
-			inspector.Enums.Add("MemoryMapFlags", new VkEnumInfo {  name = "MemoryMapFlags" });
+			inspector.Enums.Add("VkMemoryMapFlags", new VkEnumInfo {  name = "VkMemoryMapFlags" });
 			Assert.AreEqual(1, inspector.Enums.Keys.Count);
 
 			var parser = new VkCommandParser(inspector);
@@ -1030,14 +1030,14 @@ namespace CommandGen.UnitTests
 			Assert.IsNotNull(command);
 			Assert.AreEqual("vkMapMemory", command.Name);
 			Assert.AreEqual("VkResult", command.CppReturnType);
-			Assert.AreEqual("Result", command.CsReturnType);
+			Assert.AreEqual("VkResult", command.CsReturnType);
 			Assert.IsNotNull(command.FirstInstance);
 
 			// NATIVE FUNCTION
 			var function = command.NativeFunction;
 			Assert.IsNotNull(function, "command.NativeFunction is not null");
 			Assert.AreEqual("vkMapMemory", function.Name);
-			Assert.AreEqual("Result", function.ReturnType);
+			Assert.AreEqual("VkResult", function.ReturnType);
 			Assert.AreEqual(6, function.Arguments.Count);
 			Assert.IsFalse(function.UseUnsafe);
 
@@ -1048,7 +1048,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(index, arg_0.Index);
 				Assert.AreEqual("device", arg_0.Name);
 				Assert.AreEqual("VkDevice", arg_0.BaseCppType);
-				Assert.AreEqual("Device", arg_0.BaseCsType);
+				Assert.AreEqual("VkDevice", arg_0.BaseCsType);
 				Assert.AreEqual("VkDevice", arg_0.ArgumentCppType);
 				Assert.AreEqual("IntPtr", arg_0.ArgumentCsType);
 				Assert.IsFalse(arg_0.IsConst);
@@ -1068,7 +1068,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(index, arg_1.Index);
 				Assert.AreEqual("memory", arg_1.Name);
 				Assert.AreEqual("VkDeviceMemory", arg_1.BaseCppType);
-				Assert.AreEqual("DeviceMemory", arg_1.BaseCsType);
+				Assert.AreEqual("VkDeviceMemory", arg_1.BaseCsType);
 				Assert.AreEqual("VkDeviceMemory", arg_1.ArgumentCppType);
 				Assert.AreEqual("IntPtr", arg_1.ArgumentCsType);
 				Assert.IsFalse(arg_1.IsConst);
@@ -1088,9 +1088,9 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(index, arg_1.Index);
 				Assert.AreEqual("offset", arg_1.Name);
 				Assert.AreEqual("VkDeviceSize", arg_1.BaseCppType);
-				Assert.AreEqual("DeviceSize", arg_1.BaseCsType);
+				Assert.AreEqual("VkDeviceSize", arg_1.BaseCsType);
 				Assert.AreEqual("VkDeviceSize", arg_1.ArgumentCppType);
-				Assert.AreEqual("DeviceSize", arg_1.ArgumentCsType);
+				Assert.AreEqual("VkDeviceSize", arg_1.ArgumentCsType);
 				Assert.IsFalse(arg_1.IsConst);
 				Assert.IsFalse(arg_1.IsOptional);
 				Assert.IsFalse(arg_1.IsFixedArray);
@@ -1108,9 +1108,9 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(index, arg_1.Index);
 				Assert.AreEqual("size", arg_1.Name);
 				Assert.AreEqual("VkDeviceSize", arg_1.BaseCppType);
-				Assert.AreEqual("DeviceSize", arg_1.BaseCsType);
+				Assert.AreEqual("VkDeviceSize", arg_1.BaseCsType);
 				Assert.AreEqual("VkDeviceSize", arg_1.ArgumentCppType);
-				Assert.AreEqual("DeviceSize", arg_1.ArgumentCsType);
+				Assert.AreEqual("VkDeviceSize", arg_1.ArgumentCsType);
 				Assert.IsFalse(arg_1.IsConst);
 				Assert.IsFalse(arg_1.IsOptional);
 				Assert.IsFalse(arg_1.IsFixedArray);
@@ -1128,9 +1128,9 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(index, arg_1.Index);
 				Assert.AreEqual("flags", arg_1.Name);
 				Assert.AreEqual("VkMemoryMapFlags", arg_1.BaseCppType);
-				Assert.AreEqual("MemoryMapFlags", arg_1.BaseCsType);
+				Assert.AreEqual("VkMemoryMapFlags", arg_1.BaseCsType);
 				Assert.AreEqual("VkMemoryMapFlags", arg_1.ArgumentCppType);
-				Assert.AreEqual("MemoryMapFlags", arg_1.ArgumentCsType);
+				Assert.AreEqual("VkMemoryMapFlags", arg_1.ArgumentCsType);
 				Assert.IsFalse(arg_1.IsConst);
 				Assert.IsTrue(arg_1.IsOptional);
 				Assert.IsFalse(arg_1.IsFixedArray);
@@ -1176,7 +1176,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(1, param_0.Source.Index);
 				Assert.AreEqual("memory", param_0.Name);
 				Assert.IsFalse(param_0.IsNullableType);
-				Assert.AreEqual("DeviceMemory", param_0.BaseCsType);
+				Assert.AreEqual("VkDeviceMemory", param_0.BaseCsType);
 				Assert.IsFalse(param_0.UseRef);
 				Assert.IsFalse(param_0.IsFixedArray);
 				Assert.IsFalse(param_0.IsArrayParameter);
@@ -1189,7 +1189,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(2, param_0.Source.Index);
 				Assert.AreEqual("offset", param_0.Name);
 				Assert.IsFalse(param_0.IsNullableType);
-				Assert.AreEqual("DeviceSize", param_0.BaseCsType);
+				Assert.AreEqual("VkDeviceSize", param_0.BaseCsType);
 				Assert.IsFalse(param_0.UseRef);
 				Assert.IsFalse(param_0.IsFixedArray);
 				Assert.IsFalse(param_0.IsArrayParameter);
@@ -1202,7 +1202,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(3, param_0.Source.Index);
 				Assert.AreEqual("size", param_0.Name);
 				Assert.IsFalse(param_0.IsNullableType);
-				Assert.AreEqual("DeviceSize", param_0.BaseCsType);
+				Assert.AreEqual("VkDeviceSize", param_0.BaseCsType);
 				Assert.IsFalse(param_0.UseRef);
 				Assert.IsFalse(param_0.IsFixedArray);
 				Assert.IsFalse(param_0.IsArrayParameter);
@@ -1215,7 +1215,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(4, param_0.Source.Index);
 				Assert.AreEqual("flags", param_0.Name);
 				Assert.IsFalse(param_0.IsNullableType);
-				Assert.AreEqual("MemoryMapFlags", param_0.BaseCsType);
+				Assert.AreEqual("VkMemoryMapFlags", param_0.BaseCsType);
 				Assert.IsFalse(param_0.UseRef);
 				Assert.IsFalse(param_0.IsFixedArray);
 				Assert.IsFalse(param_0.IsArrayParameter);
