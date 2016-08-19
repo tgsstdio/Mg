@@ -15,20 +15,96 @@
       <Breakpoint file="D:\Magnesium.Vulkan\tools\CommandGen\CommandGen\VkEntityInspector.cs" line="60" column="9" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.Workbench ActiveDocument="tools\CommandGen\CommandGen\Program.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="tools\CommandGen\CommandGen\TestData\vk.xml">
     <Files>
-      <File FileName="tools\CommandGen\CommandGen.UnitTests\TestData\vk.xml" Line="1" Column="1" NotebookId="1" />
-      <File FileName="tools\CommandGen\CommandGen.UnitTests\InspectorTests.cs" Line="95" Column="1" NotebookId="1" />
-      <File FileName="tools\CommandGen\CommandGen\VkEnumInfo.cs" Line="13" Column="22" NotebookId="1" />
-      <File FileName="tools\CommandGen\CommandGen\VkEnumExtensionInfo.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="tools\CommandGen\CommandGen\VkEntityInspector.cs" Line="351" Column="19" NotebookId="1" />
-      <File FileName="tools\CommandGen\CommandGen\Program.cs" Line="129" Column="6" NotebookId="1" />
-      <File FileName="tools\CommandGen\CommandGen\VkEnumMemberInfo.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="src\Handles\VkBuffer.cs" Line="28" Column="4" NotebookId="1" />
+      <File FileName="src\Structs\VkDebugMarkerObjectNameInfoEXT.cs" Line="15" Column="3" NotebookId="1" />
+      <File FileName="src\Structs\VkDebugMarkerObjectTagInfoEXT.cs" Line="19" Column="1" NotebookId="1" />
+      <File FileName="src\Handles\VkDevice.cs" Line="245" Column="40" NotebookId="1" />
+      <File FileName="src\Interops.cs" Line="52" Column="70" NotebookId="1" />
+      <File FileName="src\Handles\VkPhysicalDevice.cs" Line="110" Column="40" NotebookId="1" />
+      <File FileName="src\Handles\VkEntrypoint.cs" Line="162" Column="40" NotebookId="1" />
+      <File FileName="src\Handles\VkInstance.cs" Line="15" Column="40" NotebookId="1" />
+      <File FileName="VkEntrypoint.cs" Line="22" Column="3" NotebookId="1" />
+      <File FileName="src\Structs\VkAllocationCallbacks.cs" Line="8" Column="39" NotebookId="1" />
+      <File FileName="src\MgVkAllocationCallbacks.cs" Line="17" Column="4" NotebookId="1" />
+      <File FileName="src\Structs\VkExtent3D.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="src\Handles\VkCommandBuffer.cs" Line="245" Column="40" NotebookId="1" />
+      <File FileName="src\Handles\VkBufferView.cs" Line="15" Column="1" NotebookId="1" />
+      <File FileName="src\Handles\VkCommandPool.cs" Line="30" Column="4" NotebookId="1" />
+      <File FileName="src\Handles\VkDescriptorPool.cs" Line="29" Column="39" NotebookId="1" />
+      <File FileName="src\Handles\VkDescriptorSet.cs" Line="14" Column="1" NotebookId="1" />
+      <File FileName="src\Handles\VkDescriptorSetLayout.cs" Line="21" Column="37" NotebookId="1" />
+      <File FileName="src\Handles\VkDeviceMemory.cs" Line="54" Column="4" NotebookId="1" />
+      <File FileName="src\Handles\VkImage.cs" Line="18" Column="4" NotebookId="1" />
+      <File FileName="src\Handles\VkQueryPool.cs" Line="23" Column="58" NotebookId="1" />
+      <File FileName="src\Handles\VkQueue.cs" Line="30" Column="40" NotebookId="1" />
+      <File FileName="src\Handles\VkRenderPass.cs" Line="21" Column="71" NotebookId="1" />
+      <File FileName="src\Handles\VkSampler.cs" Line="15" Column="1" NotebookId="1" />
+      <File FileName="src\Handles\VkSemaphore.cs" Line="23" Column="58" NotebookId="1" />
+      <File FileName="src\Handles\VkShaderModule.cs" Line="23" Column="58" NotebookId="1" />
+      <File FileName="src\Handles\VkSurfaceKHR.cs" Line="7" Column="19" NotebookId="1" />
+      <File FileName="src\Handles\VkSwapchainKHR.cs" Line="34" Column="2" NotebookId="1" />
+      <File FileName="src\Handles\VkPipelineCache.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="src\Handles\VkPipeline.cs" Line="19" Column="79" NotebookId="1" />
+      <File FileName="src\Handles\VkImageView.cs" Line="21" Column="73" NotebookId="1" />
+      <File FileName="src\Handles\VkFramebuffer.cs" Line="1" Column="14" NotebookId="1" />
+      <File FileName="src\Structs\VkInstanceCreateInfo.cs" Line="9" Column="3" NotebookId="1" />
+      <File FileName="..\MonoGame\Magnesium\Entrypoint\MgInstanceCreateInfo.cs" Line="7" Column="16" NotebookId="1" />
+      <File FileName="src\Structs\VkMemoryRequirements.cs" Line="15" Column="1" NotebookId="1" />
+      <File FileName="src\Structs\VkDisplayPlanePropertiesKHR.cs" Line="14" Column="1" NotebookId="1" />
+      <File FileName="src\Structs\VkPhysicalDeviceFeatures.cs" Line="10" Column="18" NotebookId="1" />
+      <File FileName="src\VkBool32.cs" Line="13" Column="1" NotebookId="1" />
+      <File FileName="src\Structs\VkAndroidSurfaceCreateInfoKHR.cs" Line="6" Column="2" NotebookId="1" />
+      <File FileName="src\Structs\VkBufferViewCreateInfo.cs" Line="9" Column="3" NotebookId="1" />
+      <File FileName="src\Structs\VkMirSurfaceCreateInfoKHR.cs" Line="17" Column="1" NotebookId="1" />
+      <File FileName="src\Structs\VkDisplayPropertiesKHR.cs" Line="19" Column="1" NotebookId="1" />
+      <File FileName="src\Structs\VkRenderPassCreateInfo.cs" Line="12" Column="10" NotebookId="1" />
+      <File FileName="src\Structs\VkDisplaySurfaceCreateInfoKHR.cs" Line="9" Column="3" NotebookId="1" />
+      <File FileName="src\Structs\VkXlibSurfaceCreateInfoKHR.cs" Line="13" Column="10" NotebookId="1" />
+      <File FileName="src\Structs\VkPipelineLayoutCreateInfo.cs" Line="5" Column="27" NotebookId="1" />
+      <File FileName="src\Structs\VkPipelineCacheCreateInfo.cs" Line="5" Column="27" NotebookId="1" />
+      <File FileName="src\Structs\VkQueryPoolCreateInfo.cs" Line="9" Column="3" NotebookId="1" />
+      <File FileName="src\Structs\VkPresentInfoKHR.cs" Line="15" Column="51" NotebookId="1" />
+      <File FileName="src\Structs\VkSwapchainCreateInfoKHR.cs" Line="9" Column="3" NotebookId="1" />
+      <File FileName="src\Structs\VkDisplayModeCreateInfoKHR.cs" Line="8" Column="44" NotebookId="1" />
+      <File FileName="src\Structs\VkSubpassDescription.cs" Line="8" Column="38" NotebookId="1" />
+      <File FileName="src\Structs\VkSamplerCreateInfo.cs" Line="7" Column="44" NotebookId="1" />
+      <File FileName="src\Structs\VkEventCreateInfo.cs" Line="12" Column="10" NotebookId="1" />
+      <File FileName="src\Structs\VkPipelineShaderStageCreateInfo.cs" Line="8" Column="33" NotebookId="1" />
+      <File FileName="src\Structs\VkSemaphoreCreateInfo.cs" Line="13" Column="3" NotebookId="1" />
+      <File FileName="src\Structs\VkShaderModuleCreateInfo.cs" Line="14" Column="48" NotebookId="1" />
+      <File FileName="src\Structs\VkFramebufferCreateInfo.cs" Line="8" Column="41" NotebookId="1" />
+      <File FileName="src\Structs\VkPipelineVertexInputStateCreateInfo.cs" Line="4" Column="1" NotebookId="1" />
+      <File FileName="src\Structs\VkDebugReportCallbackCreateInfoEXT.cs" Line="20" Column="3" NotebookId="1" />
+      <File FileName="src\Structs\VkPipelineInputAssemblyStateCreateInfo.cs" Line="10" Column="45" NotebookId="1" />
+      <File FileName="src\Structs\VkPipelineTessellationStateCreateInfo.cs" Line="7" Column="60" NotebookId="1" />
+      <File FileName="src\Structs\VkPipelineViewportStateCreateInfo.cs" Line="5" Column="27" NotebookId="1" />
+      <File FileName="src\Structs\VkPipelineRasterizationStateCreateInfo.cs" Line="4" Column="1" NotebookId="1" />
+      <File FileName="src\Structs\VkPipelineMultisampleStateCreateInfo.cs" Line="8" Column="54" NotebookId="1" />
+      <File FileName="src\Structs\VkPipelineDynamicStateCreateInfo.cs" Line="11" Column="36" NotebookId="1" />
+      <File FileName="src\Structs\VkPipelineDepthStencilStateCreateInfo.cs" Line="5" Column="27" NotebookId="1" />
+      <File FileName="src\Structs\VkPipelineColorBlendStateCreateInfo.cs" Line="7" Column="49" NotebookId="1" />
+      <File FileName="src\Structs\VkDescriptorSetLayoutCreateInfo.cs" Line="6" Column="2" NotebookId="1" />
+      <File FileName="src\Structs\VkDeviceCreateInfo.cs" Line="8" Column="36" NotebookId="1" />
+      <File FileName="src\Structs\VkDeviceQueueCreateInfo.cs" Line="12" Column="10" NotebookId="1" />
+      <File FileName="src\Structs\VkImageViewCreateInfo.cs" Line="6" Column="2" NotebookId="1" />
+      <File FileName="src\Structs\VkWaylandSurfaceCreateInfoKHR.cs" Line="14" Column="10" NotebookId="1" />
+      <File FileName="src\Structs\VkDisplayModePropertiesKHR.cs" Line="11" Column="36" NotebookId="1" />
+      <File FileName="src\Structs\VkWin32SurfaceCreateInfoKHR.cs" Line="5" Column="27" NotebookId="1" />
+      <File FileName="src\Structs\VkXcbSurfaceCreateInfoKHR.cs" Line="8" Column="43" NotebookId="1" />
+      <File FileName="src\Handles\VkEvent.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="src\Structs\VkApplicationInfo.cs" Line="15" Column="44" NotebookId="1" />
+      <File FileName="src\Enums\VkResult.cs" Line="25" Column="1" NotebookId="1" />
+      <File FileName="..\MonoGame\Magnesium\Enums\Result.cs" Line="53" Column="31" NotebookId="1" />
+      <File FileName="tools\CommandGen\CommandGen\Program.cs" Line="11" Column="1" NotebookId="1" />
+      <File FileName="src\Structs\VkLayerProperties.cs" Line="12" Column="39" NotebookId="1" />
+      <File FileName="src\Structs\VkExtensionProperties.cs" Line="8" Column="39" NotebookId="1" />
     </Files>
     <FloatingWindows>
-      <FloatingWindow WindowId="1" X="2866" Y="0" Width="958" Height="1008">
+      <FloatingWindow WindowId="1" X="1912" Y="-8" Width="1920" Height="1017">
         <Files>
-          <File FileName="tools\CommandGen\CommandGen\TestData\vk.xml" Line="1" Column="1" />
+          <File FileName="tools\CommandGen\CommandGen\TestData\vk.xml" Line="240" Column="94" />
         </Files>
       </FloatingWindow>
     </FloatingWindows>

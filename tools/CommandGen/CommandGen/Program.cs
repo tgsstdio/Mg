@@ -115,6 +115,7 @@ namespace CommandGen
 				using (var interfaceFile = new StreamWriter(Path.Combine("Structs", container.Name + ".cs"), false))
 				{
 					interfaceFile.WriteLine("using Magnesium;");
+					interfaceFile.WriteLine("using System;");
 					interfaceFile.WriteLine("using System.Runtime.InteropServices;");
 					interfaceFile.WriteLine("");
 					interfaceFile.WriteLine("namespace Magnesium.Vulkan");
@@ -155,6 +156,7 @@ namespace CommandGen
 				using (var interfaceFile = new StreamWriter(Path.Combine("Handles", container.Name + ".cs"), false))
 				{
 					interfaceFile.WriteLine("using Magnesium;");
+					interfaceFile.WriteLine("using System;");
 					interfaceFile.WriteLine("namespace Magnesium.Vulkan");
 					interfaceFile.WriteLine("{");
 					string tabbedField = "\t";
@@ -167,10 +169,10 @@ namespace CommandGen
 					if (container.Handle != null)
 					{
 						// create internal field
-						interfaceFile.WriteLine(string.Format("{0}internal {1} Handle = {1}.Zero;", methodTabs, container.Handle.csType));
+						interfaceFile.WriteLine(string.Format("{0}internal {1} Handle = {2};", methodTabs, container.Handle.csType ,container.Handle.csType == "IntPtr" ? "IntPtr.Zero" : "0L"));
 
 						// create constructor
-						interfaceFile.WriteLine(string.Format("{0}internal class {1}({2} handle)", methodTabs, container.Name, container.Handle.csType));
+						interfaceFile.WriteLine(string.Format("{0}internal {1}({2} handle)", methodTabs, container.Name, container.Handle.csType));
 						interfaceFile.WriteLine(methodTabs + "{");
 						interfaceFile.WriteLine(methodTabs + "\tHandle = handle;");
 						interfaceFile.WriteLine(methodTabs + "}");
@@ -196,6 +198,8 @@ namespace CommandGen
 			using (var interfaceFile = new StreamWriter("Interops.cs", false))
 			{
 				interfaceFile.WriteLine("using Magnesium;");
+				interfaceFile.WriteLine("using System;");
+				interfaceFile.WriteLine("using System.Runtime.InteropServices;");
 				interfaceFile.WriteLine("namespace Magnesium.Vulkan");
 				interfaceFile.WriteLine("{");
 

@@ -36,7 +36,7 @@ namespace CommandGen
 		{
 			var builder = new StringBuilder();
 
-			builder.Append ("internal external static ");
+			builder.Append ("internal extern static ");
 
 			if (UseUnsafe)
 			{
