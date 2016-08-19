@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Xml.Linq;
 using NUnit.Framework;
 
@@ -50,7 +51,7 @@ namespace CommandGen.UnitTests
 
 			var inspector = new VkEntityInspector();
 
-			inspector.Handles.Add("VkImage", new VkHandleInfo { name = "VkImage", csType = "IntPtr"});
+			inspector.Handles.Add("VkImage", new VkHandleInfo { name = "VkImage", csType = "IntPtr" });
 
 			inspector.Inspect(top);
 
@@ -65,7 +66,7 @@ namespace CommandGen.UnitTests
 			{
 				var member = members[0];
 				Assert.AreEqual("sType", member.Name);
-				Assert.AreEqual("VkStructureType",  member.CsType);
+				Assert.AreEqual("VkStructureType", member.CsType);
 			}
 
 			{
@@ -109,6 +110,74 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual("subresourceRange", member.Name);
 				Assert.AreEqual("VkImageSubresourceRange", member.CsType);
 			}
+		}
+
+		[TestCase]
+		public void TestCase2()
+		{
+			string xml = @"
+    <enums name=""VkStructureType"" type=""enum"" expand=""VK_STRUCTURE_TYPE"" comment=""Structure type enumerant"">
+        <enum value=""0""     name=""VK_STRUCTURE_TYPE_APPLICATION_INFO""/>
+        <enum value=""1""     name=""VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO""/>
+        <enum value=""2""     name=""VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO""/>
+        <enum value=""3""     name=""VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO""/>
+        <enum value=""4""     name=""VK_STRUCTURE_TYPE_SUBMIT_INFO""/>
+        <enum value=""5""     name=""VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO""/>
+        <enum value=""6""     name=""VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE""/>
+        <enum value=""7""     name=""VK_STRUCTURE_TYPE_BIND_SPARSE_INFO""/>
+        <enum value=""8""     name=""VK_STRUCTURE_TYPE_FENCE_CREATE_INFO""/>
+        <enum value=""9""     name=""VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO""/>
+        <enum value=""10""    name=""VK_STRUCTURE_TYPE_EVENT_CREATE_INFO""/>
+        <enum value=""11""    name=""VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO""/>
+        <enum value=""12""    name=""VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO""/>
+        <enum value=""13""    name=""VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO""/>
+        <enum value=""14""    name=""VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO""/>
+        <enum value=""15""    name=""VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO""/>
+        <enum value=""16""    name=""VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO""/>
+        <enum value=""17""    name=""VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO""/>
+        <enum value=""18""    name=""VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO""/>
+        <enum value=""19""    name=""VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO""/>
+        <enum value=""20""    name=""VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO""/>
+        <enum value=""21""    name=""VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO""/>
+        <enum value=""22""    name=""VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO""/>
+        <enum value=""23""    name=""VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO""/>
+        <enum value=""24""    name=""VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO""/>
+        <enum value=""25""    name=""VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO""/>
+        <enum value=""26""    name=""VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO""/>
+        <enum value=""27""    name=""VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO""/>
+        <enum value=""28""    name=""VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO""/>
+        <enum value=""29""    name=""VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO""/>
+        <enum value=""30""    name=""VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO""/>
+        <enum value=""31""    name=""VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO""/>
+        <enum value=""32""    name=""VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO""/>
+        <enum value=""33""    name=""VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO""/>
+        <enum value=""34""    name=""VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO""/>
+        <enum value=""35""    name=""VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET""/>
+        <enum value=""36""    name=""VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET""/>
+        <enum value=""37""    name=""VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO""/>
+        <enum value=""38""    name=""VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO""/>
+        <enum value=""39""    name=""VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO""/>
+        <enum value=""40""    name=""VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO""/>
+        <enum value=""41""    name=""VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO""/>
+        <enum value=""42""    name=""VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO""/>
+        <enum value=""43""    name=""VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO""/>
+        <enum value=""44""    name=""VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER""/>
+        <enum value=""45""    name=""VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER""/>
+        <enum value=""46""    name=""VK_STRUCTURE_TYPE_MEMORY_BARRIER""/>
+        <enum value=""47""    name=""VK_STRUCTURE_TYPE_LOADER_INSTANCE_CREATE_INFO""/> <!-- Reserved for internal use by the loader, layers, and ICDs -->
+        <enum value=""48""    name=""VK_STRUCTURE_TYPE_LOADER_DEVICE_CREATE_INFO""/> <!-- Reserved for internal use by the loader, layers, and ICDs -->
+    </enums>";
+
+			var inspector = new VkEntityInspector();
+
+			var actual_0 = VkEntityInspector.ParseVkStructureTypeKey("VK_STRUCTURE_TYPE_APPLICATION_INFO");
+			Assert.AreEqual("VkApplicationInfo", actual_0);
+
+			var actual_1 = VkEntityInspector.ParseVkStructureTypeKey("VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO");
+			Assert.AreEqual("VkInstanceCreateInfo", actual_1);
+
+			var actual_2 = VkEntityInspector.ParseVkStructureTypeKey("VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO");
+			Assert.AreEqual("VkCommandBufferInheritanceInfo", actual_2);
 		}
 	}
 }

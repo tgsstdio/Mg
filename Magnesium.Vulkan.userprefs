@@ -11,73 +11,29 @@
       <Breakpoint file="D:\Magnesium.Vulkan\tools\CommandGen\CommandGen.UnitTests\CommandInfoTests.cs" line="1232" column="15" />
       <Breakpoint file="D:\Magnesium.Vulkan\tools\CommandGen\CommandGen.UnitTests\CommandInfoTests.cs" line="277" column="1" />
       <Breakpoint file="D:\Magnesium.Vulkan\tools\CommandGen\CommandGen.UnitTests\InterfaceTests.cs" line="28" column="33" />
-      <Breakpoint file="D:\Magnesium.Vulkan\tools\CommandGen\CommandGen\Program.cs" line="38" column="21" />
-      <Breakpoint file="D:\Magnesium.Vulkan\tools\CommandGen\CommandGen\VkEntityInspector.cs" line="296" column="22" />
       <Breakpoint file="D:\Magnesium.Vulkan\tools\CommandGen\CommandGen.UnitTests\InspectorTests.cs" line="55" column="17" />
-      <Breakpoint file="D:\Magnesium.Vulkan\tools\CommandGen\CommandGen\VkEntityInspector.cs" line="172" column="21" />
       <Breakpoint file="D:\Magnesium.Vulkan\tools\CommandGen\CommandGen\VkEntityInspector.cs" line="60" column="9" />
-      <Breakpoint file="D:\Magnesium.Vulkan\tools\CommandGen\CommandGen\VkEntityInspector.cs" line="208" column="17" />
-      <Breakpoint file="D:\Magnesium.Vulkan\tools\CommandGen\CommandGen\VkEntityInspector.cs" line="175" column="26" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.Workbench ActiveDocument="tools\CommandGen\CommandGen.UnitTests\InterfaceTests.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="tools\CommandGen\CommandGen\Program.cs">
     <Files>
-      <File FileName="..\MonoGame\Magnesium\PhysicalDevice\MgDisplayModePropertiesKHR.cs" Line="5" Column="23" />
-      <File FileName="..\MonoGame\Magnesium\PhysicalDevice\MgDisplayPropertiesKHR.cs" Line="1" Column="1" />
-      <File FileName="..\MonoGame\Magnesium\Instance\IMgDisplayModeKHR.cs" Line="3" Column="22" />
-      <File FileName="..\MonoGame\Magnesium\PhysicalDevice\IMgDisplayKHR.cs" Line="1" Column="1" />
-      <File FileName="..\MonoGame\Magnesium\PhysicalDevice\MgSurfaceCapabilitiesKHR.cs" Line="1" Column="1" />
-      <File FileName="..\MonoGame\Magnesium\PhysicalDevice\MgSurfaceFormatKHR.cs" Line="1" Column="1" />
-      <File FileName="..\MonoGame\Magnesium\PhysicalDevice\MgSparseImageFormatProperties.cs" Line="1" Column="1" />
-      <File FileName="..\MonoGame\Magnesium\PhysicalDevice\MgSparseImageFormatFlagBits.cs" Line="1" Column="1" />
-      <File FileName="..\MonoGame\Magnesium\PhysicalDevice\MgQueueFlagBits.cs" Line="1" Column="1" />
-      <File FileName="..\MonoGame\Magnesium\PhysicalDevice\MgQueueFamilyProperties.cs" Line="1" Column="1" />
-      <File FileName="..\MonoGame\Magnesium\PhysicalDevice\MgPresentModeKHR.cs" Line="1" Column="1" />
-      <File FileName="..\MonoGame\Magnesium\PhysicalDevice\MgPhysicalDeviceType.cs" Line="1" Column="1" />
-      <File FileName="..\MonoGame\Magnesium\PhysicalDevice\MgPhysicalDeviceSparseProperties.cs" Line="1" Column="1" />
-      <File FileName="..\MonoGame\Magnesium\PhysicalDevice\MgPhysicalDeviceProperties.cs" Line="1" Column="1" />
-      <File FileName="..\MonoGame\Magnesium\PhysicalDevice\MgPhysicalDeviceMemoryProperties.cs" Line="1" Column="1" />
-      <File FileName="..\MonoGame\Magnesium\PhysicalDevice\MgPhysicalDeviceFeatures.cs" Line="1" Column="1" />
-      <File FileName="..\MonoGame\Magnesium\PhysicalDevice\MgPhysicalDeviceLimits.cs" Line="6" Column="3" />
-      <File FileName="tools\CommandGen\CommandGen\Program.cs" Line="101" Column="5" />
-      <File FileName="tools\CommandGen\CommandGen\VkEntityInspector.cs" Line="100" Column="13" />
-      <File FileName="tools\CommandGen\CommandGen\VkStructInfo.cs" Line="9" Column="27" />
-      <File FileName="tools\CommandGen\CommandGen\VkStructMember.cs" Line="11" Column="42" />
-      <File FileName="tools\CommandGen\CommandGen\VkContainerClass.cs" Line="1" Column="1" />
-      <File FileName="tools\CommandGen\CommandGen\VkCommandParser.cs" Line="199" Column="6" />
-      <File FileName="tools\CommandGen\CommandGen\VkEnumInfo.cs" Line="1" Column="1" />
-      <File FileName="tools\CommandGen\CommandGen\VkVariableDeclaration.cs" Line="1" Column="1" />
-      <File FileName="tools\CommandGen\CommandGen\TestData\vk.xml" Line="68" Column="5" />
-      <File FileName="tools\CommandGen\CommandGen.UnitTests\CommandInfoTests.cs" Line="1020" Column="53" />
-      <File FileName="tools\CommandGen\CommandGen.UnitTests\InspectorTests.cs" Line="95" Column="5" />
-      <File FileName="tools\CommandGen\CommandGen\VkHandleInfo.cs" Line="5" Column="15" />
-      <File FileName="tools\CommandGen\CommandGen.UnitTests\InterfaceTests.cs" Line="13" Column="3" />
+      <File FileName="tools\CommandGen\CommandGen.UnitTests\TestData\vk.xml" Line="1" Column="1" NotebookId="1" />
+      <File FileName="tools\CommandGen\CommandGen.UnitTests\TestData\vk.xml" Line="1" Column="1" NotebookId="1" />
+      <File FileName="tools\CommandGen\CommandGen.UnitTests\TestData\vk.xml" Line="2132" Column="11" NotebookId="1" />
+      <File FileName="tools\CommandGen\CommandGen.UnitTests\InspectorTests.cs" Line="95" Column="1" NotebookId="1" />
+      <File FileName="tools\CommandGen\CommandGen\VkEnumInfo.cs" Line="13" Column="22" NotebookId="1" />
+      <File FileName="tools\CommandGen\CommandGen\VkEnumExtensionInfo.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="tools\CommandGen\CommandGen\VkEntityInspector.cs" Line="351" Column="19" NotebookId="1" />
+      <File FileName="tools\CommandGen\CommandGen\Program.cs" Line="89" Column="29" NotebookId="1" />
+      <File FileName="tools\CommandGen\CommandGen\VkEnumMemberInfo.cs" Line="1" Column="1" NotebookId="1" />
     </Files>
-    <Pads>
-      <Pad Id="MonoDevelop.UnitTesting.TestPad">
-        <State name="__root__">
-          <Node name="Magnesium.Vulkan" expanded="True">
-            <Node name="CommandGen.UnitTests" expanded="True">
-              <Node name="CommandGen" expanded="True">
-                <Node name="UnitTests" expanded="True">
-                  <Node name="CommandInfoTests" expanded="True">
-                    <Node name="TestCase9" expanded="True" />
-                  </Node>
-                  <Node name="InspectorTests" expanded="True">
-                    <Node name="TestCase1" expanded="True">
-                      <Node name="TestCase1()" selected="True" />
-                    </Node>
-                  </Node>
-                  <Node name="InterfaceTests" expanded="True">
-                    <Node name="NoOfInterfaces" expanded="True" />
-                  </Node>
-                </Node>
-              </Node>
-            </Node>
-          </Node>
-        </State>
-      </Pad>
-    </Pads>
+    <FloatingWindows>
+      <FloatingWindow WindowId="1" X="2873" Y="0" Width="958" Height="1008">
+        <Files>
+          <File FileName="tools\CommandGen\CommandGen\TestData\vk.xml" Line="1" Column="1" />
+        </Files>
+      </FloatingWindow>
+    </FloatingWindows>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.ItemProperties.CommandGen PreferredExecutionTarget="MonoDevelop.Default" />
 </Properties>

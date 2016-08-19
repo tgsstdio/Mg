@@ -54,6 +54,8 @@
     <Compile Include="VkContainerClass.cs" />
     <Compile Include="VkInterfaceCollection.cs" />
     <Compile Include="VkStructMember.cs" />
+    <Compile Include="VkEnumMemberInfo.cs" />
+    <Compile Include="VkEnumExtensionInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="TestData\vk.xml">

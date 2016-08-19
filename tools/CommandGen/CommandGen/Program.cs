@@ -8,22 +8,24 @@ namespace CommandGen
 {
 	class MainClass
 	{
-		[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Ansi)]
+		[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
 		public struct LayerProperties
 		{
-			[MarshalAs(UnmanagedType.ByValTStr, SizeConst=256)] public string layerName;
+			[MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
+			public string layerName;
 			public UInt32 specVersion;
 			public UInt32 implementationVersion;
-			[MarshalAs(UnmanagedType.ByValTStr, SizeConst=256)] public string description;
+			[MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
+			public string description;
 		}
 
-		[DllImport("vulkan-1", CallingConvention=CallingConvention.Winapi)]
+		[DllImport("vulkan-1", CallingConvention = CallingConvention.Winapi)]
 		extern static unsafe UInt32 vkEnumerateInstanceLayerProperties(ref UInt32 pPropertyCount, [In, Out] LayerProperties[] pProperties);
 
 		[DllImport("vulkan-1", CallingConvention = CallingConvention.Winapi)]
 		extern static unsafe void vkCmdSetBlendConstants(IntPtr commandBuffer, [MarshalAs(UnmanagedType.LPArray, SizeConst = 4)] float[] blendConstants);
 
-		public static void Main (string[] args)
+		public static void Main(string[] args)
 		{
 			//NativeVk();
 			try
@@ -55,6 +57,7 @@ namespace CommandGen
 				var implementation = new VkInterfaceCollection();
 				GenerateInterops(DLLNAME, lookup, ref noOfUnsafe, ref totalNativeInterfaces);
 				GenerateImplementation(implementation, inspector);
+				GenerateVkEnums(inspector);
 				GenerateVkStructs(inspector);
 
 				Console.WriteLine("totalNativeInterfaces :" + totalNativeInterfaces);
@@ -63,6 +66,40 @@ namespace CommandGen
 			catch (Exception ex)
 			{
 				Console.WriteLine(ex);
+			}
+		}
+
+		static void GenerateVkEnums(VkEntityInspector inspector)
+		{
+			if (!Directory.Exists("Enums"))
+			{
+				Directory.CreateDirectory("Enums");
+			}
+
+			foreach (var container in inspector.Enums.Values)
+			{
+				using (var interfaceFile = new StreamWriter(Path.Combine("Enums", container.name + ".cs"), false))
+				{
+					interfaceFile.WriteLine("using System;");
+					interfaceFile.WriteLine("");
+					interfaceFile.WriteLine("namespace Magnesium.Vulkan");
+					interfaceFile.WriteLine("{");
+					string tabbedField = "\t";
+
+					if (container.UseFlags)
+						interfaceFile.WriteLine(tabbedField + "[Flags]");
+					interfaceFile.WriteLine(tabbedField + "internal enum {0} : uint", container.name);
+					interfaceFile.WriteLine(tabbedField + "{");
+
+					var methodTabs = tabbedField + "\t";
+
+					foreach (var member in container.Members)
+					{
+						interfaceFile.WriteLine(methodTabs + member.Id + " = " + member.Value + ",");
+					}
+					interfaceFile.WriteLine(tabbedField + "}");
+					interfaceFile.WriteLine("}");
+				}
 			}
 		}
 

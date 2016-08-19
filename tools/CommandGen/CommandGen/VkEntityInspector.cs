@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Xml.Linq;
@@ -54,30 +55,61 @@ namespace CommandGen
 
 		public void Inspect(XElement root)
 		{
-			ExtractAPIConstants(root);
+			LearnExtensions(root);
+			ExtractEnumConstants(root, "API Constants", StoreAPIConstants);
+			ExtractEnumConstants(root, "VkStructureType", ParseVkStructureType);
 			GenerateType(root, "handle", InspectHandle);
-			GenerateType(root, "enum", InspectEnum);
+			InspectEnums(root);
 			GenerateType(root, "struct", InspectStructure);
 			GenerateType(root, "union", InspectStructure);
 		}
 
+		private Dictionary<string, string> mVkStructureKeys = new Dictionary<string, string>();
+		public void ParseVkStructureType(string attr, string value)
+		{
+			var structKey = ParseVkStructureTypeKey(attr);
+			mVkStructureKeys.Add(structKey, value);
+		}
+
+		public static string ParseVkStructureTypeKey(string name)
+		{
+			//throw new NotImplementedException();
+			var tokens = name.Replace("_STRUCTURE_TYPE_", "_").Split('_');
+
+			var collection = new List<string>();
+			foreach (var token in tokens)
+			{
+				if (token.Length > 1)
+					collection.Add(token[0] + token.Substring(1).ToLowerInvariant());
+				else
+					collection.Add(token[0].ToString());
+			}
+
+			return string.Join("", collection.ToArray());
+		}
+
 		private Dictionary<string, string> mAPIConstants = new Dictionary<string, string>();
-		void ExtractAPIConstants(XElement root)
+		void ExtractEnumConstants(XElement root, string enumCategory, Action<string, string> enumAction)
 		{
 			var constants = root.Elements("enums");
 
 			if (constants == null)
 				return;
 						
-			var api = constants.FirstOrDefault(e => e.Attribute("name").Value == "API Constants");
+			var api = constants.FirstOrDefault(e => e.Attribute("name").Value == enumCategory);
 			foreach (var field in constants.Elements("enum"))
 			{
 				var attr = field.Attribute("name");
-				var define = field.Attribute("value");
+				var attrValue = field.Attribute("value");
 
-				if (attr != null && define != null)
-					mAPIConstants.Add(attr.Value, define.Value);
+				if (attr != null && attrValue != null)
+					enumAction(attr.Value, attrValue.Value);
 			}
+		}
+
+		void StoreAPIConstants(string attr, string value)
+		{
+			mAPIConstants.Add(attr, value);
 		}
 
 		readonly Dictionary<string, string> mExtensions = new Dictionary<string, string> {
@@ -300,54 +332,258 @@ namespace CommandGen
 
 		readonly Dictionary<string, VkEnumInfo> mEnums = new Dictionary<string, VkEnumInfo>();
 
-		void InspectEnum(XElement enumElement)
+		void InspectEnums(XElement root)
 		{
-			string name = enumElement.Attribute("name").Value;
-			string csName = GetTypeCsName(name, "enum");
-
-			var values = from el in enumElement.Parent.Elements("enums")
-						 where (string)el.Attribute("name") == name
-						 select el;
-
-			if (values.Count() < 1)
+			foreach (var parent in root.Elements("enums"))
 			{
-				Console.WriteLine("warning: not adding empty enum {0}", csName);
-				return;
-			}
+				string name = parent.Attribute("name").Value;
 
-			var enumsElement = values.First();
+				if (!name.StartsWith("Vk", StringComparison.InvariantCulture))
+				{
+					Console.WriteLine("warning: not adding name doesn't start with Vk -  {0}", name);
+					continue;
+				}
 
-			var typeAttribute = enumsElement.Attribute("type");
-			var useFlags = typeAttribute != null && typeAttribute.Value == "bitmask";
-			if (useFlags)
-			{
-				string suffix = null;
-				foreach (var ext in mExtensions)
-					if (csName.EndsWith(ext.Value, StringComparison.InvariantCulture))
-					{
-						suffix = ext.Value + suffix;
-						csName = csName.Substring(0, csName.Length - ext.Value.Length);
-					}
-				if (csName.EndsWith("FlagBits", StringComparison.InvariantCulture))
-					csName = csName.Substring(0, csName.Length - 4) + "s";
-				if (suffix != null)
-					csName += suffix;
-			}
+				string csName = GetTypeCsName(name, "enum");
 
-			mTypesTranslation[name] = csName;
-			// enums are blittable too
-			mBlittableTypes.Add(csName);
 
-			//foreach (var e in values.Elements("enum"))
-			//	WriteEnumField(e, csName);
-			//WriteEnumExtensions(csName);
+				var children = from el in parent.Elements("enum")
+							 select el;
 
-			mEnums.Add(csName,
-	          	new VkEnumInfo { 
+
+				if (children.Count() < 1)
+				{
+					Console.WriteLine("warning: not adding empty enum {0}", csName);
+					continue;
+				}
+
+
+				var typeAttribute = parent.Attribute("type");
+				var useFlags = typeAttribute != null && typeAttribute.Value == "bitmask";
+				if (useFlags)
+				{
+					string suffix = null;
+					foreach (var ext in mExtensions)
+						if (csName.EndsWith(ext.Value, StringComparison.InvariantCulture))
+						{
+							suffix = ext.Value + suffix;
+							csName = csName.Substring(0, csName.Length - ext.Value.Length);
+						}
+					if (csName.EndsWith("FlagBits", StringComparison.InvariantCulture))
+						csName = csName.Substring(0, csName.Length - 4) + "s";
+					if (suffix != null)
+						csName += suffix;
+				}
+
+				mTypesTranslation[name] = csName;
+				// enums are blittable too
+				mBlittableTypes.Add(csName);
+
+				var container = new VkEnumInfo
+				{
 					name = csName,
 					UseFlags = useFlags,
+				};
+
+				foreach (var e in children)
+				{
+					container.Members.Add(WriteEnumField(e, csName));
 				}
-		    );
+
+				if (enumExtensions.ContainsKey(csName))
+				{
+					foreach (var info in enumExtensions[csName])
+					{
+						container.Members.Add(WriteEnumField(info.Name, info.Value, csName));
+					}
+				}
+
+				mEnums.Add(csName, container);
+
+			}
+		}
+
+		void LearnExtensions(XElement root)
+		{
+			var elements = from e in root.Elements("extensions").Elements("extension") where e.Attribute("supported").Value != "disabled" select e;
+
+			foreach (var element in elements)
+				LearnExtension(element);
+		}
+
+		void LearnExtension(XElement extensionElement)
+		{
+			var extensions = from e in extensionElement.Element("require").Elements("enum") where e.Attribute("extends") != null select e;
+			int number = Int32.Parse(extensionElement.Attribute("number").Value);
+			foreach (var element in extensions)
+			{
+				string enumName = GetTypeCsName(element.Attribute("extends").Value, "enum");
+				var info = new VkEnumExtensionInfo 
+				{ 
+					Name = element.Attribute("name").Value,
+					Value = EnumExtensionValue(element, number, ref enumName)
+				};
+				if (!enumExtensions.ContainsKey(enumName))
+					enumExtensions[enumName] = new List<VkEnumExtensionInfo>();
+
+				enumExtensions[enumName].Add(info);
+			}
+		}
+
+		string EnumExtensionValue(XElement element, int number, ref string csEnumName)
+		{
+			var offsetAttribute = element.Attribute("offset");
+			if (offsetAttribute != null)
+			{
+				int direction = 1;
+				var dirAttr = element.Attribute("dir");
+				if (dirAttr != null && dirAttr.Value == "-")
+					direction = -1;
+				int offset = Int32.Parse(offsetAttribute.Value);
+
+				return (direction * (1000000000 + (number - 1) * 1000 + offset)).ToString();
+			}
+			var valueAttribute = element.Attribute("value");
+			if (valueAttribute != null)
+				return valueAttribute.Value;
+
+			var bitposAttribute = element.Attribute("bitpos");
+			if (bitposAttribute != null)
+			{
+				if (csEnumName.EndsWith("FlagBits", StringComparison.InvariantCulture))
+					csEnumName = csEnumName.Substring(0, csEnumName.Length - 4) + "s";
+
+				return FormatFlagValue(Int32.Parse(bitposAttribute.Value));
+			}
+
+			throw new Exception(string.Format("unexpected extension enum value in: {0}", element));
+		}
+
+		Dictionary<string, List<VkEnumExtensionInfo>> enumExtensions = new Dictionary<string, List<VkEnumExtensionInfo>>();
+
+		string FormatFlagValue(int pos)
+		{
+			return string.Format("0x{0:X}", 1 << pos);
+		}
+
+		VkEnumMemberInfo WriteEnumField(XElement e, string csEnumName)
+		{
+			var valueAttr = e.Attribute("value");
+			string value;
+			if (valueAttr == null)
+				value = FormatFlagValue(Convert.ToInt32(e.Attribute("bitpos").Value));
+			else
+				value = valueAttr.Value;
+
+			return WriteEnumField(e.Attribute("name").Value, value, csEnumName);
+		}
+
+		static Dictionary<string, string> mSpecialParts = new Dictionary<string, string> {
+			{ "AMD", "Amd" },
+			{ "API", "Api" },
+			{ "EXT", "Ext" },
+			{ "KHR", "Khr" },
+			{ "1D", "1D" },
+			{ "2D", "2D" },
+			{ "3D", "3D" },
+			{ "NV", "Nv" }
+		};
+
+		string TranslateCName(string name)
+		{
+			using (StringWriter sw = new StringWriter())
+			{
+				bool first = true;
+
+				foreach (var part in name.Split('_'))
+				{
+					if (first)
+					{
+						first = false;
+						if (name.StartsWith("VK", StringComparison.OrdinalIgnoreCase))
+							continue;
+						else
+							Console.WriteLine("warning: name '{0}' doesn't start with VK prefix", name);
+					}
+
+					if (mSpecialParts.ContainsKey(part))
+						sw.Write(mSpecialParts[part]);
+					else if (part.Length > 0)
+					{
+						if (part.ToCharArray().All(c => char.IsUpper(c) || char.IsDigit(c)))
+							sw.Write(part[0] + part.Substring(1).ToLower());
+						else
+							sw.Write(char.ToUpper(part[0]) + part.Substring(1));
+					}
+				}
+
+				return sw.ToString();
+			}
+		}
+
+		VkEnumMemberInfo WriteEnumField(string name, string value, string csEnumName)
+		{
+			string fName = TranslateCName(name);
+			string prefix = csEnumName, suffix = null;
+			bool isExtensionField = false;
+			string extension = null;
+
+			foreach (var ext in mExtensions)
+			{
+				if (prefix.EndsWith(ext.Value, StringComparison.InvariantCulture))
+				{
+					prefix = prefix.Substring(0, prefix.Length - ext.Value.Length);
+					suffix = ext.Value;
+				}
+				else if (fName.EndsWith(ext.Value, StringComparison.InvariantCulture))
+				{
+					isExtensionField = true;
+					extension = ext.Value;
+				}
+			}
+
+			if (prefix.EndsWith("Flags", StringComparison.InvariantCulture))
+			{
+				prefix = prefix.Substring(0, prefix.Length - 5);
+				suffix = "Bit" + suffix;
+			}
+
+			if (fName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+				fName = fName.Substring(prefix.Length);
+
+			if (!char.IsLetter(fName[0]))
+			{
+				switch (csEnumName)
+				{
+					case "ImageType":
+						fName = "Image" + fName;
+						break;
+					case "ImageViewType":
+						fName = "View" + fName;
+						break;
+					case "QueryResultFlags":
+						fName = "Result" + fName;
+						break;
+					case "SampleCountFlags":
+						fName = "Count" + fName;
+						break;
+				}
+			}
+			if (suffix != null)
+			{
+				if (fName.EndsWith(suffix, StringComparison.InvariantCulture))
+					fName = fName.Substring(0, fName.Length - suffix.Length);
+				else if (isExtensionField && fName.EndsWith(suffix + extension, StringComparison.InvariantCulture))
+					fName = fName.Substring(0, fName.Length - suffix.Length - extension.Length) + extension;
+			}
+
+			return new VkEnumMemberInfo
+			{
+				Id = fName,
+				Value = value,
+			};
+
+			//IndentWriteLine("{0} = {1},", fName, value);
 		}
 
 		#endregion
