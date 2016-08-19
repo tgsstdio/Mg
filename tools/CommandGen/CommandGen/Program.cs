@@ -105,9 +105,14 @@ namespace CommandGen
 
 		static void GenerateVkStructs(IVkEntityInspector inspector)
 		{
+			if (!Directory.Exists("Structs"))
+			{
+				Directory.CreateDirectory("Structs");
+			}
+
 			foreach (var container in inspector.Structs.Values)
 			{
-				using (var interfaceFile = new StreamWriter(container.Name + ".cs", false))
+				using (var interfaceFile = new StreamWriter(Path.Combine("Structs", container.Name + ".cs"), false))
 				{
 					interfaceFile.WriteLine("using Magnesium;");
 					interfaceFile.WriteLine("using System.Runtime.InteropServices;");
@@ -134,15 +139,20 @@ namespace CommandGen
 
 		static void GenerateImplementation(VkInterfaceCollection implementation, IVkEntityInspector inspector)
 		{
+			if (!Directory.Exists("Handles"))
+			{
+				Directory.CreateDirectory("Handles");
+			}
+
 			foreach (var container in implementation.Interfaces)
 			{
 				VkHandleInfo found;
-				if (inspector.Handles.TryGetValue(container.Name.Replace("Vk",""), out found))
+				if (inspector.Handles.TryGetValue(container.Name, out found))
 				{
 					container.Handle = found;
 				}
 
-				using (var interfaceFile = new StreamWriter(container.Name + ".cs", false))
+				using (var interfaceFile = new StreamWriter(Path.Combine("Handles", container.Name + ".cs"), false))
 				{
 					interfaceFile.WriteLine("using Magnesium;");
 					interfaceFile.WriteLine("namespace Magnesium.Vulkan");
