@@ -10,6 +10,6 @@ namespace Magnesium.Vulkan
 		public VkStructureType sType { get; set; }
 		public IntPtr pNext { get; set; }
 		public VkCommandBufferUsageFlags flags { get; set; }
-		public VkCommandBufferInheritanceInfo pInheritanceInfo { get; set; }
+		public IntPtr pInheritanceInfo { get; set; }
 	}
 }

@@ -290,10 +290,10 @@ namespace Magnesium.Vulkan
 		internal extern static void vkCmdBindPipeline(IntPtr commandBuffer, VkPipelineBindPoint pipelineBindPoint, UInt64 pipeline);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe void vkCmdSetViewport(IntPtr commandBuffer, UInt32 firstViewport, UInt32 viewportCount, VkViewport* pViewports);
+		internal extern static unsafe void vkCmdSetViewport(IntPtr commandBuffer, UInt32 firstViewport, UInt32 viewportCount, Magnesium.MgViewport* pViewports);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe void vkCmdSetScissor(IntPtr commandBuffer, UInt32 firstScissor, UInt32 scissorCount, VkRect2D* pScissors);
+		internal extern static unsafe void vkCmdSetScissor(IntPtr commandBuffer, UInt32 firstScissor, UInt32 scissorCount, Magnesium.MgRect2D* pScissors);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkCmdSetLineWidth(IntPtr commandBuffer, float lineWidth);
@@ -344,37 +344,37 @@ namespace Magnesium.Vulkan
 		internal extern static void vkCmdDispatchIndirect(IntPtr commandBuffer, UInt64 buffer, UInt64 offset);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe void vkCmdCopyBuffer(IntPtr commandBuffer, UInt64 srcBuffer, UInt64 dstBuffer, UInt32 regionCount, VkBufferCopy* pRegions);
+		internal extern static unsafe void vkCmdCopyBuffer(IntPtr commandBuffer, UInt64 srcBuffer, UInt64 dstBuffer, UInt32 regionCount, Magnesium.MgBufferCopy* pRegions);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe void vkCmdCopyImage(IntPtr commandBuffer, UInt64 srcImage, VkImageLayout srcImageLayout, UInt64 dstImage, VkImageLayout dstImageLayout, UInt32 regionCount, VkImageCopy* pRegions);
+		internal extern static unsafe void vkCmdCopyImage(IntPtr commandBuffer, UInt64 srcImage, VkImageLayout srcImageLayout, UInt64 dstImage, VkImageLayout dstImageLayout, UInt32 regionCount, Magnesium.MgImageCopy* pRegions);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static void vkCmdBlitImage(IntPtr commandBuffer, UInt64 srcImage, VkImageLayout srcImageLayout, UInt64 dstImage, VkImageLayout dstImageLayout, UInt32 regionCount, [In, Out] VkImageBlit[] pRegions, VkFilter filter);
+		internal extern static void vkCmdBlitImage(IntPtr commandBuffer, UInt64 srcImage, MgImageLayout srcImageLayout, UInt64 dstImage, MgImageLayout dstImageLayout, UInt32 regionCount, [In] MgImageBlit[] pRegions, VkFilter filter);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe void vkCmdCopyBufferToImage(IntPtr commandBuffer, UInt64 srcBuffer, UInt64 dstImage, VkImageLayout dstImageLayout, UInt32 regionCount, VkBufferImageCopy* pRegions);
+		internal extern static unsafe void vkCmdCopyBufferToImage(IntPtr commandBuffer, UInt64 srcBuffer, UInt64 dstImage, MgImageLayout dstImageLayout, UInt32 regionCount, MgBufferImageCopy* pRegions);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe void vkCmdCopyImageToBuffer(IntPtr commandBuffer, UInt64 srcImage, VkImageLayout srcImageLayout, UInt64 dstBuffer, UInt32 regionCount, VkBufferImageCopy* pRegions);
+		internal extern static unsafe void vkCmdCopyImageToBuffer(IntPtr commandBuffer, UInt64 srcImage, MgImageLayout srcImageLayout, UInt64 dstBuffer, UInt32 regionCount, MgBufferImageCopy* pRegions);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static void vkCmdUpdateBuffer(IntPtr commandBuffer, UInt64 dstBuffer, UInt64 dstOffset, UInt64 dataSize, IntPtr[] pData);
+		internal extern static void vkCmdUpdateBuffer(IntPtr commandBuffer, UInt64 dstBuffer, UInt64 dstOffset, UInt64 dataSize, IntPtr pData);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkCmdFillBuffer(IntPtr commandBuffer, UInt64 dstBuffer, UInt64 dstOffset, UInt64 size, UInt32 data);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static void vkCmdClearColorImage(IntPtr commandBuffer, UInt64 image, VkImageLayout imageLayout, [In, Out] VkClearColorValue pColor, UInt32 rangeCount, VkImageSubresourceRange[] pRanges);
+		internal extern static void vkCmdClearColorImage(IntPtr commandBuffer, UInt64 image, MgImageLayout imageLayout, [In] MgClearColorValue pColor, UInt32 rangeCount, [In] Magnesium.MgImageSubresourceRange[] pRanges);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe void vkCmdClearDepthStencilImage(IntPtr commandBuffer, UInt64 image, VkImageLayout imageLayout, VkClearDepthStencilValue pDepthStencil, UInt32 rangeCount, VkImageSubresourceRange* pRanges);
+		internal extern static unsafe void vkCmdClearDepthStencilImage(IntPtr commandBuffer, UInt64 image, MgImageLayout imageLayout, [In] MgClearDepthStencilValue pDepthStencil, UInt32 rangeCount, [In] Magnesium.MgImageSubresourceRange[] pRanges);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static void vkCmdClearAttachments(IntPtr commandBuffer, UInt32 attachmentCount, [In, Out] VkClearAttachment[] pAttachments, UInt32 rectCount, VkClearRect[] pRects);
+		internal extern static unsafe void vkCmdClearAttachments(IntPtr commandBuffer, UInt32 attachmentCount, Magnesium.MgClearAttachment* pAttachments, UInt32 rectCount, Magnesium.MgClearRect* pRects);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe void vkCmdResolveImage(IntPtr commandBuffer, UInt64 srcImage, VkImageLayout srcImageLayout, UInt64 dstImage, VkImageLayout dstImageLayout, UInt32 regionCount, VkImageResolve* pRegions);
+		internal extern static unsafe void vkCmdResolveImage(IntPtr commandBuffer, UInt64 srcImage, MgImageLayout srcImageLayout, UInt64 dstImage, MgImageLayout dstImageLayout, UInt32 regionCount, MgImageResolve* pRegions);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkCmdSetEvent(IntPtr commandBuffer, UInt64 @event, VkPipelineStageFlags stageMask);
@@ -404,7 +404,7 @@ namespace Magnesium.Vulkan
 		internal extern static void vkCmdCopyQueryPoolResults(IntPtr commandBuffer, UInt64 queryPool, UInt32 firstQuery, UInt32 queryCount, UInt64 dstBuffer, UInt64 dstOffset, UInt64 stride, VkQueryResultFlags flags);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static void vkCmdPushConstants(IntPtr commandBuffer, UInt64 layout, VkShaderStageFlags stageFlags, UInt32 offset, UInt32 size, IntPtr[] pValues);
+		internal extern static void vkCmdPushConstants(IntPtr commandBuffer, UInt64 layout, VkShaderStageFlags stageFlags, UInt32 offset, UInt32 size, IntPtr pValues);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkCmdBeginRenderPass(IntPtr commandBuffer, [In, Out] VkRenderPassBeginInfo pRenderPassBegin, VkSubpassContents contents);

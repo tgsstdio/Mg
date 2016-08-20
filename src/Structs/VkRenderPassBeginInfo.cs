@@ -13,6 +13,6 @@ namespace Magnesium.Vulkan
 		public UInt64 framebuffer { get; set; }
 		public VkRect2D renderArea { get; set; }
 		public UInt32 clearValueCount { get; set; }
-		public VkClearValue pClearValues { get; set; }
+		public IntPtr pClearValues { get; set; }
 	}
 }
