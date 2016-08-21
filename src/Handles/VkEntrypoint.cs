@@ -19,10 +19,10 @@ namespace Magnesium.Vulkan
 				};
 
 				ici.enabledLayerCount = createInfo.EnabledLayerNames != null ? (uint)createInfo.EnabledExtensionNames.Length : 0;
-				ici.ppEnabledLayerNames = CopyStrings(allocatedItems, createInfo.EnabledLayerNames);
+				ici.ppEnabledLayerNames = CopyStringArrays(allocatedItems, createInfo.EnabledLayerNames);
 
 				ici.enabledExtensionCount = createInfo.EnabledExtensionNames != null ? (uint)createInfo.EnabledExtensionNames.Length : 0;
-				ici.ppEnabledExtensionNames  = CopyStrings(allocatedItems, createInfo.EnabledExtensionNames);
+				ici.ppEnabledExtensionNames  = CopyStringArrays(allocatedItems, createInfo.EnabledExtensionNames);
 
 				if (createInfo.ApplicationInfo != null)
 				{
@@ -32,8 +32,8 @@ namespace Magnesium.Vulkan
 					acInfo.apiVersion = createInfo.ApplicationInfo.ApiVersion;
 					acInfo.applicationVersion = createInfo.ApplicationInfo.ApplicationVersion;
 					acInfo.engineVersion = createInfo.ApplicationInfo.EngineVersion;
-					acInfo.pApplicationName = CopyString(allocatedItems, createInfo.ApplicationInfo.ApplicationName);
-					acInfo.pEngineName = CopyString(allocatedItems, createInfo.ApplicationInfo.EngineName);
+					acInfo.pApplicationName = CopySingleString(allocatedItems, createInfo.ApplicationInfo.ApplicationName);
+					acInfo.pEngineName = CopySingleString(allocatedItems, createInfo.ApplicationInfo.EngineName);
 
 					var acInfoSize = Marshal.SizeOf(acInfo);
 					var destPtr = Marshal.AllocHGlobal(acInfoSize);
@@ -66,7 +66,7 @@ namespace Magnesium.Vulkan
 			}
 		}
 
-		static IntPtr CopyString(List<IntPtr> allocatedItems, string name)
+		static IntPtr CopySingleString(List<IntPtr> allocatedItems, string name)
 		{
 			if (!string.IsNullOrWhiteSpace(name))
 			{
@@ -80,7 +80,7 @@ namespace Magnesium.Vulkan
 			}
 		}
 
-		static IntPtr CopyStrings(List<IntPtr> allocatedItems, string[] array)
+		static IntPtr CopyStringArrays(List<IntPtr> allocatedItems, string[] array)
 		{
 			var POINTER_SIZE = Marshal.SizeOf(typeof(IntPtr));
 

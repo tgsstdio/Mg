@@ -1,4 +1,3 @@
-using Magnesium;
 using System;
 using System.Diagnostics;
 
@@ -6,7 +5,7 @@ namespace Magnesium.Vulkan
 {
 	public class VkQueryPool : IMgQueryPool
 	{
-		internal UInt64 Handle { get; private set;}
+		internal UInt64 Handle { get; private set; }
 		internal VkQueryPool(UInt64 handle)
 		{
 			Handle = handle;
@@ -18,9 +17,9 @@ namespace Magnesium.Vulkan
 			if (mIsDisposed)
 				return;
 
-			var bDevice = device as VkDevice;
+			var bDevice = (VkDevice) device;
 			Debug.Assert(bDevice != null);
-			var bAllocator = allocator as MgVkAllocationCallbacks;
+			var bAllocator = (MgVkAllocationCallbacks) allocator;
 
 			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 

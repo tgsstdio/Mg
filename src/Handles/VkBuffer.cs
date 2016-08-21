@@ -6,7 +6,7 @@ namespace Magnesium.Vulkan
 {
 	public class VkBuffer : IMgBuffer
 	{
-		internal UInt64 Handle = 0L;
+		internal UInt64 Handle { get; private set; }
 		internal VkBuffer(UInt64 handle)
 		{
 			Handle = handle;
@@ -26,6 +26,7 @@ namespace Magnesium.Vulkan
 
 			Interops.vkDestroyBuffer(bDevice.Handle, this.Handle, allocatorPtr);
 
+			this.Handle = 0UL;
 			mIsDisposed = true;
 		}
 
@@ -39,7 +40,7 @@ namespace Magnesium.Vulkan
 			Debug.Assert(bDevice != null); // RIGHT TYPE
 			Debug.Assert(bMemory != null); // RIGHT TYPE
 
-			return (Result)Interops.vkBindBufferMemory(bDevice.Handle, this.Handle, bMemory.Handle, memoryOffset); 
+			return Interops.vkBindBufferMemory(bDevice.Handle, this.Handle, bMemory.Handle, memoryOffset); 
 		}
 
 	}

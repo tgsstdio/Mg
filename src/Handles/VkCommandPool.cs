@@ -1,32 +1,43 @@
 using Magnesium;
 using System;
+using System.Diagnostics;
+
 namespace Magnesium.Vulkan
 {
 	public class VkCommandPool : IMgCommandPool
 	{
-		internal UInt64 Handle = 0L;
+		internal UInt64 Handle { get; private set; }
 		internal VkCommandPool(UInt64 handle)
 		{
 			Handle = handle;
 		}
 
+		private bool mIsDisposed = false;
 		public void DestroyCommandPool(IMgDevice device, IMgAllocationCallbacks allocator)
 		{
+			if (mIsDisposed)
+				return;
+
 			var bDevice = device as VkDevice;
+			Debug.Assert(bDevice != null);
 			var bAllocator = allocator as MgVkAllocationCallbacks;
 
-			IntPtr devicePtr = bDevice != null ? bDevice.Handle : IntPtr.Zero;
 			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
-			Interops.vkDestroyCommandPool(devicePtr, this.Handle, allocatorPtr);			
+			Interops.vkDestroyCommandPool(bDevice.Handle, this.Handle, allocatorPtr);
+
+			this.Handle = 0UL;
+			mIsDisposed = true;
 		}
 
 		public Result ResetCommandPool(IMgDevice device, MgCommandPoolResetFlagBits flags)
 		{
-			var bDevice = device as VkDevice;
+			Debug.Assert(!mIsDisposed);
 
-			IntPtr devicePtr = bDevice != null ? bDevice.Handle : IntPtr.Zero;
-			return (Result) Interops.vkResetCommandPool(devicePtr, this.Handle, (VkCommandPoolResetFlags)flags);
+			var bDevice = device as VkDevice;
+			Debug.Assert(bDevice != null);
+
+			return Interops.vkResetCommandPool(bDevice.Handle, this.Handle, (VkCommandPoolResetFlags)flags);
 		}
 
 	}

@@ -16,6 +16,6 @@ namespace Magnesium.Vulkan
 		public VkSurfaceTransformFlagsKhr transform { get; set; }
 		public float globalAlpha { get; set; }
 		public VkDisplayPlaneAlphaFlagsKhr alphaMode { get; set; }
-		public VkExtent2D imageExtent { get; set; }
+		public MgExtent2D imageExtent { get; set; }
 	}
 }

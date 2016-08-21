@@ -8,13 +8,13 @@ namespace Magnesium.Vulkan
 	internal struct VkDisplayPlaneCapabilitiesKHR
 	{
 		public VkDisplayPlaneAlphaFlagsKhr supportedAlpha { get; set; }
-		public VkOffset2D minSrcPosition { get; set; }
-		public VkOffset2D maxSrcPosition { get; set; }
-		public VkExtent2D minSrcExtent { get; set; }
-		public VkExtent2D maxSrcExtent { get; set; }
-		public VkOffset2D minDstPosition { get; set; }
-		public VkOffset2D maxDstPosition { get; set; }
-		public VkExtent2D minDstExtent { get; set; }
-		public VkExtent2D maxDstExtent { get; set; }
+		public MgOffset2D minSrcPosition { get; set; }
+		public MgOffset2D maxSrcPosition { get; set; }
+		public MgExtent2D minSrcExtent { get; set; }
+		public MgExtent2D maxSrcExtent { get; set; }
+		public MgOffset2D minDstPosition { get; set; }
+		public MgOffset2D maxDstPosition { get; set; }
+		public MgExtent2D minDstExtent { get; set; }
+		public MgExtent2D maxDstExtent { get; set; }
 	}
 }

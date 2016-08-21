@@ -7,7 +7,7 @@ namespace Magnesium.Vulkan
 {
 	public class VkCommandBuffer : IMgCommandBuffer
 	{
-		internal IntPtr Handle = IntPtr.Zero;
+		internal IntPtr Handle { get; private set; }
 		internal VkCommandBuffer(IntPtr handle)
 		{
 			Handle = handle;
@@ -776,19 +776,7 @@ namespace Magnesium.Vulkan
 					pNext = IntPtr.Zero,
 					renderPass = bRenderPass.Handle,
 					framebuffer = bFrameBuffer.Handle,
-					renderArea = new VkRect2D
-					{
-						extent = new VkExtent2D
-						{
-							width = pRenderPassBegin.RenderArea.Extent.Width,
-							height = pRenderPassBegin.RenderArea.Extent.Height,
-						},
-						offset = new VkOffset2D
-						{
-							x = pRenderPassBegin.RenderArea.Offset.X,
-							y = pRenderPassBegin.RenderArea.Offset.Y,
-						}
-					},
+					renderArea = pRenderPassBegin.RenderArea,
 					clearValueCount = clearValueCount,
 					pClearValues = clearValues,
 				};

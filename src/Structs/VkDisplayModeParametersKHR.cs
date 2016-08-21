@@ -7,7 +7,7 @@ namespace Magnesium.Vulkan
 	[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Ansi)]
 	internal struct VkDisplayModeParametersKHR
 	{
-		public VkExtent2D visibleRegion { get; set; }
+		public MgExtent2D visibleRegion { get; set; }
 		public UInt32 refreshRate { get; set; }
 	}
 }

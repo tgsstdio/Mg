@@ -11,7 +11,7 @@ namespace Magnesium.Vulkan
 		public UInt32 bufferRowLength { get; set; }
 		public UInt32 bufferImageHeight { get; set; }
 		public VkImageSubresourceLayers imageSubresource { get; set; }
-		public VkOffset3D imageOffset { get; set; }
-		public VkExtent3D imageExtent { get; set; }
+		public MgOffset3D imageOffset { get; set; }
+		public MgExtent3D imageExtent { get; set; }
 	}
 }

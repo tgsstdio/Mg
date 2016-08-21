@@ -5,7 +5,7 @@ namespace Magnesium.Vulkan
 {
 	public class VkEvent : IMgEvent
 	{
-		internal UInt64 Handle = 0L;
+		internal UInt64 Handle { get; private set;}
 		internal VkEvent(UInt64 handle)
 		{
 			Handle = handle;
@@ -18,7 +18,7 @@ namespace Magnesium.Vulkan
 			var bDevice = device as VkDevice;
 			Debug.Assert(bDevice != null);
 
-			return (Magnesium.Result)Interops.vkGetEventStatus(bDevice.Handle, this.Handle);
+			return Interops.vkGetEventStatus(bDevice.Handle, this.Handle);
 		}
 
 		public Result SetEvent(IMgDevice device)
@@ -28,7 +28,7 @@ namespace Magnesium.Vulkan
 			var bDevice = device as VkDevice;
 			Debug.Assert(bDevice != null);
 
-			return (Magnesium.Result)Interops.vkSetEvent(bDevice.Handle, this.Handle);
+			return Interops.vkSetEvent(bDevice.Handle, this.Handle);
 		}
 
 		public Result ResetEvent(IMgDevice device)
@@ -55,6 +55,7 @@ namespace Magnesium.Vulkan
 
 			Interops.vkDestroyEvent(bDevice.Handle, this.Handle, allocatorPtr);
 
+			this.Handle = 0UL;
 			mIsDisposed = true;
 		}
 

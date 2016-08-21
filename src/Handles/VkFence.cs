@@ -1,5 +1,7 @@
 using Magnesium;
 using System;
+using System.Diagnostics;
+
 namespace Magnesium.Vulkan
 {
 	public class VkFence : IMgFence
@@ -10,8 +12,22 @@ namespace Magnesium.Vulkan
 			Handle = handle;
 		}
 
+		private bool mIsDisposed = false;
 		public void DestroyFence(IMgDevice device, IMgAllocationCallbacks allocator)
 		{
+			if (mIsDisposed)
+				return;
+
+			var bDevice = device as VkDevice;
+			Debug.Assert(bDevice != null);
+
+			var bAllocator = allocator as MgVkAllocationCallbacks;
+			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+
+			Interops.vkDestroyFence(bDevice.Handle, this.Handle, allocatorPtr);
+
+			this.Handle = 0UL;
+			mIsDisposed = true;
 		}
 
 	}

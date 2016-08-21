@@ -1,24 +1,33 @@
 using Magnesium;
 using System;
+using System.Diagnostics;
+
 namespace Magnesium.Vulkan
 {
 	public class VkRenderPass : IMgRenderPass
 	{
-		internal UInt64 Handle = 0L;
+		internal UInt64 Handle { get; private set; } 
 		internal VkRenderPass(UInt64 handle)
 		{
 			Handle = handle;
 		}
 
+		private bool mIsDisposed = false;
 		public void DestroyRenderPass(IMgDevice device, IMgAllocationCallbacks allocator)
 		{
-			var bDevice = device as VkDevice;
-			var bAllocator = allocator as MgVkAllocationCallbacks;
+			if (mIsDisposed)
+				return;
 
-			IntPtr devicePtr = bDevice != null ? bDevice.Handle : IntPtr.Zero;
+			var bDevice = (VkDevice)device;
+			Debug.Assert(bDevice != null);
+
+			var bAllocator = (MgVkAllocationCallbacks)allocator;
 			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
-			Interops.vkDestroyRenderPass(devicePtr, this.Handle, allocatorPtr);
+			Interops.vkDestroyRenderPass(bDevice.Handle, this.Handle, allocatorPtr);
+
+			this.Handle = 0UL;
+			mIsDisposed = true;
 		}
 
 	}

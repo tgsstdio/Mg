@@ -1,10 +1,12 @@
 using Magnesium;
 using System;
+using System.Diagnostics;
+
 namespace Magnesium.Vulkan
 {
 	public class VkPhysicalDevice : IMgPhysicalDevice
 	{
-		internal IntPtr Handle = IntPtr.Zero;
+		internal IntPtr Handle { get; private set;}
 		internal VkPhysicalDevice(IntPtr handle)
 		{
 			Handle = handle;
@@ -110,5 +112,36 @@ namespace Magnesium.Vulkan
 			throw new NotImplementedException();
 		}
 
+		public Result CreateDisplayModeKHR(IMgDisplayKHR display, MgDisplayModeCreateInfoKHR pCreateInfo, IMgAllocationCallbacks allocator, out IMgDisplayModeKHR pMode)
+		{
+			if (pCreateInfo != null)
+			{
+				throw new ArgumentNullException(nameof(pCreateInfo));
+			}
+
+			var bDisplay = (VkDisplayModeKHR)display;
+			Debug.Assert(bDisplay != null);
+
+			var bAllocator = (MgVkAllocationCallbacks)allocator;
+			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+
+			VkDisplayModeCreateInfoKHR createInfo = new VkDisplayModeCreateInfoKHR
+			{
+				sType = VkStructureType.StructureTypeDisplayModeCreateInfoKhr,
+				pNext = IntPtr.Zero,
+				flags = pCreateInfo.flags,
+				parameters = new VkDisplayModeParametersKHR
+				{
+					refreshRate = pCreateInfo.parameters.RefreshRate,
+					visibleRegion = pCreateInfo.parameters.VisibleRegion,
+				}
+			};
+
+			ulong modeHandle = 0;
+			var result = Interops.vkCreateDisplayModeKHR(this.Handle, bDisplay.Handle, createInfo, allocatorPtr, ref modeHandle);
+			pMode = new VkDisplayModeKHR(modeHandle);
+
+			return result;
+		}
 	}
 }

@@ -27,6 +27,7 @@ namespace Magnesium.Vulkan
 
 			Interops.vkDestroyFramebuffer(bDevice.Handle, this.Handle, allocatorPtr);
 
+			this.Handle = 0UL;
 			mIsDisposed = true;
 		}
 

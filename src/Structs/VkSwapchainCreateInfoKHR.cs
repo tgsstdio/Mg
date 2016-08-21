@@ -14,7 +14,7 @@ namespace Magnesium.Vulkan
 		public UInt32 minImageCount { get; set; }
 		public VkFormat imageFormat { get; set; }
 		public VkColorSpaceKhr imageColorSpace { get; set; }
-		public VkExtent2D imageExtent { get; set; }
+		public MgExtent2D imageExtent { get; set; }
 		public UInt32 imageArrayLayers { get; set; }
 		public VkImageUsageFlags imageUsage { get; set; }
 		public VkSharingMode imageSharingMode { get; set; }

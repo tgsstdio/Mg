@@ -1,4 +1,3 @@
-using Magnesium;
 using System;
 using System.Diagnostics;
 
@@ -19,14 +18,14 @@ namespace Magnesium.Vulkan
 				return;
 			
 			var bDevice = device as VkDevice;
-			var bAllocator = allocator as MgVkAllocationCallbacks;
-
 			Debug.Assert(bDevice != null);
 
+			var bAllocator = allocator as MgVkAllocationCallbacks;
 			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
 			Interops.vkDestroyDescriptorSetLayout (bDevice.Handle, this.Handle, allocatorPtr);
 
+			this.Handle = 0UL;
 			mIsDisposed = true;
 		}
 

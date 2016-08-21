@@ -8,9 +8,9 @@ namespace Magnesium.Vulkan
 	internal struct VkImageCopy
 	{
 		public VkImageSubresourceLayers srcSubresource { get; set; }
-		public VkOffset3D srcOffset { get; set; }
+		public MgOffset3D srcOffset { get; set; }
 		public VkImageSubresourceLayers dstSubresource { get; set; }
-		public VkOffset3D dstOffset { get; set; }
-		public VkExtent3D extent { get; set; }
+		public MgOffset3D dstOffset { get; set; }
+		public MgExtent3D extent { get; set; }
 	}
 }

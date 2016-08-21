@@ -1,32 +1,42 @@
-using Magnesium;
 using System;
+using System.Diagnostics;
+
 namespace Magnesium.Vulkan
 {
 	public class VkDescriptorPool : IMgDescriptorPool
 	{
-		internal UInt64 Handle = 0L;
+		internal UInt64 Handle { get; private set;}
 		internal VkDescriptorPool(UInt64 handle)
 		{
 			Handle = handle;
 		}
 
+		private bool mIsDisposed = false;
 		public void DestroyDescriptorPool(IMgDevice device, IMgAllocationCallbacks allocator)
 		{
+			if (mIsDisposed)
+				return;
+
 			var bDevice = device as VkDevice;
+			Debug.Assert(bDevice != null);
 			var bAllocator = allocator as MgVkAllocationCallbacks;
 
-			IntPtr devicePtr = bDevice != null ? bDevice.Handle : IntPtr.Zero;
 			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
-			Interops.vkDestroyDescriptorPool(devicePtr, this.Handle, allocatorPtr);
+			Interops.vkDestroyDescriptorPool(bDevice.Handle, this.Handle, allocatorPtr);
+
+			this.Handle = 0UL;
+			mIsDisposed = true;
 		}
 
 		public Result ResetDescriptorPool(IMgDevice device, UInt32 flags)
 		{
-			var bDevice = device as VkDevice;
-			IntPtr devicePtr = bDevice != null ? bDevice.Handle : IntPtr.Zero;
+			Debug.Assert(!mIsDisposed);
 
-			return (Result)Interops.vkResetDescriptorPool(devicePtr, this.Handle, (UInt32) flags);
+			var bDevice = device as VkDevice;
+			Debug.Assert(bDevice != null);
+
+			return Interops.vkResetDescriptorPool(bDevice.Handle, this.Handle, flags);
 		}
 
 	}

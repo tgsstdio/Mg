@@ -8,8 +8,8 @@ namespace Magnesium.Vulkan
 	internal struct VkImageBlit
 	{
 		public VkImageSubresourceLayers srcSubresource { get; set; }
-		public VkOffset3D srcOffsets { get; set; }
+		public MgOffset3D srcOffsets { get; set; }
 		public VkImageSubresourceLayers dstSubresource { get; set; }
-		public VkOffset3D dstOffsets { get; set; }
+		public MgOffset3D dstOffsets { get; set; }
 	}
 }

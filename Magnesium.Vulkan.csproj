@@ -120,11 +120,6 @@
     <Compile Include="src\Structs\VkBufferImageCopy.cs" />
     <Compile Include="src\Structs\VkBufferMemoryBarrier.cs" />
     <Compile Include="src\Structs\VkBufferViewCreateInfo.cs" />
-    <Compile Include="src\Structs\VkClearAttachment.cs" />
-    <Compile Include="src\Structs\VkClearColorValue.cs" />
-    <Compile Include="src\Structs\VkClearDepthStencilValue.cs" />
-    <Compile Include="src\Structs\VkClearRect.cs" />
-    <Compile Include="src\Structs\VkClearValue.cs" />
     <Compile Include="src\Structs\VkCommandBufferAllocateInfo.cs" />
     <Compile Include="src\Structs\VkCommandBufferBeginInfo.cs" />
     <Compile Include="src\Structs\VkCommandBufferInheritanceInfo.cs" />
@@ -161,8 +156,6 @@
     <Compile Include="src\Structs\VkDrawIndirectCommand.cs" />
     <Compile Include="src\Structs\VkEventCreateInfo.cs" />
     <Compile Include="src\Structs\VkExtensionProperties.cs" />
-    <Compile Include="src\Structs\VkExtent2D.cs" />
-    <Compile Include="src\Structs\VkExtent3D.cs" />
     <Compile Include="src\Structs\VkFenceCreateInfo.cs" />
     <Compile Include="src\Structs\VkFormatProperties.cs" />
     <Compile Include="src\Structs\VkFramebufferCreateInfo.cs" />
@@ -186,8 +179,6 @@
     <Compile Include="src\Structs\VkMemoryRequirements.cs" />
     <Compile Include="src\Structs\VkMemoryType.cs" />
     <Compile Include="src\Structs\VkMirSurfaceCreateInfoKHR.cs" />
-    <Compile Include="src\Structs\VkOffset2D.cs" />
-    <Compile Include="src\Structs\VkOffset3D.cs" />
     <Compile Include="src\Structs\VkPhysicalDeviceFeatures.cs" />
     <Compile Include="src\Structs\VkPhysicalDeviceLimits.cs" />
     <Compile Include="src\Structs\VkPhysicalDeviceMemoryProperties.cs" />
@@ -211,8 +202,6 @@
     <Compile Include="src\Structs\VkPushConstantRange.cs" />
     <Compile Include="src\Structs\VkQueryPoolCreateInfo.cs" />
     <Compile Include="src\Structs\VkQueueFamilyProperties.cs" />
-    <Compile Include="src\Structs\VkRect2D.cs" />
-    <Compile Include="src\Structs\VkRect3D.cs" />
     <Compile Include="src\Structs\VkRenderPassBeginInfo.cs" />
     <Compile Include="src\Structs\VkRenderPassCreateInfo.cs" />
     <Compile Include="src\Structs\VkSamplerCreateInfo.cs" />
@@ -237,7 +226,6 @@
     <Compile Include="src\Structs\VkSwapchainCreateInfoKHR.cs" />
     <Compile Include="src\Structs\VkVertexInputAttributeDescription.cs" />
     <Compile Include="src\Structs\VkVertexInputBindingDescription.cs" />
-    <Compile Include="src\Structs\VkViewport.cs" />
     <Compile Include="src\Structs\VkWaylandSurfaceCreateInfoKHR.cs" />
     <Compile Include="src\Structs\VkWin32SurfaceCreateInfoKHR.cs" />
     <Compile Include="src\Structs\VkWriteDescriptorSet.cs" />
@@ -273,6 +261,8 @@
     <Compile Include="src\Handles\VkSwapchainKHR.cs" />
     <Compile Include="src\MgVkAllocationCallbacks.cs" />
     <Compile Include="src\VkBool32.cs" />
+    <Compile Include="src\Handles\VkDisplayModeKHR.cs" />
+    <Compile Include="src\Handles\VkDebugReportCallbackEXT.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>

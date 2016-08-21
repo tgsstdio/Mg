@@ -8,8 +8,8 @@ namespace Magnesium.Vulkan
 	internal struct VkSparseImageMemoryBind
 	{
 		public VkImageSubresource subresource { get; set; }
-		public VkOffset3D offset { get; set; }
-		public VkExtent3D extent { get; set; }
+		public MgOffset3D offset { get; set; }
+		public MgExtent3D extent { get; set; }
 		public UInt64 memory { get; set; }
 		public UInt64 memoryOffset { get; set; }
 		public VkSparseMemoryBindFlags flags { get; set; }

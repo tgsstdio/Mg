@@ -6,7 +6,7 @@ namespace Magnesium.Vulkan
 {
 	public class VkImage : IMgImage
 	{
-		internal UInt64 Handle = 0L;
+		internal UInt64 Handle { get; private set;}
 		internal VkImage(UInt64 handle)
 		{
 			Handle = handle;
@@ -17,12 +17,12 @@ namespace Magnesium.Vulkan
 			Debug.Assert(!mIsDisposed);
 
 			var bDevice = device as VkDevice;
-			var bMemory = memory as VkDeviceMemory;
-
 			Debug.Assert(bDevice != null);
+
+			var bMemory = memory as VkDeviceMemory;
 			Debug.Assert(bMemory != null);
 
-			return (Magnesium.Result)Interops.vkBindImageMemory(bDevice.Handle, this.Handle, bMemory.Handle, memoryOffset);
+			return Interops.vkBindImageMemory(bDevice.Handle, this.Handle, bMemory.Handle, memoryOffset);
 		}
 
 		private bool mIsDisposed = false;
@@ -31,6 +31,15 @@ namespace Magnesium.Vulkan
 			if (mIsDisposed)
 				return;
 
+			var bDevice = device as VkDevice;
+			Debug.Assert(bDevice != null);
+
+			var bAllocator = allocator as MgVkAllocationCallbacks;
+			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+
+			Interops.vkDestroyImage(bDevice.Handle, this.Handle, allocatorPtr);
+
+			this.Handle = 0UL;
 			mIsDisposed = true;
 			
 		}

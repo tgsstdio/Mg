@@ -10,6 +10,6 @@ namespace Magnesium.Vulkan
 		public VkQueueFlags queueFlags { get; set; }
 		public UInt32 queueCount { get; set; }
 		public UInt32 timestampValidBits { get; set; }
-		public VkExtent3D minImageTransferGranularity { get; set; }
+		public MgExtent3D minImageTransferGranularity { get; set; }
 	}
 }

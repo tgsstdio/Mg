@@ -19,14 +19,14 @@ namespace Magnesium.Vulkan
 				return;
 
 			var bDevice = device as VkDevice;
-			var bAllocator = allocator as MgVkAllocationCallbacks;
-
 			Debug.Assert(bDevice != null);
 
+			var bAllocator = allocator as MgVkAllocationCallbacks;
 			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
 			Interops.vkFreeMemory(bDevice.Handle, this.Handle, allocatorPtr);
 
+			this.Handle = 0UL;
 			mIsDisposed = true;
 		}
 
@@ -38,7 +38,7 @@ namespace Magnesium.Vulkan
 			Debug.Assert(bDevice != null);
 
 			IntPtr dest = IntPtr.Zero;
-			var result = Interops.vkMapMemory(bDevice.Handle, this.Handle, offset, size, (UInt32)flags, ref dest);
+			var result = Interops.vkMapMemory(bDevice.Handle, this.Handle, offset, size, flags, ref dest);
 			ppData = dest;
 			return result;
 		}

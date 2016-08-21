@@ -12,7 +12,7 @@ namespace Magnesium.Vulkan
 		public VkImageCreateFlags flags { get; set; }
 		public VkImageType imageType { get; set; }
 		public VkFormat format { get; set; }
-		public VkExtent3D extent { get; set; }
+		public MgExtent3D extent { get; set; }
 		public UInt32 mipLevels { get; set; }
 		public UInt32 arrayLayers { get; set; }
 		public VkSampleCountFlags samples { get; set; }

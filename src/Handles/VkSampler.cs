@@ -18,14 +18,15 @@ namespace Magnesium.Vulkan
 			if (mIsDisposed)
 				return;
 
-			var bDevice = device as VkDevice;
+			var bDevice = (VkDevice)device;
 			Debug.Assert(bDevice != null);
-			var bAllocator = allocator as MgVkAllocationCallbacks;
 
+			var bAllocator = (MgVkAllocationCallbacks)allocator;
 			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
 			Interops.vkDestroySampler(bDevice.Handle, this.Handle, allocatorPtr);
 
+			this.Handle = 0UL;
 			mIsDisposed = true;
 		}
 

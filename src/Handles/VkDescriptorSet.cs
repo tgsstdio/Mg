@@ -1,4 +1,3 @@
-using Magnesium;
 using System;
 namespace Magnesium.Vulkan
 {
