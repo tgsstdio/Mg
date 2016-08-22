@@ -227,9 +227,9 @@
     <Compile Include="Structs\VkWriteDescriptorSet.cs" />
     <Compile Include="Structs\VkXcbSurfaceCreateInfoKHR.cs" />
     <Compile Include="Structs\VkXlibSurfaceCreateInfoKHR.cs" />
-    <Compile Include="Interops.cs" />
-    <Compile Include="MgVkAllocationCallbacks.cs" />
-    <Compile Include="VkBool32.cs" />
+    <Compile Include="Core\Interops.cs" />
+    <Compile Include="Core\MgVkAllocationCallbacks.cs" />
+    <Compile Include="Core\VkBool32.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Core\" />
