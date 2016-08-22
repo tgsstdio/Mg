@@ -17,6 +17,8 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+*.userprefs
+
 # =========================
 # Operating System Files
 # =========================
@@ -54,3 +56,6 @@ Tools/*/obj/*
 Tools/*/*/bin/*
 Tools/*/*/obj/*
 Tools/*/packages/*
+
+Magnesium.Vulkan/bin/*
+Magnesium.Vulkan/obj/*
