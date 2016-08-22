@@ -1,4 +1,3 @@
-using Magnesium;
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -19,7 +18,7 @@ namespace Magnesium.Vulkan
 		{
 			Debug.Assert(!mIsDisposed);
 
-			return Interops.vkGetDeviceProcAddr(this.Handle, pName);
+			return Interops.vkGetDeviceProcAddr(Handle, pName);
 		}
 
 		private bool mIsDisposed = false;
@@ -29,20 +28,20 @@ namespace Magnesium.Vulkan
 				return;
 
 			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
-			Interops.vkDestroyDevice(this.Handle, allocatorPtr);
+			Interops.vkDestroyDevice(Handle, allocatorPtr);
 
-			this.Handle = IntPtr.Zero;
+			Handle = IntPtr.Zero;
 			mIsDisposed = true;
 		}
 
-		public void GetDeviceQueue(UInt32 queueFamilyIndex, UInt32 queueIndex, out IMgQueue pQueue)
+		public void GetDeviceQueue(uint queueFamilyIndex, uint queueIndex, out IMgQueue pQueue)
 		{
 			Debug.Assert(!mIsDisposed);
 
-			IntPtr queueHandle = IntPtr.Zero;
-			Interops.vkGetDeviceQueue(this.Handle, queueFamilyIndex, queueIndex, ref queueHandle);
+			var queueHandle = IntPtr.Zero;
+			Interops.vkGetDeviceQueue(Handle, queueFamilyIndex, queueIndex, ref queueHandle);
 			pQueue = new VkQueue(queueHandle);
 		}
 
@@ -50,7 +49,7 @@ namespace Magnesium.Vulkan
 		{
 			Debug.Assert(!mIsDisposed);
 
-			return Interops.vkDeviceWaitIdle(this.Handle);
+			return Interops.vkDeviceWaitIdle(Handle);
 		}
 
 		public Result AllocateMemory(MgMemoryAllocateInfo pAllocateInfo, IMgAllocationCallbacks allocator, out IMgDeviceMemory pMemory)
@@ -61,7 +60,7 @@ namespace Magnesium.Vulkan
 			Debug.Assert(!mIsDisposed);
 
 			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
 			unsafe
 			{
@@ -75,12 +74,12 @@ namespace Magnesium.Vulkan
 					memoryTypeIndex = pAllocateInfo.MemoryTypeIndex,
 				};
 
-				var memoryHandle = stackalloc UInt64[1];
-				var result = Interops.vkAllocateMemory(this.Handle, allocateInfo, allocatorPtr, memoryHandle);
+				var memoryHandle = stackalloc ulong[1];
+				var result = Interops.vkAllocateMemory(Handle, allocateInfo, allocatorPtr, memoryHandle);
 
 				pMemory = new VkDeviceMemory(memoryHandle[0]);
 				return result;
-		   	}
+			}
 		}
 
 		public Result FlushMappedMemoryRanges(MgMappedMemoryRange[] pMemoryRanges)
@@ -92,7 +91,7 @@ namespace Magnesium.Vulkan
 
 			unsafe
 			{
-				var rangeCount = (UInt32)pMemoryRanges.Length;
+				var rangeCount = (uint)pMemoryRanges.Length;
 
 				var ranges = stackalloc VkMappedMemoryRange[pMemoryRanges.Length];
 
@@ -112,8 +111,8 @@ namespace Magnesium.Vulkan
 					};
 				}		
 
-				return Interops.vkFlushMappedMemoryRanges(this.Handle, rangeCount, ranges);
-		   	}
+				return Interops.vkFlushMappedMemoryRanges(Handle, rangeCount, ranges);
+			}
 		}
 
 		public Result InvalidateMappedMemoryRanges(MgMappedMemoryRange[] pMemoryRanges)
@@ -125,7 +124,7 @@ namespace Magnesium.Vulkan
 
 			unsafe
 			{
-				var rangeCount = (UInt32)pMemoryRanges.Length;
+				var rangeCount = (uint)pMemoryRanges.Length;
 
 				var ranges = stackalloc VkMappedMemoryRange[pMemoryRanges.Length];
 
@@ -145,16 +144,16 @@ namespace Magnesium.Vulkan
 					};
 				}
 
-				return Interops.vkInvalidateMappedMemoryRanges(this.Handle, rangeCount, ranges);
+				return Interops.vkInvalidateMappedMemoryRanges(Handle, rangeCount, ranges);
 			}
 		}
 
-		public void GetDeviceMemoryCommitment(IMgDeviceMemory memory, ref UInt64 pCommittedMemoryInBytes)
+		public void GetDeviceMemoryCommitment(IMgDeviceMemory memory, ref ulong pCommittedMemoryInBytes)
 		{
 			var bDeviceMemory = (VkDeviceMemory)memory;
 			Debug.Assert(bDeviceMemory != null);
 
-			Interops.vkGetDeviceMemoryCommitment(this.Handle, bDeviceMemory.Handle, ref pCommittedMemoryInBytes);
+			Interops.vkGetDeviceMemoryCommitment(Handle, bDeviceMemory.Handle, ref pCommittedMemoryInBytes);
 		}
 
 		public void GetBufferMemoryRequirements(IMgBuffer buffer, out MgMemoryRequirements pMemoryRequirements)
@@ -167,7 +166,7 @@ namespace Magnesium.Vulkan
 			unsafe
 			{
 				var memReqs = stackalloc MgMemoryRequirements[0];
-				Interops.vkGetBufferMemoryRequirements(this.Handle, bBuffer.Handle, memReqs);
+				Interops.vkGetBufferMemoryRequirements(Handle, bBuffer.Handle, memReqs);
 				pMemoryRequirements = memReqs[0];
 			}
 		}
@@ -182,7 +181,7 @@ namespace Magnesium.Vulkan
 			unsafe
 			{
 				var memReqs = stackalloc MgMemoryRequirements[0];
-				Interops.vkGetImageMemoryRequirements(this.Handle, bImage.Handle, memReqs);
+				Interops.vkGetImageMemoryRequirements(Handle, bImage.Handle, memReqs);
 				memoryRequirements = memReqs[0];
 			}
 		}
@@ -194,12 +193,12 @@ namespace Magnesium.Vulkan
 			var bImage = (VkImage)image;
 			Debug.Assert(bImage != null);
 
-			var requirements = new UInt32[1];
+			var requirements = new uint[1];
 			unsafe
 			{
-				fixed (UInt32* count = &requirements[0])
+				fixed (uint* count = &requirements[0])
 				{
-					Interops.vkGetImageSparseMemoryRequirements(this.Handle, bImage.Handle, count, null);
+					Interops.vkGetImageSparseMemoryRequirements(Handle, bImage.Handle, count, null);
 				}
 			}
 
@@ -215,9 +214,9 @@ namespace Magnesium.Vulkan
 					IntPtr pinnedArray = smrHandle.AddrOfPinnedObject();
 					var sparseReqs = (MgSparseImageMemoryRequirements*)pinnedArray.ToPointer();
 
-					fixed (UInt32* count = &requirements[0])
+					fixed (uint* count = &requirements[0])
 					{
-						Interops.vkGetImageSparseMemoryRequirements(this.Handle, bImage.Handle, count, sparseReqs);
+						Interops.vkGetImageSparseMemoryRequirements(Handle, bImage.Handle, count, sparseReqs);
 					}
 				}
 			}
@@ -244,8 +243,8 @@ namespace Magnesium.Vulkan
 				flags = (VkFenceCreateFlags)pCreateInfo.Flags,
 			};
 
-			UInt64 pFence = 0UL;
-			var result = Interops.vkCreateFence(this.Handle, createInfo, allocatorPtr, ref pFence);
+			ulong pFence = 0UL;
+			var result = Interops.vkCreateFence(Handle, createInfo, allocatorPtr, ref pFence);
 			fence = new VkFence(pFence);
 			return result;
 		}
@@ -259,7 +258,7 @@ namespace Magnesium.Vulkan
 
 			var fenceCount = (uint)pFences.Length;
 
-			var fenceHandles = new UInt64[pFences.Length];
+			var fenceHandles = new ulong[pFences.Length];
 			for (var i = 0; i < fenceCount; ++i)
 			{
 				var bFence = (VkFence) pFences[i];
@@ -267,7 +266,7 @@ namespace Magnesium.Vulkan
 				fenceHandles[i] = bFence.Handle;
 			}
 
-			return Interops.vkResetFences(this.Handle, fenceCount, fenceHandles);
+			return Interops.vkResetFences(Handle, fenceCount, fenceHandles);
 		}
 
 		public Result GetFenceStatus(IMgFence fence)
@@ -277,10 +276,10 @@ namespace Magnesium.Vulkan
 			var bFence = (VkFence) fence;
 			Debug.Assert(bFence != null);
 
-			return Interops.vkGetFenceStatus(this.Handle, bFence.Handle);
+			return Interops.vkGetFenceStatus(Handle, bFence.Handle);
 		}
 
-		public Result WaitForFences(IMgFence[] pFences, bool waitAll, UInt64 timeout)
+		public Result WaitForFences(IMgFence[] pFences, bool waitAll, ulong timeout)
 		{
 			if (pFences == null)
 				throw new ArgumentNullException(nameof(pFences));
@@ -289,7 +288,7 @@ namespace Magnesium.Vulkan
 
 			var fenceCount = (uint)pFences.Length;
 
-			var fenceHandles = new UInt64[pFences.Length];
+			var fenceHandles = new ulong[pFences.Length];
 			for (var i = 0; i < fenceCount; ++i)
 			{
 				var bFence = (VkFence)pFences[i];
@@ -297,7 +296,7 @@ namespace Magnesium.Vulkan
 				fenceHandles[i] = bFence.Handle;
 			}
 
-			return Interops.vkWaitForFences(this.Handle, fenceCount, fenceHandles, VkBool32.ConvertTo(waitAll), timeout);
+			return Interops.vkWaitForFences(Handle, fenceCount, fenceHandles, VkBool32.ConvertTo(waitAll), timeout);
 		}
 
 		public Result CreateSemaphore(MgSemaphoreCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgSemaphore pSemaphore)
@@ -317,8 +316,8 @@ namespace Magnesium.Vulkan
 				flags = pCreateInfo.Flags,
 			};
 
-			UInt64 internalHandle = 0UL;
-			var result = Interops.vkCreateSemaphore(this.Handle, createInfo, allocatorPtr, ref internalHandle);
+			ulong internalHandle = 0UL;
+			var result = Interops.vkCreateSemaphore(Handle, createInfo, allocatorPtr, ref internalHandle);
 			pSemaphore = new VkSemaphore(internalHandle);
 
 			return result;
@@ -332,7 +331,7 @@ namespace Magnesium.Vulkan
 			Debug.Assert(!mIsDisposed);
 
 			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
 			var createInfo = new VkEventCreateInfo
 			{
@@ -341,8 +340,8 @@ namespace Magnesium.Vulkan
 				flags = pCreateInfo.Flags,
 			};
 
-			UInt64 eventHandle = 0UL;
-			var result = Interops.vkCreateEvent(this.Handle, createInfo, allocatorPtr, ref eventHandle);
+			ulong eventHandle = 0UL;
+			var result = Interops.vkCreateEvent(Handle, createInfo, allocatorPtr, ref eventHandle);
 			@event = new VkEvent(eventHandle);
 
 			return result;
@@ -356,7 +355,7 @@ namespace Magnesium.Vulkan
 			Debug.Assert(!mIsDisposed);
 
 			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
 			var createInfo = new VkQueryPoolCreateInfo
 			{
@@ -368,21 +367,21 @@ namespace Magnesium.Vulkan
 				pipelineStatistics = (VkQueryPipelineStatisticFlags)pCreateInfo.PipelineStatistics,
 			};
 
-			UInt64 internalHandle = 0UL;
-			var result = Interops.vkCreateQueryPool(this.Handle, createInfo, allocatorPtr, ref internalHandle);
+			ulong internalHandle = 0UL;
+			var result = Interops.vkCreateQueryPool(Handle, createInfo, allocatorPtr, ref internalHandle);
 			queryPool = new VkQueryPool(internalHandle);
 
 			return result;
 		}
 
-		public Result GetQueryPoolResults(IMgQueryPool queryPool, UInt32 firstQuery, UInt32 queryCount, IntPtr dataSize, IntPtr pData, UInt64 stride, MgQueryResultFlagBits flags)
+		public Result GetQueryPoolResults(IMgQueryPool queryPool, uint firstQuery, uint queryCount, IntPtr dataSize, IntPtr pData, ulong stride, MgQueryResultFlagBits flags)
 		{
 			Debug.Assert(!mIsDisposed);
 
 			var bQueryPool = (VkQueryPool)queryPool;
 			Debug.Assert(bQueryPool != null);
 
-			return Interops.vkGetQueryPoolResults(this.Handle, bQueryPool.Handle, firstQuery, queryCount, dataSize, pData, stride, (VkQueryResultFlags)flags);
+			return Interops.vkGetQueryPoolResults(Handle, bQueryPool.Handle, firstQuery, queryCount, dataSize, pData, stride, (VkQueryResultFlags)flags);
 		}
 
 		public Result CreateBuffer(MgBufferCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgBuffer pBuffer)
@@ -393,9 +392,23 @@ namespace Magnesium.Vulkan
 			Debug.Assert(!mIsDisposed);
 
 			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
-			throw new NotImplementedException();
+			var createInfo = new VkBufferCreateInfo
+			{
+				sType = VkStructureType.StructureTypeBufferCreateInfo,
+				pNext = IntPtr.Zero,
+				flags = (VkBufferCreateFlags)pCreateInfo.Flags,
+				sharingMode = (VkSharingMode)pCreateInfo.SharingMode,
+				usage = (VkBufferUsageFlags)pCreateInfo.Usage,
+				size = pCreateInfo.Size,
+			};
+
+			ulong internalHandle = 0;
+			var result = Interops.vkCreateBuffer(Handle, createInfo, allocatorPtr, ref internalHandle);
+			pBuffer = new VkBuffer(internalHandle);
+			return result;
+
 		}
 
 		public Result CreateBufferView(MgBufferViewCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgBufferView pView)
@@ -406,7 +419,7 @@ namespace Magnesium.Vulkan
 			Debug.Assert(!mIsDisposed);
 
 			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
 			throw new NotImplementedException();
 		}
@@ -419,7 +432,7 @@ namespace Magnesium.Vulkan
 			Debug.Assert(!mIsDisposed);
 
 			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
 			throw new NotImplementedException();
 		}
@@ -437,7 +450,7 @@ namespace Magnesium.Vulkan
 			Debug.Assert(!mIsDisposed);
 
 			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
 			throw new NotImplementedException();
 		}
@@ -450,7 +463,7 @@ namespace Magnesium.Vulkan
 			Debug.Assert(!mIsDisposed);
 
 			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
 			var bufferSize = (int)pCreateInfo.CodeSize;
 			var dest = Marshal.AllocHGlobal(bufferSize);
@@ -475,7 +488,7 @@ namespace Magnesium.Vulkan
 					pCode = dest
 				};
 				ulong internalHandle = 0;
-				var result = Interops.vkCreateShaderModule(this.Handle, createInfo, allocatorPtr, ref internalHandle);
+				var result = Interops.vkCreateShaderModule(Handle, createInfo, allocatorPtr, ref internalHandle);
 				pShaderModule = new VkShaderModule(internalHandle);
 				return result;
 			}
@@ -493,7 +506,7 @@ namespace Magnesium.Vulkan
 			Debug.Assert(!mIsDisposed);
 
 			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
 			var createInfo = new VkPipelineCacheCreateInfo
 			{
@@ -505,7 +518,7 @@ namespace Magnesium.Vulkan
 			};
 
 			ulong internalHandle = 0;
-			var result = Interops.vkCreatePipelineCache(this.Handle, createInfo, allocatorPtr, ref internalHandle);
+			var result = Interops.vkCreatePipelineCache(Handle, createInfo, allocatorPtr, ref internalHandle);
 			pPipelineCache = new VkPipelineCache(internalHandle);
 			return result;
 		}
@@ -525,7 +538,7 @@ namespace Magnesium.Vulkan
 			Debug.Assert(!mIsDisposed);
 
 			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
 			throw new NotImplementedException();
 		}
@@ -635,7 +648,7 @@ namespace Magnesium.Vulkan
 			try
 			{
 				var pAttachments = IntPtr.Zero;
-				UInt32 attachmentCount = pCreateInfo.Attachments != null ? (UInt32)pCreateInfo.Attachments.Length : 0U;
+				uint attachmentCount = pCreateInfo.Attachments != null ? (uint)pCreateInfo.Attachments.Length : 0U;
 				if (attachmentCount > 0)
 				{
 					var stride = Marshal.SizeOf(typeof(VkAttachmentDescription));
@@ -658,14 +671,14 @@ namespace Magnesium.Vulkan
 							finalLayout = (VkImageLayout)current.FinalLayout
 						};
 
-						IntPtr dest = IntPtr.Add(pAttachments, i * stride);
+						var dest = IntPtr.Add(pAttachments, i * stride);
 						Marshal.StructureToPtr(temp, dest, false);
 					}
 				}
 
 				var attReferenceSize = Marshal.SizeOf(typeof(VkAttachmentReference));
 
-				UInt32 subpassCount = pCreateInfo.Subpasses != null ? (UInt32)pCreateInfo.Subpasses.Length : 0U;
+				uint subpassCount = pCreateInfo.Subpasses != null ? (uint)pCreateInfo.Subpasses.Length : 0U;
 				var pSubpasses = IntPtr.Zero;
 				if (subpassCount > 0)
 				{
@@ -706,7 +719,7 @@ namespace Magnesium.Vulkan
 									attachment = input.Attachment,
 									layout = (VkImageLayout)input.Layout,
 								};
-								IntPtr localAttachmentPtr = IntPtr.Add(pInputAttachments, j * attReferenceSize);
+								var localAttachmentPtr = IntPtr.Add(pInputAttachments, j * attReferenceSize);
 								Marshal.StructureToPtr(attachment, localAttachmentPtr, false);
 							}						
 						}
@@ -729,7 +742,7 @@ namespace Magnesium.Vulkan
 									attachment = color.Attachment,
 									layout = (VkImageLayout)color.Layout,
 								};
-								IntPtr localAttachmentPtr = IntPtr.Add(pColorAttachments, j * attReferenceSize);
+								var localAttachmentPtr = IntPtr.Add(pColorAttachments, j * attReferenceSize);
 								Marshal.StructureToPtr(attachment, localAttachmentPtr, false);
 							}
 
@@ -753,12 +766,12 @@ namespace Magnesium.Vulkan
 							}
 						}
 
-						var preserveAttachmentCount = currentSubpass.PreserveAttachments != null ? (UInt32) currentSubpass.PreserveAttachments.Length : 0U;
+						var preserveAttachmentCount = currentSubpass.PreserveAttachments != null ? (uint) currentSubpass.PreserveAttachments.Length : 0U;
 						var pPreserveAttachments = IntPtr.Zero;
 
 						if (preserveAttachmentCount > 0)
 						{
-							var preserveAttachmentSize = sizeof(UInt32);
+							var preserveAttachmentSize = sizeof(uint);
 							var bufferLength = (int)(preserveAttachmentSize * preserveAttachmentCount);
 							pPreserveAttachments = Marshal.AllocHGlobal(bufferLength);						
 							attachedItems.Add(pPreserveAttachments);
@@ -780,17 +793,17 @@ namespace Magnesium.Vulkan
 							pResolveAttachments = pResolveAttachments,
 							pDepthStencilAttachment = depthStencil,
 							preserveAttachmentCount = preserveAttachmentCount,
-							pPreserveAttachments = pPreserveAttachments, // UInt32
+							pPreserveAttachments = pPreserveAttachments, // uint
 						};
 
-						IntPtr dest = IntPtr.Add(pSubpasses, subpassOffset);
+						var dest = IntPtr.Add(pSubpasses, subpassOffset);
 						Marshal.StructureToPtr(description, dest, false);
 						subpassOffset += subPassDescriptionSize;
 					}
 				}
 
-				uint dependencyCount = pCreateInfo.Dependencies != null ? (UInt32) pCreateInfo.Dependencies.Length : 0U;
-				IntPtr pDependencies = IntPtr.Zero;
+				uint dependencyCount = pCreateInfo.Dependencies != null ? (uint) pCreateInfo.Dependencies.Length : 0U;
+				var pDependencies = IntPtr.Zero;
 				if (dependencyCount > 0)
 				{
 					var dependencyStructSize = Marshal.SizeOf(typeof(VkSubpassDependency));
@@ -807,14 +820,14 @@ namespace Magnesium.Vulkan
 						{
 							srcSubpass = currentDependency.SrcSubpass,
 							dstSubpass = currentDependency.DstSubpass,
-							srcStageMask = (Magnesium.Vulkan.VkPipelineStageFlags)currentDependency.SrcStageMask,
-							dstStageMask = (Magnesium.Vulkan.VkPipelineStageFlags)currentDependency.DstStageMask,
-							srcAccessMask = (Magnesium.Vulkan.VkAccessFlags)currentDependency.SrcAccessMask,
-							dstAccessMask = (Magnesium.Vulkan.VkAccessFlags)currentDependency.DstAccessMask,
-							dependencyFlags = (Magnesium.Vulkan.VkDependencyFlags)currentDependency.DependencyFlags,
+							srcStageMask = (VkPipelineStageFlags)currentDependency.SrcStageMask,
+							dstStageMask = (VkPipelineStageFlags)currentDependency.DstStageMask,
+							srcAccessMask = (VkAccessFlags)currentDependency.SrcAccessMask,
+							dstAccessMask = (VkAccessFlags)currentDependency.DstAccessMask,
+							dependencyFlags = (VkDependencyFlags)currentDependency.DependencyFlags,
 						};
 
-						IntPtr dest = IntPtr.Add(pDependencies, dependencyOffset);
+						var dest = IntPtr.Add(pDependencies, dependencyOffset);
 						Marshal.StructureToPtr(temp, dest, false);
 						dependencyOffset += dependencyStructSize;
 					}
@@ -834,7 +847,7 @@ namespace Magnesium.Vulkan
 				};
 
 				ulong internalHandle = 0;
-				var result = Interops.vkCreateRenderPass(this.Handle, createInfo, allocatorPtr, ref internalHandle);
+				var result = Interops.vkCreateRenderPass(Handle, createInfo, allocatorPtr, ref internalHandle);
 				pRenderPass = new VkRenderPass(internalHandle);
 				return result;
 			}
@@ -857,7 +870,7 @@ namespace Magnesium.Vulkan
 			unsafe
 			{
 				var grans = stackalloc MgExtent2D[1];
-				Interops.vkGetRenderAreaGranularity(this.Handle, bRenderPass.Handle, grans);
+				Interops.vkGetRenderAreaGranularity(Handle, bRenderPass.Handle, grans);
 				pGranularity = grans[0];
 			}
 		}
@@ -870,17 +883,17 @@ namespace Magnesium.Vulkan
 			Debug.Assert(!mIsDisposed);
 
 			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
-			UInt64 internalHandle = 0UL;
-			VkCommandPoolCreateInfo createInfo = new VkCommandPoolCreateInfo
+			ulong internalHandle = 0UL;
+			var createInfo = new VkCommandPoolCreateInfo
 			{
 				sType = VkStructureType.StructureTypeCommandPoolCreateInfo,
 				pNext = IntPtr.Zero,
 				flags = (VkCommandPoolCreateFlags)pCreateInfo.Flags,
 				queueFamilyIndex = pCreateInfo.QueueFamilyIndex,
 			};
-			var result = Interops.vkCreateCommandPool(this.Handle, createInfo, allocatorPtr, ref internalHandle);
+			var result = Interops.vkCreateCommandPool(Handle, createInfo, allocatorPtr, ref internalHandle);
 			pCommandPool = new VkCommandPool(internalHandle);
 			return result;
 		}
@@ -905,9 +918,9 @@ namespace Magnesium.Vulkan
 			{
 				var arraySize = (int)pAllocateInfo.CommandBufferCount;
 
-				IntPtr* pBufferHandle = stackalloc IntPtr[arraySize];
+				var pBufferHandle = stackalloc IntPtr[arraySize];
 
-				VkCommandBufferAllocateInfo* allocateInfo = stackalloc VkCommandBufferAllocateInfo[1];
+				var allocateInfo = stackalloc VkCommandBufferAllocateInfo[1];
 
 				allocateInfo[0] = new VkCommandBufferAllocateInfo
 				{
@@ -918,14 +931,14 @@ namespace Magnesium.Vulkan
 					level = (VkCommandBufferLevel)pAllocateInfo.Level,
 				};
 
-				var result = Interops.vkAllocateCommandBuffers(this.Handle, allocateInfo, pBufferHandle);
+				var result = Interops.vkAllocateCommandBuffers(Handle, allocateInfo, pBufferHandle);
 
 				for (var i = 0; i < arraySize; ++i)
 				{
 					pCommandBuffers[i] = new VkCommandBuffer(pBufferHandle[i]);
 				}
 				return result;
-		  	}
+			}
 		}
 
 		public void FreeCommandBuffers(IMgCommandPool commandPool, IMgCommandBuffer[] pCommandBuffers)
@@ -935,7 +948,7 @@ namespace Magnesium.Vulkan
 			var bCommandPool = (VkCommandPool) commandPool;
 			Debug.Assert(bCommandPool != null);
 
-			var commandBufferCount = pCommandBuffers != null ? (UInt32) pCommandBuffers.Length : 0U;
+			var commandBufferCount = pCommandBuffers != null ? (uint) pCommandBuffers.Length : 0U;
 
 			if (commandBufferCount > 0)
 			{
@@ -946,7 +959,7 @@ namespace Magnesium.Vulkan
 					bufferHandles[i] = bCommandBuffer.Handle;
 				}
 
-				Interops.vkFreeCommandBuffers(this.Handle, bCommandPool.Handle, commandBufferCount, bufferHandles);
+				Interops.vkFreeCommandBuffers(Handle, bCommandPool.Handle, commandBufferCount, bufferHandles);
 			}
 		}
 
@@ -958,7 +971,7 @@ namespace Magnesium.Vulkan
 			Debug.Assert(!mIsDisposed);
 
 			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
 			var attachedItems = new List<IntPtr>();
 
@@ -966,7 +979,7 @@ namespace Magnesium.Vulkan
 			{
 
 				var createInfoStructSize = Marshal.SizeOf(typeof(VkSwapchainCreateInfoKHR));
-				var swapChainCount = pCreateInfos != null ? (UInt32) pCreateInfos.Length : 0U;
+				var swapChainCount = pCreateInfos != null ? (uint) pCreateInfos.Length : 0U;
 
 				var swapChainCreateInfos = new VkSwapchainCreateInfoKHR[swapChainCount];
 				for (var i = 0; i < swapChainCount; ++i)
@@ -974,8 +987,8 @@ namespace Magnesium.Vulkan
 					swapChainCreateInfos[i] = GenerateSwapchainCreateInfoKHR(pCreateInfos[i], attachedItems);
 				}
 
-				var sharedSwapchains = new UInt64[swapChainCount];
-				var result = Interops.vkCreateSharedSwapchainsKHR(this.Handle, swapChainCount, swapChainCreateInfos, allocatorPtr, sharedSwapchains);
+				var sharedSwapchains = new ulong[swapChainCount];
+				var result = Interops.vkCreateSharedSwapchainsKHR(Handle, swapChainCount, swapChainCreateInfos, allocatorPtr, sharedSwapchains);
 
 				// TODO : result 
 				pSwapchains = new VkSwapchainKHR[swapChainCount];
@@ -1002,16 +1015,16 @@ namespace Magnesium.Vulkan
 			Debug.Assert(!mIsDisposed);
 
 			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
 			var attachedItems = new List<IntPtr>();
 
 			try
 			{
-				VkSwapchainCreateInfoKHR createInfo = GenerateSwapchainCreateInfoKHR(pCreateInfo, attachedItems);
+				var createInfo = GenerateSwapchainCreateInfoKHR(pCreateInfo, attachedItems);
 
 				ulong internalHandle = 0;
-				var result = Interops.vkCreateSwapchainKHR(this.Handle, createInfo, allocatorPtr, ref internalHandle);
+				var result = Interops.vkCreateSwapchainKHR(Handle, createInfo, allocatorPtr, ref internalHandle);
 				pSwapchain = new VkSwapchainKHR(internalHandle);
 				return result;
 			}
@@ -1033,11 +1046,11 @@ namespace Magnesium.Vulkan
 			var bOldSwapchainPtr = bOldSwapchain != null ? bOldSwapchain.Handle : 0UL;
 
 			var pQueueFamilyIndices = IntPtr.Zero;
-			var queueFamilyIndexCount = pCreateInfo.QueueFamilyIndices != null ? (UInt32)pCreateInfo.QueueFamilyIndices.Length : 0U;
+			var queueFamilyIndexCount = pCreateInfo.QueueFamilyIndices != null ? (uint)pCreateInfo.QueueFamilyIndices.Length : 0U;
 
 			if (queueFamilyIndexCount > 0)
 			{
-				var arraySize = (int)(sizeof(UInt32) * queueFamilyIndexCount);
+				var arraySize = (int)(sizeof(uint) * queueFamilyIndexCount);
 				pQueueFamilyIndices = Marshal.AllocHGlobal(arraySize);
 				attachedItems.Add(pQueueFamilyIndices);
 
@@ -1047,7 +1060,7 @@ namespace Magnesium.Vulkan
 				Marshal.Copy(tempBuffer, 0, pQueueFamilyIndices, arraySize);
 			}
 
-			VkSwapchainCreateInfoKHR createInfo = new VkSwapchainCreateInfoKHR
+			var createInfo = new VkSwapchainCreateInfoKHR
 			{
 				sType = VkStructureType.StructureTypeSwapchainCreateInfoKhr,
 				pNext = IntPtr.Zero,
@@ -1066,7 +1079,7 @@ namespace Magnesium.Vulkan
 				compositeAlpha = (VkCompositeAlphaFlagsKhr)pCreateInfo.CompositeAlpha,
 				presentMode = (VkPresentModeKhr)pCreateInfo.PresentMode,
 				clipped = VkBool32.ConvertTo(pCreateInfo.Clipped),
-				oldSwapchain = bOldSwapchainPtr,
+				oldSwapchain = bOldSwapchainPtr
 			};
 			return createInfo;
 		}
@@ -1078,8 +1091,8 @@ namespace Magnesium.Vulkan
 			var bSwapchain = (VkSwapchainKHR)swapchain;
 			Debug.Assert(bSwapchain != null);
 
-			UInt32 noOfImages = 0;
-			var first = Interops.vkGetSwapchainImagesKHR(this.Handle, bSwapchain.Handle, ref noOfImages, null);
+			uint noOfImages = 0;
+			var first = Interops.vkGetSwapchainImagesKHR(Handle, bSwapchain.Handle, ref noOfImages, null);
 
 			if (first != Result.SUCCESS)
 			{
@@ -1087,8 +1100,8 @@ namespace Magnesium.Vulkan
 				return first;
 			}
 
-			var images = new UInt64[noOfImages];
-			var final = Interops.vkGetSwapchainImagesKHR(this.Handle, bSwapchain.Handle, ref noOfImages, images);
+			var images = new ulong[noOfImages];
+			var final = Interops.vkGetSwapchainImagesKHR(Handle, bSwapchain.Handle, ref noOfImages, images);
 
 			pSwapchainImages = new VkImage[noOfImages];
 			for (var i = 0; i < noOfImages; ++i)
@@ -1099,7 +1112,7 @@ namespace Magnesium.Vulkan
 			return final;
 		}
 
-		public Result AcquireNextImageKHR(IMgSwapchainKHR swapchain, UInt64 timeout, IMgSemaphore semaphore, IMgFence fence, out UInt32 pImageIndex)
+		public Result AcquireNextImageKHR(IMgSwapchainKHR swapchain, ulong timeout, IMgSemaphore semaphore, IMgFence fence, out uint pImageIndex)
 		{
 			Debug.Assert(!mIsDisposed);
 
@@ -1113,7 +1126,7 @@ namespace Magnesium.Vulkan
 			var bFencePtr = bFence != null ? bFence.Handle : 0UL;
 
 			uint imageIndex = 0;
-			var result = Interops.vkAcquireNextImageKHR(this.Handle, bSwapchain.Handle, timeout, bSemaphorePtr, bFencePtr, ref imageIndex);
+			var result = Interops.vkAcquireNextImageKHR(Handle, bSwapchain.Handle, timeout, bSemaphorePtr, bFencePtr, ref imageIndex);
 			pImageIndex = imageIndex;
 			return result;
 		}

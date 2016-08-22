@@ -230,6 +230,36 @@
     <Compile Include="Core\Interops.cs" />
     <Compile Include="Core\MgVkAllocationCallbacks.cs" />
     <Compile Include="Core\VkBool32.cs" />
+    <Compile Include="Handles\VkBuffer.cs" />
+    <Compile Include="Handles\VkBufferView.cs" />
+    <Compile Include="Handles\VkCommandBuffer.cs" />
+    <Compile Include="Handles\VkCommandPool.cs" />
+    <Compile Include="Handles\VkDebugReportCallbackEXT.cs" />
+    <Compile Include="Handles\VkDescriptorPool.cs" />
+    <Compile Include="Handles\VkDescriptorSet.cs" />
+    <Compile Include="Handles\VkDescriptorSetLayout.cs" />
+    <Compile Include="Handles\VkDevice.cs" />
+    <Compile Include="Handles\VkDeviceMemory.cs" />
+    <Compile Include="Handles\VkDisplayModeKHR.cs" />
+    <Compile Include="Handles\VkEntrypoint.cs" />
+    <Compile Include="Handles\VkEvent.cs" />
+    <Compile Include="Handles\VkFence.cs" />
+    <Compile Include="Handles\VkFramebuffer.cs" />
+    <Compile Include="Handles\VkImage.cs" />
+    <Compile Include="Handles\VkImageView.cs" />
+    <Compile Include="Handles\VkInstance.cs" />
+    <Compile Include="Handles\VkPhysicalDevice.cs" />
+    <Compile Include="Handles\VkPipeline.cs" />
+    <Compile Include="Handles\VkPipelineCache.cs" />
+    <Compile Include="Handles\VkPipelineLayout.cs" />
+    <Compile Include="Handles\VkQueryPool.cs" />
+    <Compile Include="Handles\VkQueue.cs" />
+    <Compile Include="Handles\VkRenderPass.cs" />
+    <Compile Include="Handles\VkSampler.cs" />
+    <Compile Include="Handles\VkSemaphore.cs" />
+    <Compile Include="Handles\VkShaderModule.cs" />
+    <Compile Include="Handles\VkSurfaceKHR.cs" />
+    <Compile Include="Handles\VkSwapchainKHR.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Core\" />
