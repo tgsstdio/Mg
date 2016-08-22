@@ -19,11 +19,11 @@ namespace Magnesium.Vulkan
 		public VkImageUsageFlags imageUsage { get; set; }
 		public VkSharingMode imageSharingMode { get; set; }
 		public UInt32 queueFamilyIndexCount { get; set; }
-		public UInt32 pQueueFamilyIndices { get; set; }
+		public IntPtr pQueueFamilyIndices { get; set; }
 		public VkSurfaceTransformFlagsKhr preTransform { get; set; }
 		public VkCompositeAlphaFlagsKhr compositeAlpha { get; set; }
 		public VkPresentModeKhr presentMode { get; set; }
 		public VkBool32 clipped { get; set; }
-		public IntPtr oldSwapchain { get; set; }
+		public UInt64 oldSwapchain { get; set; }
 	}
 }

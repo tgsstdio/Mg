@@ -155,10 +155,10 @@ namespace Magnesium.Vulkan
 		internal extern static void vkDestroyQueryPool(IntPtr device, UInt64 queryPool, IntPtr pAllocator);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static Result vkGetQueryPoolResults(IntPtr device, UInt64 queryPool, UInt32 firstQuery, UInt32 queryCount, UIntPtr dataSize, IntPtr[] pData, UInt64 stride, VkQueryResultFlags flags);
+		internal extern static Result vkGetQueryPoolResults(IntPtr device, UInt64 queryPool, UInt32 firstQuery, UInt32 queryCount, IntPtr dataSize, IntPtr pData, UInt64 stride, VkQueryResultFlags flags);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe Result vkCreateBuffer(IntPtr device, VkBufferCreateInfo pCreateInfo, IntPtr pAllocator, UInt64* pBuffer);
+		internal extern static Result vkCreateBuffer(IntPtr device, [In] VkBufferCreateInfo pCreateInfo, IntPtr pAllocator, ref UInt64 pBuffer);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkDestroyBuffer(IntPtr device, UInt64 buffer, IntPtr pAllocator);
@@ -263,7 +263,7 @@ namespace Magnesium.Vulkan
 		internal extern static unsafe void vkGetRenderAreaGranularity(IntPtr device, UInt64 renderPass, MgExtent2D* pGranularity);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe Result vkCreateCommandPool(IntPtr device, VkCommandPoolCreateInfo pCreateInfo, IntPtr pAllocator, UInt64* pCommandPool);
+		internal extern static Result vkCreateCommandPool(IntPtr device, [In] VkCommandPoolCreateInfo pCreateInfo, IntPtr pAllocator, ref UInt64 pCommandPool);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkDestroyCommandPool(IntPtr device, UInt64 commandPool, IntPtr pAllocator);
@@ -272,7 +272,7 @@ namespace Magnesium.Vulkan
 		internal extern static Result vkResetCommandPool(IntPtr device, UInt64 commandPool, VkCommandPoolResetFlags flags);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe Result vkAllocateCommandBuffers(IntPtr device, VkCommandBufferAllocateInfo pAllocateInfo, IntPtr* pCommandBuffers);
+		internal extern static unsafe Result vkAllocateCommandBuffers(IntPtr device, VkCommandBufferAllocateInfo* pAllocateInfo, IntPtr* pCommandBuffers);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkFreeCommandBuffers(IntPtr device, UInt64 commandPool, UInt32 commandBufferCount, IntPtr[] pCommandBuffers);
@@ -443,7 +443,7 @@ namespace Magnesium.Vulkan
 		internal extern static Result vkCreateDisplayPlaneSurfaceKHR(IntPtr instance, [In, Out] VkDisplaySurfaceCreateInfoKHR pCreateInfo, IntPtr pAllocator, ref UInt64 pSurface);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static Result vkCreateSharedSwapchainsKHR(IntPtr device, UInt32 swapchainCount, [In, Out] VkSwapchainCreateInfoKHR[] pCreateInfos, IntPtr pAllocator, UInt64[] pSwapchains);
+		internal extern static Result vkCreateSharedSwapchainsKHR(IntPtr device, UInt32 swapchainCount, [In] VkSwapchainCreateInfoKHR[] pCreateInfos, IntPtr pAllocator, [In, Out] UInt64[] pSwapchains);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static Result vkCreateMirSurfaceKHR(IntPtr instance, [In, Out] VkMirSurfaceCreateInfoKHR pCreateInfo, IntPtr pAllocator, ref UInt64 pSurface);
@@ -467,7 +467,7 @@ namespace Magnesium.Vulkan
 		internal extern static Result vkGetPhysicalDeviceSurfacePresentModesKHR(IntPtr physicalDevice, UInt64 surface, ref UInt32 pPresentModeCount, VkPresentModeKhr[] pPresentModes);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static Result vkCreateSwapchainKHR(IntPtr device, [In, Out] VkSwapchainCreateInfoKHR pCreateInfo, IntPtr pAllocator, ref UInt64 pSwapchain);
+		internal extern static Result vkCreateSwapchainKHR(IntPtr device, [In] VkSwapchainCreateInfoKHR pCreateInfo, IntPtr pAllocator, ref UInt64 pSwapchain);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkDestroySwapchainKHR(IntPtr device, UInt64 swapchain, IntPtr pAllocator);

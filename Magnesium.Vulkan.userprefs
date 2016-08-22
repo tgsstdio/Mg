@@ -15,10 +15,10 @@
       <Breakpoint file="D:\Magnesium.Vulkan\tools\CommandGen\CommandGen\VkEntityInspector.cs" line="60" column="9" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.Workbench ActiveDocument="src\Handles\VkDevice.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="src\Interops.cs">
     <Files>
-      <File FileName="src\Handles\VkDevice.cs" Line="801" Column="34" />
-      <File FileName="src\Structs\VkSubpassDependency.cs" Line="16" Column="19" />
+      <File FileName="src\Handles\VkDevice.cs" Line="398" Column="40" />
+      <File FileName="src\Interops.cs" Line="12" Column="3" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <DisabledProjects>

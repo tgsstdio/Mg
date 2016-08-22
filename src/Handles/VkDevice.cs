@@ -377,7 +377,12 @@ namespace Magnesium.Vulkan
 
 		public Result GetQueryPoolResults(IMgQueryPool queryPool, UInt32 firstQuery, UInt32 queryCount, IntPtr dataSize, IntPtr pData, UInt64 stride, MgQueryResultFlagBits flags)
 		{
-			throw new NotImplementedException();
+			Debug.Assert(!mIsDisposed);
+
+			var bQueryPool = (VkQueryPool)queryPool;
+			Debug.Assert(bQueryPool != null);
+
+			return Interops.vkGetQueryPoolResults(this.Handle, bQueryPool.Handle, firstQuery, queryCount, dataSize, pData, stride, (VkQueryResultFlags)flags);
 		}
 
 		public Result CreateBuffer(MgBufferCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgBuffer pBuffer)
@@ -844,7 +849,17 @@ namespace Magnesium.Vulkan
 
 		public void GetRenderAreaGranularity(IMgRenderPass renderPass, out MgExtent2D pGranularity)
 		{
-			throw new NotImplementedException();
+			Debug.Assert(!mIsDisposed);
+
+			var bRenderPass = (VkRenderPass)renderPass;
+			Debug.Assert(bRenderPass != null);
+
+			unsafe
+			{
+				var grans = stackalloc MgExtent2D[1];
+				Interops.vkGetRenderAreaGranularity(this.Handle, bRenderPass.Handle, grans);
+				pGranularity = grans[0];
+			}
 		}
 
 		public Result CreateCommandPool(MgCommandPoolCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgCommandPool pCommandPool)
@@ -857,28 +872,126 @@ namespace Magnesium.Vulkan
 			var bAllocator = (MgVkAllocationCallbacks)allocator;
 			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
-			throw new NotImplementedException();
+			UInt64 internalHandle = 0UL;
+			VkCommandPoolCreateInfo createInfo = new VkCommandPoolCreateInfo
+			{
+				sType = VkStructureType.StructureTypeCommandPoolCreateInfo,
+				pNext = IntPtr.Zero,
+				flags = (VkCommandPoolCreateFlags)pCreateInfo.Flags,
+				queueFamilyIndex = pCreateInfo.QueueFamilyIndex,
+			};
+			var result = Interops.vkCreateCommandPool(this.Handle, createInfo, allocatorPtr, ref internalHandle);
+			pCommandPool = new VkCommandPool(internalHandle);
+			return result;
 		}
 
 		public Result AllocateCommandBuffers(MgCommandBufferAllocateInfo pAllocateInfo, IMgCommandBuffer[] pCommandBuffers)
 		{
-			throw new NotImplementedException();
+			if (pAllocateInfo == null)
+				throw new ArgumentNullException(nameof(pAllocateInfo));
+
+			if (pCommandBuffers == null)
+				throw new ArgumentNullException(nameof(pCommandBuffers));
+
+			if (pAllocateInfo.CommandBufferCount != pCommandBuffers.Length)
+				throw new ArgumentOutOfRangeException(nameof(pAllocateInfo.CommandBufferCount) + " !=  " + nameof(pCommandBuffers.Length));
+
+			Debug.Assert(!mIsDisposed);
+
+			var bCommandPool = (VkCommandPool)pAllocateInfo.CommandPool;
+			Debug.Assert(bCommandPool != null);
+
+			unsafe
+			{
+				var arraySize = (int)pAllocateInfo.CommandBufferCount;
+
+				IntPtr* pBufferHandle = stackalloc IntPtr[arraySize];
+
+				VkCommandBufferAllocateInfo* allocateInfo = stackalloc VkCommandBufferAllocateInfo[1];
+
+				allocateInfo[0] = new VkCommandBufferAllocateInfo
+				{
+					sType = VkStructureType.StructureTypeCommandBufferAllocateInfo,
+					pNext = IntPtr.Zero,
+					commandBufferCount = pAllocateInfo.CommandBufferCount,
+					commandPool = bCommandPool.Handle,
+					level = (VkCommandBufferLevel)pAllocateInfo.Level,
+				};
+
+				var result = Interops.vkAllocateCommandBuffers(this.Handle, allocateInfo, pBufferHandle);
+
+				for (var i = 0; i < arraySize; ++i)
+				{
+					pCommandBuffers[i] = new VkCommandBuffer(pBufferHandle[i]);
+				}
+				return result;
+		  	}
 		}
 
 		public void FreeCommandBuffers(IMgCommandPool commandPool, IMgCommandBuffer[] pCommandBuffers)
 		{
-			throw new NotImplementedException();
+			Debug.Assert(!mIsDisposed);
+
+			var bCommandPool = (VkCommandPool) commandPool;
+			Debug.Assert(bCommandPool != null);
+
+			var commandBufferCount = pCommandBuffers != null ? (UInt32) pCommandBuffers.Length : 0U;
+
+			if (commandBufferCount > 0)
+			{
+				var bufferHandles = new IntPtr[commandBufferCount];
+				for (var i = 0; i < commandBufferCount; ++i)
+				{
+					var bCommandBuffer = (VkCommandBuffer)pCommandBuffers[i];
+					bufferHandles[i] = bCommandBuffer.Handle;
+				}
+
+				Interops.vkFreeCommandBuffers(this.Handle, bCommandPool.Handle, commandBufferCount, bufferHandles);
+			}
 		}
 
 		public Result CreateSharedSwapchainsKHR(MgSwapchainCreateInfoKHR[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgSwapchainKHR[] pSwapchains)
 		{
-			
+			if (pCreateInfos == null)
+				throw new ArgumentNullException(nameof(pCreateInfos));
+
 			Debug.Assert(!mIsDisposed);
 
 			var bAllocator = (MgVkAllocationCallbacks)allocator;
 			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
-			throw new NotImplementedException();
+			var attachedItems = new List<IntPtr>();
+
+			try
+			{
+
+				var createInfoStructSize = Marshal.SizeOf(typeof(VkSwapchainCreateInfoKHR));
+				var swapChainCount = pCreateInfos != null ? (UInt32) pCreateInfos.Length : 0U;
+
+				var swapChainCreateInfos = new VkSwapchainCreateInfoKHR[swapChainCount];
+				for (var i = 0; i < swapChainCount; ++i)
+				{
+					swapChainCreateInfos[i] = GenerateSwapchainCreateInfoKHR(pCreateInfos[i], attachedItems);
+				}
+
+				var sharedSwapchains = new UInt64[swapChainCount];
+				var result = Interops.vkCreateSharedSwapchainsKHR(this.Handle, swapChainCount, swapChainCreateInfos, allocatorPtr, sharedSwapchains);
+
+				// TODO : result 
+				pSwapchains = new VkSwapchainKHR[swapChainCount];
+				for (var i = 0; i < swapChainCount; ++i)
+				{
+					pSwapchains[i] = new VkSwapchainKHR(sharedSwapchains[i]);
+				}
+				return result;
+			}
+			finally
+			{
+				foreach (var handle in attachedItems)
+				{
+					Marshal.FreeHGlobal(handle);
+				}
+			}
 		}
 
 		public Result CreateSwapchainKHR(MgSwapchainCreateInfoKHR pCreateInfo, IMgAllocationCallbacks allocator, out IMgSwapchainKHR pSwapchain)
@@ -891,17 +1004,118 @@ namespace Magnesium.Vulkan
 			var bAllocator = (MgVkAllocationCallbacks)allocator;
 			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
-			throw new NotImplementedException();
+			var attachedItems = new List<IntPtr>();
+
+			try
+			{
+				VkSwapchainCreateInfoKHR createInfo = GenerateSwapchainCreateInfoKHR(pCreateInfo, attachedItems);
+
+				ulong internalHandle = 0;
+				var result = Interops.vkCreateSwapchainKHR(this.Handle, createInfo, allocatorPtr, ref internalHandle);
+				pSwapchain = new VkSwapchainKHR(internalHandle);
+				return result;
+			}
+			finally
+			{
+				foreach (var handle in attachedItems)
+				{
+					Marshal.FreeHGlobal(handle);
+				}
+			}
+		}
+
+		static VkSwapchainCreateInfoKHR GenerateSwapchainCreateInfoKHR(MgSwapchainCreateInfoKHR pCreateInfo, List<IntPtr> attachedItems)
+		{
+			var bSurface = (VkSurfaceKHR)pCreateInfo.Surface;
+			var bSurfacePtr = bSurface != null ? bSurface.Handle : 0UL;
+
+			var bOldSwapchain = (VkSwapchainKHR)pCreateInfo.OldSwapchain;
+			var bOldSwapchainPtr = bOldSwapchain != null ? bOldSwapchain.Handle : 0UL;
+
+			var pQueueFamilyIndices = IntPtr.Zero;
+			var queueFamilyIndexCount = pCreateInfo.QueueFamilyIndices != null ? (UInt32)pCreateInfo.QueueFamilyIndices.Length : 0U;
+
+			if (queueFamilyIndexCount > 0)
+			{
+				var arraySize = (int)(sizeof(UInt32) * queueFamilyIndexCount);
+				pQueueFamilyIndices = Marshal.AllocHGlobal(arraySize);
+				attachedItems.Add(pQueueFamilyIndices);
+
+
+				var tempBuffer = new byte[arraySize];
+				Buffer.BlockCopy(pCreateInfo.QueueFamilyIndices, 0, tempBuffer, 0, arraySize);
+				Marshal.Copy(tempBuffer, 0, pQueueFamilyIndices, arraySize);
+			}
+
+			VkSwapchainCreateInfoKHR createInfo = new VkSwapchainCreateInfoKHR
+			{
+				sType = VkStructureType.StructureTypeSwapchainCreateInfoKhr,
+				pNext = IntPtr.Zero,
+				flags = pCreateInfo.Flags,
+				surface = bSurfacePtr,
+				minImageCount = pCreateInfo.MinImageCount,
+				imageFormat = (VkFormat)pCreateInfo.ImageFormat,
+				imageColorSpace = (VkColorSpaceKhr)pCreateInfo.ImageColorSpace,
+				imageExtent = pCreateInfo.ImageExtent,
+				imageArrayLayers = pCreateInfo.ImageArrayLayers,
+				imageUsage = (VkImageUsageFlags)pCreateInfo.ImageUsage,
+				imageSharingMode = (VkSharingMode)pCreateInfo.ImageSharingMode,
+				queueFamilyIndexCount = queueFamilyIndexCount,
+				pQueueFamilyIndices = pQueueFamilyIndices,
+				preTransform = (VkSurfaceTransformFlagsKhr)pCreateInfo.PreTransform,
+				compositeAlpha = (VkCompositeAlphaFlagsKhr)pCreateInfo.CompositeAlpha,
+				presentMode = (VkPresentModeKhr)pCreateInfo.PresentMode,
+				clipped = VkBool32.ConvertTo(pCreateInfo.Clipped),
+				oldSwapchain = bOldSwapchainPtr,
+			};
+			return createInfo;
 		}
 
 		public Result GetSwapchainImagesKHR(IMgSwapchainKHR swapchain, out IMgImage[] pSwapchainImages)
 		{
-			throw new NotImplementedException();
+			Debug.Assert(!mIsDisposed);
+
+			var bSwapchain = (VkSwapchainKHR)swapchain;
+			Debug.Assert(bSwapchain != null);
+
+			UInt32 noOfImages = 0;
+			var first = Interops.vkGetSwapchainImagesKHR(this.Handle, bSwapchain.Handle, ref noOfImages, null);
+
+			if (first != Result.SUCCESS)
+			{
+				pSwapchainImages = null;
+				return first;
+			}
+
+			var images = new UInt64[noOfImages];
+			var final = Interops.vkGetSwapchainImagesKHR(this.Handle, bSwapchain.Handle, ref noOfImages, images);
+
+			pSwapchainImages = new VkImage[noOfImages];
+			for (var i = 0; i < noOfImages; ++i)
+			{
+				pSwapchainImages[i] = new VkImage(images[i]);
+			}
+
+			return final;
 		}
 
 		public Result AcquireNextImageKHR(IMgSwapchainKHR swapchain, UInt64 timeout, IMgSemaphore semaphore, IMgFence fence, out UInt32 pImageIndex)
 		{
-			throw new NotImplementedException();
+			Debug.Assert(!mIsDisposed);
+
+			var bSwapchain = (VkSwapchainKHR)swapchain;
+			Debug.Assert(bSwapchain != null);
+
+			var bSemaphore = (VkSemaphore)semaphore;
+			var bSemaphorePtr = bSemaphore != null ? bSemaphore.Handle : 0UL;
+
+			var bFence = (VkFence)fence;
+			var bFencePtr = bFence != null ? bFence.Handle : 0UL;
+
+			uint imageIndex = 0;
+			var result = Interops.vkAcquireNextImageKHR(this.Handle, bSwapchain.Handle, timeout, bSemaphorePtr, bFencePtr, ref imageIndex);
+			pImageIndex = imageIndex;
+			return result;
 		}
 
 	}
