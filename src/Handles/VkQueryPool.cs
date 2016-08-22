@@ -19,12 +19,13 @@ namespace Magnesium.Vulkan
 
 			var bDevice = (VkDevice) device;
 			Debug.Assert(bDevice != null);
-			var bAllocator = (MgVkAllocationCallbacks) allocator;
 
+			var bAllocator = (MgVkAllocationCallbacks) allocator;
 			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
-			Interops.vkDestroyQueryPool(bDevice.Handle, this.Handle, allocatorPtr);		
+			Interops.vkDestroyQueryPool(bDevice.Handle, this.Handle, allocatorPtr);
 
+			this.Handle = 0UL;
 			mIsDisposed = true;
 		}
 

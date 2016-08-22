@@ -149,7 +149,7 @@ namespace Magnesium.Vulkan
 			return result;
 		}
 
-		public Result CreateDebugReportCallbackEXT(MgDebugReportCallbackCreateInfoEXT pCreateInfo, IMgAllocationCallbacks allocator, out MgDebugReportCallbackEXT pCallback)
+		public Result CreateDebugReportCallbackEXT(MgDebugReportCallbackCreateInfoEXT pCreateInfo, IMgAllocationCallbacks allocator, out IMgDebugReportCallbackEXT pCallback)
 		{
 			throw new NotImplementedException();
 
@@ -174,13 +174,6 @@ namespace Magnesium.Vulkan
 			pCallback = new VkDebugReportCallbackEXT(callback);
 
 			return result;
-		}
-
-		public void DestroyDebugReportCallbackEXT(MgDebugReportCallbackEXT callback, IMgAllocationCallbacks allocator)
-		{
-			Debug.Assert(!mIsDisposed);
-
-			throw new NotImplementedException();
 		}
 
 		public void DebugReportMessageEXT(MgDebugReportFlagBitsEXT flags, MgDebugReportObjectTypeEXT objectType, UInt64 @object, IntPtr location, Int32 messageCode, string pLayerPrefix, string pMessage)

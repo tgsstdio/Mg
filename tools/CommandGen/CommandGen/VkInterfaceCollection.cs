@@ -50,7 +50,7 @@ namespace CommandGen
 
 				typeof(IMgSurfaceKHR),
 				typeof(IMgSwapchainKHR),
-				typeof(MgDebugReportCallbackEXT),
+				typeof(IMgDebugReportCallbackEXT),
 				typeof(IMgAllocationCallbacks),
 			 };
 

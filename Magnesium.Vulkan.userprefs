@@ -15,17 +15,10 @@
       <Breakpoint file="D:\Magnesium.Vulkan\tools\CommandGen\CommandGen\VkEntityInspector.cs" line="60" column="9" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.Workbench ActiveDocument="src\Structs\VkBufferImageCopy.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="src\Handles\VkDevice.cs">
     <Files>
-      <File FileName="src\Structs\VkQueueFamilyProperties.cs" Line="9" Column="3" />
-      <File FileName="src\Structs\VkSparseImageFormatProperties.cs" Line="9" Column="3" />
-      <File FileName="src\Structs\VkBufferImageCopy.cs" Line="7" Column="35" />
-      <File FileName="src\Structs\VkSparseImageMemoryBind.cs" Line="5" Column="27" />
-      <File FileName="src\Structs\VkImageFormatProperties.cs" Line="7" Column="30" />
-      <File FileName="src\Structs\VkImageResolve.cs" Line="12" Column="19" />
-      <File FileName="src\Structs\VkImageCopy.cs" Line="7" Column="33" />
-      <File FileName="src\Structs\VkImageCreateInfo.cs" Line="10" Column="37" />
-      <File FileName="src\Structs\VkImageBlit.cs" Line="5" Column="22" />
+      <File FileName="src\Handles\VkDevice.cs" Line="801" Column="34" />
+      <File FileName="src\Structs\VkSubpassDependency.cs" Line="16" Column="19" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <DisabledProjects>

@@ -24,6 +24,7 @@ namespace Magnesium.Vulkan
 			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
 			Interops.vkDestroyPipelineCache(bDevice.Handle, this.Handle, allocatorPtr);
+
 			this.Handle = 0UL;
 			mIsDisposed = true;
 		}

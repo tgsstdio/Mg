@@ -176,7 +176,6 @@
     <Compile Include="src\Structs\VkMemoryAllocateInfo.cs" />
     <Compile Include="src\Structs\VkMemoryBarrier.cs" />
     <Compile Include="src\Structs\VkMemoryHeap.cs" />
-    <Compile Include="src\Structs\VkMemoryRequirements.cs" />
     <Compile Include="src\Structs\VkMemoryType.cs" />
     <Compile Include="src\Structs\VkMirSurfaceCreateInfoKHR.cs" />
     <Compile Include="src\Structs\VkPhysicalDeviceFeatures.cs" />

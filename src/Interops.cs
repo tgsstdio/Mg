@@ -17,7 +17,7 @@ namespace Magnesium.Vulkan
 		internal extern static Result vkEnumeratePhysicalDevices(IntPtr instance, ref UInt32 pPhysicalDeviceCount, IntPtr[] pPhysicalDevices);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static PFN_vkVoidFunction vkGetDeviceProcAddr(IntPtr device, string pName);
+		internal extern static PFN_vkVoidFunction vkGetDeviceProcAddr(IntPtr device, [MarshalAs(UnmanagedType.LPStr)] string pName);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static PFN_vkVoidFunction vkGetInstanceProcAddr(IntPtr instance, [MarshalAs(UnmanagedType.LPStr)] string pName);
@@ -71,7 +71,7 @@ namespace Magnesium.Vulkan
 		internal extern static Result vkDeviceWaitIdle(IntPtr device);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe Result vkAllocateMemory(IntPtr device, VkMemoryAllocateInfo pAllocateInfo, IntPtr pAllocator, UInt64* pMemory);
+		internal extern static unsafe Result vkAllocateMemory(IntPtr device, VkMemoryAllocateInfo* pAllocateInfo, IntPtr pAllocator, UInt64* pMemory);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkFreeMemory(IntPtr device, UInt64 memory, IntPtr pAllocator);
@@ -92,19 +92,19 @@ namespace Magnesium.Vulkan
 		internal extern static void vkGetDeviceMemoryCommitment(IntPtr device, UInt64 memory, ref UInt64 pCommittedMemoryInBytes);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe void vkGetBufferMemoryRequirements(IntPtr device, UInt64 buffer, VkMemoryRequirements pMemoryRequirements);
+		internal extern static unsafe void vkGetBufferMemoryRequirements(IntPtr device, UInt64 buffer, Magnesium.MgMemoryRequirements* pMemoryRequirements);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static Result vkBindBufferMemory(IntPtr device, UInt64 buffer, UInt64 memory, UInt64 memoryOffset);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe void vkGetImageMemoryRequirements(IntPtr device, UInt64 image, VkMemoryRequirements pMemoryRequirements);
+		internal extern static unsafe void vkGetImageMemoryRequirements(IntPtr device, UInt64 image, Magnesium.MgMemoryRequirements* pMemoryRequirements);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static Result vkBindImageMemory(IntPtr device, UInt64 image, UInt64 memory, UInt64 memoryOffset);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe void vkGetImageSparseMemoryRequirements(IntPtr device, UInt64 image, UInt32* pSparseMemoryRequirementCount, VkSparseImageMemoryRequirements* pSparseMemoryRequirements);
+		internal extern static unsafe void vkGetImageSparseMemoryRequirements(IntPtr device, UInt64 image, UInt32* pSparseMemoryRequirementCount, Magnesium.MgSparseImageMemoryRequirements* pSparseMemoryRequirements);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static unsafe void vkGetPhysicalDeviceSparseImageFormatProperties(IntPtr physicalDevice, VkFormat format, VkImageType type, VkSampleCountFlags samples, VkImageUsageFlags usage, VkImageTiling tiling, UInt32* pPropertyCount, VkSparseImageFormatProperties* pProperties);
@@ -113,7 +113,7 @@ namespace Magnesium.Vulkan
 		internal extern static unsafe Result vkQueueBindSparse(IntPtr queue, UInt32 bindInfoCount, VkBindSparseInfo* pBindInfo, UInt64 fence);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe Result vkCreateFence(IntPtr device, VkFenceCreateInfo pCreateInfo, IntPtr pAllocator, UInt64* pFence);
+		internal extern static Result vkCreateFence(IntPtr device, [In] VkFenceCreateInfo pCreateInfo, IntPtr pAllocator, ref UInt64 pFence);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkDestroyFence(IntPtr device, UInt64 fence, IntPtr pAllocator);

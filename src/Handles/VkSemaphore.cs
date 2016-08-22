@@ -26,6 +26,7 @@ namespace Magnesium.Vulkan
 
 			Interops.vkDestroySemaphore(bDevice.Handle, this.Handle, allocatorPtr);
 
+			this.Handle = 0UL;
 			mIsDisposed = true;
 		}
 
