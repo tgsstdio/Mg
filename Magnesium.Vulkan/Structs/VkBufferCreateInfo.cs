@@ -14,6 +14,6 @@ namespace Magnesium.Vulkan
 		public VkBufferUsageFlags usage { get; set; }
 		public VkSharingMode sharingMode { get; set; }
 		public UInt32 queueFamilyIndexCount { get; set; }
-		public UInt32 pQueueFamilyIndices { get; set; }
+		public IntPtr pQueueFamilyIndices { get; set; }
 	}
 }

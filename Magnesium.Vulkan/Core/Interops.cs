@@ -170,13 +170,13 @@ namespace Magnesium.Vulkan
 		internal extern static void vkDestroyBufferView(IntPtr device, UInt64 bufferView, IntPtr pAllocator);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe Result vkCreateImage(IntPtr device, VkImageCreateInfo pCreateInfo, IntPtr pAllocator, UInt64* pImage);
+		internal extern static Result vkCreateImage(IntPtr device, [In] VkImageCreateInfo pCreateInfo, IntPtr pAllocator, ref UInt64 pImage);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkDestroyImage(IntPtr device, UInt64 image, IntPtr pAllocator);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe void vkGetImageSubresourceLayout(IntPtr device, UInt64 image, VkImageSubresource pSubresource, VkSubresourceLayout pLayout);
+		internal extern static void vkGetImageSubresourceLayout(IntPtr device, UInt64 image, [In] Magnesium.MgImageSubresource pSubresource, [In, Out] Magnesium.MgSubresourceLayout pLayout);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static Result vkCreateImageView(IntPtr device, [In, Out] VkImageViewCreateInfo pCreateInfo, IntPtr pAllocator, ref UInt64 pView);

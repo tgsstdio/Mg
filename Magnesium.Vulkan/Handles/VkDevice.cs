@@ -394,21 +394,42 @@ namespace Magnesium.Vulkan
 			var bAllocator = (MgVkAllocationCallbacks)allocator;
 			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
-			var createInfo = new VkBufferCreateInfo
+			uint queueFamilyIndexCount = 0;
+			IntPtr pQueueFamilyIndices = IntPtr.Zero;
+
+			try
 			{
-				sType = VkStructureType.StructureTypeBufferCreateInfo,
-				pNext = IntPtr.Zero,
-				flags = (VkBufferCreateFlags)pCreateInfo.Flags,
-				sharingMode = (VkSharingMode)pCreateInfo.SharingMode,
-				usage = (VkBufferUsageFlags)pCreateInfo.Usage,
-				size = pCreateInfo.Size,
-			};
+				if (pCreateInfo.QueueFamilyIndices != null)
+				{
+					queueFamilyIndexCount = (uint)pCreateInfo.QueueFamilyIndices.Length;
+					pQueueFamilyIndices = GenerateQueueFamilyIndicesPtr(pCreateInfo.QueueFamilyIndices, queueFamilyIndexCount);
+				}
 
-			ulong internalHandle = 0;
-			var result = Interops.vkCreateBuffer(Handle, createInfo, allocatorPtr, ref internalHandle);
-			pBuffer = new VkBuffer(internalHandle);
-			return result;
+				var createInfo = new VkBufferCreateInfo
+				{
+					sType = VkStructureType.StructureTypeBufferCreateInfo,
+					pNext = IntPtr.Zero,
+					flags = (VkBufferCreateFlags)pCreateInfo.Flags,
+					sharingMode = (VkSharingMode)pCreateInfo.SharingMode,
+					usage = (VkBufferUsageFlags)pCreateInfo.Usage,
+					size = pCreateInfo.Size,
+					queueFamilyIndexCount = queueFamilyIndexCount,
+					pQueueFamilyIndices = pQueueFamilyIndices,
 
+				};
+
+				ulong internalHandle = 0;
+				var result = Interops.vkCreateBuffer(Handle, createInfo, allocatorPtr, ref internalHandle);
+				pBuffer = new VkBuffer(internalHandle);
+				return result;
+			}
+			finally
+			{
+				if (pQueueFamilyIndices != IntPtr.Zero)
+				{
+					Marshal.FreeHGlobal(pQueueFamilyIndices);
+				}
+			}
 		}
 
 		public Result CreateBufferView(MgBufferViewCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgBufferView pView)
@@ -421,7 +442,23 @@ namespace Magnesium.Vulkan
 			var bAllocator = (MgVkAllocationCallbacks)allocator;
 			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
-			throw new NotImplementedException();
+			var bBuffer = (VkBuffer)pCreateInfo.Buffer;
+			Debug.Assert(bBuffer != null);
+
+			ulong internalHandle = 0;
+			var createInfo = new VkBufferViewCreateInfo
+			{
+				sType = VkStructureType.StructureTypeBufferViewCreateInfo,
+				pNext = IntPtr.Zero,
+				flags = pCreateInfo.Flags,
+				buffer = bBuffer.Handle,
+				format = (VkFormat)pCreateInfo.Format,
+				offset = pCreateInfo.Offset,
+				range = pCreateInfo.Range,
+			};
+			var result = Interops.vkCreateBufferView(Handle, createInfo, allocatorPtr, ref internalHandle);
+			pView = new VkBufferView(internalHandle);
+			return result;
 		}
 
 		public Result CreateImage(MgImageCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgImage pImage)
@@ -434,12 +471,72 @@ namespace Magnesium.Vulkan
 			var bAllocator = (MgVkAllocationCallbacks)allocator;
 			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
-			throw new NotImplementedException();
+			uint queueFamilyIndexCount = 0;
+			IntPtr pQueueFamilyIndices = IntPtr.Zero;
+
+			try
+			{
+				if (pCreateInfo.QueueFamilyIndices != null)
+				{
+					queueFamilyIndexCount = (uint)pCreateInfo.QueueFamilyIndices.Length;
+					pQueueFamilyIndices = GenerateQueueFamilyIndicesPtr(pCreateInfo.QueueFamilyIndices, queueFamilyIndexCount);
+				}
+
+				ulong internalHandle = 0;
+
+				var createInfo = new VkImageCreateInfo
+				{
+					sType = VkStructureType.StructureTypeImageCreateInfo,
+					pNext = IntPtr.Zero,
+					flags = (VkImageCreateFlags)pCreateInfo.Flags,
+					imageType = (VkImageType)pCreateInfo.ImageType,
+					format = (VkFormat)pCreateInfo.Format,
+					extent = pCreateInfo.Extent,
+					mipLevels = pCreateInfo.MipLevels,
+					arrayLayers = pCreateInfo.ArrayLayers,
+					samples = (VkSampleCountFlags)pCreateInfo.Samples,
+					tiling = (VkImageTiling)pCreateInfo.Tiling,
+					usage = (VkImageUsageFlags)pCreateInfo.Usage,
+					sharingMode = (VkSharingMode)pCreateInfo.SharingMode,
+					queueFamilyIndexCount = queueFamilyIndexCount,
+					pQueueFamilyIndices = pQueueFamilyIndices,
+					initialLayout = (VkImageLayout)pCreateInfo.InitialLayout,
+				};
+				var result = Interops.vkCreateImage(Handle, createInfo, allocatorPtr, ref internalHandle);
+				pImage = new VkImage(internalHandle);
+				return result;
+			}
+			finally
+			{
+				if (pQueueFamilyIndices != IntPtr.Zero)
+				{
+					Marshal.FreeHGlobal(pQueueFamilyIndices);
+				}
+			}
+		}
+
+		static IntPtr GenerateQueueFamilyIndicesPtr(uint[] queueFamilyIndices, uint queueFamilyIndexCount)
+		{
+			IntPtr pQueueFamilyIndices;
+			var arraySize = (int)(sizeof(uint) * queueFamilyIndexCount);
+			pQueueFamilyIndices = Marshal.AllocHGlobal(arraySize);
+
+			var tempBuffer = new byte[arraySize];
+			Buffer.BlockCopy(queueFamilyIndices, 0, tempBuffer, 0, arraySize);
+			Marshal.Copy(tempBuffer, 0, pQueueFamilyIndices, arraySize);
+			return pQueueFamilyIndices;
 		}
 
 		public void GetImageSubresourceLayout(IMgImage image, MgImageSubresource pSubresource, out MgSubresourceLayout pLayout)
 		{
-			throw new NotImplementedException();
+			Debug.Assert(!mIsDisposed);
+
+			var bImage = (VkImage)image;
+			Debug.Assert(bImage != null);
+
+			var layout = default(MgSubresourceLayout);
+			Interops.vkGetImageSubresourceLayout(this.Handle, bImage.Handle, pSubresource, layout);
+			pLayout = layout;
 		}
 
 		public Result CreateImageView(MgImageViewCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgImageView pView)
@@ -479,7 +576,7 @@ namespace Magnesium.Vulkan
 					Marshal.Copy(ms.ToArray(), 0, dest, bufferSize);
 				}
 
-				VkShaderModuleCreateInfo createInfo = new VkShaderModuleCreateInfo
+				var createInfo = new VkShaderModuleCreateInfo
 				{
 					sType = VkStructureType.StructureTypeShaderModuleCreateInfo,
 					pNext = IntPtr.Zero,
@@ -514,7 +611,7 @@ namespace Magnesium.Vulkan
 				pNext = IntPtr.Zero,
 				flags = pCreateInfo.Flags,
 				initialDataSize = pCreateInfo.InitialDataSize,
-				pInitialData = pCreateInfo.InitialData
+				pInitialData = pCreateInfo.InitialData,
 			};
 
 			ulong internalHandle = 0;
@@ -1046,14 +1143,15 @@ namespace Magnesium.Vulkan
 			var bOldSwapchainPtr = bOldSwapchain != null ? bOldSwapchain.Handle : 0UL;
 
 			var pQueueFamilyIndices = IntPtr.Zero;
-			var queueFamilyIndexCount = pCreateInfo.QueueFamilyIndices != null ? (uint)pCreateInfo.QueueFamilyIndices.Length : 0U;
+			var queueFamilyIndexCount =  0U;
 
-			if (queueFamilyIndexCount > 0)
+
+			if (pCreateInfo.QueueFamilyIndices != null)
 			{
+				queueFamilyIndexCount = (uint)pCreateInfo.QueueFamilyIndices.Length;
 				var arraySize = (int)(sizeof(uint) * queueFamilyIndexCount);
 				pQueueFamilyIndices = Marshal.AllocHGlobal(arraySize);
 				attachedItems.Add(pQueueFamilyIndices);
-
 
 				var tempBuffer = new byte[arraySize];
 				Buffer.BlockCopy(pCreateInfo.QueueFamilyIndices, 0, tempBuffer, 0, arraySize);
@@ -1082,6 +1180,7 @@ namespace Magnesium.Vulkan
 				oldSwapchain = bOldSwapchainPtr
 			};
 			return createInfo;
+
 		}
 
 		public Result GetSwapchainImagesKHR(IMgSwapchainKHR swapchain, out IMgImage[] pSwapchainImages)
