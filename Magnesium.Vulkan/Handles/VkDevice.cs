@@ -816,7 +816,32 @@ namespace Magnesium.Vulkan
 			var bAllocator = (MgVkAllocationCallbacks)allocator;
 			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
-			throw new NotImplementedException();
+			var internalHandle = 0UL;
+			var createInfo = new VkSamplerCreateInfo
+			{
+				sType = VkStructureType.StructureTypeSamplerCreateInfo,
+				pNext = IntPtr.Zero,
+				flags = pCreateInfo.Flags,
+				magFilter = (VkFilter) pCreateInfo.MagFilter,
+				minFilter = (VkFilter) pCreateInfo.MinFilter,
+				mipmapMode = (VkSamplerMipmapMode) pCreateInfo.MipmapMode,
+				addressModeU = (VkSamplerAddressMode) pCreateInfo.AddressModeU,
+				addressModeV = (VkSamplerAddressMode) pCreateInfo.AddressModeV,
+				addressModeW = (VkSamplerAddressMode) pCreateInfo.AddressModeW,
+				mipLodBias = pCreateInfo.MipLodBias,
+				anisotropyEnable = VkBool32.ConvertTo(pCreateInfo.AnisotropyEnable),
+				maxAnisotropy = pCreateInfo.MaxAnisotropy,
+				compareEnable = VkBool32.ConvertTo(pCreateInfo.CompareEnable),
+				compareOp = (VkCompareOp) pCreateInfo.CompareOp,
+				minLod = pCreateInfo.MinLod,
+				maxLod = pCreateInfo.MaxLod,
+				borderColor = (VkBorderColor) pCreateInfo.BorderColor,
+				unnormalizedCoordinates = VkBool32.ConvertTo(pCreateInfo.UnnormalizedCoordinates),
+			};
+
+			var result = Interops.vkCreateSampler(Handle, createInfo, allocatorPtr, ref internalHandle);
+			pSampler = new VkSampler(internalHandle);
+			return result;
 		}
 
 		public Result CreateDescriptorSetLayout(MgDescriptorSetLayoutCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDescriptorSetLayout pSetLayout)
@@ -842,7 +867,59 @@ namespace Magnesium.Vulkan
 			var bAllocator = (MgVkAllocationCallbacks)allocator;
 			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
-			throw new NotImplementedException();
+			var pPoolSizes = IntPtr.Zero;
+			var poolSizeCount = 0U;
+
+
+			try
+			{
+				if (pCreateInfo.PoolSizes != null)
+				{
+					poolSizeCount = (UInt32) pCreateInfo.PoolSizes.Length;
+					if (poolSizeCount > 0)
+					{
+						var stride = Marshal.SizeOf(typeof(VkDescriptorPoolSize));
+
+						pPoolSizes = Marshal.AllocHGlobal((int)(poolSizeCount * stride));
+
+						var offset = 0;
+						for (var j = 0; j < poolSizeCount; ++j)
+						{
+							var current = pCreateInfo.PoolSizes[j];
+
+							var poolSizeItem = new VkDescriptorPoolSize
+							{
+								type = (VkDescriptorType) current.Type,
+								descriptorCount = current.DescriptorCount,
+							};
+							var dest = IntPtr.Add(pPoolSizes, offset);
+							Marshal.StructureToPtr(poolSizeItem, dest, false);
+							offset += stride;
+						}
+					}
+				}
+
+				var internalHandle = 0UL;
+				var createInfo = new VkDescriptorPoolCreateInfo
+				{
+					sType = VkStructureType.StructureTypeDescriptorPoolCreateInfo,
+					pNext = IntPtr.Zero,
+					flags = (VkDescriptorPoolCreateFlags) pCreateInfo.Flags,
+					maxSets = pCreateInfo.MaxSets,
+					poolSizeCount = poolSizeCount,
+					pPoolSizes = pPoolSizes,
+				};
+				var result = Interops.vkCreateDescriptorPool(Handle, createInfo, allocatorPtr, ref internalHandle);
+				pDescriptorPool = new VkDescriptorPool(internalHandle);
+				return result;
+			}
+			finally
+			{
+				if(pPoolSizes != IntPtr.Zero)
+				{
+					Marshal.FreeHGlobal(pPoolSizes);
+				}
+			}
 		}
 
 		public Result AllocateDescriptorSets(MgDescriptorSetAllocateInfo pAllocateInfo, out IMgDescriptorSet[] pDescriptorSets)

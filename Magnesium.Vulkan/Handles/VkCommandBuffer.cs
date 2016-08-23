@@ -34,7 +34,7 @@ namespace Magnesium.Vulkan
 						var container = pBeginInfo.InheritanceInfo.RenderPass;
 						if (container != null)
 						{
-							var rp = container as VkRenderPass;
+							var rp = (VkRenderPass) container;
 							Debug.Assert(rp != null);
 							internalPtr = rp.Handle;
 						}
@@ -48,7 +48,7 @@ namespace Magnesium.Vulkan
 						var container = pBeginInfo.InheritanceInfo.Framebuffer;
 						if (container != null)
 						{
-							var fb = container as VkFramebuffer;
+							var fb = (VkFramebuffer) container;
 							Debug.Assert(fb != null);
 							internalPtr = fb.Handle;
 						}
@@ -89,7 +89,7 @@ namespace Magnesium.Vulkan
 
 		public void CmdBindPipeline(MgPipelineBindPoint pipelineBindPoint, IMgPipeline pipeline)
 		{
-			var bPipeline = pipeline as VkPipeline;
+			var bPipeline = (VkPipeline) pipeline;
 			Debug.Assert(bPipeline != null);
 
 			Interops.vkCmdBindPipeline(this.Handle, (VkPipelineBindPoint)pipelineBindPoint, bPipeline.Handle);
@@ -183,7 +183,7 @@ namespace Magnesium.Vulkan
 
 		public void CmdBindDescriptorSets(MgPipelineBindPoint pipelineBindPoint, IMgPipelineLayout layout, UInt32 firstSet, UInt32 descriptorSetCount, IMgDescriptorSet[] pDescriptorSets, UInt32[] pDynamicOffsets)
 		{
-			var bLayout = layout as VkPipelineLayout;
+			var bLayout = (VkPipelineLayout) layout;
 			Debug.Assert(bLayout != null);
 
 			var stride = Marshal.SizeOf(typeof(IntPtr));
@@ -192,7 +192,8 @@ namespace Magnesium.Vulkan
 			var src = new ulong[descriptorSetCount];
 			for (uint i = 0; i < descriptorSetCount; ++i)
 			{
-				var bDescSet = pDescriptorSets[i] as VkDescriptorSet;
+				var bDescSet = (VkDescriptorSet) pDescriptorSets[i];
+				Debug.Assert(bDescSet != null);
 				src[i] = bDescSet.Handle;
 			}
 
@@ -201,7 +202,7 @@ namespace Magnesium.Vulkan
 
 		public void CmdBindIndexBuffer(IMgBuffer buffer, UInt64 offset, MgIndexType indexType)
 		{
-			var bBuffer = buffer as VkBuffer;
+			var bBuffer = (VkBuffer) buffer;
 			Debug.Assert(bBuffer != null);
 
 			Interops.vkCmdBindIndexBuffer(this.Handle, bBuffer.Handle, offset, (VkIndexType)indexType);
@@ -213,7 +214,7 @@ namespace Magnesium.Vulkan
 			var src = new ulong[pBuffers.Length];
 			for (uint i = 0; i < bindingCount; ++i)
 			{
-				var bBuffer = pBuffers[i] as VkDescriptorSet;
+				var bBuffer = (VkBuffer) pBuffers[i];
 				Debug.Assert(bBuffer != null);
 				src[i] = bBuffer.Handle;
 			}
@@ -233,7 +234,7 @@ namespace Magnesium.Vulkan
 
 		public void CmdDrawIndirect(IMgBuffer buffer, UInt64 offset, UInt32 drawCount, UInt32 stride)
 		{
-			var bBuffer = buffer as VkBuffer;
+			var bBuffer = (VkBuffer) buffer;
 			Debug.Assert(bBuffer != null);
 
 			Interops.vkCmdDrawIndirect(this.Handle, bBuffer.Handle, offset, drawCount, stride);
@@ -241,7 +242,7 @@ namespace Magnesium.Vulkan
 
 		public void CmdDrawIndexedIndirect(IMgBuffer buffer, UInt64 offset, UInt32 drawCount, UInt32 stride)
 		{
-			var bBuffer = buffer as VkBuffer;
+			var bBuffer = (VkBuffer) buffer;
 			Debug.Assert(bBuffer != null);
 
 			Interops.vkCmdDrawIndexedIndirect(this.Handle, bBuffer.Handle, offset, drawCount, stride);
@@ -254,7 +255,7 @@ namespace Magnesium.Vulkan
 
 		public void CmdDispatchIndirect(IMgBuffer buffer, UInt64 offset)
 		{
-			var bBuffer = buffer as VkBuffer;
+			var bBuffer = (VkBuffer) buffer;
 			Debug.Assert(bBuffer != null);
 
 			Interops.vkCmdDispatchIndirect(this.Handle, bBuffer.Handle, offset);
@@ -262,10 +263,10 @@ namespace Magnesium.Vulkan
 
 		public void CmdCopyBuffer(IMgBuffer srcBuffer, IMgBuffer dstBuffer, MgBufferCopy[] pRegions)
 		{
-			var bBuffer_src = srcBuffer as VkBuffer;
+			var bBuffer_src = (VkBuffer) srcBuffer;
 			Debug.Assert(bBuffer_src != null);
 
-			var bBuffer_dst = dstBuffer as VkBuffer;
+			var bBuffer_dst = (VkBuffer) dstBuffer;
 			Debug.Assert(bBuffer_dst != null);
 
 			var handle = GCHandle.Alloc(pRegions, GCHandleType.Pinned);
@@ -290,10 +291,10 @@ namespace Magnesium.Vulkan
 
 		public void CmdCopyImage(IMgImage srcImage, MgImageLayout srcImageLayout, IMgImage dstImage, MgImageLayout dstImageLayout, MgImageCopy[] pRegions)
 		{
-			var bSrcImage = srcImage as VkImage;
+			var bSrcImage = (VkImage) srcImage;
 			Debug.Assert(bSrcImage != null);
 
-			var bDstImage = dstImage as VkImage;
+			var bDstImage = (VkImage) dstImage;
 			Debug.Assert(bDstImage != null);
 
 
@@ -318,9 +319,9 @@ namespace Magnesium.Vulkan
 
 		public void CmdBlitImage(IMgImage srcImage, MgImageLayout srcImageLayout, IMgImage dstImage, MgImageLayout dstImageLayout, MgImageBlit[] pRegions, MgFilter filter)
 		{
-			var bSrcImage = srcImage as VkImage;
+			var bSrcImage = (VkImage) srcImage;
 			Debug.Assert(bSrcImage != null);
-			var bDstImage = dstImage as VkImage;
+			var bDstImage = (VkImage) dstImage;
 			Debug.Assert(bDstImage != null);
 
 			Interops.vkCmdBlitImage(this.Handle, bSrcImage.Handle, srcImageLayout, bDstImage.Handle, dstImageLayout, (uint)pRegions.Length, pRegions, (VkFilter)filter);
@@ -328,9 +329,9 @@ namespace Magnesium.Vulkan
 
 		public void CmdCopyBufferToImage(IMgBuffer srcBuffer, IMgImage dstImage, MgImageLayout dstImageLayout, MgBufferImageCopy[] pRegions)
 		{
-			var bSrcBuffer = srcBuffer as VkBuffer;
+			var bSrcBuffer = (VkBuffer) srcBuffer;
 			Debug.Assert(bSrcBuffer != null);
-			var bDstImage = dstImage as VkImage;
+			var bDstImage = (VkImage) dstImage;
 			Debug.Assert(bDstImage != null);
 
 			var handle = GCHandle.Alloc(pRegions, GCHandleType.Pinned);
@@ -355,9 +356,9 @@ namespace Magnesium.Vulkan
 
 		public void CmdCopyImageToBuffer(IMgImage srcImage, MgImageLayout srcImageLayout, IMgBuffer dstBuffer, MgBufferImageCopy[] pRegions)
 		{
-			var bSrcImage = srcImage as VkImage;
+			var bSrcImage = (VkImage) srcImage;
 			Debug.Assert(bSrcImage != null);
-			var bDstBuffer = dstBuffer as VkBuffer;
+			var bDstBuffer = (VkBuffer) dstBuffer;
 			Debug.Assert(bDstBuffer != null);
 
 			var handle = GCHandle.Alloc(pRegions, GCHandleType.Pinned);
@@ -382,7 +383,7 @@ namespace Magnesium.Vulkan
 
 		public void CmdUpdateBuffer(IMgBuffer dstBuffer, UInt64 dstOffset, UInt64 dataSize, IntPtr pData)
 		{
-			var bDstBuffer = dstBuffer as VkBuffer;
+			var bDstBuffer = (VkBuffer) dstBuffer;
 			Debug.Assert(bDstBuffer != null);
 
 			Interops.vkCmdUpdateBuffer(this.Handle, bDstBuffer.Handle, dstOffset, dataSize, pData);
@@ -390,7 +391,7 @@ namespace Magnesium.Vulkan
 
 		public void CmdFillBuffer(IMgBuffer dstBuffer, UInt64 dstOffset, UInt64 size, UInt32 data)
 		{
-			var bDstBuffer = dstBuffer as VkBuffer;
+			var bDstBuffer = (VkBuffer) dstBuffer;
 			Debug.Assert(bDstBuffer != null);
 
 			Interops.vkCmdFillBuffer(this.Handle, bDstBuffer.Handle, dstOffset, size, data);
@@ -398,7 +399,7 @@ namespace Magnesium.Vulkan
 
 		public void CmdClearColorImage(IMgImage image, MgImageLayout imageLayout, MgClearColorValue pColor, MgImageSubresourceRange[] pRanges)
 		{
-			var bImage = image as VkImage;
+			var bImage = (VkImage) image;
 			Debug.Assert(bImage != null);
 
 			Interops.vkCmdClearColorImage(this.Handle, bImage.Handle, imageLayout, pColor, (uint)pRanges.Length, pRanges); 
@@ -406,7 +407,7 @@ namespace Magnesium.Vulkan
 
 		public void CmdClearDepthStencilImage(IMgImage image, MgImageLayout imageLayout, MgClearDepthStencilValue pDepthStencil, MgImageSubresourceRange[] pRanges)
 		{
-			var bImage = image as VkImage;
+			var bImage = (VkImage) image;
 			Debug.Assert(bImage != null);
 
 			Interops.vkCmdClearDepthStencilImage(this.Handle, bImage.Handle, imageLayout, pDepthStencil, (uint)pRanges.Length, pRanges); 
@@ -438,9 +439,9 @@ namespace Magnesium.Vulkan
 
 		public void CmdResolveImage(IMgImage srcImage, MgImageLayout srcImageLayout, IMgImage dstImage, MgImageLayout dstImageLayout, MgImageResolve[] pRegions)
 		{
-			var bSrcImage = srcImage as VkImage;
+			var bSrcImage = (VkImage) srcImage;
 			Debug.Assert(bSrcImage != null);
-			var bDstImage = dstImage as VkImage;
+			var bDstImage = (VkImage) dstImage;
 			Debug.Assert(bDstImage != null);
 
 			var handle = GCHandle.Alloc(pRegions, GCHandleType.Pinned);
@@ -465,7 +466,7 @@ namespace Magnesium.Vulkan
 
 		public void CmdSetEvent(IMgEvent @event, MgPipelineStageFlagBits stageMask)
 		{
-			var bEvent = @event as VkEvent;
+			var bEvent = (VkEvent) @event;
 			Debug.Assert(bEvent != null);
 
 			Interops.vkCmdSetEvent(this.Handle, bEvent.Handle, (VkPipelineStageFlags)stageMask);
@@ -473,7 +474,7 @@ namespace Magnesium.Vulkan
 
 		public void CmdResetEvent(IMgEvent @event, MgPipelineStageFlagBits stageMask)
 		{
-			var bEvent = @event as VkEvent;
+			var bEvent = (VkEvent) @event;
 			Debug.Assert(bEvent != null);
 
 			Interops.vkCmdResetEvent(this.Handle, bEvent.Handle, (VkPipelineStageFlags)stageMask);
@@ -487,7 +488,8 @@ namespace Magnesium.Vulkan
 				var eventCount = (uint)pEvents.Length;
 				for (var i = 0; i < eventCount; ++i)
 				{
-					var bEvent = pEvents[i] as VkEvent;
+					var bEvent = (VkEvent) pEvents[i];
+					Debug.Assert(bEvent != null);
 					eventHandles[i] = bEvent.Handle;
 				}
 
@@ -519,7 +521,7 @@ namespace Magnesium.Vulkan
 					for (var i = 0; i < bufBarrierCount; ++i)
 					{
 						var current = pBufferMemoryBarriers[i];
-						var bBuffer = current.Buffer as VkBuffer;
+						var bBuffer = (VkBuffer) current.Buffer;
 						Debug.Assert(bBuffer != null);
 
 						tempBuf[i] = new VkBufferMemoryBarrier
@@ -548,7 +550,7 @@ namespace Magnesium.Vulkan
 					for (var i = 0; i < bufBarrierCount; ++i)
 					{
 						var current = pImageMemoryBarriers[i];
-						var bImage = current.Image as VkImage;
+						var bImage = (VkImage) current.Image;
 						Debug.Assert(bImage != null);
 
 						tempImg[i] = new VkImageMemoryBarrier
@@ -623,7 +625,7 @@ namespace Magnesium.Vulkan
 					for (var i = 0; i < bufBarrierCount; ++i)
 					{
 						var current = pBufferMemoryBarriers[i];
-						var bBuffer = current.Buffer as VkBuffer;
+						var bBuffer = (VkBuffer) current.Buffer;
 						Debug.Assert(bBuffer != null);
 
 						tempBuf[i] = new VkBufferMemoryBarrier
@@ -652,7 +654,7 @@ namespace Magnesium.Vulkan
 					for (var i = 0; i < bufBarrierCount; ++i)
 					{
 						var current = pImageMemoryBarriers[i];
-						var bImage = current.Image as VkImage;
+						var bImage = (VkImage) current.Image;
 						Debug.Assert(bImage != null);
 
 						tempImg[i] = new VkImageMemoryBarrier
@@ -694,7 +696,7 @@ namespace Magnesium.Vulkan
 
 		public void CmdBeginQuery(IMgQueryPool queryPool, UInt32 query, MgQueryControlFlagBits flags)
 		{
-			var bQueryPool = queryPool as VkQueryPool;
+			var bQueryPool = (VkQueryPool) queryPool;
 			Debug.Assert(bQueryPool != null);
 
 			Interops.vkCmdBeginQuery(this.Handle, bQueryPool.Handle, query, (Magnesium.Vulkan.VkQueryControlFlags)flags);
@@ -702,7 +704,7 @@ namespace Magnesium.Vulkan
 
 		public void CmdEndQuery(IMgQueryPool queryPool, UInt32 query)
 		{
-			var bQueryPool = queryPool as VkQueryPool;
+			var bQueryPool = (VkQueryPool) queryPool;
 			Debug.Assert(bQueryPool != null);
 
 			Interops.vkCmdEndQuery(this.Handle, bQueryPool.Handle, query);
@@ -710,7 +712,7 @@ namespace Magnesium.Vulkan
 
 		public void CmdResetQueryPool(IMgQueryPool queryPool, UInt32 firstQuery, UInt32 queryCount)
 		{
-			var bQueryPool = queryPool as VkQueryPool;
+			var bQueryPool = (VkQueryPool) queryPool;
 			Debug.Assert(bQueryPool != null);
 
 			Interops.vkCmdResetQueryPool(this.Handle, bQueryPool.Handle, firstQuery, queryCount);
@@ -718,7 +720,7 @@ namespace Magnesium.Vulkan
 
 		public void CmdWriteTimestamp(MgPipelineStageFlagBits pipelineStage, IMgQueryPool queryPool, UInt32 query)
 		{
-			var bQueryPool = queryPool as VkQueryPool;
+			var bQueryPool = (VkQueryPool) queryPool;
 			Debug.Assert(bQueryPool != null);
 
 			Interops.vkCmdWriteTimestamp(this.Handle, (VkPipelineStageFlags)pipelineStage, bQueryPool.Handle, query);
@@ -726,18 +728,18 @@ namespace Magnesium.Vulkan
 
 		public void CmdCopyQueryPoolResults(IMgQueryPool queryPool, UInt32 firstQuery, UInt32 queryCount, IMgBuffer dstBuffer, UInt64 dstOffset, UInt64 stride, MgQueryResultFlagBits flags)
 		{
-			var bQueryPool = queryPool as VkQueryPool;
+			var bQueryPool =(VkQueryPool) queryPool;
 			Debug.Assert(bQueryPool != null);
 
-			var bBuffer = queryPool as VkQueryPool;
-			Debug.Assert(bBuffer != null);
+			var bDstBuffer = (VkBuffer) dstBuffer;
+			Debug.Assert(bDstBuffer != null);
 
-			Interops.vkCmdCopyQueryPoolResults(this.Handle, bQueryPool.Handle, firstQuery, queryCount, bBuffer.Handle, dstOffset, stride, (Magnesium.Vulkan.VkQueryResultFlags)flags);
+			Interops.vkCmdCopyQueryPoolResults(this.Handle, bQueryPool.Handle, firstQuery, queryCount, bDstBuffer.Handle, dstOffset, stride, (Magnesium.Vulkan.VkQueryResultFlags)flags);
 		}
 
 		public void CmdPushConstants(IMgPipelineLayout layout, MgShaderStageFlagBits stageFlags, UInt32 offset, UInt32 size, IntPtr pValues)
 		{
-			var bLayout = layout as VkPipelineLayout;
+			var bLayout = (VkPipelineLayout) layout;
 			Debug.Assert(bLayout != null);
 
 			Interops.vkCmdPushConstants(this.Handle, bLayout.Handle, (Magnesium.Vulkan.VkShaderStageFlags)stageFlags, offset, size, pValues);
@@ -745,11 +747,14 @@ namespace Magnesium.Vulkan
 
 		public void CmdBeginRenderPass(MgRenderPassBeginInfo pRenderPassBegin, MgSubpassContents contents)
 		{
-			Debug.Assert(pRenderPassBegin != null);
+			if (pRenderPassBegin == null)
+			{
+				throw new ArgumentNullException(nameof(pRenderPassBegin));
+			}
 
-			var bRenderPass = pRenderPassBegin.RenderPass as VkRenderPass;
+			var bRenderPass = (VkRenderPass) pRenderPassBegin.RenderPass;
 			Debug.Assert(bRenderPass != null);
-			var bFrameBuffer = pRenderPassBegin.Framebuffer as VkFramebuffer;
+			var bFrameBuffer = (VkFramebuffer) pRenderPassBegin.Framebuffer;
 			Debug.Assert(bFrameBuffer != null);
 
 			var clearValueCount = pRenderPassBegin.ClearValues != null ? (UInt32) pRenderPassBegin.ClearValues.Length : 0U;
@@ -809,7 +814,8 @@ namespace Magnesium.Vulkan
 			var bufferCount = (uint)pCommandBuffers.Length;
 			for (uint i = 0; i < bufferCount; ++i)
 			{
-				var bBuffer = pCommandBuffers[i] as VkCommandBuffer;
+				var bBuffer = (VkCommandBuffer) pCommandBuffers[i];
+				Debug.Assert(bBuffer != null);
 				handles[i] = bBuffer.Handle;
 			}
 

@@ -230,7 +230,7 @@ namespace Magnesium.Vulkan
 		internal extern static void vkDestroyDescriptorSetLayout(IntPtr device, UInt64 descriptorSetLayout, IntPtr pAllocator);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe Result vkCreateDescriptorPool(IntPtr device, VkDescriptorPoolCreateInfo pCreateInfo, IntPtr pAllocator, UInt64* pDescriptorPool);
+		internal extern static Result vkCreateDescriptorPool(IntPtr device, [In] VkDescriptorPoolCreateInfo pCreateInfo, IntPtr pAllocator, ref UInt64 pDescriptorPool);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkDestroyDescriptorPool(IntPtr device, UInt64 descriptorPool, IntPtr pAllocator);

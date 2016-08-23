@@ -18,8 +18,8 @@ namespace Magnesium.Vulkan
 			if (!mIsDisposed)
 				return;
 
-			var bAllocator = allocator as MgVkAllocationCallbacks;
-			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var bAllocator = (MgVkAllocationCallbacks) allocator;
+			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;		
 
 			Interops.vkDestroyInstance(this.Handle, allocatorPtr);
 

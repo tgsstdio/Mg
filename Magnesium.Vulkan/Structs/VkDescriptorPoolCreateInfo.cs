@@ -12,6 +12,6 @@ namespace Magnesium.Vulkan
 		public VkDescriptorPoolCreateFlags flags { get; set; }
 		public UInt32 maxSets { get; set; }
 		public UInt32 poolSizeCount { get; set; }
-		public VkDescriptorPoolSize pPoolSizes { get; set; }
+		public IntPtr pPoolSizes { get; set; } // VkDescriptorPoolSize
 	}
 }

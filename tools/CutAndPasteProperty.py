@@ -7,8 +7,16 @@ def parseProperty(line):
     tokens = line.split()
     propertyType = tokens[1]
     structName = tokens[2]
-    srcPropertyName = structName.capitalize()
-    namedParameter = structName + " = pCreateInfo." + srcPropertyName + ","
+    srcPropertyName = structName[0].upper() + structName[1:]
+    if structName == 'sType':
+        namedParameter = "sType = VkStructureType.StructureType,"
+    elif structName == 'pNext':
+        namedParameter = "pNext = IntPtr.Zero,"
+    elif propertyType.endswith('Flags'):
+        namedParameter = structName + " = (" + propertyType + ") pCreateInfo." + srcPropertyName + ","
+    else:
+        namedParameter = structName + " = pCreateInfo." + srcPropertyName + ","
+    
     return namedParameter
 
 f = open(os.path.curdir + '/Properties.txt')

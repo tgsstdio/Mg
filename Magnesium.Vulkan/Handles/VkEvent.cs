@@ -15,8 +15,8 @@ namespace Magnesium.Vulkan
 		{
 			Debug.Assert(!mIsDisposed);
 
-			var bDevice = device as VkDevice;
-			Debug.Assert(bDevice != null);
+			var bDevice = (VkDevice) device;
+			Debug.Assert(bDevice != null);		
 
 			return Interops.vkGetEventStatus(bDevice.Handle, this.Handle);
 		}
@@ -25,8 +25,8 @@ namespace Magnesium.Vulkan
 		{
 			Debug.Assert(!mIsDisposed);
 
-			var bDevice = device as VkDevice;
-			Debug.Assert(bDevice != null);
+			var bDevice = (VkDevice) device;
+			Debug.Assert(bDevice != null);		
 
 			return Interops.vkSetEvent(bDevice.Handle, this.Handle);
 		}
@@ -35,8 +35,8 @@ namespace Magnesium.Vulkan
 		{
 			Debug.Assert(!mIsDisposed);
 
-			var bDevice = device as VkDevice;
-			Debug.Assert(bDevice != null);
+			var bDevice = (VkDevice) device;
+			Debug.Assert(bDevice != null);		
 
 			return (Result)Interops.vkResetEvent(bDevice.Handle, this.Handle);
 		}
@@ -47,11 +47,11 @@ namespace Magnesium.Vulkan
 			if (mIsDisposed)
 				return;
 
-			var bDevice = device as VkDevice;
-			var bAllocator = allocator as MgVkAllocationCallbacks;
-
-			Debug.Assert(bDevice != null);
-			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var bDevice = (VkDevice) device;
+			Debug.Assert(bDevice != null);			
+			
+			var bAllocator = (MgVkAllocationCallbacks) allocator;
+			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;	
 
 			Interops.vkDestroyEvent(bDevice.Handle, this.Handle, allocatorPtr);
 

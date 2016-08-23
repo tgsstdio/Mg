@@ -1,5 +1,6 @@
 using Magnesium;
 using System;
+using System.Diagnostics;
 namespace Magnesium.Vulkan
 {
 	public class VkBufferView : IMgBufferView
@@ -16,13 +17,14 @@ namespace Magnesium.Vulkan
 			if (mIsDisposed)
 				return;
 
-			var bDevice = device as VkDevice;
-			var bAllocator = allocator as MgVkAllocationCallbacks;
+			
+			var bDevice = (VkDevice) device;
+			Debug.Assert(bDevice != null);	
 
-			IntPtr devicePtr = bDevice != null ? bDevice.Handle : IntPtr.Zero;
+			var bAllocator = (MgVkAllocationCallbacks) allocator;
 			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
-			Interops.vkDestroyBufferView(devicePtr, this.Handle, allocatorPtr);
+			Interops.vkDestroyBufferView(bDevice.Handle, this.Handle, allocatorPtr);
 
 			this.Handle = 0UL;
 			mIsDisposed = true;
