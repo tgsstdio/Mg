@@ -549,7 +549,31 @@ namespace Magnesium.Vulkan
 			var bAllocator = (MgVkAllocationCallbacks)allocator;
 			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
-			throw new NotImplementedException();
+			var bImage = (VkImage) pCreateInfo.Image;
+			Debug.Assert(bImage != null);
+
+
+			var createInfo = new VkImageViewCreateInfo
+			{
+				sType = VkStructureType.StructureTypeImageViewCreateInfo,
+				pNext = IntPtr.Zero,
+				flags = pCreateInfo.Flags,
+				image = bImage.Handle,
+				viewType = (VkImageViewType) pCreateInfo.ViewType,
+				format = (VkFormat) pCreateInfo.Format,
+				components = new VkComponentMapping
+				{
+					r =	(VkComponentSwizzle) pCreateInfo.Components.R,
+					g = (VkComponentSwizzle) pCreateInfo.Components.G,
+					b = (VkComponentSwizzle) pCreateInfo.Components.B,
+					a = (VkComponentSwizzle) pCreateInfo.Components.A,
+				},	
+				subresourceRange = pCreateInfo.SubresourceRange,
+			};
+			ulong internalHandle = 0;
+			var result = Interops.vkCreateImageView(Handle, createInfo, allocatorPtr, ref internalHandle);
+			pView = new VkImageView(internalHandle);
+			return result;
 		}
 
 		public Result CreateShaderModule(MgShaderModuleCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgShaderModule pShaderModule)
@@ -620,14 +644,58 @@ namespace Magnesium.Vulkan
 			return result;
 		}
 
-		public Result GetPipelineCacheData(IMgPipelineCache pipelineCache, UIntPtr pDataSize, IntPtr pData)
+		public Result GetPipelineCacheData(IMgPipelineCache pipelineCache, out byte[] pData)
 		{
-			throw new NotImplementedException();
+			Debug.Assert(!mIsDisposed);
+
+			var bPipelineCache = (VkPipelineCache)pipelineCache;
+			Debug.Assert(bPipelineCache != null);
+
+			UIntPtr dataSize = UIntPtr.Zero;
+			var first = Interops.vkGetPipelineCacheData(Handle, bPipelineCache.Handle, ref dataSize, IntPtr.Zero);
+
+			if (first != Result.SUCCESS)
+			{
+				pData = null;
+				return first;
+			}
+
+			pData = new byte[dataSize.ToUInt64()];
+			GCHandle pinnedArray = GCHandle.Alloc(pData, GCHandleType.Pinned);
+			try
+			{
+				var dest = pinnedArray.AddrOfPinnedObject();
+				return Interops.vkGetPipelineCacheData(Handle, bPipelineCache.Handle, ref dataSize, dest);
+			}
+			finally
+			{
+				pinnedArray.Free();
+			}
 		}
 
 		public Result MergePipelineCaches(IMgPipelineCache dstCache, IMgPipelineCache[] pSrcCaches)
 		{
-			throw new NotImplementedException();
+			if (pSrcCaches == null)
+			{
+				throw new ArgumentNullException(nameof(pSrcCaches));
+			}
+
+			Debug.Assert(!mIsDisposed);
+
+			var bDstCache = (VkPipelineCache)dstCache;
+			Debug.Assert(bDstCache != null);
+
+			var srcCacheCount = (UInt32) pSrcCaches.Length;
+
+			ulong[] cacheHandles = new ulong[srcCacheCount];
+			for (var i = 0; i < srcCacheCount; ++i)
+			{
+				var bCache = (VkPipelineCache) pSrcCaches[i];
+				Debug.Assert(bCache != null);
+				cacheHandles[i] = bCache.Handle;
+			}
+
+			return Interops.vkMergePipelineCaches(Handle, bDstCache.Handle, srcCacheCount, cacheHandles);
 		}
 
 		public Result CreateGraphicsPipelines(IMgPipelineCache pipelineCache, MgGraphicsPipelineCreateInfo[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgPipeline[] pPipelines)

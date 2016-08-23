@@ -1,10 +1,9 @@
-using Magnesium;
 using System;
 using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan
 {
-	[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Ansi)]
+    [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Ansi)]
 	internal struct VkImageViewCreateInfo
 	{
 		public VkStructureType sType { get; set; }
@@ -14,6 +13,6 @@ namespace Magnesium.Vulkan
 		public VkImageViewType viewType { get; set; }
 		public VkFormat format { get; set; }
 		public VkComponentMapping components { get; set; }
-		public VkImageSubresourceRange subresourceRange { get; set; }
+		public MgImageSubresourceRange subresourceRange { get; set; }
 	}
 }
