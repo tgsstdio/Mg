@@ -728,7 +728,82 @@ namespace Magnesium.Vulkan
 			var bAllocator = (MgVkAllocationCallbacks)allocator;
 			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
-			throw new NotImplementedException();
+			var setLayoutCount = 0U;
+			var pSetLayouts = IntPtr.Zero;
+
+			var pushConstantRangeCount = 0U;
+			var pPushConstantRanges = IntPtr.Zero;
+
+			try
+			{
+				if (pCreateInfo.SetLayouts != null)
+				{
+					setLayoutCount = (UInt32) pCreateInfo.SetLayouts.Length;
+					if (setLayoutCount > 0)				
+					{
+                        var arraySize = (int)(sizeof(UInt64) * setLayoutCount);
+                        pSetLayouts = Marshal.AllocHGlobal(arraySize);						
+						var tempBuffer = new byte[arraySize];
+						Buffer.BlockCopy(pCreateInfo.SetLayouts, 0, tempBuffer, 0, arraySize);
+						Marshal.Copy(tempBuffer, 0, pSetLayouts, arraySize);
+					}
+				}
+
+				if (pCreateInfo.PushConstantRanges != null)
+				{
+					pushConstantRangeCount = (UInt32) pCreateInfo.PushConstantRanges.Length;
+
+					if (pushConstantRangeCount > 0)
+					{
+						var stride = Marshal.SizeOf(typeof(VkPushConstantRange));
+						pPushConstantRanges = Marshal.AllocHGlobal((int)(pushConstantRangeCount * stride));
+
+						var offset = 0;
+						for (var j = 0; j < pushConstantRangeCount; ++j)
+						{
+							var current = pCreateInfo.PushConstantRanges[j];
+
+							var rangeItem = new VkPushConstantRange
+							{
+								stageFlags = (VkShaderStageFlags) current.StageFlags,
+								offset = current.Offset,
+								size = current.Size,
+							};
+							var dest = IntPtr.Add(pPushConstantRanges, offset);
+							Marshal.StructureToPtr(rangeItem, dest, false);
+							offset += stride;
+						}
+					}
+				}
+
+				ulong internalHandle = 0;
+				var createInfo = new VkPipelineLayoutCreateInfo
+				{
+					sType = VkStructureType.StructureTypePipelineLayoutCreateInfo,
+					pNext = IntPtr.Zero,
+					flags = pCreateInfo.Flags,
+					setLayoutCount = setLayoutCount,
+					pSetLayouts = pSetLayouts,
+					pushConstantRangeCount = pushConstantRangeCount,
+					pPushConstantRanges = pPushConstantRanges,
+
+				};
+				var result = Interops.vkCreatePipelineLayout(Handle, createInfo, allocatorPtr, ref internalHandle);
+				pPipelineLayout = new VkPipelineLayout(internalHandle);
+				return result;
+			}
+			finally
+			{
+				if (pSetLayouts != IntPtr.Zero)
+				{
+					Marshal.FreeHGlobal(pSetLayouts);
+				}
+
+				if (pPushConstantRanges != IntPtr.Zero)
+				{
+					Marshal.FreeHGlobal(pPushConstantRanges);
+				}				
+			}
 		}
 
 		public Result CreateSampler(MgSamplerCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgSampler pSampler)
