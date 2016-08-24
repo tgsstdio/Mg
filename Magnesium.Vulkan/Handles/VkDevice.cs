@@ -1216,7 +1216,30 @@ namespace Magnesium.Vulkan
 
 		public Result FreeDescriptorSets(IMgDescriptorPool descriptorPool, IMgDescriptorSet[] pDescriptorSets)
 		{
-			throw new NotImplementedException();
+			if (descriptorPool == null)
+				throw new ArgumentNullException(nameof(descriptorPool));
+
+			if (pDescriptorSets == null)
+				throw new ArgumentNullException(nameof(pDescriptorSets));
+
+			var descriptorSetCount = (uint) pDescriptorSets.Length;
+			if (descriptorSetCount == 0)
+				throw new ArgumentOutOfRangeException(nameof(pDescriptorSets.Length) + " == 0");
+
+			Debug.Assert(!mIsDisposed);
+
+			var bDescriptorPool = (VkDescriptorPool)descriptorPool;
+			Debug.Assert(bDescriptorPool != null); // MAYBE DUPLICATE TESTING 
+
+			var internalHandles = new ulong[descriptorSetCount];
+			for (var i = 0; i < descriptorSetCount; ++i)
+			{
+				var bDescriptorSet = (VkDescriptorSet)pDescriptorSets[i];
+				Debug.Assert(bDescriptorSet != null);
+				internalHandles[i] = bDescriptorSet.Handle;
+			}
+
+			return Interops.vkFreeDescriptorSets(Handle, bDescriptorPool.Handle, descriptorSetCount, internalHandles);
 		}
 
 		public void UpdateDescriptorSets(MgWriteDescriptorSet[] pDescriptorWrites, MgCopyDescriptorSet[] pDescriptorCopies)
