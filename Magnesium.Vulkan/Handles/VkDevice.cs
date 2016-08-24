@@ -710,7 +710,7 @@ namespace Magnesium.Vulkan
 
         // Using Hans Passant's answer
         // http://stackoverflow.com/questions/10773440/conversion-in-net-native-utf-8-managed-string
-        public static IntPtr NativeUtf8FromString(string managedString)
+        static IntPtr NativeUtf8FromString(string managedString)
         {
             int len = System.Text.Encoding.UTF8.GetByteCount(managedString);
             byte[] buffer = new byte[len + 1];
@@ -864,11 +864,13 @@ namespace Magnesium.Vulkan
 					setLayoutCount = (UInt32) pCreateInfo.SetLayouts.Length;
 					if (setLayoutCount > 0)				
 					{
-                        var arraySize = (int)(sizeof(UInt64) * setLayoutCount);
-                        pSetLayouts = Marshal.AllocHGlobal(arraySize);						
-						var tempBuffer = new byte[arraySize];
-						Buffer.BlockCopy(pCreateInfo.SetLayouts, 0, tempBuffer, 0, arraySize);
-						Marshal.Copy(tempBuffer, 0, pSetLayouts, arraySize);
+                        pSetLayouts = ExtractUInt64HandleArray(pCreateInfo.SetLayouts,
+							(dsl) =>
+							{
+								var bDescriptorSetLayout = (VkDescriptorSetLayout) dsl;
+								Debug.Assert(bDescriptorSetLayout != null);
+								return bDescriptorSetLayout.Handle;
+							});
 					}
 				}
 
@@ -1011,20 +1013,16 @@ namespace Magnesium.Vulkan
 								if (currentBinding.DescriptorCount > 0)
 								{
 									var arraySize = (int)(currentBinding.DescriptorCount * sizeof(UInt64));										
-									pImmutableSamplers = Marshal.AllocHGlobal(arraySize);
-									attachedItems.Add(pImmutableSamplers);
+									pImmutableSamplers = ExtractUInt64HandleArray(currentBinding.ImmutableSamplers,									
+											(sampler) =>
+											{
+												var bSampler = (VkSampler) sampler;
+												Debug.Assert(bSampler != null);
+												return bSampler.Handle;
+											}										
+										);			
 
-									var handles = new UInt64[currentBinding.DescriptorCount];
-									for(var j = 0; j <  currentBinding.DescriptorCount; ++j)
-									{
-										var bSampler = (VkSampler) currentBinding.ImmutableSamplers[j];
-										Debug.Assert(bSampler != null);
-										handles[j] = bSampler.Handle;
-									}							
-			
-									var tempBuffer = new byte[arraySize];
-									Buffer.BlockCopy(handles, 0, tempBuffer, 0, arraySize);
-									Marshal.Copy(tempBuffer, 0, pImmutableSamplers, arraySize);
+									attachedItems.Add(pImmutableSamplers);
 								}
 							}
 
@@ -1134,7 +1132,86 @@ namespace Magnesium.Vulkan
 
 		public Result AllocateDescriptorSets(MgDescriptorSetAllocateInfo pAllocateInfo, out IMgDescriptorSet[] pDescriptorSets)
 		{
-			throw new NotImplementedException();
+			if (pAllocateInfo == null)
+				throw new ArgumentNullException(nameof(pAllocateInfo));
+
+			if (pAllocateInfo.SetLayouts == null)
+				throw new ArgumentNullException(nameof(pAllocateInfo.SetLayouts));
+			
+			var descriptorSetCount = pAllocateInfo.DescriptorSetCount;
+			if (descriptorSetCount != pAllocateInfo.SetLayouts.Length)
+				throw new ArgumentOutOfRangeException(nameof(pAllocateInfo.DescriptorSetCount) + " must equal to " + nameof(pAllocateInfo.SetLayouts.Length));
+
+			Debug.Assert(!mIsDisposed);
+
+			var bDescriptorPool = (VkDescriptorPool)pAllocateInfo.DescriptorPool;
+			Debug.Assert(bDescriptorPool != null);
+
+			var pSetLayouts = IntPtr.Zero;
+
+			try
+			{
+				if (descriptorSetCount > 0)
+				{
+					pSetLayouts = ExtractUInt64HandleArray(pAllocateInfo.SetLayouts,
+					 (dsl) =>
+					 {
+						var bSetLayout = (VkDescriptorSetLayout) dsl;
+						Debug.Assert(bSetLayout != null);
+						return bSetLayout.Handle;
+					 });
+				}
+
+				var allocateInfo = new VkDescriptorSetAllocateInfo
+				{
+					sType = VkStructureType.StructureTypeDescriptorSetAllocateInfo,
+					pNext = IntPtr.Zero,
+					descriptorPool = bDescriptorPool.Handle,
+					descriptorSetCount = pAllocateInfo.DescriptorSetCount,
+					pSetLayouts = pSetLayouts,
+				};
+
+				var internalHandles = new ulong[pAllocateInfo.DescriptorSetCount];
+				var result = Interops.vkAllocateDescriptorSets(this.Handle, allocateInfo, internalHandles);
+
+				pDescriptorSets = new VkDescriptorSet[pAllocateInfo.DescriptorSetCount];
+				for (var i = 0; i < pAllocateInfo.DescriptorSetCount; ++i)
+				{
+					pDescriptorSets[i] = new VkDescriptorSet(internalHandles[i]);
+				}
+				return result;
+			}
+			finally
+			{
+				if (pSetLayouts != IntPtr.Zero)
+				{
+					Marshal.FreeHGlobal(pSetLayouts);
+				}
+			}
+		}
+
+		/// DON'T FORGET TO Marshal.FreeHGlobal the returned value
+		static IntPtr ExtractUInt64HandleArray<TVkType>(TVkType[] arrayItems, Func<TVkType, UInt64> extractHandle)
+		{
+			Debug.Assert(arrayItems != null);
+			Debug.Assert(extractHandle != null);
+
+			var arrayLength = arrayItems.Length;
+
+			var arraySizeInBytes = (int)(arrayLength * sizeof(UInt64));
+			var array = Marshal.AllocHGlobal(arraySizeInBytes);
+
+			var vkHandles = new UInt64[arrayLength];
+			for (var j = 0; j < arrayLength; ++j)
+			{
+				vkHandles[j] = extractHandle(arrayItems[j]);
+			}
+
+			var tempBuffer = new byte[arraySizeInBytes];
+			Buffer.BlockCopy(vkHandles, 0, tempBuffer, 0, arraySizeInBytes);
+			Marshal.Copy(tempBuffer, 0, array, arraySizeInBytes);			
+
+			return array;
 		}
 
 		public Result FreeDescriptorSets(IMgDescriptorPool descriptorPool, IMgDescriptorSet[] pDescriptorSets)
@@ -1169,21 +1246,14 @@ namespace Magnesium.Vulkan
 				{
 					attachmentCount = (uint) pCreateInfo.Attachments.Length;
 					if (attachmentCount > 0)
-					{
-						var arraySize = (int)(attachmentCount * sizeof(UInt64));										
-						pAttachments = Marshal.AllocHGlobal(arraySize);
-
-						var handles = new UInt64[attachmentCount];
-						for(var j = 0; j < attachmentCount; ++j)
-						{
-							var bImageView = (VkImageView) pCreateInfo.Attachments[j];
-							Debug.Assert(bImageView != null);
-							handles[j] = bImageView.Handle;
-						}							
-
-						var tempBuffer = new byte[arraySize];
-						Buffer.BlockCopy(handles, 0, tempBuffer, 0, arraySize);
-						Marshal.Copy(tempBuffer, 0, pAttachments, arraySize);
+					{									
+						pAttachments = ExtractUInt64HandleArray(pCreateInfo.Attachments, 
+							(a) => 
+							{
+								var bImageView = (VkImageView) a;
+								Debug.Assert(bImageView != null);
+								return bImageView.Handle;
+							});
 					}
 				}
 
