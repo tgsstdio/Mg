@@ -1379,9 +1379,28 @@ namespace Magnesium.Vulkan
 					{
 						var bCopySets = stackalloc VkCopyDescriptorSet[(int)copyCount];
 
-						for (var j = 0; j < writeCount; ++j)
+						for (var j = 0; j < copyCount; ++j)
 						{
+							var currentCopy = pDescriptorCopies[j];
 
+							var bSrcSet = (VkDescriptorSet)currentCopy.SrcSet;
+							Debug.Assert(bSrcSet != null);
+
+							var bDstSet = (VkDescriptorSet)currentCopy.DstSet;
+							Debug.Assert(bDstSet != null);
+
+							bCopySets[j] = new VkCopyDescriptorSet
+							{
+								sType = VkStructureType.StructureTypeCopyDescriptorSet,
+								pNext = IntPtr.Zero,
+								srcSet = bSrcSet.Handle,
+								srcBinding = currentCopy.SrcBinding,
+								srcArrayElement = currentCopy.SrcArrayElement,
+								dstSet = bDstSet.Handle,
+								dstBinding = currentCopy.DstBinding,
+								dstArrayElement = currentCopy.DstArrayElement,
+								descriptorCount = currentCopy.DescriptorCount,
+							};
 						}
 
 						copies = bCopySets;
