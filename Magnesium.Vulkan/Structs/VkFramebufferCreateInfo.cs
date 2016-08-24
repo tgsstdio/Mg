@@ -12,7 +12,7 @@ namespace Magnesium.Vulkan
 		public UInt32 flags { get; set; }
 		public UInt64 renderPass { get; set; }
 		public UInt32 attachmentCount { get; set; }
-		public UInt64 pAttachments { get; set; }
+		public IntPtr pAttachments { get; set; }
 		public UInt32 width { get; set; }
 		public UInt32 height { get; set; }
 		public UInt32 layers { get; set; }

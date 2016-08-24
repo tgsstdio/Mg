@@ -708,14 +708,137 @@ namespace Magnesium.Vulkan
 			throw new NotImplementedException();
 		}
 
+        // Using Hans Passant's answer
+        // http://stackoverflow.com/questions/10773440/conversion-in-net-native-utf-8-managed-string
+        public static IntPtr NativeUtf8FromString(string managedString)
+        {
+            int len = System.Text.Encoding.UTF8.GetByteCount(managedString);
+            byte[] buffer = new byte[len + 1];
+            System.Text.Encoding.UTF8.GetBytes(managedString, 0, managedString.Length, buffer, 0);
+            IntPtr nativeUtf8 = Marshal.AllocHGlobal(buffer.Length);
+            Marshal.Copy(buffer, 0, nativeUtf8, buffer.Length);
+            return nativeUtf8;
+        }
+
 		public Result CreateComputePipelines(IMgPipelineCache pipelineCache, MgComputePipelineCreateInfo[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgPipeline[] pPipelines)
 		{
+			if (pCreateInfos == null)
+				throw new ArgumentNullException(nameof(pCreateInfos));
+
 			Debug.Assert(!mIsDisposed);
 
 			var bAllocator = (MgVkAllocationCallbacks)allocator;
 			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
-			throw new NotImplementedException();
+			var bPipelineCache = (VkPipelineCache) pipelineCache;
+			var bPipelineCachePtr =  bPipelineCache != null ? bPipelineCache.Handle : 0UL;
+
+			uint createInfoCount = (uint) pCreateInfos.Length;
+
+			var attachedItems = new List<IntPtr>();
+			var maintainedHandles = new List<GCHandle>();
+			try
+			{				
+				var createInfos = new VkComputePipelineCreateInfo[createInfoCount];
+				for(var i = 0; i < createInfoCount; ++i)
+				{
+					var currentCreateInfo = pCreateInfos[i];
+
+					var bBasePipeline = (VkPipeline) currentCreateInfo.BasePipelineHandle;
+					var bBasePipelinePtr = bBasePipeline != null ? bBasePipeline.Handle : 0UL;
+
+					var bPipelineLayout = (VkPipelineLayout) currentCreateInfo.Layout;
+					Debug.Assert(bPipelineLayout != null);
+
+					var currentStage = currentCreateInfo.Stage;
+					Debug.Assert(currentStage != null);
+
+					var bModule = (VkShaderModule) currentStage.Module;
+					Debug.Assert(bModule != null);			
+
+					// pointer to a null-terminated UTF-8 string specifying the entry point name of the shader for this stage
+					Debug.Assert(!string.IsNullOrWhiteSpace(currentStage.Name));
+					var pName = NativeUtf8FromString(currentStage.Name);
+					attachedItems.Add(pName);
+
+					var pSpecializationInfo = IntPtr.Zero;
+
+					if (currentStage.SpecializationInfo != null)
+					{
+						var mapEntryCount = 0U;
+						var pMapEntries = IntPtr.Zero;
+
+						if (currentStage.SpecializationInfo.MapEntries != null)
+						{
+							mapEntryCount = (uint) currentStage.SpecializationInfo.MapEntries.Length;
+							if (mapEntryCount > 0)
+							{
+								var pinnedArray = GCHandle.Alloc(currentStage.SpecializationInfo.MapEntries, GCHandleType.Pinned); 
+								maintainedHandles.Add(pinnedArray);								
+
+								pMapEntries = pinnedArray.AddrOfPinnedObject();
+							}
+						}
+
+						pSpecializationInfo = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(VkSpecializationInfo)));
+						attachedItems.Add(pSpecializationInfo);
+
+						var spInfo = new VkSpecializationInfo
+						{
+							mapEntryCount = mapEntryCount,
+							pMapEntries = pMapEntries,
+							dataSize = currentStage.SpecializationInfo.DataSize,
+							pData = currentStage.SpecializationInfo.Data,
+						};
+
+						Marshal.StructureToPtr(spInfo, pSpecializationInfo, false);
+					}
+
+					var pStage = new VkPipelineShaderStageCreateInfo
+					{
+						sType = VkStructureType.StructureTypePipelineShaderStageCreateInfo,
+						pNext = IntPtr.Zero,
+						flags = currentStage.Flags,
+						stage = (VkShaderStageFlags) currentStage.Stage,
+						module = bModule.Handle,
+						pName = pName,
+						pSpecializationInfo = pSpecializationInfo,
+					};
+
+					createInfos[i] = new VkComputePipelineCreateInfo
+					{
+						sType = VkStructureType.StructureTypeComputePipelineCreateInfo,
+						pNext = IntPtr.Zero,
+						flags = (VkPipelineCreateFlags) currentCreateInfo.Flags,
+						stage = pStage,
+						layout = bPipelineLayout.Handle,
+						basePipelineHandle = bBasePipelinePtr,
+						basePipelineIndex = currentCreateInfo.BasePipelineIndex,
+					};
+				}			
+
+				var handles = new ulong[createInfoCount];
+				var result = Interops.vkCreateComputePipelines(Handle, bPipelineCachePtr, createInfoCount, createInfos, allocatorPtr, handles);
+
+				pPipelines = new VkPipeline[createInfoCount];
+				for(var i = 0; i < createInfoCount; ++i)
+				{
+					pPipelines[i] = new VkPipeline(handles[i]);
+				}
+				return result;
+			}
+			finally
+			{
+				foreach(var handle in attachedItems)
+				{
+					Marshal.FreeHGlobal(handle);
+				}
+
+				foreach (var pin in maintainedHandles)
+				{
+					pin.Free();
+				}
+			}			
 		}
 
 		public Result CreatePipelineLayout(MgPipelineLayoutCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgPipelineLayout pPipelineLayout)
@@ -852,9 +975,96 @@ namespace Magnesium.Vulkan
 			Debug.Assert(!mIsDisposed);
 
 			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
-			throw new NotImplementedException();
+
+
+			var attachedItems = new List<IntPtr>();
+
+			try
+			{
+				var bindingCount = 0U;
+				var pBindings = IntPtr.Zero;
+
+				if (pCreateInfo.Bindings != null)
+				{
+					bindingCount = (uint)pCreateInfo.Bindings.Length;
+					if (bindingCount > 0)
+					{
+						var stride = Marshal.SizeOf(typeof(VkDescriptorSetLayoutBinding));
+						pBindings = Marshal.AllocHGlobal((int)(bindingCount * stride));
+						attachedItems.Add(pBindings);
+
+						var offset = 0;
+						foreach (var currentBinding in pCreateInfo.Bindings)
+						{
+							/**
+							 * TODO:
+							 * If descriptorType is VK_DESCRIPTOR_TYPE_SAMPLER or VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+							 * and descriptorCount is not 0 and pImmutableSamplers is not NULL, pImmutableSamplers must be a 
+							 * pointer to an array of descriptorCount valid VkSampler handles
+							**/
+
+							var pImmutableSamplers = IntPtr.Zero;
+							if (currentBinding.ImmutableSamplers != null)
+							{
+								if (currentBinding.DescriptorCount > 0)
+								{
+									var arraySize = (int)(currentBinding.DescriptorCount * sizeof(UInt64));										
+									pImmutableSamplers = Marshal.AllocHGlobal(arraySize);
+									attachedItems.Add(pImmutableSamplers);
+
+									var handles = new UInt64[currentBinding.DescriptorCount];
+									for(var j = 0; j <  currentBinding.DescriptorCount; ++j)
+									{
+										var bSampler = (VkSampler) currentBinding.ImmutableSamplers[j];
+										Debug.Assert(bSampler != null);
+										handles[j] = bSampler.Handle;
+									}							
+			
+									var tempBuffer = new byte[arraySize];
+									Buffer.BlockCopy(handles, 0, tempBuffer, 0, arraySize);
+									Marshal.Copy(tempBuffer, 0, pImmutableSamplers, arraySize);
+								}
+							}
+
+							var binding = new VkDescriptorSetLayoutBinding
+							{
+								binding = currentBinding.Binding,
+								descriptorType = (VkDescriptorType) currentBinding.DescriptorType,
+								descriptorCount = currentBinding.DescriptorCount,
+								stageFlags = (VkShaderStageFlags) currentBinding.StageFlags,
+								pImmutableSamplers = pImmutableSamplers,
+							};
+
+							var dest = IntPtr.Add(pBindings, offset);
+							Marshal.StructureToPtr(binding, dest, false);
+							offset += stride;							
+						}
+					}
+				}
+
+
+				var internalHandle = 0UL;
+				var createInfo = new VkDescriptorSetLayoutCreateInfo
+				{
+					sType = VkStructureType.StructureTypeDescriptorSetLayoutCreateInfo,
+					pNext = IntPtr.Zero,
+					flags = pCreateInfo.Flags,
+					bindingCount = bindingCount,
+					pBindings = pBindings,
+				};
+				var result = Interops.vkCreateDescriptorSetLayout(Handle, createInfo, allocatorPtr, ref internalHandle);
+				pSetLayout = new VkDescriptorSetLayout(internalHandle);
+				return result;
+			}
+			finally
+			{
+				foreach (var handle in attachedItems)
+				{
+					Marshal.FreeHGlobal(handle);
+				}
+			}
 		}
 
 		public Result CreateDescriptorPool(MgDescriptorPoolCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDescriptorPool pDescriptorPool)
@@ -947,7 +1157,61 @@ namespace Magnesium.Vulkan
 			var bAllocator = (MgVkAllocationCallbacks)allocator;
 			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
-			throw new NotImplementedException();
+			var bRenderPass = (VkRenderPass) pCreateInfo.RenderPass;
+			Debug.Assert(bRenderPass != null);
+
+			var attachmentCount = 0U;
+			var pAttachments = IntPtr.Zero;
+
+			try
+			{
+				if (pCreateInfo.Attachments != null)
+				{
+					attachmentCount = (uint) pCreateInfo.Attachments.Length;
+					if (attachmentCount > 0)
+					{
+						var arraySize = (int)(attachmentCount * sizeof(UInt64));										
+						pAttachments = Marshal.AllocHGlobal(arraySize);
+
+						var handles = new UInt64[attachmentCount];
+						for(var j = 0; j < attachmentCount; ++j)
+						{
+							var bImageView = (VkImageView) pCreateInfo.Attachments[j];
+							Debug.Assert(bImageView != null);
+							handles[j] = bImageView.Handle;
+						}							
+
+						var tempBuffer = new byte[arraySize];
+						Buffer.BlockCopy(handles, 0, tempBuffer, 0, arraySize);
+						Marshal.Copy(tempBuffer, 0, pAttachments, arraySize);
+					}
+				}
+
+				var createInfo = new VkFramebufferCreateInfo
+				{
+					sType = VkStructureType.StructureTypeFramebufferCreateInfo,
+					pNext = IntPtr.Zero,
+					flags = pCreateInfo.Flags,
+					renderPass = bRenderPass.Handle,
+					attachmentCount = attachmentCount,
+					pAttachments = pAttachments,
+					width = pCreateInfo.Width,
+					height = pCreateInfo.Height,
+					layers = pCreateInfo.Layers,
+				};
+
+				var internalHandle = 0UL;
+				var result = Interops.vkCreateFramebuffer(Handle, createInfo, allocatorPtr, ref internalHandle);
+				pFramebuffer = new VkFramebuffer(internalHandle);
+				return result;
+			}
+			finally
+			{
+				if (pAttachments != IntPtr.Zero)
+				{
+					Marshal.FreeHGlobal(pAttachments);
+				}
+			}
 		}
 
 		public Result CreateRenderPass(MgRenderPassCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgRenderPass pRenderPass)

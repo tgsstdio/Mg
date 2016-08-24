@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan
 {
-	[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Ansi)]
+	[StructLayout(LayoutKind.Sequential)]
 	internal struct VkPipelineShaderStageCreateInfo
 	{
 		public VkStructureType sType { get; set; }
@@ -12,7 +12,7 @@ namespace Magnesium.Vulkan
 		public UInt32 flags { get; set; }
 		public VkShaderStageFlags stage { get; set; }
 		public UInt64 module { get; set; }
-		public string pName { get; set; }
-		public VkSpecializationInfo pSpecializationInfo { get; set; }
+		public IntPtr pName { get; set; }
+		public IntPtr pSpecializationInfo { get; set; }
 	}
 }

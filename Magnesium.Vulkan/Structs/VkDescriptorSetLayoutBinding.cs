@@ -11,6 +11,6 @@ namespace Magnesium.Vulkan
 		public VkDescriptorType descriptorType { get; set; }
 		public UInt32 descriptorCount { get; set; }
 		public VkShaderStageFlags stageFlags { get; set; }
-		public UInt64 pImmutableSamplers { get; set; }
+		public IntPtr pImmutableSamplers { get; set; }
 	}
 }

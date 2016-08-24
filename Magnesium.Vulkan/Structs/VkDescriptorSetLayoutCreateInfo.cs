@@ -11,6 +11,6 @@ namespace Magnesium.Vulkan
 		public IntPtr pNext { get; set; }
 		public UInt32 flags { get; set; }
 		public UInt32 bindingCount { get; set; }
-		public VkDescriptorSetLayoutBinding pBindings { get; set; }
+		public IntPtr pBindings { get; set; } // VkDescriptorSetLayoutBinding
 	}
 }
