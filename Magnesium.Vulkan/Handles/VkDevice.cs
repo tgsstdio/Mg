@@ -1244,7 +1244,159 @@ namespace Magnesium.Vulkan
 
 		public void UpdateDescriptorSets(MgWriteDescriptorSet[] pDescriptorWrites, MgCopyDescriptorSet[] pDescriptorCopies)
 		{
-			throw new NotImplementedException();
+			Debug.Assert(!mIsDisposed);
+
+			var writeCount = 0U;
+			if (pDescriptorWrites != null)
+			{
+				writeCount = (uint)pDescriptorWrites.Length;
+			}
+
+			var copyCount = 0U;
+			if (pDescriptorCopies != null)
+			{
+				copyCount = (uint)pDescriptorCopies.Length;
+			}
+
+			var attachedItems = new List<IntPtr>();
+
+			try
+			{
+				unsafe
+				{
+					VkWriteDescriptorSet* writes = null;
+					VkCopyDescriptorSet* copies = null;
+
+					if (writeCount > 0)
+					{
+						var bWriteSets = stackalloc VkWriteDescriptorSet[(int)writeCount];
+
+						for (var i = 0; i < writeCount; ++i)
+						{
+							var currentWrite = pDescriptorWrites[i];
+							var bDstSet = (VkDescriptorSet)currentWrite.DstSet;
+
+							var pImageInfo = IntPtr.Zero;
+							var pBufferInfo = IntPtr.Zero;
+							var pTexelBufferView = IntPtr.Zero;
+
+							var descriptorCount = (int) currentWrite.DescriptorCount;
+
+							if (currentWrite.ImageInfo != null)
+							{
+								if (descriptorCount > 0)
+								{
+									var imageInfoSize = Marshal.SizeOf(typeof(VkDescriptorImageInfo));
+									pImageInfo = Marshal.AllocHGlobal(descriptorCount * imageInfoSize);
+									attachedItems.Add(pImageInfo);
+
+									var offset = 0;
+									foreach (var srcInfo in currentWrite.ImageInfo)
+									{
+										var bSampler = (VkSampler) srcInfo.Sampler;
+										Debug.Assert(bSampler != null);
+
+										var bImageView = (VkImageView) srcInfo.ImageView;
+										Debug.Assert(bImageView != null);
+
+										var dstInfo = new VkDescriptorImageInfo
+										{
+											sampler = bSampler.Handle,
+											imageView = bImageView.Handle,
+											imageLayout = (VkImageLayout) srcInfo.ImageLayout,
+										};
+
+										var dest = IntPtr.Add(pBufferInfo, offset);
+										Marshal.StructureToPtr(dstInfo, dest, false);
+										offset += imageInfoSize;
+									}									
+								}
+							}
+
+							if (currentWrite.BufferInfo != null)
+							{
+								if (descriptorCount > 0)
+								{
+									var bufferInfoSize = Marshal.SizeOf(typeof(VkDescriptorBufferInfo));
+									pBufferInfo = Marshal.AllocHGlobal(descriptorCount * bufferInfoSize);
+									attachedItems.Add(pBufferInfo);
+
+									var offset = 0;
+									foreach (var srcInfo in currentWrite.BufferInfo)
+									{
+										var bBuffer = (VkBuffer) srcInfo.Buffer;
+										Debug.Assert(bBuffer != null);
+
+										var dstInfo = new VkDescriptorBufferInfo
+										{
+											buffer = bBuffer.Handle,
+											offset = srcInfo.Offset,
+											range = srcInfo.Range,
+										};
+
+										var dest = IntPtr.Add(pBufferInfo, offset);
+										Marshal.StructureToPtr(dstInfo, dest, false);
+										offset += bufferInfoSize;
+									}
+								}
+							}
+
+							if (currentWrite.TexelBufferView != null)
+							{
+								if (descriptorCount > 0)
+								{
+									pTexelBufferView = ExtractUInt64HandleArray(currentWrite.TexelBufferView,
+										(tbv) =>
+										{
+											var bBufferView = (VkBufferView) tbv;
+											Debug.Assert(bBufferView != null);
+											return bBufferView.Handle;
+										}
+										);
+									attachedItems.Add(pTexelBufferView);
+								}
+							}							
+
+							bWriteSets[i] = new VkWriteDescriptorSet
+							{
+								sType = VkStructureType.StructureTypeWriteDescriptorSet,
+								pNext = IntPtr.Zero,
+								dstSet = bDstSet.Handle,
+								dstBinding = currentWrite.DstBinding,
+								dstArrayElement = currentWrite.DstArrayElement,
+								descriptorCount = currentWrite.DescriptorCount,
+								descriptorType = (VkDescriptorType)currentWrite.DescriptorType,
+								pImageInfo = pImageInfo,
+								pBufferInfo = pBufferInfo,
+								pTexelBufferView = pTexelBufferView,
+							};
+						}
+
+						writes = bWriteSets;
+					}
+
+					if (copyCount > 0)
+					{
+						var bCopySets = stackalloc VkCopyDescriptorSet[(int)copyCount];
+
+						for (var j = 0; j < writeCount; ++j)
+						{
+
+						}
+
+						copies = bCopySets;
+					}
+
+					Interops.vkUpdateDescriptorSets(Handle, writeCount, writes, copyCount, copies);
+				}			
+			}
+			finally
+			{
+				foreach(var item in attachedItems)
+				{
+					Marshal.FreeHGlobal(item);
+				}
+			}
 		}
 
 		public Result CreateFramebuffer(MgFramebufferCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgFramebuffer pFramebuffer)
