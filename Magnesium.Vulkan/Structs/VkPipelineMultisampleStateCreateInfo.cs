@@ -13,7 +13,7 @@ namespace Magnesium.Vulkan
 		public VkSampleCountFlags rasterizationSamples { get; set; }
 		public VkBool32 sampleShadingEnable { get; set; }
 		public float minSampleShading { get; set; }
-		public UInt32 pSampleMask { get; set; }
+		public IntPtr pSampleMask { get; set; } // UInt32
 		public VkBool32 alphaToCoverageEnable { get; set; }
 		public VkBool32 alphaToOneEnable { get; set; }
 	}

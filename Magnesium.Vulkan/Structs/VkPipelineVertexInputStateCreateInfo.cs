@@ -11,8 +11,8 @@ namespace Magnesium.Vulkan
 		public IntPtr pNext { get; set; }
 		public UInt32 flags { get; set; }
 		public UInt32 vertexBindingDescriptionCount { get; set; }
-		public VkVertexInputBindingDescription pVertexBindingDescriptions { get; set; }
+		public IntPtr pVertexBindingDescriptions { get; set; } // VkVertexInputBindingDescription
 		public UInt32 vertexAttributeDescriptionCount { get; set; }
-		public VkVertexInputAttributeDescription pVertexAttributeDescriptions { get; set; }
-	}
+		public IntPtr pVertexAttributeDescriptions { get; set; } // VkVertexInputAttributeDescription
+}
 }

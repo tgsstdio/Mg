@@ -14,6 +14,8 @@ def parseProperty(line):
         namedParameter = "pNext = IntPtr.Zero,"
     elif propertyType.endswith('Flags'):
         namedParameter = structName + " = (" + propertyType + ") pCreateInfo." + srcPropertyName + ","
+    elif propertyType == 'VkBool32':
+        namedParameter = structName + " = VkBool32.ConvertTo(pCreateInfo." + srcPropertyName + "),"
     else:
         namedParameter = structName + " = pCreateInfo." + srcPropertyName + ","
     

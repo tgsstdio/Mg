@@ -402,7 +402,7 @@ namespace Magnesium.Vulkan
 				if (pCreateInfo.QueueFamilyIndices != null)
 				{
 					queueFamilyIndexCount = (uint)pCreateInfo.QueueFamilyIndices.Length;
-					pQueueFamilyIndices = GenerateQueueFamilyIndicesPtr(pCreateInfo.QueueFamilyIndices, queueFamilyIndexCount);
+					pQueueFamilyIndices = AllocateUInt32Array(pCreateInfo.QueueFamilyIndices);
 				}
 
 				var createInfo = new VkBufferCreateInfo
@@ -479,7 +479,7 @@ namespace Magnesium.Vulkan
 				if (pCreateInfo.QueueFamilyIndices != null)
 				{
 					queueFamilyIndexCount = (uint)pCreateInfo.QueueFamilyIndices.Length;
-					pQueueFamilyIndices = GenerateQueueFamilyIndicesPtr(pCreateInfo.QueueFamilyIndices, queueFamilyIndexCount);
+					pQueueFamilyIndices = AllocateUInt32Array(pCreateInfo.QueueFamilyIndices);
 				}
 
 				ulong internalHandle = 0;
@@ -513,18 +513,6 @@ namespace Magnesium.Vulkan
 					Marshal.FreeHGlobal(pQueueFamilyIndices);
 				}
 			}
-		}
-
-		static IntPtr GenerateQueueFamilyIndicesPtr(uint[] queueFamilyIndices, uint queueFamilyIndexCount)
-		{
-			IntPtr pQueueFamilyIndices;
-			var arraySize = (int)(sizeof(uint) * queueFamilyIndexCount);
-			pQueueFamilyIndices = Marshal.AllocHGlobal(arraySize);
-
-			var tempBuffer = new byte[arraySize];
-			Buffer.BlockCopy(queueFamilyIndices, 0, tempBuffer, 0, arraySize);
-			Marshal.Copy(tempBuffer, 0, pQueueFamilyIndices, arraySize);
-			return pQueueFamilyIndices;
 		}
 
 		public void GetImageSubresourceLayout(IMgImage image, MgImageSubresource pSubresource, out MgSubresourceLayout pLayout)
@@ -700,17 +688,551 @@ namespace Magnesium.Vulkan
 
 		public Result CreateGraphicsPipelines(IMgPipelineCache pipelineCache, MgGraphicsPipelineCreateInfo[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgPipeline[] pPipelines)
 		{
+			if (pCreateInfos == null)
+				throw new ArgumentNullException(nameof(pCreateInfos));
+
+			if (pCreateInfos.Length == 0)
+			{
+				throw new ArgumentOutOfRangeException(nameof(pCreateInfos) + " == 0");
+			}
+
 			Debug.Assert(!mIsDisposed);
 
 			var bAllocator = (MgVkAllocationCallbacks)allocator;
 			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
-			throw new NotImplementedException();
+			var bPipelineCache = (VkPipelineCache)pipelineCache;
+			var bPipelineCachePtr = bPipelineCache != null ? bPipelineCache.Handle : 0UL;
+
+			var createInfoCount = (uint)pCreateInfos.Length;
+
+			VkGraphicsPipelineCreateInfo[] createInfos = new VkGraphicsPipelineCreateInfo[createInfoCount];
+
+			var attachedItems = new List<IntPtr>();
+			var maintainedHandles = new List<GCHandle>();
+
+			try
+			{
+
+				for (var i = 0; i < createInfoCount; ++i)
+				{
+					var current = pCreateInfos[i];
+
+					var bRenderPass = (VkRenderPass)current.RenderPass;
+					Debug.Assert(bRenderPass != null);
+
+					var bLayout = (VkPipelineLayout)current.Layout;
+					Debug.Assert(bLayout != null);
+
+					var bBasePipelineHandle = (VkPipeline)current.BasePipelineHandle;
+					var bBasePipelineHandlePtr = bBasePipelineHandle != null ? bBasePipelineHandle.Handle : 0UL;
+
+					// STAGES
+					Debug.Assert(current.Stages != null);
+
+					var stageCount = (uint)current.Stages.Length;
+					Debug.Assert(stageCount > 0);
+
+					var stageStructSize = Marshal.SizeOf(typeof(VkPipelineShaderStageCreateInfo));
+					var pStages = Marshal.AllocHGlobal((int)(stageCount * stageStructSize));
+					attachedItems.Add(pStages);
+
+					{
+						var offset = 0;
+						foreach (var stage in current.Stages)
+						{
+							var stageInfo = ExtractPipelineShaderStage(attachedItems, maintainedHandles, stage);
+							IntPtr dest = IntPtr.Add(pStages, offset);
+							Marshal.StructureToPtr(stageInfo, dest, false);
+							offset += stageStructSize;
+						}
+					}
+
+					// pVertexInputState must be a pointer to a valid VkPipelineVertexInputStateCreateInfo structure
+					Debug.Assert(current.VertexInputState != null);
+					var pVertexInputState = ExtractVertexInputState(attachedItems, current.VertexInputState);
+
+					// pInputAssemblyState must be a pointer to a valid VkPipelineInputAssemblyStateCreateInfo structure
+					Debug.Assert(current.InputAssemblyState != null);
+					var pInputAssemblyState = ExtractInputAssemblyState(attachedItems, current.InputAssemblyState);
+
+					// pRasterizationState must be a pointer to a valid VkPipelineRasterizationStateCreateInfo structure
+					Debug.Assert(current.RasterizationState != null);
+					var pRasterizationState = ExtractRasterizationState(attachedItems, current.RasterizationState);
+
+					var pTessellationState = ExtractTesselationState(attachedItems, current.TessellationState);
+
+					var pViewportState = ExtractViewportState(attachedItems, maintainedHandles, current.ViewportState);
+
+					var pMultisampleState = ExtractMultisampleState(attachedItems, current.MultisampleState);
+
+					var pDepthStencilState = ExtractDepthStencilState(attachedItems, current.DepthStencilState);
+
+					var pColorBlendState = ExtractColorBlendState(attachedItems, current.ColorBlendState);
+
+					var pDynamicState = ExtractDynamicState(attachedItems, current.DynamicState);
+
+					createInfos[i] = new VkGraphicsPipelineCreateInfo
+					{
+						sType = VkStructureType.StructureTypeGraphicsPipelineCreateInfo,
+						pNext = IntPtr.Zero,
+						flags = (VkPipelineCreateFlags)current.Flags,
+						stageCount = stageCount,
+						pStages = pStages,
+						pVertexInputState = pVertexInputState,
+						pInputAssemblyState = pInputAssemblyState,
+						pTessellationState = pTessellationState,
+						pViewportState = pViewportState,
+						pRasterizationState = pRasterizationState,
+						pMultisampleState = pMultisampleState,
+						pDepthStencilState = pDepthStencilState,
+						pColorBlendState = pColorBlendState,
+						pDynamicState = pDynamicState,
+						layout = bLayout.Handle,
+						renderPass = bRenderPass.Handle,
+						subpass = current.Subpass,
+						basePipelineHandle = bBasePipelineHandlePtr,
+						basePipelineIndex = current.BasePipelineIndex,
+					};
+				}
+
+				var handles = new ulong[createInfoCount];
+				var result = Interops.vkCreateGraphicsPipelines(Handle, bPipelineCachePtr, createInfoCount, createInfos, allocatorPtr, handles);
+
+				pPipelines = new VkPipeline[createInfoCount];
+				for (var i = 0; i < createInfoCount; ++i)
+				{
+					pPipelines[i] = new VkPipeline(handles[i]);
+				}
+				return result;
+			}
+			finally
+			{
+				foreach (var item in attachedItems)
+				{
+					Marshal.FreeHGlobal(item);
+				}
+
+				foreach (var handle in maintainedHandles)
+				{
+					handle.Free();
+				}
+			}
 		}
 
-        // Using Hans Passant's answer
-        // http://stackoverflow.com/questions/10773440/conversion-in-net-native-utf-8-managed-string
-        static IntPtr NativeUtf8FromString(string managedString)
+		static IntPtr ExtractDynamicState(List<IntPtr> attachedItems, MgPipelineDynamicStateCreateInfo dynamicState)
+		{
+			if (dynamicState == null)
+				return IntPtr.Zero;
+
+			var dynamicStateCount = 0U;
+			var pDynamicStates = IntPtr.Zero;
+
+			if (dynamicState.DynamicStates != null)
+			{
+				dynamicStateCount = (uint) dynamicState.DynamicStates.Length;
+				if (dynamicStateCount > 0)
+				{
+					var stride = sizeof(VkDynamicState);
+					pDynamicStates = Marshal.AllocHGlobal((int)(stride * dynamicStateCount));
+					attachedItems.Add(pDynamicStates);
+
+					var offset = 0;
+					foreach(var item in dynamicState.DynamicStates)
+					{
+						var dest = IntPtr.Add(pDynamicStates, offset);
+						Marshal.StructureToPtr(item, dest, false);
+						offset += stride;
+					}
+				}
+			}
+
+			var dataItem = new VkPipelineDynamicStateCreateInfo
+			{
+				sType = VkStructureType.StructureTypePipelineDynamicStateCreateInfo,
+				pNext = IntPtr.Zero,
+				flags = dynamicState.Flags,
+				dynamicStateCount = dynamicStateCount,
+				pDynamicStates = pDynamicStates,
+			};
+			
+			{
+				var structSize = Marshal.SizeOf(dataItem);
+				var dest = Marshal.AllocHGlobal(structSize);
+				Marshal.StructureToPtr(dataItem, dest, false);
+				attachedItems.Add(dest);
+				return dest;
+			}
+		}
+
+		static IntPtr ExtractColorBlendState(List<IntPtr> attachedItems, MgPipelineColorBlendStateCreateInfo colorBlendState)
+		{
+			if (colorBlendState == null)
+				return IntPtr.Zero;
+
+			var pAttachments = IntPtr.Zero;
+			var attachmentCount = 0U;
+
+			if (colorBlendState.Attachments != null)
+			{
+				attachmentCount = (uint) colorBlendState.Attachments.Length;
+				if (attachmentCount > 0)
+				{
+					var stride = sizeof(VkDynamicState);
+					pAttachments = Marshal.AllocHGlobal((int)(stride * attachmentCount));
+					attachedItems.Add(pAttachments);
+
+					var offset = 0;
+					foreach(var item in colorBlendState.Attachments)
+					{
+						var attachment = new VkPipelineColorBlendAttachmentState
+						{
+							blendEnable = VkBool32.ConvertTo(item.BlendEnable),
+							srcColorBlendFactor = (VkBlendFactor) item.SrcColorBlendFactor,
+							dstColorBlendFactor = (VkBlendFactor) item.DstColorBlendFactor,
+							colorBlendOp = (VkBlendOp) item.ColorBlendOp,
+							srcAlphaBlendFactor = (VkBlendFactor) item.SrcAlphaBlendFactor,
+							dstAlphaBlendFactor = (VkBlendFactor) item.DstAlphaBlendFactor,
+							alphaBlendOp = (VkBlendOp) item.AlphaBlendOp,
+							colorWriteMask = (VkColorComponentFlags) item.ColorWriteMask,
+						};
+
+						var dest = IntPtr.Add(pAttachments, offset);
+						Marshal.StructureToPtr(attachment, dest, false);
+						offset += stride;
+					}
+				}
+			}
+
+			var dataItem = new VkPipelineColorBlendStateCreateInfo
+			{
+				sType = VkStructureType.StructureTypePipelineColorBlendStateCreateInfo,
+				pNext = IntPtr.Zero,
+				flags = colorBlendState.Flags,
+				logicOpEnable = VkBool32.ConvertTo(colorBlendState.LogicOpEnable),
+				logicOp = (VkLogicOp) colorBlendState.LogicOp,
+				attachmentCount = attachmentCount,
+				pAttachments = pAttachments,
+				blendConstants = colorBlendState.BlendConstants,
+			};
+
+			{
+				var structSize = Marshal.SizeOf(dataItem);
+				var dest = Marshal.AllocHGlobal(structSize);
+				Marshal.StructureToPtr(dataItem, dest, false);
+				attachedItems.Add(dest);
+				return dest;
+			}
+		}
+
+		// REMEMBER TO FREE ALLOCATED MEMORY i.e. Marshal.FreeHGlobal
+		static IntPtr AllocateUInt32Array(UInt32[] values)
+		{
+			Debug.Assert(values != null);
+
+			var arrayLength = values.Length;
+			var arraySizeInBytes = (int)(arrayLength * sizeof(UInt32));
+			var arrayPtr = Marshal.AllocHGlobal(arraySizeInBytes);
+
+			var tempBuffer = new byte[arraySizeInBytes];
+			Buffer.BlockCopy(values, 0, tempBuffer, 0, arraySizeInBytes);
+			Marshal.Copy(tempBuffer, 0, arrayPtr, arraySizeInBytes);					
+			
+			return arrayPtr;
+		}
+
+		static IntPtr ExtractDepthStencilState(List<IntPtr> attachedItems, MgPipelineDepthStencilStateCreateInfo depthStencilState)
+		{
+			if (depthStencilState == null)
+				return IntPtr.Zero;
+
+			var dataItem = new VkPipelineDepthStencilStateCreateInfo
+			{
+				sType = VkStructureType.StructureTypePipelineDepthStencilStateCreateInfo,
+				pNext = IntPtr.Zero,
+				flags = depthStencilState.Flags,
+				depthTestEnable = VkBool32.ConvertTo(depthStencilState.DepthTestEnable),
+				depthWriteEnable = VkBool32.ConvertTo(depthStencilState.DepthWriteEnable),
+				depthCompareOp = (VkCompareOp) depthStencilState.DepthCompareOp,
+				depthBoundsTestEnable = VkBool32.ConvertTo(depthStencilState.DepthBoundsTestEnable),
+				stencilTestEnable = VkBool32.ConvertTo(depthStencilState.StencilTestEnable),
+				front = new VkStencilOpState
+				{
+					failOp = (VkStencilOp) depthStencilState.Front.FailOp,
+					passOp = (VkStencilOp)depthStencilState.Front.PassOp,
+					depthFailOp = (VkStencilOp) depthStencilState.Front.DepthFailOp,
+					compareOp = (VkCompareOp) depthStencilState.Front.CompareOp,
+					compareMask = depthStencilState.Front.CompareMask,
+					writeMask = depthStencilState.Front.WriteMask,
+					reference = depthStencilState.Front.Reference,	
+				},					
+				back = new VkStencilOpState
+				{
+					failOp = (VkStencilOp) depthStencilState.Back.FailOp,
+					passOp = (VkStencilOp) depthStencilState.Back.PassOp,
+					depthFailOp = (VkStencilOp) depthStencilState.Back.DepthFailOp,
+					compareOp = (VkCompareOp) depthStencilState.Back.CompareOp,
+					compareMask = depthStencilState.Back.CompareMask,
+					writeMask = depthStencilState.Back.WriteMask,
+					reference = depthStencilState.Back.Reference,
+				},
+				minDepthBounds = depthStencilState.MinDepthBounds,
+				maxDepthBounds = depthStencilState.MaxDepthBounds,				
+			};
+
+			{
+				var structSize = Marshal.SizeOf(dataItem);
+				var dest = Marshal.AllocHGlobal(structSize);
+				Marshal.StructureToPtr(dataItem, dest, false);
+				attachedItems.Add(dest);
+				return dest;
+			}					
+		}
+
+		static IntPtr ExtractMultisampleState(List<IntPtr> attachedItems, MgPipelineMultisampleStateCreateInfo multisample)
+		{
+			if (multisample == null)
+				return IntPtr.Zero;
+
+			var pSampleMask = IntPtr.Zero;
+			if (multisample.SampleMask != null)
+			{
+				if (multisample.SampleMask.Length > 0)
+				{
+					pSampleMask = AllocateUInt32Array(multisample.SampleMask);
+					attachedItems.Add(pSampleMask);
+				}	
+			}
+
+			var dataItem = new VkPipelineMultisampleStateCreateInfo
+			{
+				sType = VkStructureType.StructureTypePipelineMultisampleStateCreateInfo,
+				pNext = IntPtr.Zero,
+				flags = multisample.Flags,
+				rasterizationSamples = (VkSampleCountFlags) multisample.RasterizationSamples,
+				sampleShadingEnable = VkBool32.ConvertTo(multisample.SampleShadingEnable),
+				minSampleShading = multisample.MinSampleShading,
+				pSampleMask = pSampleMask,
+				alphaToCoverageEnable = VkBool32.ConvertTo(multisample.AlphaToCoverageEnable),
+				alphaToOneEnable = VkBool32.ConvertTo(multisample.AlphaToOneEnable),
+			};
+
+			{
+				var structSize = Marshal.SizeOf(dataItem);
+				var dest = Marshal.AllocHGlobal(structSize);
+				Marshal.StructureToPtr(dataItem, dest, false);
+				attachedItems.Add(dest);
+				return dest;
+			}	
+		}
+
+		static IntPtr ExtractViewportState(List<IntPtr> attachedItems, List<GCHandle> maintainedHandles, MgPipelineViewportStateCreateInfo viewportState)
+		{
+			if (viewportState == null)
+				return IntPtr.Zero;
+
+			var viewportCount = 0U;
+			var pViewports = IntPtr.Zero;
+
+			if (viewportState.Viewports != null)
+			{
+				viewportCount = (uint) viewportState.Viewports.Length;
+				if (viewportCount > 0)
+				{
+					var pinnedArray = GCHandle.Alloc(viewportState.Viewports, GCHandleType.Pinned);
+					maintainedHandles.Add(pinnedArray);
+					pViewports = pinnedArray.AddrOfPinnedObject();
+				}
+			}
+
+			var scissorCount = 0U;
+			var pScissors = IntPtr.Zero;
+
+			if (viewportState.Scissors != null)
+			{
+				scissorCount = (uint) viewportState.Scissors.Length;
+				if (scissorCount > 0)
+				{
+					var pinnedArray = GCHandle.Alloc(viewportState.Scissors, GCHandleType.Pinned);
+					maintainedHandles.Add(pinnedArray);
+					pScissors = pinnedArray.AddrOfPinnedObject();					
+				}
+			}
+
+			var dataItem = new VkPipelineViewportStateCreateInfo
+			{
+				sType = VkStructureType.StructureTypePipelineViewportStateCreateInfo,
+				pNext = IntPtr.Zero,
+				flags = viewportState.Flags,
+				viewportCount = viewportCount,
+				pViewports = pViewports,
+				scissorCount = scissorCount,
+				pScissors = pScissors,
+			};
+
+			{
+				var structSize = Marshal.SizeOf(dataItem);
+				var dest = Marshal.AllocHGlobal(structSize);
+				Marshal.StructureToPtr(dataItem, dest, false);
+				attachedItems.Add(dest);
+				return dest;
+			}				
+		}
+
+		static IntPtr ExtractTesselationState(List<IntPtr> attachedItems, MgPipelineTessellationStateCreateInfo tessellationState)
+		{
+			if (tessellationState == null)
+				return IntPtr.Zero;
+
+			var dataItem = new VkPipelineTessellationStateCreateInfo
+			{
+				sType = VkStructureType.StructureTypePipelineTessellationStateCreateInfo,
+				pNext = IntPtr.Zero,
+				flags = tessellationState.Flags,
+				patchControlPoints = tessellationState.PatchControlPoints,
+			};
+
+			{
+				var structSize = Marshal.SizeOf(dataItem);
+				var dest = Marshal.AllocHGlobal(structSize);
+				Marshal.StructureToPtr(dataItem, dest, false);
+				attachedItems.Add(dest);
+				return dest;
+			}
+		}
+
+		static IntPtr ExtractRasterizationState(List<IntPtr> attachedItems, MgPipelineRasterizationStateCreateInfo rasterizationState)
+		{
+			var dataItem = new VkPipelineRasterizationStateCreateInfo
+			{
+				sType = VkStructureType.StructureTypePipelineRasterizationStateCreateInfo,
+				pNext = IntPtr.Zero,
+				flags = rasterizationState.Flags,
+				depthClampEnable = VkBool32.ConvertTo(rasterizationState.DepthClampEnable),
+				rasterizerDiscardEnable = VkBool32.ConvertTo(rasterizationState.RasterizerDiscardEnable),
+				polygonMode = (VkPolygonMode) rasterizationState.PolygonMode,
+				cullMode = (VkCullModeFlags)rasterizationState.CullMode,
+				frontFace = (VkFrontFace) rasterizationState.FrontFace,
+				depthBiasEnable = VkBool32.ConvertTo(rasterizationState.DepthBiasEnable),
+				depthBiasConstantFactor = rasterizationState.DepthBiasConstantFactor,
+				depthBiasClamp = rasterizationState.DepthBiasClamp,
+				depthBiasSlopeFactor = rasterizationState.DepthBiasSlopeFactor,
+				lineWidth = rasterizationState.LineWidth,
+			};
+
+			{
+				var structSize = Marshal.SizeOf(dataItem);
+				var dest = Marshal.AllocHGlobal(structSize);
+				Marshal.StructureToPtr(dataItem, dest, false);
+				attachedItems.Add(dest);
+				return dest;
+			}
+		}
+
+		static IntPtr ExtractInputAssemblyState(List<IntPtr> attachedItems, MgPipelineInputAssemblyStateCreateInfo inputAssemblyState)
+		{
+			var dataItem = new VkPipelineInputAssemblyStateCreateInfo
+			{
+				sType = VkStructureType.StructureTypePipelineInputAssemblyStateCreateInfo,
+				pNext = IntPtr.Zero,
+				flags = inputAssemblyState.Flags,
+				topology = (VkPrimitiveTopology) inputAssemblyState.Topology,
+				primitiveRestartEnable = VkBool32.ConvertTo(inputAssemblyState.PrimitiveRestartEnable),
+			};
+
+			{
+				var structSize = Marshal.SizeOf(dataItem);
+				var dest = Marshal.AllocHGlobal(structSize);
+				Marshal.StructureToPtr(dataItem, dest, false);
+				attachedItems.Add(dest);
+				return dest;
+			}
+		}
+
+		static IntPtr ExtractVertexInputState(List<IntPtr> attachedItems, MgPipelineVertexInputStateCreateInfo current)
+		{
+			var vertexBindingDescriptionCount = 0U;
+			var pVertexBindingDescriptions = IntPtr.Zero;
+			if (current.VertexBindingDescriptions != null)
+			{
+				vertexBindingDescriptionCount = (uint)current.VertexBindingDescriptions.Length;
+				if (vertexBindingDescriptionCount > 0)
+				{
+					var stride = Marshal.SizeOf(typeof(VkVertexInputBindingDescription));
+					pVertexBindingDescriptions = Marshal.AllocHGlobal((int)(vertexBindingDescriptionCount * stride));
+					attachedItems.Add(pVertexBindingDescriptions);
+
+					var offset = 0;
+					foreach (var currentBinding in current.VertexBindingDescriptions)
+					{
+						var binding = new VkVertexInputBindingDescription
+						{
+							binding = currentBinding.Binding,
+							stride = currentBinding.Stride,
+							inputRate = (VkVertexInputRate)currentBinding.InputRate,
+						};
+
+						var dest = IntPtr.Add(pVertexBindingDescriptions, offset);
+						Marshal.StructureToPtr(binding, dest, false);
+						offset += stride;
+					}
+				}
+			}
+
+			var vertexAttributeDescriptionCount = 0U;
+			var pVertexAttributeDescriptions = IntPtr.Zero;
+
+			if (current.VertexAttributeDescriptions != null)
+			{
+				vertexAttributeDescriptionCount = (uint)current.VertexAttributeDescriptions.Length;
+
+				if (vertexAttributeDescriptionCount > 0)
+				{
+					var stride = Marshal.SizeOf(typeof(VkVertexInputAttributeDescription));
+					pVertexAttributeDescriptions = Marshal.AllocHGlobal((int)(vertexAttributeDescriptionCount * stride));
+					attachedItems.Add(pVertexAttributeDescriptions);
+
+					var offset = 0;
+					foreach (var currentAttribute in current.VertexAttributeDescriptions)
+					{
+						var attribute = new VkVertexInputAttributeDescription
+						{
+							location = currentAttribute.Location,
+							binding = currentAttribute.Binding,
+							format = (VkFormat)currentAttribute.Format,
+							offset = currentAttribute.Offset,
+						};
+
+						var dest = IntPtr.Add(pVertexBindingDescriptions, offset);
+						Marshal.StructureToPtr(attribute, dest, false);
+						offset += stride;
+					}
+				}
+			}
+
+			var dataItem = new VkPipelineVertexInputStateCreateInfo
+			{
+				sType = VkStructureType.StructureTypePipelineVertexInputStateCreateInfo,
+				pNext = IntPtr.Zero,
+				flags = current.Flags,
+				vertexBindingDescriptionCount = vertexBindingDescriptionCount,
+				pVertexBindingDescriptions = pVertexBindingDescriptions,
+				vertexAttributeDescriptionCount = vertexAttributeDescriptionCount,
+				pVertexAttributeDescriptions = pVertexAttributeDescriptions,
+			};
+
+			{
+				var structSize = Marshal.SizeOf(dataItem);
+				var dest = Marshal.AllocHGlobal(structSize);
+				Marshal.StructureToPtr(dataItem, dest, false);
+				attachedItems.Add(dest);
+				return dest;
+			}
+		}
+
+		// Using Hans Passant's answer
+		// http://stackoverflow.com/questions/10773440/conversion-in-net-native-utf-8-managed-string
+		static IntPtr NativeUtf8FromString(string managedString)
         {
             int len = System.Text.Encoding.UTF8.GetByteCount(managedString);
             byte[] buffer = new byte[len + 1];
@@ -743,79 +1265,25 @@ namespace Magnesium.Vulkan
 				for(var i = 0; i < createInfoCount; ++i)
 				{
 					var currentCreateInfo = pCreateInfos[i];
+					var pStage = ExtractPipelineShaderStage(attachedItems, maintainedHandles, currentCreateInfo.Stage);
 
-					var bBasePipeline = (VkPipeline) currentCreateInfo.BasePipelineHandle;
+					var bBasePipeline = (VkPipeline)currentCreateInfo.BasePipelineHandle;
 					var bBasePipelinePtr = bBasePipeline != null ? bBasePipeline.Handle : 0UL;
 
-					var bPipelineLayout = (VkPipelineLayout) currentCreateInfo.Layout;
+					var bPipelineLayout = (VkPipelineLayout)currentCreateInfo.Layout;
 					Debug.Assert(bPipelineLayout != null);
-
-					var currentStage = currentCreateInfo.Stage;
-					Debug.Assert(currentStage != null);
-
-					var bModule = (VkShaderModule) currentStage.Module;
-					Debug.Assert(bModule != null);			
-
-					// pointer to a null-terminated UTF-8 string specifying the entry point name of the shader for this stage
-					Debug.Assert(!string.IsNullOrWhiteSpace(currentStage.Name));
-					var pName = NativeUtf8FromString(currentStage.Name);
-					attachedItems.Add(pName);
-
-					var pSpecializationInfo = IntPtr.Zero;
-
-					if (currentStage.SpecializationInfo != null)
-					{
-						var mapEntryCount = 0U;
-						var pMapEntries = IntPtr.Zero;
-
-						if (currentStage.SpecializationInfo.MapEntries != null)
-						{
-							mapEntryCount = (uint) currentStage.SpecializationInfo.MapEntries.Length;
-							if (mapEntryCount > 0)
-							{
-								var pinnedArray = GCHandle.Alloc(currentStage.SpecializationInfo.MapEntries, GCHandleType.Pinned); 
-								maintainedHandles.Add(pinnedArray);								
-
-								pMapEntries = pinnedArray.AddrOfPinnedObject();
-							}
-						}
-
-						pSpecializationInfo = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(VkSpecializationInfo)));
-						attachedItems.Add(pSpecializationInfo);
-
-						var spInfo = new VkSpecializationInfo
-						{
-							mapEntryCount = mapEntryCount,
-							pMapEntries = pMapEntries,
-							dataSize = currentStage.SpecializationInfo.DataSize,
-							pData = currentStage.SpecializationInfo.Data,
-						};
-
-						Marshal.StructureToPtr(spInfo, pSpecializationInfo, false);
-					}
-
-					var pStage = new VkPipelineShaderStageCreateInfo
-					{
-						sType = VkStructureType.StructureTypePipelineShaderStageCreateInfo,
-						pNext = IntPtr.Zero,
-						flags = currentStage.Flags,
-						stage = (VkShaderStageFlags) currentStage.Stage,
-						module = bModule.Handle,
-						pName = pName,
-						pSpecializationInfo = pSpecializationInfo,
-					};
 
 					createInfos[i] = new VkComputePipelineCreateInfo
 					{
 						sType = VkStructureType.StructureTypeComputePipelineCreateInfo,
 						pNext = IntPtr.Zero,
-						flags = (VkPipelineCreateFlags) currentCreateInfo.Flags,
+						flags = (VkPipelineCreateFlags)currentCreateInfo.Flags,
 						stage = pStage,
 						layout = bPipelineLayout.Handle,
 						basePipelineHandle = bBasePipelinePtr,
 						basePipelineIndex = currentCreateInfo.BasePipelineIndex,
 					};
-				}			
+				}
 
 				var handles = new ulong[createInfoCount];
 				var result = Interops.vkCreateComputePipelines(Handle, bPipelineCachePtr, createInfoCount, createInfos, allocatorPtr, handles);
@@ -839,6 +1307,64 @@ namespace Magnesium.Vulkan
 					pin.Free();
 				}
 			}			
+		}
+
+		static VkPipelineShaderStageCreateInfo ExtractPipelineShaderStage(List<IntPtr> attachedItems, List<GCHandle> handles, MgPipelineShaderStageCreateInfo currentStage)
+		{
+			Debug.Assert(currentStage != null);
+
+			var bModule = (VkShaderModule)currentStage.Module;
+			Debug.Assert(bModule != null);
+
+			// pointer to a null-terminated UTF-8 string specifying the entry point name of the shader for this stage
+			Debug.Assert(!string.IsNullOrWhiteSpace(currentStage.Name));
+			var pName = NativeUtf8FromString(currentStage.Name);
+			attachedItems.Add(pName);
+
+			var pSpecializationInfo = IntPtr.Zero;
+
+			if (currentStage.SpecializationInfo != null)
+			{
+				var mapEntryCount = 0U;
+				var pMapEntries = IntPtr.Zero;
+
+				if (currentStage.SpecializationInfo.MapEntries != null)
+				{
+					mapEntryCount = (uint)currentStage.SpecializationInfo.MapEntries.Length;
+					if (mapEntryCount > 0)
+					{
+						var pinnedArray = GCHandle.Alloc(currentStage.SpecializationInfo.MapEntries, GCHandleType.Pinned);
+						handles.Add(pinnedArray);
+
+						pMapEntries = pinnedArray.AddrOfPinnedObject();
+					}
+				}
+
+				pSpecializationInfo = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(VkSpecializationInfo)));
+				attachedItems.Add(pSpecializationInfo);
+
+				var spInfo = new VkSpecializationInfo
+				{
+					mapEntryCount = mapEntryCount,
+					pMapEntries = pMapEntries,
+					dataSize = currentStage.SpecializationInfo.DataSize,
+					pData = currentStage.SpecializationInfo.Data,
+				};
+
+				Marshal.StructureToPtr(spInfo, pSpecializationInfo, false);
+			}
+
+			var pStage = new VkPipelineShaderStageCreateInfo
+			{
+				sType = VkStructureType.StructureTypePipelineShaderStageCreateInfo,
+				pNext = IntPtr.Zero,
+				flags = currentStage.Flags,
+				stage = (VkShaderStageFlags)currentStage.Stage,
+				module = bModule.Handle,
+				pName = pName,
+				pSpecializationInfo = pSpecializationInfo,
+			};
+			return pStage;
 		}
 
 		public Result CreatePipelineLayout(MgPipelineLayoutCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgPipelineLayout pPipelineLayout)
@@ -1616,15 +2142,8 @@ namespace Magnesium.Vulkan
 
 						if (preserveAttachmentCount > 0)
 						{
-							var preserveAttachmentSize = sizeof(uint);
-							var bufferLength = (int)(preserveAttachmentSize * preserveAttachmentCount);
-							pPreserveAttachments = Marshal.AllocHGlobal(bufferLength);						
+							pPreserveAttachments = AllocateUInt32Array(currentSubpass.PreserveAttachments);
 							attachedItems.Add(pPreserveAttachments);
-
-							// NEED TO BE TESTED
-							var tempBuffer = new byte[bufferLength];
-							Buffer.BlockCopy(currentSubpass.PreserveAttachments, 0, tempBuffer, 0, bufferLength);
-							Marshal.Copy(tempBuffer, 0, pPreserveAttachments, bufferLength); 
 						}	
 
 						var description = new VkSubpassDescription
@@ -1896,14 +2415,9 @@ namespace Magnesium.Vulkan
 
 			if (pCreateInfo.QueueFamilyIndices != null)
 			{
-				queueFamilyIndexCount = (uint)pCreateInfo.QueueFamilyIndices.Length;
-				var arraySize = (int)(sizeof(uint) * queueFamilyIndexCount);
-				pQueueFamilyIndices = Marshal.AllocHGlobal(arraySize);
+				queueFamilyIndexCount = (uint)pCreateInfo.QueueFamilyIndices.Length;	
+				pQueueFamilyIndices = AllocateUInt32Array(pCreateInfo.QueueFamilyIndices); 
 				attachedItems.Add(pQueueFamilyIndices);
-
-				var tempBuffer = new byte[arraySize];
-				Buffer.BlockCopy(pCreateInfo.QueueFamilyIndices, 0, tempBuffer, 0, arraySize);
-				Marshal.Copy(tempBuffer, 0, pQueueFamilyIndices, arraySize);
 			}
 
 			var createInfo = new VkSwapchainCreateInfoKHR
