@@ -38,7 +38,7 @@ namespace Magnesium.Vulkan
 		internal extern static unsafe void vkGetPhysicalDeviceFormatProperties(IntPtr physicalDevice, VkFormat format, VkFormatProperties pFormatProperties);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe Result vkGetPhysicalDeviceImageFormatProperties(IntPtr physicalDevice, VkFormat format, VkImageType type, VkImageTiling tiling, VkImageUsageFlags usage, VkImageCreateFlags flags, VkImageFormatProperties pImageFormatProperties);
+		internal extern static Result vkGetPhysicalDeviceImageFormatProperties(IntPtr physicalDevice, VkFormat format, VkImageType type, VkImageTiling tiling, VkImageUsageFlags usage, VkImageCreateFlags flags, [In, Out] VkImageFormatProperties pImageFormatProperties);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static Result vkCreateDevice(IntPtr physicalDevice, [In, Out] VkDeviceCreateInfo pCreateInfo, IntPtr pAllocator, ref IntPtr pDevice);
@@ -56,7 +56,7 @@ namespace Magnesium.Vulkan
 		internal extern static Result vkEnumerateDeviceLayerProperties(IntPtr physicalDevice, ref UInt32 pPropertyCount, [In, Out] VkLayerProperties[] pProperties);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static Result vkEnumerateDeviceExtensionProperties(IntPtr physicalDevice, string pLayerName, ref UInt32 pPropertyCount, [In, Out] VkExtensionProperties[] pProperties);
+		internal extern static Result vkEnumerateDeviceExtensionProperties(IntPtr physicalDevice, IntPtr pLayerName, ref UInt32 pPropertyCount, [In, Out] VkExtensionProperties[] pProperties);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkGetDeviceQueue(IntPtr device, UInt32 queueFamilyIndex, UInt32 queueIndex, ref IntPtr pQueue);

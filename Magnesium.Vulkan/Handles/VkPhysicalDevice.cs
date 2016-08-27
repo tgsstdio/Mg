@@ -2,6 +2,7 @@ using Magnesium;
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
 namespace Magnesium.Vulkan
 {
@@ -273,7 +274,7 @@ namespace Magnesium.Vulkan
 
 		public void GetPhysicalDeviceFormatProperties(MgFormat format, out MgFormatProperties pFormatProperties)
 		{
-			VkFormatProperties formatProperties = default(VkFormatProperties);
+			var formatProperties = default(VkFormatProperties);
 			Interops.vkGetPhysicalDeviceFormatProperties(Handle, (VkFormat)format, formatProperties);
 
 			pFormatProperties = new MgFormatProperties
@@ -287,7 +288,33 @@ namespace Magnesium.Vulkan
 
 		public Result GetPhysicalDeviceImageFormatProperties(MgFormat format, MgImageType type, MgImageTiling tiling, MgImageUsageFlagBits usage, MgImageCreateFlagBits flags, out MgImageFormatProperties pImageFormatProperties)
 		{
-			throw new NotImplementedException();
+			var bFormat = (VkFormat)format;
+			var bType = (VkImageType)type;
+			var bUsage = (VkImageUsageFlags)usage;
+			var bTiling = (VkImageTiling)tiling;
+			var bFlags = (VkImageCreateFlags)flags;
+
+			var properties = default(VkImageFormatProperties);
+			var result = Interops.vkGetPhysicalDeviceImageFormatProperties
+			(
+				Handle,
+				bFormat,
+				bType,
+				bTiling,
+				bUsage,
+				bFlags,
+				properties
+		   );
+
+			pImageFormatProperties = new MgImageFormatProperties
+			{
+				MaxExtent = properties.maxExtent,
+				MaxMipLevels = properties.maxMipLevels,
+				MaxArrayLayers = properties.maxArrayLayers,
+				SampleCounts = (MgSampleCountFlagBits)properties.sampleCounts,
+				MaxResourceSize = properties.maxResourceSize,
+			};
+			return result;
 		}
 
 		public Result CreateDevice(MgDeviceCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDevice pDevice)
@@ -300,51 +327,35 @@ namespace Magnesium.Vulkan
 			var bAllocator = (MgVkAllocationCallbacks)allocator;
 			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
-			var pQueueCreateInfos = IntPtr.Zero;
-
-			var ppEnabledLayerNames = IntPtr.Zero;
-
-			var ppEnabledExtensionNames = IntPtr.Zero;
-
-			var pEnabledFeatures = IntPtr.Zero;
+			var attachedItems = new List<IntPtr>();
 
 			try
 			{
 				var queueCreateInfoCount = 0U;
+				var pQueueCreateInfos = IntPtr.Zero;
 				if (pCreateInfo.QueueCreateInfos != null)
 				{
 					queueCreateInfoCount = (uint)pCreateInfo.QueueCreateInfos.Length;
 					if (queueCreateInfoCount > 0)
 					{
-						pQueueCreateInfos = GenerateQueueCreateInfos();
+						pQueueCreateInfos = GenerateQueueCreateInfos(attachedItems, pCreateInfo.QueueCreateInfos);
 					}
 				}
 
 				var enabledLayerCount = 0U;
-				if (pCreateInfo.EnabledLayerNames != null)
-				{
-					enabledLayerCount = (uint)pCreateInfo.EnabledLayerNames.Length;
-					if (enabledLayerCount > 0)
-					{
-						ppEnabledLayerNames = GenerateEnabledLayerNames();
-					}
-				}
-
+				var ppEnabledLayerNames = GenerateEnabledLayerNames();
 
 				var enabledExtensionCount = 0U;
+				var ppEnabledExtensionNames = IntPtr.Zero;
 				if (pCreateInfo.EnabledExtensionNames != null)
 				{
 					enabledExtensionCount = (uint)pCreateInfo.EnabledExtensionNames.Length;
 					if (enabledExtensionCount > 0)
 					{
-						ppEnabledLayerNames = GenerateExtensionNames();
+						ppEnabledExtensionNames = GenerateExtensionNames(attachedItems, pCreateInfo.EnabledExtensionNames);
 					}
 				}
-
-				if (pCreateInfo.EnabledFeatures != null)
-				{
-					pEnabledFeatures = GenerateEnabledFeatures();
-				}
+				var pEnabledFeatures = GenerateEnabledFeatures(attachedItems, pCreateInfo.EnabledFeatures);
 
 				var internalHandle = IntPtr.Zero;
 				var createInfo = new VkDeviceCreateInfo
@@ -366,67 +377,234 @@ namespace Magnesium.Vulkan
 			}
 			finally
 			{
-				if (pEnabledFeatures != IntPtr.Zero)
+				foreach (var item in attachedItems)
 				{
-					Marshal.FreeHGlobal(pEnabledFeatures);
-				}
-
-				if (ppEnabledExtensionNames != IntPtr.Zero)
-				{
-					Marshal.FreeHGlobal(ppEnabledExtensionNames);
-				}
-
-				if (ppEnabledLayerNames != IntPtr.Zero)
-				{
-					Marshal.FreeHGlobal(ppEnabledLayerNames);
-				}
-
-				if (pQueueCreateInfos != IntPtr.Zero)
-				{
-					Marshal.FreeHGlobal(pQueueCreateInfos);
+					Marshal.FreeHGlobal(item);
 				}
 			}
 		}
 
-		IntPtr GenerateEnabledFeatures()
+
+		IntPtr GenerateEnabledFeatures(List<IntPtr> attachedItems, MgPhysicalDeviceFeatures enabledFeatures)
 		{
-			throw new NotImplementedException();
+			if (enabledFeatures == null)
+				return IntPtr.Zero;
+
+			var dataItem = new VkPhysicalDeviceFeatures
+			{
+				robustBufferAccess = VkBool32.ConvertTo(enabledFeatures.RobustBufferAccess),
+				fullDrawIndexUint32 = VkBool32.ConvertTo(enabledFeatures.FullDrawIndexUint32),
+				imageCubeArray = VkBool32.ConvertTo(enabledFeatures.ImageCubeArray),
+				independentBlend = VkBool32.ConvertTo(enabledFeatures.IndependentBlend),
+				geometryShader = VkBool32.ConvertTo(enabledFeatures.GeometryShader),
+				tessellationShader = VkBool32.ConvertTo(enabledFeatures.TessellationShader),
+				sampleRateShading = VkBool32.ConvertTo(enabledFeatures.SampleRateShading),
+				dualSrcBlend = VkBool32.ConvertTo(enabledFeatures.DualSrcBlend),
+				logicOp = VkBool32.ConvertTo(enabledFeatures.LogicOp),
+				multiDrawIndirect = VkBool32.ConvertTo(enabledFeatures.MultiDrawIndirect),
+				drawIndirectFirstInstance = VkBool32.ConvertTo(enabledFeatures.DrawIndirectFirstInstance),
+				depthClamp = VkBool32.ConvertTo(enabledFeatures.DepthClamp),
+				depthBiasClamp = VkBool32.ConvertTo(enabledFeatures.DepthBiasClamp),
+				fillModeNonSolid = VkBool32.ConvertTo(enabledFeatures.FillModeNonSolid),
+				depthBounds = VkBool32.ConvertTo(enabledFeatures.DepthBounds),
+				wideLines = VkBool32.ConvertTo(enabledFeatures.WideLines),
+				largePoints = VkBool32.ConvertTo(enabledFeatures.LargePoints),
+				alphaToOne = VkBool32.ConvertTo(enabledFeatures.AlphaToOne),
+				multiViewport = VkBool32.ConvertTo(enabledFeatures.MultiViewport),
+				samplerAnisotropy = VkBool32.ConvertTo(enabledFeatures.SamplerAnisotropy),
+				textureCompressionETC2 = VkBool32.ConvertTo(enabledFeatures.TextureCompressionETC2),
+				textureCompressionASTC_LDR = VkBool32.ConvertTo(enabledFeatures.TextureCompressionASTC_LDR),
+				textureCompressionBC = VkBool32.ConvertTo(enabledFeatures.TextureCompressionBC),
+				occlusionQueryPrecise = VkBool32.ConvertTo(enabledFeatures.OcclusionQueryPrecise),
+				pipelineStatisticsQuery = VkBool32.ConvertTo(enabledFeatures.PipelineStatisticsQuery),
+				vertexPipelineStoresAndAtomics = VkBool32.ConvertTo(enabledFeatures.VertexPipelineStoresAndAtomics),
+				fragmentStoresAndAtomics = VkBool32.ConvertTo(enabledFeatures.FragmentStoresAndAtomics),
+				shaderTessellationAndGeometryPointSize = VkBool32.ConvertTo(enabledFeatures.ShaderTessellationAndGeometryPointSize),
+				shaderImageGatherExtended = VkBool32.ConvertTo(enabledFeatures.ShaderImageGatherExtended),
+				shaderStorageImageExtendedFormats = VkBool32.ConvertTo(enabledFeatures.ShaderStorageImageExtendedFormats),
+				shaderStorageImageMultisample = VkBool32.ConvertTo(enabledFeatures.ShaderStorageImageMultisample),
+				shaderStorageImageReadWithoutFormat = VkBool32.ConvertTo(enabledFeatures.ShaderStorageImageReadWithoutFormat),
+				shaderStorageImageWriteWithoutFormat = VkBool32.ConvertTo(enabledFeatures.ShaderStorageImageWriteWithoutFormat),
+				shaderUniformBufferArrayDynamicIndexing = VkBool32.ConvertTo(enabledFeatures.ShaderUniformBufferArrayDynamicIndexing),
+				shaderSampledImageArrayDynamicIndexing = VkBool32.ConvertTo(enabledFeatures.ShaderSampledImageArrayDynamicIndexing),
+				shaderStorageBufferArrayDynamicIndexing = VkBool32.ConvertTo(enabledFeatures.ShaderStorageBufferArrayDynamicIndexing),
+				shaderStorageImageArrayDynamicIndexing = VkBool32.ConvertTo(enabledFeatures.ShaderStorageImageArrayDynamicIndexing),
+				shaderClipDistance = VkBool32.ConvertTo(enabledFeatures.ShaderClipDistance),
+				shaderCullDistance = VkBool32.ConvertTo(enabledFeatures.ShaderCullDistance),
+				shaderFloat64 = VkBool32.ConvertTo(enabledFeatures.ShaderFloat64),
+				shaderInt64 = VkBool32.ConvertTo(enabledFeatures.ShaderInt64),
+				shaderInt16 = VkBool32.ConvertTo(enabledFeatures.ShaderInt16),
+				shaderResourceResidency = VkBool32.ConvertTo(enabledFeatures.ShaderResourceResidency),
+				shaderResourceMinLod = VkBool32.ConvertTo(enabledFeatures.ShaderResourceMinLod),
+				sparseBinding = VkBool32.ConvertTo(enabledFeatures.SparseBinding),
+				sparseResidencyBuffer = VkBool32.ConvertTo(enabledFeatures.SparseResidencyBuffer),
+				sparseResidencyImage2D = VkBool32.ConvertTo(enabledFeatures.SparseResidencyImage2D),
+				sparseResidencyImage3D = VkBool32.ConvertTo(enabledFeatures.SparseResidencyImage3D),
+				sparseResidency2Samples = VkBool32.ConvertTo(enabledFeatures.SparseResidency2Samples),
+				sparseResidency4Samples = VkBool32.ConvertTo(enabledFeatures.SparseResidency4Samples),
+				sparseResidency8Samples = VkBool32.ConvertTo(enabledFeatures.SparseResidency8Samples),
+				sparseResidency16Samples = VkBool32.ConvertTo(enabledFeatures.SparseResidency16Samples),
+				sparseResidencyAliased = VkBool32.ConvertTo(enabledFeatures.SparseResidencyAliased),
+				variableMultisampleRate = VkBool32.ConvertTo(enabledFeatures.VariableMultisampleRate),
+				inheritedQueries = VkBool32.ConvertTo(enabledFeatures.InheritedQueries),
+			};
+
+			{
+				var structSize = Marshal.SizeOf(dataItem);
+				var dest = Marshal.AllocHGlobal(structSize);
+				attachedItems.Add(dest);
+				Marshal.StructureToPtr(dataItem, dest, false);
+				return dest;
+			}
 		}
 
+		IntPtr GenerateExtensionNames(List<IntPtr> attachedItems, string[] enabledExtensionNames)
+		{
+			if (enabledExtensionNames == null)
+				return IntPtr.Zero;
+
+			var stride = Marshal.SizeOf(typeof(IntPtr));
+			var arrayLength = enabledExtensionNames.Length;
+			var pEnabledExtensionNames = Marshal.AllocHGlobal(stride * arrayLength);
+			attachedItems.Add(pEnabledExtensionNames);
+
+			var pExtensions = new IntPtr[arrayLength];
+			foreach (var name in enabledExtensionNames)
+			{
+				var handle = VkStringUtility.NativeUtf8FromString(name);
+				attachedItems.Add(handle);
+			}
+			Marshal.Copy(pExtensions, 0, pEnabledExtensionNames, arrayLength);
+
+			return pEnabledExtensionNames;
+		}
+  
 		IntPtr GenerateEnabledLayerNames()
 		{
-			throw new NotImplementedException();
+			// https://www.khronos.org/registry/vulkan/specs/1.0-wsi_extensions/xhtml/vkspec.html#extended-functionality-device-layer-deprecation
+			return IntPtr.Zero;
 		}
 
-		IntPtr GenerateExtensionNames()
+		IntPtr GenerateQueueCreateInfos(List<IntPtr> attachedItems, MgDeviceQueueCreateInfo[] queueCreateInfos)
 		{
-			throw new NotImplementedException();
-		}
 
-		IntPtr GenerateQueueCreateInfos()
-		{
-			throw new NotImplementedException();
+			var stride = Marshal.SizeOf(typeof(VkDeviceQueueCreateInfo));
+			var pQueueCreateInfos = Marshal.AllocHGlobal(stride * queueCreateInfos.Length);
+			attachedItems.Add(pQueueCreateInfos);
+
+			var offset = 0;
+			foreach (var item in queueCreateInfos)
+			{
+				var queueCount = item.QueueCount;
+
+				Debug.Assert(item.QueuePriorities != null);
+				int arrayLength = item.QueuePriorities.Length;
+				Debug.Assert(item.QueueCount == arrayLength);
+
+				var pQueuePriorities = Marshal.AllocHGlobal(sizeof(float) * arrayLength);
+				attachedItems.Add(pQueuePriorities);
+				Marshal.Copy(item.QueuePriorities, 0, pQueuePriorities, arrayLength);
+
+				var info = new VkDeviceQueueCreateInfo
+				{
+					sType = VkStructureType.StructureTypeDeviceQueueCreateInfo,
+					pNext = IntPtr.Zero,
+					flags = item.Flags,
+					queueFamilyIndex = item.QueueFamilyIndex,
+					queueCount = item.QueueCount,
+					pQueuePriorities = pQueuePriorities,
+				};
+
+				IntPtr dest = IntPtr.Add(pQueueCreateInfos, offset);
+				Marshal.StructureToPtr(info, dest, false);
+				offset += stride;
+			}
+
+			return pQueueCreateInfos;
 		}
 
 		public Result EnumerateDeviceLayerProperties(out MgLayerProperties[] pProperties)
 		{
-			throw new NotImplementedException();
+			uint count = 0U;
+			var first = Interops.vkEnumerateDeviceLayerProperties(Handle, ref count, null);
+
+			if (first != Result.SUCCESS)
+			{
+				pProperties = null;
+				return first;
+			}
+
+			var layers = new VkLayerProperties[count];
+			var final = Interops.vkEnumerateDeviceLayerProperties(Handle, ref count, layers);
+
+			pProperties = new MgLayerProperties[count];
+			for (var i = 0; i < count; ++i)
+			{
+				pProperties[i] = new MgLayerProperties
+				{
+					LayerName = layers[i].layerName,
+					SpecVersion = layers[i].specVersion,
+					ImplementationVersion = layers[i].implementationVersion,
+					Description = layers[i].description,
+				};
+			}
+
+			return final;
 		}
 
 		public Result EnumerateDeviceExtensionProperties(string layerName, out MgExtensionProperties[] pProperties)
 		{
-			throw new NotImplementedException();
+			var bLayerName = IntPtr.Zero;
+
+			try
+			{
+				if (layerName != null)
+				{
+					bLayerName = VkStringUtility.NativeUtf8FromString(layerName);
+				}
+				uint count = 0;
+				var first = Interops.vkEnumerateDeviceExtensionProperties(Handle, bLayerName, ref count, null);
+
+				if (first != Result.SUCCESS)
+				{
+					pProperties = null;
+					return first;
+				}
+
+				var extensions = new VkExtensionProperties[count];
+				var final = Interops.vkEnumerateDeviceExtensionProperties(Handle, bLayerName, ref count, extensions);
+
+				pProperties = new MgExtensionProperties[count];
+				for (var i = 0; i < count; ++i)
+				{
+					pProperties[i] = new MgExtensionProperties
+					{
+						ExtensionName = extensions[i].extensionName,
+						SpecVersion = extensions[i].specVersion,
+					};
+				}
+
+				return final;
+
+			}
+			finally
+			{
+				if (bLayerName != IntPtr.Zero)
+				{
+					Marshal.FreeHGlobal(bLayerName);
+				}
+			}
 		}
 
 		public void GetPhysicalDeviceSparseImageFormatProperties(MgFormat format, MgImageType type, MgSampleCountFlagBits samples, MgImageUsageFlagBits usage, MgImageTiling tiling, out MgSparseImageFormatProperties[] pProperties)
 		{
 			uint count = 0;
 
-			VkFormat bFormat = (VkFormat) format;
-			VkImageType bType = (VkImageType) type;
-			VkSampleCountFlags bSamples = (VkSampleCountFlags) samples;
-			VkImageUsageFlags bUsage = (VkImageUsageFlags) usage;
-			VkImageTiling bTiling = (VkImageTiling) tiling;
+			var bFormat = (VkFormat) format;
+			var bType = (VkImageType) type;
+			var bSamples = (VkSampleCountFlags) samples;
+			var bUsage = (VkImageUsageFlags) usage;
+			var bTiling = (VkImageTiling) tiling;
 
 			Interops.vkGetPhysicalDeviceSparseImageFormatProperties
 			(

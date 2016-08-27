@@ -12,6 +12,6 @@ namespace Magnesium.Vulkan
 		public UInt32 flags { get; set; }
 		public UInt32 queueFamilyIndex { get; set; }
 		public UInt32 queueCount { get; set; }
-		public float pQueuePriorities { get; set; }
+		public IntPtr pQueuePriorities { get; set; } // float[]
 	}
 }

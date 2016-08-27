@@ -1230,18 +1230,6 @@ namespace Magnesium.Vulkan
 			}
 		}
 
-		// Using Hans Passant's answer
-		// http://stackoverflow.com/questions/10773440/conversion-in-net-native-utf-8-managed-string
-		static IntPtr NativeUtf8FromString(string managedString)
-        {
-            int len = System.Text.Encoding.UTF8.GetByteCount(managedString);
-            byte[] buffer = new byte[len + 1];
-            System.Text.Encoding.UTF8.GetBytes(managedString, 0, managedString.Length, buffer, 0);
-            IntPtr nativeUtf8 = Marshal.AllocHGlobal(buffer.Length);
-            Marshal.Copy(buffer, 0, nativeUtf8, buffer.Length);
-            return nativeUtf8;
-        }
-
 		public Result CreateComputePipelines(IMgPipelineCache pipelineCache, MgComputePipelineCreateInfo[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgPipeline[] pPipelines)
 		{
 			if (pCreateInfos == null)
@@ -1318,7 +1306,7 @@ namespace Magnesium.Vulkan
 
 			// pointer to a null-terminated UTF-8 string specifying the entry point name of the shader for this stage
 			Debug.Assert(!string.IsNullOrWhiteSpace(currentStage.Name));
-			var pName = NativeUtf8FromString(currentStage.Name);
+			var pName = VkStringUtility.NativeUtf8FromString(currentStage.Name);
 			attachedItems.Add(pName);
 
 			var pSpecializationInfo = IntPtr.Zero;
@@ -2354,7 +2342,6 @@ namespace Magnesium.Vulkan
 				var sharedSwapchains = new ulong[swapChainCount];
 				var result = Interops.vkCreateSharedSwapchainsKHR(Handle, swapChainCount, swapChainCreateInfos, allocatorPtr, sharedSwapchains);
 
-				// TODO : result 
 				pSwapchains = new VkSwapchainKHR[swapChainCount];
 				for (var i = 0; i < swapChainCount; ++i)
 				{

@@ -260,6 +260,7 @@
     <Compile Include="Handles\VkSwapchainKHR.cs" />
     <Compile Include="Handles\VkDisplayKHR.cs" />
     <Compile Include="Structs\VkDisplayModePropertiesKHR.cs" />
+    <Compile Include="Handles\VkStringUtility.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Core\" />
