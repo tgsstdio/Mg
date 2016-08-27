@@ -17,7 +17,7 @@ namespace Magnesium.Vulkan
 
 		public Result QueueWaitIdle()
 		{
-			throw new NotImplementedException();
+			return Interops.vkQueueWaitIdle(Handle);
 		}
 
 		public Result QueueBindSparse(MgBindSparseInfo[] pBindInfo, IMgFence fence)
