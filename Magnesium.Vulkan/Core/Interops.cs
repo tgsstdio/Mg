@@ -32,7 +32,7 @@ namespace Magnesium.Vulkan
 		internal extern static void vkGetPhysicalDeviceMemoryProperties(IntPtr physicalDevice, [In, Out] VkPhysicalDeviceMemoryProperties pMemoryProperties);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe void vkGetPhysicalDeviceFeatures(IntPtr physicalDevice, VkPhysicalDeviceFeatures* pFeatures);
+		internal extern static void vkGetPhysicalDeviceFeatures(IntPtr physicalDevice, [In, Out] VkPhysicalDeviceFeatures pFeatures);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static unsafe void vkGetPhysicalDeviceFormatProperties(IntPtr physicalDevice, VkFormat format, VkFormatProperties pFormatProperties);

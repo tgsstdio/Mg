@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan
 {
-	[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Ansi)]
+	[StructLayout(LayoutKind.Sequential)]
 	internal struct VkPhysicalDeviceLimits
 	{
 		public UInt32 maxImageDimension1D { get; set; }
@@ -59,9 +59,9 @@ namespace Magnesium.Vulkan
 		public UInt32 maxFragmentDualSrcAttachments { get; set; }
 		public UInt32 maxFragmentCombinedOutputResources { get; set; }
 		public UInt32 maxComputeSharedMemorySize { get; set; }
-		public UInt32 maxComputeWorkGroupCount { get; set; }
+		public MgVec3Ui maxComputeWorkGroupCount { get; set; }
 		public UInt32 maxComputeWorkGroupInvocations { get; set; }
-		public UInt32 maxComputeWorkGroupSize { get; set; }
+		public MgVec3Ui maxComputeWorkGroupSize { get; set; }
 		public UInt32 subPixelPrecisionBits { get; set; }
 		public UInt32 subTexelPrecisionBits { get; set; }
 		public UInt32 mipmapPrecisionBits { get; set; }
@@ -70,8 +70,8 @@ namespace Magnesium.Vulkan
 		public float maxSamplerLodBias { get; set; }
 		public float maxSamplerAnisotropy { get; set; }
 		public UInt32 maxViewports { get; set; }
-		public UInt32 maxViewportDimensions { get; set; }
-		public float viewportBoundsRange { get; set; }
+		public MgVec2Ui maxViewportDimensions { get; set; }
+		public MgVec2f viewportBoundsRange { get; set; }
 		public UInt32 viewportSubPixelBits { get; set; }
 		public UIntPtr minMemoryMapAlignment { get; set; }
 		public UInt64 minTexelBufferOffsetAlignment { get; set; }
@@ -104,8 +104,8 @@ namespace Magnesium.Vulkan
 		public UInt32 maxCullDistances { get; set; }
 		public UInt32 maxCombinedClipAndCullDistances { get; set; }
 		public UInt32 discreteQueuePriorities { get; set; }
-		public float pointSizeRange { get; set; }
-		public float lineWidthRange { get; set; }
+		public MgVec2f pointSizeRange { get; set; }
+		public MgVec2f lineWidthRange { get; set; }
 		public float pointSizeGranularity { get; set; }
 		public float lineWidthGranularity { get; set; }
 		public VkBool32 strictLines { get; set; }
