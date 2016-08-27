@@ -10,6 +10,6 @@ namespace Magnesium.Vulkan
 		public VkStructureType sType { get; set; }
 		public IntPtr pNext { get; set; }
 		public UInt32 flags { get; set; }
-		public VkDisplayModeParametersKHR parameters { get; set; }
+		public MgDisplayModeParametersKHR parameters { get; set; }
 	}
 }

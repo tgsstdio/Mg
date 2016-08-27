@@ -8,6 +8,6 @@ namespace Magnesium.Vulkan
 	internal struct VkDisplayModePropertiesKHR
 	{
 		public UInt64 displayMode { get; set; }
-		public VkDisplayModeParametersKHR parameters { get; set; }
+		public MgDisplayModeParametersKHR parameters { get; set; }
 	}
 }

@@ -142,8 +142,6 @@
     <Compile Include="Structs\VkDeviceQueueCreateInfo.cs" />
     <Compile Include="Structs\VkDispatchIndirectCommand.cs" />
     <Compile Include="Structs\VkDisplayModeCreateInfoKHR.cs" />
-    <Compile Include="Structs\VkDisplayModeParametersKHR.cs" />
-    <Compile Include="Structs\VkDisplayModePropertiesKHR.cs" />
     <Compile Include="Structs\VkDisplayPlaneCapabilitiesKHR.cs" />
     <Compile Include="Structs\VkDisplayPlanePropertiesKHR.cs" />
     <Compile Include="Structs\VkDisplayPresentInfoKHR.cs" />
@@ -260,6 +258,8 @@
     <Compile Include="Handles\VkShaderModule.cs" />
     <Compile Include="Handles\VkSurfaceKHR.cs" />
     <Compile Include="Handles\VkSwapchainKHR.cs" />
+    <Compile Include="Handles\VkDisplayKHR.cs" />
+    <Compile Include="Structs\VkDisplayModePropertiesKHR.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Core\" />

@@ -11,11 +11,11 @@ namespace Magnesium.Vulkan
 		public IntPtr pNext { get; set; }
 		public UInt32 flags { get; set; }
 		public UInt32 queueCreateInfoCount { get; set; }
-		public VkDeviceQueueCreateInfo pQueueCreateInfos { get; set; }
+		public IntPtr pQueueCreateInfos { get; set; } // VkDeviceQueueCreateInfo[]
 		public UInt32 enabledLayerCount { get; set; }
-		public string ppEnabledLayerNames { get; set; }
+		public IntPtr ppEnabledLayerNames { get; set; } // string[]
 		public UInt32 enabledExtensionCount { get; set; }
-		public string ppEnabledExtensionNames { get; set; }
-		public VkPhysicalDeviceFeatures pEnabledFeatures { get; set; }
+		public IntPtr ppEnabledExtensionNames { get; set; } // string[]
+		public IntPtr pEnabledFeatures { get; set; } // VkPhysicalDeviceFeatures
 	}
 }

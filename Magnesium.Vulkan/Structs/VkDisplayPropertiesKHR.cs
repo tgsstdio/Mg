@@ -6,7 +6,7 @@ namespace Magnesium.Vulkan
 	[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Ansi)]
 	internal struct VkDisplayPropertiesKHR
 	{
-		public IntPtr display;
+		public UInt64 display;
 		[MarshalAs(UnmanagedType.LPStr)]
 		public string displayName;
 		public MgExtent2D physicalDimensions;
