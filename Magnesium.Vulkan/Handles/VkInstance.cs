@@ -1,4 +1,3 @@
-using Magnesium;
 using System;
 using System.Diagnostics;
 
@@ -12,16 +11,26 @@ namespace Magnesium.Vulkan
 			Handle = handle;
 		}
 
+		/// <summary>
+		/// Allocator is optional
+		/// </summary>
+		/// <param name="allocator"></param>
+		/// <returns></returns>
+		static IntPtr GetAllocatorHandle(IMgAllocationCallbacks allocator)
+		{
+			var bAllocator = (MgVkAllocationCallbacks)allocator;
+			return bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+		}
+
 		private bool mIsDisposed = false;
 		public void DestroyInstance(IMgAllocationCallbacks allocator)
 		{
 			if (!mIsDisposed)
 				return;
 
-			var bAllocator = (MgVkAllocationCallbacks) allocator;
-			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;		
+			var allocatorHandle = GetAllocatorHandle(allocator);	
 
-			Interops.vkDestroyInstance(this.Handle, allocatorPtr);
+			Interops.vkDestroyInstance(Handle, allocatorHandle);
 
 			Handle = IntPtr.Zero;
 			mIsDisposed = true;
@@ -31,9 +40,9 @@ namespace Magnesium.Vulkan
 		{
 			Debug.Assert(!mIsDisposed);
 
-			UInt32 pPropertyCount = 0;
+			var pPropertyCount = 0U;
 
-			var first = Interops.vkEnumeratePhysicalDevices(this.Handle, ref pPropertyCount, null);
+			var first = Interops.vkEnumeratePhysicalDevices(Handle, ref pPropertyCount, null);
 
 			if (first != Result.SUCCESS)
 			{
@@ -42,7 +51,7 @@ namespace Magnesium.Vulkan
 			}
 
 			var devices = new IntPtr[pPropertyCount];
-			var last = Interops.vkEnumeratePhysicalDevices(this.Handle, ref pPropertyCount, devices);
+			var last = Interops.vkEnumeratePhysicalDevices(Handle, ref pPropertyCount, devices);
 
 			physicalDevices = new VkPhysicalDevice[pPropertyCount];
 			for (uint i = 0; i < pPropertyCount; ++i)
@@ -56,7 +65,7 @@ namespace Magnesium.Vulkan
 		{
 			Debug.Assert(!mIsDisposed);
 
-			return Interops.vkGetInstanceProcAddr(this.Handle, pName);
+			return Interops.vkGetInstanceProcAddr(Handle, pName);
 		}
 
 		public Result CreateDisplayPlaneSurfaceKHR(MgDisplaySurfaceCreateInfoKHR createInfo, IMgAllocationCallbacks allocator, out IMgSurfaceKHR pSurface)
@@ -85,11 +94,10 @@ namespace Magnesium.Vulkan
 
 			// MIGHT NEED GetInstanceProcAddr INSTEAD
 
-			var bAllocator = allocator as MgVkAllocationCallbacks;
-			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorHandle = GetAllocatorHandle(allocator);
 
 			UInt64 handle = 0UL;
-			var result = Interops.vkCreateDisplayPlaneSurfaceKHR(this.Handle, pCreateInfo, allocatorPtr, ref handle);
+			var result = Interops.vkCreateDisplayPlaneSurfaceKHR(Handle, pCreateInfo, allocatorHandle, ref handle);
 			pSurface = new VkSurfaceKHR(handle);
 
 			return result;
@@ -102,8 +110,7 @@ namespace Magnesium.Vulkan
 
 			Debug.Assert(!mIsDisposed);
 
-			var bAllocator = (MgVkAllocationCallbacks) allocator;
-			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorHandle = GetAllocatorHandle(allocator);
 
 			// TODO : MIGHT NEED GetInstanceProcAddr INSTEAD
 			var createInfo = new VkAndroidSurfaceCreateInfoKHR
@@ -114,8 +121,8 @@ namespace Magnesium.Vulkan
 				window = pCreateInfo.Window,
 			};
 
-			ulong surfaceHandle = 0;
-			var result = Interops.vkCreateAndroidSurfaceKHR(this.Handle, createInfo, allocatorPtr, ref surfaceHandle);
+			var surfaceHandle = 0UL;
+			var result = Interops.vkCreateAndroidSurfaceKHR(Handle, createInfo, allocatorHandle, ref surfaceHandle);
 			pSurface = new VkSurfaceKHR(surfaceHandle);
 
 			return result;
@@ -128,8 +135,7 @@ namespace Magnesium.Vulkan
 
 			Debug.Assert(!mIsDisposed);
 
-			var bAllocator = (MgVkAllocationCallbacks) allocator;
-			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorHandle = GetAllocatorHandle(allocator);
 
 			var createInfo = new VkWin32SurfaceCreateInfoKHR
 			{
@@ -142,8 +148,8 @@ namespace Magnesium.Vulkan
 
 			// TODO : MIGHT NEED GetInstanceProcAddr INSTEAD
 
-			ulong surfaceHandle = 0;
-			var result = Interops.vkCreateWin32SurfaceKHR(this.Handle, createInfo, allocatorPtr, ref surfaceHandle);
+			var surfaceHandle = 0UL;
+			var result = Interops.vkCreateWin32SurfaceKHR(Handle, createInfo, allocatorHandle, ref surfaceHandle);
 			pSurface = new VkSurfaceKHR(surfaceHandle);
 
 			return result;
@@ -155,21 +161,20 @@ namespace Magnesium.Vulkan
 
 			Debug.Assert(!mIsDisposed);
 
-			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorHandle = GetAllocatorHandle(allocator);
 
 			var createInfo = new VkDebugReportCallbackCreateInfoEXT
 			{
 				sType = VkStructureType.StructureTypeDebugReportCallbackCreateInfoExt,
 				pNext = IntPtr.Zero,
-				flags = (Magnesium.Vulkan.VkDebugReportFlagsExt)pCreateInfo.Flags,
+				flags = (VkDebugReportFlagsExt)pCreateInfo.Flags,
 				// TODO : figure out translation
 				pfnCallback = null,
 				pUserData = pCreateInfo.UserData,
 			};
 
-			UInt64 callback = 0;
-			var result = Interops.vkCreateDebugReportCallbackEXT(this.Handle, createInfo, allocatorPtr, ref callback);
+			var callback = 0UL;
+			var result = Interops.vkCreateDebugReportCallbackEXT(Handle, createInfo, allocatorHandle, ref callback);
 			// TODO : figure out translation
 			pCallback = new VkDebugReportCallbackEXT(callback);
 

@@ -10,14 +10,14 @@ namespace Magnesium.Vulkan
 		public VkStructureType sType { get; set; }
 		public IntPtr pNext { get; set; }
 		public UInt32 waitSemaphoreCount { get; set; }
-		public UInt64 pWaitSemaphores { get; set; }
+		public IntPtr pWaitSemaphores { get; set; } // UInt64[]
 		public UInt32 bufferBindCount { get; set; }
-		public VkSparseBufferMemoryBindInfo pBufferBinds { get; set; }
+		public IntPtr pBufferBinds { get; set; } // VkSparseBufferMemoryBindInfo[]
 		public UInt32 imageOpaqueBindCount { get; set; }
-		public VkSparseImageOpaqueMemoryBindInfo pImageOpaqueBinds { get; set; }
+		public IntPtr pImageOpaqueBinds { get; set; } // VkSparseImageOpaqueMemoryBindInfo
 		public UInt32 imageBindCount { get; set; }
-		public VkSparseImageMemoryBindInfo pImageBinds { get; set; }
+		public IntPtr pImageBinds { get; set; } // VkSparseImageMemoryBindInfo[]
 		public UInt32 signalSemaphoreCount { get; set; }
-		public UInt64 pSignalSemaphores { get; set; }
-	}
+		public IntPtr pSignalSemaphores { get; set; } // UInt64[]
+}
 }

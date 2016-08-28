@@ -14,6 +14,17 @@ namespace Magnesium.Vulkan
 			Handle = handle;
 		}
 
+		/// <summary>
+		/// Allocator is optional
+		/// </summary>
+		/// <param name="allocator"></param>
+		/// <returns></returns>
+		static IntPtr GetAllocatorHandle(IMgAllocationCallbacks allocator)
+		{
+			var bAllocator = (MgVkAllocationCallbacks)allocator;
+			return bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+		}
+
 		public void GetPhysicalDeviceProperties(out MgPhysicalDeviceProperties pProperties)
 		{
 			var pCreateInfo = default(VkPhysicalDeviceProperties);
@@ -319,13 +330,10 @@ namespace Magnesium.Vulkan
 
 		public Result CreateDevice(MgDeviceCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDevice pDevice)
 		{
-			if (pCreateInfo != null)
-			{
+			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
-			}
 
-			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = GetAllocatorHandle(allocator);
 
 			var attachedItems = new List<IntPtr>();
 
@@ -471,7 +479,7 @@ namespace Magnesium.Vulkan
 			var pExtensions = new IntPtr[arrayLength];
 			foreach (var name in enabledExtensionNames)
 			{
-				var handle = VkStringUtility.NativeUtf8FromString(name);
+				var handle = VkInteropsUtility.NativeUtf8FromString(name);
 				attachedItems.Add(handle);
 			}
 			Marshal.Copy(pExtensions, 0, pEnabledExtensionNames, arrayLength);
@@ -487,38 +495,31 @@ namespace Magnesium.Vulkan
 
 		IntPtr GenerateQueueCreateInfos(List<IntPtr> attachedItems, MgDeviceQueueCreateInfo[] queueCreateInfos)
 		{
-
-			var stride = Marshal.SizeOf(typeof(VkDeviceQueueCreateInfo));
-			var pQueueCreateInfos = Marshal.AllocHGlobal(stride * queueCreateInfos.Length);
-			attachedItems.Add(pQueueCreateInfos);
-
-			var offset = 0;
-			foreach (var item in queueCreateInfos)
-			{
-				var queueCount = item.QueueCount;
-
-				Debug.Assert(item.QueuePriorities != null);
-				int arrayLength = item.QueuePriorities.Length;
-				Debug.Assert(item.QueueCount == arrayLength);
-
-				var pQueuePriorities = Marshal.AllocHGlobal(sizeof(float) * arrayLength);
-				attachedItems.Add(pQueuePriorities);
-				Marshal.Copy(item.QueuePriorities, 0, pQueuePriorities, arrayLength);
-
-				var info = new VkDeviceQueueCreateInfo
+			var pQueueCreateInfos = VkInteropsUtility.AllocateHGlobalArray(
+				queueCreateInfos,
+				(item) =>
 				{
-					sType = VkStructureType.StructureTypeDeviceQueueCreateInfo,
-					pNext = IntPtr.Zero,
-					flags = item.Flags,
-					queueFamilyIndex = item.QueueFamilyIndex,
-					queueCount = item.QueueCount,
-					pQueuePriorities = pQueuePriorities,
-				};
+					var queueCount = item.QueueCount;
 
-				IntPtr dest = IntPtr.Add(pQueueCreateInfos, offset);
-				Marshal.StructureToPtr(info, dest, false);
-				offset += stride;
-			}
+					Debug.Assert(item.QueuePriorities != null);
+					int arrayLength = item.QueuePriorities.Length;
+					Debug.Assert(item.QueueCount == arrayLength);
+
+					var pQueuePriorities = Marshal.AllocHGlobal(sizeof(float) * arrayLength);
+					attachedItems.Add(pQueuePriorities);
+					Marshal.Copy(item.QueuePriorities, 0, pQueuePriorities, arrayLength);
+
+					return new VkDeviceQueueCreateInfo
+					{
+						sType = VkStructureType.StructureTypeDeviceQueueCreateInfo,
+						pNext = IntPtr.Zero,
+						flags = item.Flags,
+						queueFamilyIndex = item.QueueFamilyIndex,
+						queueCount = item.QueueCount,
+						pQueuePriorities = pQueuePriorities,
+					};
+				});
+			attachedItems.Add(pQueueCreateInfos);
 
 			return pQueueCreateInfos;
 		}
@@ -560,7 +561,7 @@ namespace Magnesium.Vulkan
 			{
 				if (layerName != null)
 				{
-					bLayerName = VkStringUtility.NativeUtf8FromString(layerName);
+					bLayerName = VkInteropsUtility.NativeUtf8FromString(layerName);
 				}
 				uint count = 0;
 				var first = Interops.vkEnumerateDeviceExtensionProperties(Handle, bLayerName, ref count, null);
@@ -902,16 +903,17 @@ namespace Magnesium.Vulkan
 
 		public Result CreateDisplayModeKHR(IMgDisplayKHR display, MgDisplayModeCreateInfoKHR pCreateInfo, IMgAllocationCallbacks allocator, out IMgDisplayModeKHR pMode)
 		{
-			if (pCreateInfo != null)
-			{
+			if (display == null)
+				throw new ArgumentNullException(nameof(display));
+
+			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
-			}
+			
 
 			var bDisplay = (VkDisplayModeKHR)display;
 			Debug.Assert(bDisplay != null);
 
-			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = GetAllocatorHandle(allocator);
 
 			var createInfo = new VkDisplayModeCreateInfoKHR
 			{
@@ -921,7 +923,7 @@ namespace Magnesium.Vulkan
 				parameters = pCreateInfo.parameters,
 			};
 
-			ulong modeHandle = 0;
+			var modeHandle = 0UL;
 			var result = Interops.vkCreateDisplayModeKHR(this.Handle, bDisplay.Handle, createInfo, allocatorPtr, ref modeHandle);
 			pMode = new VkDisplayModeKHR(modeHandle);
 

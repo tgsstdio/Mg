@@ -14,6 +14,7 @@ namespace Magnesium.Vulkan
 		public UInt32 swapchainCount { get; set; }
 		public IntPtr pSwapchains { get; set; } // array
 		public UInt32 pImageIndices { get; set; } 
+		// Reused for results
 		public IntPtr pResults { get; set; } // array
 	}
 }

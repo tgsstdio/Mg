@@ -21,14 +21,24 @@ namespace Magnesium.Vulkan
 			return Interops.vkGetDeviceProcAddr(Handle, pName);
 		}
 
+		/// <summary>
+		/// Allocator is optional
+		/// </summary>
+		/// <param name="allocator"></param>
+		/// <returns></returns>
+		static IntPtr GetAllocatorHandle(IMgAllocationCallbacks allocator)
+		{
+			var bAllocator = (MgVkAllocationCallbacks)allocator;
+			return bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+		}
+
 		private bool mIsDisposed = false;
 		public void DestroyDevice(IMgAllocationCallbacks allocator)
 		{
 			if (mIsDisposed)
 				return;
 
-			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = GetAllocatorHandle(allocator);
 
 			Interops.vkDestroyDevice(Handle, allocatorPtr);
 
@@ -59,8 +69,7 @@ namespace Magnesium.Vulkan
 
 			Debug.Assert(!mIsDisposed);
 
-			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = GetAllocatorHandle(allocator);
 
 			unsafe
 			{
@@ -233,8 +242,7 @@ namespace Magnesium.Vulkan
 
 			Debug.Assert(!mIsDisposed);
 
-			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = GetAllocatorHandle(allocator);
 
 			var createInfo = new VkFenceCreateInfo
 			{
@@ -271,6 +279,9 @@ namespace Magnesium.Vulkan
 
 		public Result GetFenceStatus(IMgFence fence)
 		{
+			if (fence == null)
+				throw new ArgumentNullException(nameof(fence));
+
 			Debug.Assert(!mIsDisposed);
 
 			var bFence = (VkFence) fence;
@@ -306,8 +317,7 @@ namespace Magnesium.Vulkan
 
 			Debug.Assert(!mIsDisposed);
 
-			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = GetAllocatorHandle(allocator);
 
 			var createInfo = new VkSemaphoreCreateInfo
 			{
@@ -316,7 +326,7 @@ namespace Magnesium.Vulkan
 				flags = pCreateInfo.Flags,
 			};
 
-			ulong internalHandle = 0UL;
+			var internalHandle = 0UL;
 			var result = Interops.vkCreateSemaphore(Handle, createInfo, allocatorPtr, ref internalHandle);
 			pSemaphore = new VkSemaphore(internalHandle);
 
@@ -330,8 +340,7 @@ namespace Magnesium.Vulkan
 
 			Debug.Assert(!mIsDisposed);
 
-			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = GetAllocatorHandle(allocator);
 
 			var createInfo = new VkEventCreateInfo
 			{
@@ -340,7 +349,7 @@ namespace Magnesium.Vulkan
 				flags = pCreateInfo.Flags,
 			};
 
-			ulong eventHandle = 0UL;
+			var eventHandle = 0UL;
 			var result = Interops.vkCreateEvent(Handle, createInfo, allocatorPtr, ref eventHandle);
 			@event = new VkEvent(eventHandle);
 
@@ -354,8 +363,7 @@ namespace Magnesium.Vulkan
 
 			Debug.Assert(!mIsDisposed);
 
-			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = GetAllocatorHandle(allocator);
 
 			var createInfo = new VkQueryPoolCreateInfo
 			{
@@ -367,7 +375,7 @@ namespace Magnesium.Vulkan
 				pipelineStatistics = (VkQueryPipelineStatisticFlags)pCreateInfo.PipelineStatistics,
 			};
 
-			ulong internalHandle = 0UL;
+			var internalHandle = 0UL;
 			var result = Interops.vkCreateQueryPool(Handle, createInfo, allocatorPtr, ref internalHandle);
 			queryPool = new VkQueryPool(internalHandle);
 
@@ -376,6 +384,9 @@ namespace Magnesium.Vulkan
 
 		public Result GetQueryPoolResults(IMgQueryPool queryPool, uint firstQuery, uint queryCount, IntPtr dataSize, IntPtr pData, ulong stride, MgQueryResultFlagBits flags)
 		{
+			if (queryPool == null)
+				throw new ArgumentNullException(nameof(queryPool));
+
 			Debug.Assert(!mIsDisposed);
 
 			var bQueryPool = (VkQueryPool)queryPool;
@@ -391,11 +402,10 @@ namespace Magnesium.Vulkan
 
 			Debug.Assert(!mIsDisposed);
 
-			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = GetAllocatorHandle(allocator);
 
-			uint queueFamilyIndexCount = 0;
-			IntPtr pQueueFamilyIndices = IntPtr.Zero;
+			var queueFamilyIndexCount = 0U;
+			var pQueueFamilyIndices = IntPtr.Zero;
 
 			try
 			{
@@ -418,7 +428,7 @@ namespace Magnesium.Vulkan
 
 				};
 
-				ulong internalHandle = 0;
+				var internalHandle = 0UL;
 				var result = Interops.vkCreateBuffer(Handle, createInfo, allocatorPtr, ref internalHandle);
 				pBuffer = new VkBuffer(internalHandle);
 				return result;
@@ -439,13 +449,11 @@ namespace Magnesium.Vulkan
 
 			Debug.Assert(!mIsDisposed);
 
-			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = GetAllocatorHandle(allocator);
 
 			var bBuffer = (VkBuffer)pCreateInfo.Buffer;
 			Debug.Assert(bBuffer != null);
 
-			ulong internalHandle = 0;
 			var createInfo = new VkBufferViewCreateInfo
 			{
 				sType = VkStructureType.StructureTypeBufferViewCreateInfo,
@@ -456,6 +464,7 @@ namespace Magnesium.Vulkan
 				offset = pCreateInfo.Offset,
 				range = pCreateInfo.Range,
 			};
+			var internalHandle = 0UL;
 			var result = Interops.vkCreateBufferView(Handle, createInfo, allocatorPtr, ref internalHandle);
 			pView = new VkBufferView(internalHandle);
 			return result;
@@ -468,11 +477,10 @@ namespace Magnesium.Vulkan
 
 			Debug.Assert(!mIsDisposed);
 
-			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = GetAllocatorHandle(allocator);
 
 			uint queueFamilyIndexCount = 0;
-			IntPtr pQueueFamilyIndices = IntPtr.Zero;
+			var pQueueFamilyIndices = IntPtr.Zero;
 
 			try
 			{
@@ -517,6 +525,9 @@ namespace Magnesium.Vulkan
 
 		public void GetImageSubresourceLayout(IMgImage image, MgImageSubresource pSubresource, out MgSubresourceLayout pLayout)
 		{
+			if (image == null)
+				throw new ArgumentNullException(nameof(image));
+
 			Debug.Assert(!mIsDisposed);
 
 			var bImage = (VkImage)image;
@@ -534,8 +545,7 @@ namespace Magnesium.Vulkan
 
 			Debug.Assert(!mIsDisposed);
 
-			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = GetAllocatorHandle(allocator);
 
 			var bImage = (VkImage) pCreateInfo.Image;
 			Debug.Assert(bImage != null);
@@ -571,8 +581,7 @@ namespace Magnesium.Vulkan
 
 			Debug.Assert(!mIsDisposed);
 
-			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = GetAllocatorHandle(allocator);
 
 			var bufferSize = (int)pCreateInfo.CodeSize;
 			var dest = Marshal.AllocHGlobal(bufferSize);
@@ -614,8 +623,7 @@ namespace Magnesium.Vulkan
 
 			Debug.Assert(!mIsDisposed);
 
-			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = GetAllocatorHandle(allocator);
 
 			var createInfo = new VkPipelineCacheCreateInfo
 			{
@@ -634,6 +642,9 @@ namespace Magnesium.Vulkan
 
 		public Result GetPipelineCacheData(IMgPipelineCache pipelineCache, out byte[] pData)
 		{
+			if (pipelineCache == null)
+				throw new ArgumentNullException(nameof(pipelineCache));
+
 			Debug.Assert(!mIsDisposed);
 
 			var bPipelineCache = (VkPipelineCache)pipelineCache;
@@ -664,9 +675,7 @@ namespace Magnesium.Vulkan
 		public Result MergePipelineCaches(IMgPipelineCache dstCache, IMgPipelineCache[] pSrcCaches)
 		{
 			if (pSrcCaches == null)
-			{
-				throw new ArgumentNullException(nameof(pSrcCaches));
-			}
+				throw new ArgumentNullException(nameof(pSrcCaches));			
 
 			Debug.Assert(!mIsDisposed);
 
@@ -698,8 +707,7 @@ namespace Magnesium.Vulkan
 
 			Debug.Assert(!mIsDisposed);
 
-			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = GetAllocatorHandle(allocator);
 
 			var bPipelineCache = (VkPipelineCache)pipelineCache;
 			var bPipelineCachePtr = bPipelineCache != null ? bPipelineCache.Handle : 0UL;
@@ -833,17 +841,14 @@ namespace Magnesium.Vulkan
 				dynamicStateCount = (uint) dynamicState.DynamicStates.Length;
 				if (dynamicStateCount > 0)
 				{
-					var stride = sizeof(VkDynamicState);
-					pDynamicStates = Marshal.AllocHGlobal((int)(stride * dynamicStateCount));
-					attachedItems.Add(pDynamicStates);
+					pDynamicStates = VkInteropsUtility.AllocateHGlobalArray(
+						dynamicState.DynamicStates,
+						(item) =>
+						{
+							return item;
+						});					
 
-					var offset = 0;
-					foreach(var item in dynamicState.DynamicStates)
-					{
-						var dest = IntPtr.Add(pDynamicStates, offset);
-						Marshal.StructureToPtr(item, dest, false);
-						offset += stride;
-					}
+					attachedItems.Add(pDynamicStates);
 				}
 			}
 
@@ -878,29 +883,23 @@ namespace Magnesium.Vulkan
 				attachmentCount = (uint) colorBlendState.Attachments.Length;
 				if (attachmentCount > 0)
 				{
-					var stride = sizeof(VkDynamicState);
-					pAttachments = Marshal.AllocHGlobal((int)(stride * attachmentCount));
-					attachedItems.Add(pAttachments);
-
-					var offset = 0;
-					foreach(var item in colorBlendState.Attachments)
-					{
-						var attachment = new VkPipelineColorBlendAttachmentState
+					pAttachments = VkInteropsUtility.AllocateHGlobalArray(
+						colorBlendState.Attachments,
+						(item) =>
 						{
-							blendEnable = VkBool32.ConvertTo(item.BlendEnable),
-							srcColorBlendFactor = (VkBlendFactor) item.SrcColorBlendFactor,
-							dstColorBlendFactor = (VkBlendFactor) item.DstColorBlendFactor,
-							colorBlendOp = (VkBlendOp) item.ColorBlendOp,
-							srcAlphaBlendFactor = (VkBlendFactor) item.SrcAlphaBlendFactor,
-							dstAlphaBlendFactor = (VkBlendFactor) item.DstAlphaBlendFactor,
-							alphaBlendOp = (VkBlendOp) item.AlphaBlendOp,
-							colorWriteMask = (VkColorComponentFlags) item.ColorWriteMask,
-						};
-
-						var dest = IntPtr.Add(pAttachments, offset);
-						Marshal.StructureToPtr(attachment, dest, false);
-						offset += stride;
-					}
+							return new VkPipelineColorBlendAttachmentState
+							{
+								blendEnable = VkBool32.ConvertTo(item.BlendEnable),
+								srcColorBlendFactor = (VkBlendFactor) item.SrcColorBlendFactor,
+								dstColorBlendFactor = (VkBlendFactor) item.DstColorBlendFactor,
+								colorBlendOp = (VkBlendOp) item.ColorBlendOp,
+								srcAlphaBlendFactor = (VkBlendFactor) item.SrcAlphaBlendFactor,
+								dstAlphaBlendFactor = (VkBlendFactor) item.DstAlphaBlendFactor,
+								alphaBlendOp = (VkBlendOp) item.AlphaBlendOp,
+								colorWriteMask = (VkColorComponentFlags) item.ColorWriteMask,
+							};
+						});			
+					attachedItems.Add(pAttachments);
 				}
 			}
 
@@ -1158,24 +1157,18 @@ namespace Magnesium.Vulkan
 				vertexBindingDescriptionCount = (uint)current.VertexBindingDescriptions.Length;
 				if (vertexBindingDescriptionCount > 0)
 				{
-					var stride = Marshal.SizeOf(typeof(VkVertexInputBindingDescription));
-					pVertexBindingDescriptions = Marshal.AllocHGlobal((int)(vertexBindingDescriptionCount * stride));
-					attachedItems.Add(pVertexBindingDescriptions);
-
-					var offset = 0;
-					foreach (var currentBinding in current.VertexBindingDescriptions)
-					{
-						var binding = new VkVertexInputBindingDescription
+					pVertexBindingDescriptions =VkInteropsUtility.AllocateHGlobalArray(
+						current.VertexBindingDescriptions,
+						(currentBinding) =>
 						{
-							binding = currentBinding.Binding,
-							stride = currentBinding.Stride,
-							inputRate = (VkVertexInputRate)currentBinding.InputRate,
-						};
-
-						var dest = IntPtr.Add(pVertexBindingDescriptions, offset);
-						Marshal.StructureToPtr(binding, dest, false);
-						offset += stride;
-					}
+							return new VkVertexInputBindingDescription
+							{
+								binding = currentBinding.Binding,
+								stride = currentBinding.Stride,
+								inputRate = (VkVertexInputRate)currentBinding.InputRate,
+							};
+						});
+					attachedItems.Add(pVertexBindingDescriptions);
 				}
 			}
 
@@ -1188,25 +1181,19 @@ namespace Magnesium.Vulkan
 
 				if (vertexAttributeDescriptionCount > 0)
 				{
-					var stride = Marshal.SizeOf(typeof(VkVertexInputAttributeDescription));
-					pVertexAttributeDescriptions = Marshal.AllocHGlobal((int)(vertexAttributeDescriptionCount * stride));
-					attachedItems.Add(pVertexAttributeDescriptions);
-
-					var offset = 0;
-					foreach (var currentAttribute in current.VertexAttributeDescriptions)
-					{
-						var attribute = new VkVertexInputAttributeDescription
+					pVertexAttributeDescriptions = VkInteropsUtility.AllocateHGlobalArray(
+						current.VertexAttributeDescriptions,
+						(attr) => 
 						{
-							location = currentAttribute.Location,
-							binding = currentAttribute.Binding,
-							format = (VkFormat)currentAttribute.Format,
-							offset = currentAttribute.Offset,
-						};
-
-						var dest = IntPtr.Add(pVertexBindingDescriptions, offset);
-						Marshal.StructureToPtr(attribute, dest, false);
-						offset += stride;
-					}
+							return new VkVertexInputAttributeDescription
+							{
+								location = attr.Location,
+								binding = attr.Binding,
+								format = (VkFormat)attr.Format,
+								offset = attr.Offset,
+							};
+						});
+					attachedItems.Add(pVertexAttributeDescriptions);
 				}
 			}
 
@@ -1237,13 +1224,12 @@ namespace Magnesium.Vulkan
 
 			Debug.Assert(!mIsDisposed);
 
-			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = GetAllocatorHandle(allocator);
 
 			var bPipelineCache = (VkPipelineCache) pipelineCache;
 			var bPipelineCachePtr =  bPipelineCache != null ? bPipelineCache.Handle : 0UL;
 
-			uint createInfoCount = (uint) pCreateInfos.Length;
+			var createInfoCount = (uint) pCreateInfos.Length;
 
 			var attachedItems = new List<IntPtr>();
 			var maintainedHandles = new List<GCHandle>();
@@ -1256,7 +1242,7 @@ namespace Magnesium.Vulkan
 					var pStage = ExtractPipelineShaderStage(attachedItems, maintainedHandles, currentCreateInfo.Stage);
 
 					var bBasePipeline = (VkPipeline)currentCreateInfo.BasePipelineHandle;
-					var bBasePipelinePtr = bBasePipeline != null ? bBasePipeline.Handle : 0UL;
+					var basePipelineHandle = bBasePipeline != null ? bBasePipeline.Handle : 0UL;
 
 					var bPipelineLayout = (VkPipelineLayout)currentCreateInfo.Layout;
 					Debug.Assert(bPipelineLayout != null);
@@ -1268,7 +1254,7 @@ namespace Magnesium.Vulkan
 						flags = (VkPipelineCreateFlags)currentCreateInfo.Flags,
 						stage = pStage,
 						layout = bPipelineLayout.Handle,
-						basePipelineHandle = bBasePipelinePtr,
+						basePipelineHandle = basePipelineHandle,
 						basePipelineIndex = currentCreateInfo.BasePipelineIndex,
 					};
 				}
@@ -1306,7 +1292,7 @@ namespace Magnesium.Vulkan
 
 			// pointer to a null-terminated UTF-8 string specifying the entry point name of the shader for this stage
 			Debug.Assert(!string.IsNullOrWhiteSpace(currentStage.Name));
-			var pName = VkStringUtility.NativeUtf8FromString(currentStage.Name);
+			var pName = VkInteropsUtility.NativeUtf8FromString(currentStage.Name);
 			attachedItems.Add(pName);
 
 			var pSpecializationInfo = IntPtr.Zero;
@@ -1362,23 +1348,22 @@ namespace Magnesium.Vulkan
 
 			Debug.Assert(!mIsDisposed);
 
-			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = GetAllocatorHandle(allocator);
 
-			var setLayoutCount = 0U;
 			var pSetLayouts = IntPtr.Zero;
 
-			var pushConstantRangeCount = 0U;
 			var pPushConstantRanges = IntPtr.Zero;
 
 			try
 			{
+
+				var setLayoutCount = 0U;
 				if (pCreateInfo.SetLayouts != null)
 				{
 					setLayoutCount = (UInt32) pCreateInfo.SetLayouts.Length;
 					if (setLayoutCount > 0)				
 					{
-                        pSetLayouts = ExtractUInt64HandleArray(pCreateInfo.SetLayouts,
+						pSetLayouts = VkInteropsUtility.ExtractUInt64HandleArray(pCreateInfo.SetLayouts,
 							(dsl) =>
 							{
 								var bDescriptorSetLayout = (VkDescriptorSetLayout) dsl;
@@ -1388,30 +1373,26 @@ namespace Magnesium.Vulkan
 					}
 				}
 
+				var pushConstantRangeCount = 0U;
 				if (pCreateInfo.PushConstantRanges != null)
 				{
 					pushConstantRangeCount = (UInt32) pCreateInfo.PushConstantRanges.Length;
 
 					if (pushConstantRangeCount > 0)
 					{
-						var stride = Marshal.SizeOf(typeof(VkPushConstantRange));
-						pPushConstantRanges = Marshal.AllocHGlobal((int)(pushConstantRangeCount * stride));
-
-						var offset = 0;
-						for (var j = 0; j < pushConstantRangeCount; ++j)
-						{
-							var current = pCreateInfo.PushConstantRanges[j];
-
-							var rangeItem = new VkPushConstantRange
-							{
-								stageFlags = (VkShaderStageFlags) current.StageFlags,
-								offset = current.Offset,
-								size = current.Size,
-							};
-							var dest = IntPtr.Add(pPushConstantRanges, offset);
-							Marshal.StructureToPtr(rangeItem, dest, false);
-							offset += stride;
-						}
+						pPushConstantRanges = VkInteropsUtility.AllocateHGlobalArray
+							(
+								pCreateInfo.PushConstantRanges,
+								(pcr) =>
+								{
+									return new VkPushConstantRange
+									{
+										stageFlags = (VkShaderStageFlags) pcr.StageFlags,
+										offset = pcr.Offset,
+										size = pcr.Size,
+									};
+								}
+							);		
 					}
 				}
 
@@ -1452,8 +1433,7 @@ namespace Magnesium.Vulkan
 
 			Debug.Assert(!mIsDisposed);
 
-			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = GetAllocatorHandle(allocator);
 
 			var internalHandle = 0UL;
 			var createInfo = new VkSamplerCreateInfo
@@ -1490,10 +1470,7 @@ namespace Magnesium.Vulkan
 
 			Debug.Assert(!mIsDisposed);
 
-			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
-
-
+			var allocatorPtr = GetAllocatorHandle(allocator);
 
 			var attachedItems = new List<IntPtr>();
 
@@ -1527,7 +1504,7 @@ namespace Magnesium.Vulkan
 								if (currentBinding.DescriptorCount > 0)
 								{
 									var arraySize = (int)(currentBinding.DescriptorCount * sizeof(UInt64));										
-									pImmutableSamplers = ExtractUInt64HandleArray(currentBinding.ImmutableSamplers,									
+									pImmutableSamplers = VkInteropsUtility.ExtractUInt64HandleArray(currentBinding.ImmutableSamplers,									
 											(sampler) =>
 											{
 												var bSampler = (VkSampler) sampler;
@@ -1586,12 +1563,10 @@ namespace Magnesium.Vulkan
 
 			Debug.Assert(!mIsDisposed);
 
-			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = GetAllocatorHandle(allocator);
 
 			var pPoolSizes = IntPtr.Zero;
 			var poolSizeCount = 0U;
-
 
 			try
 			{
@@ -1600,28 +1575,18 @@ namespace Magnesium.Vulkan
 					poolSizeCount = (UInt32) pCreateInfo.PoolSizes.Length;
 					if (poolSizeCount > 0)
 					{
-						var stride = Marshal.SizeOf(typeof(VkDescriptorPoolSize));
-
-						pPoolSizes = Marshal.AllocHGlobal((int)(poolSizeCount * stride));
-
-						var offset = 0;
-						for (var j = 0; j < poolSizeCount; ++j)
-						{
-							var current = pCreateInfo.PoolSizes[j];
-
-							var poolSizeItem = new VkDescriptorPoolSize
+						pPoolSizes = VkInteropsUtility.AllocateHGlobalArray(
+							pCreateInfo.PoolSizes,
+							(current) => 
 							{
-								type = (VkDescriptorType) current.Type,
-								descriptorCount = current.DescriptorCount,
-							};
-							var dest = IntPtr.Add(pPoolSizes, offset);
-							Marshal.StructureToPtr(poolSizeItem, dest, false);
-							offset += stride;
-						}
+								return new VkDescriptorPoolSize
+								{
+									type = (VkDescriptorType) current.Type,
+									descriptorCount = current.DescriptorCount,
+								};
+							});
 					}
 				}
-
-				var internalHandle = 0UL;
 				var createInfo = new VkDescriptorPoolCreateInfo
 				{
 					sType = VkStructureType.StructureTypeDescriptorPoolCreateInfo,
@@ -1631,6 +1596,8 @@ namespace Magnesium.Vulkan
 					poolSizeCount = poolSizeCount,
 					pPoolSizes = pPoolSizes,
 				};
+
+				var internalHandle = 0UL;
 				var result = Interops.vkCreateDescriptorPool(Handle, createInfo, allocatorPtr, ref internalHandle);
 				pDescriptorPool = new VkDescriptorPool(internalHandle);
 				return result;
@@ -1667,7 +1634,7 @@ namespace Magnesium.Vulkan
 			{
 				if (descriptorSetCount > 0)
 				{
-					pSetLayouts = ExtractUInt64HandleArray(pAllocateInfo.SetLayouts,
+					pSetLayouts = VkInteropsUtility.ExtractUInt64HandleArray(pAllocateInfo.SetLayouts,
 					 (dsl) =>
 					 {
 						var bSetLayout = (VkDescriptorSetLayout) dsl;
@@ -1702,30 +1669,6 @@ namespace Magnesium.Vulkan
 					Marshal.FreeHGlobal(pSetLayouts);
 				}
 			}
-		}
-
-		/// DON'T FORGET TO Marshal.FreeHGlobal the returned value
-		static IntPtr ExtractUInt64HandleArray<TVkType>(TVkType[] arrayItems, Func<TVkType, UInt64> extractHandle)
-		{
-			Debug.Assert(arrayItems != null);
-			Debug.Assert(extractHandle != null);
-
-			var arrayLength = arrayItems.Length;
-
-			var arraySizeInBytes = (int)(arrayLength * sizeof(UInt64));
-			var array = Marshal.AllocHGlobal(arraySizeInBytes);
-
-			var vkHandles = new UInt64[arrayLength];
-			for (var j = 0; j < arrayLength; ++j)
-			{
-				vkHandles[j] = extractHandle(arrayItems[j]);
-			}
-
-			var tempBuffer = new byte[arraySizeInBytes];
-			Buffer.BlockCopy(vkHandles, 0, tempBuffer, 0, arraySizeInBytes);
-			Marshal.Copy(tempBuffer, 0, array, arraySizeInBytes);			
-
-			return array;
 		}
 
 		public Result FreeDescriptorSets(IMgDescriptorPool descriptorPool, IMgDescriptorSet[] pDescriptorSets)
@@ -1789,77 +1732,66 @@ namespace Magnesium.Vulkan
 						{
 							var currentWrite = pDescriptorWrites[i];
 							var bDstSet = (VkDescriptorSet)currentWrite.DstSet;
-
-							var pImageInfo = IntPtr.Zero;
-							var pBufferInfo = IntPtr.Zero;
-							var pTexelBufferView = IntPtr.Zero;
+							Debug.Assert(bDstSet != null);
 
 							var descriptorCount = (int) currentWrite.DescriptorCount;
 
+							var pImageInfo = IntPtr.Zero;
 							if (currentWrite.ImageInfo != null)
 							{
 								if (descriptorCount > 0)
 								{
-									var imageInfoSize = Marshal.SizeOf(typeof(VkDescriptorImageInfo));
-									pImageInfo = Marshal.AllocHGlobal(descriptorCount * imageInfoSize);
-									attachedItems.Add(pImageInfo);
-
-									var offset = 0;
-									foreach (var srcInfo in currentWrite.ImageInfo)
-									{
-										var bSampler = (VkSampler) srcInfo.Sampler;
-										Debug.Assert(bSampler != null);
-
-										var bImageView = (VkImageView) srcInfo.ImageView;
-										Debug.Assert(bImageView != null);
-
-										var dstInfo = new VkDescriptorImageInfo
+									pImageInfo = VkInteropsUtility.AllocateHGlobalArray( 
+										currentWrite.ImageInfo,
+										(srcInfo) =>
 										{
-											sampler = bSampler.Handle,
-											imageView = bImageView.Handle,
-											imageLayout = (VkImageLayout) srcInfo.ImageLayout,
-										};
+											var bSampler = (VkSampler) srcInfo.Sampler;
+											Debug.Assert(bSampler != null);
 
-										var dest = IntPtr.Add(pBufferInfo, offset);
-										Marshal.StructureToPtr(dstInfo, dest, false);
-										offset += imageInfoSize;
-									}									
+											var bImageView = (VkImageView) srcInfo.ImageView;
+											Debug.Assert(bImageView != null);
+
+											return new VkDescriptorImageInfo
+											{
+												sampler = bSampler.Handle,
+												imageView = bImageView.Handle,
+												imageLayout = (VkImageLayout) srcInfo.ImageLayout,
+											};
+										});				
+									attachedItems.Add(pImageInfo);								
 								}
 							}
 
+							var pBufferInfo = IntPtr.Zero;
 							if (currentWrite.BufferInfo != null)
 							{
 								if (descriptorCount > 0)
 								{
-									var bufferInfoSize = Marshal.SizeOf(typeof(VkDescriptorBufferInfo));
-									pBufferInfo = Marshal.AllocHGlobal(descriptorCount * bufferInfoSize);
-									attachedItems.Add(pBufferInfo);
-
-									var offset = 0;
-									foreach (var srcInfo in currentWrite.BufferInfo)
-									{
-										var bBuffer = (VkBuffer) srcInfo.Buffer;
-										Debug.Assert(bBuffer != null);
-
-										var dstInfo = new VkDescriptorBufferInfo
+									pBufferInfo = VkInteropsUtility.AllocateHGlobalArray(
+										currentWrite.BufferInfo,
+										(src) =>
 										{
-											buffer = bBuffer.Handle,
-											offset = srcInfo.Offset,
-											range = srcInfo.Range,
-										};
+											var bBuffer = (VkBuffer) src.Buffer;
+											Debug.Assert(bBuffer != null);
 
-										var dest = IntPtr.Add(pBufferInfo, offset);
-										Marshal.StructureToPtr(dstInfo, dest, false);
-										offset += bufferInfoSize;
-									}
+											return new VkDescriptorBufferInfo
+											{
+												buffer = bBuffer.Handle,
+												offset = src.Offset,
+												range = src.Range,
+											};
+										}
+									);
+									attachedItems.Add(pBufferInfo);
 								}
 							}
 
+							var pTexelBufferView = IntPtr.Zero;
 							if (currentWrite.TexelBufferView != null)
 							{
 								if (descriptorCount > 0)
 								{
-									pTexelBufferView = ExtractUInt64HandleArray(currentWrite.TexelBufferView,
+									pTexelBufferView = VkInteropsUtility.ExtractUInt64HandleArray(currentWrite.TexelBufferView,
 										(tbv) =>
 										{
 											var bBufferView = (VkBufferView) tbv;
@@ -1939,8 +1871,7 @@ namespace Magnesium.Vulkan
 
 			Debug.Assert(!mIsDisposed);
 
-			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = GetAllocatorHandle(allocator);
 
 			var bRenderPass = (VkRenderPass) pCreateInfo.RenderPass;
 			Debug.Assert(bRenderPass != null);
@@ -1955,7 +1886,7 @@ namespace Magnesium.Vulkan
 					attachmentCount = (uint) pCreateInfo.Attachments.Length;
 					if (attachmentCount > 0)
 					{									
-						pAttachments = ExtractUInt64HandleArray(pCreateInfo.Attachments, 
+						pAttachments = VkInteropsUtility.ExtractUInt64HandleArray(pCreateInfo.Attachments, 
 							(a) => 
 							{
 								var bImageView = (VkImageView) a;
@@ -1999,8 +1930,7 @@ namespace Magnesium.Vulkan
 
 			Debug.Assert(!mIsDisposed);
 
-			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = GetAllocatorHandle(allocator);
 
 			var attachedItems = new List<IntPtr>();
 
@@ -2009,30 +1939,25 @@ namespace Magnesium.Vulkan
 				var pAttachments = IntPtr.Zero;
 				uint attachmentCount = pCreateInfo.Attachments != null ? (uint)pCreateInfo.Attachments.Length : 0U;
 				if (attachmentCount > 0)
-				{
-					var stride = Marshal.SizeOf(typeof(VkAttachmentDescription));
-					pAttachments = Marshal.AllocHGlobal((int)(stride * attachmentCount));
-					attachedItems.Add(pAttachments);
-
-					for (var i = 0; i < attachmentCount; ++i)
-					{
-						var current = pCreateInfo.Attachments[i];
-						var temp = new VkAttachmentDescription
+				{	
+					pAttachments = VkInteropsUtility.AllocateHGlobalArray(
+						pCreateInfo.Attachments,
+						(attachment) =>
 						{
-							flags = (VkAttachmentDescriptionFlags)current.Flags,
-							format = (VkFormat)current.Format,
-							samples = (VkSampleCountFlags)current.Samples,
-							loadOp = (VkAttachmentLoadOp)current.LoadOp,
-							storeOp = (VkAttachmentStoreOp)current.StoreOp,
-							stencilLoadOp = (VkAttachmentLoadOp)current.StencilLoadOp,
-							stencilStoreOp = (VkAttachmentStoreOp)current.StencilStoreOp,
-							initialLayout = (VkImageLayout)current.InitialLayout,
-							finalLayout = (VkImageLayout)current.FinalLayout
-						};
-
-						var dest = IntPtr.Add(pAttachments, i * stride);
-						Marshal.StructureToPtr(temp, dest, false);
-					}
+							return new VkAttachmentDescription
+							{
+								flags = (VkAttachmentDescriptionFlags)attachment.Flags,
+								format = (VkFormat)attachment.Format,
+								samples = (VkSampleCountFlags)attachment.Samples,
+								loadOp = (VkAttachmentLoadOp)attachment.LoadOp,
+								storeOp = (VkAttachmentStoreOp)attachment.StoreOp,
+								stencilLoadOp = (VkAttachmentLoadOp)attachment.StencilLoadOp,
+								stencilStoreOp = (VkAttachmentStoreOp)attachment.StencilStoreOp,
+								initialLayout = (VkImageLayout)attachment.InitialLayout,
+								finalLayout = (VkImageLayout)attachment.FinalLayout
+							};
+						});
+					attachedItems.Add(pAttachments);
 				}
 
 				var attReferenceSize = Marshal.SizeOf(typeof(VkAttachmentReference));
@@ -2066,21 +1991,17 @@ namespace Magnesium.Vulkan
 
 						if (inputAttachmentCount > 0)
 						{
-							pInputAttachments = Marshal.AllocHGlobal((int)(inputAttachmentCount * attReferenceSize));
-							attachedItems.Add(pInputAttachments);
-
-							for (var j = 0; j < inputAttachmentCount; ++j)
-							{
-								var input = currentSubpass.InputAttachments[j];
-
-								var attachment = new VkAttachmentReference
+							pInputAttachments = VkInteropsUtility.AllocateHGlobalArray(
+								currentSubpass.InputAttachments,
+								(input) =>
 								{
-									attachment = input.Attachment,
-									layout = (VkImageLayout)input.Layout,
-								};
-								var localAttachmentPtr = IntPtr.Add(pInputAttachments, j * attReferenceSize);
-								Marshal.StructureToPtr(attachment, localAttachmentPtr, false);
-							}						
+									return new VkAttachmentReference
+									{
+										attachment = input.Attachment,
+										layout = (VkImageLayout)input.Layout,
+									};
+								});
+							attachedItems.Add(pInputAttachments);					
 						}
 
 						var colorAttachmentCount = currentSubpass.ColorAttachments != null ? (uint)currentSubpass.ColorAttachments.Length : 0;
@@ -2089,39 +2010,31 @@ namespace Magnesium.Vulkan
 
 						if (colorAttachmentCount > 0)
 						{
-							pColorAttachments = Marshal.AllocHGlobal((int)(colorAttachmentCount * attReferenceSize));
-							attachedItems.Add(pColorAttachments);
-
-							for (var j = 0; j < colorAttachmentCount; ++j)
-							{
-								var color = currentSubpass.ColorAttachments[j];
-
-								var attachment = new VkAttachmentReference
+							pColorAttachments = VkInteropsUtility.AllocateHGlobalArray(
+								currentSubpass.ColorAttachments,
+								(color) =>
 								{
-									attachment = color.Attachment,
-									layout = (VkImageLayout)color.Layout,
-								};
-								var localAttachmentPtr = IntPtr.Add(pColorAttachments, j * attReferenceSize);
-								Marshal.StructureToPtr(attachment, localAttachmentPtr, false);
-							}
-
-							if (currentSubpass.ResolveAttachments != null)
-							{
-								pResolveAttachments = Marshal.AllocHGlobal((int)(colorAttachmentCount * attReferenceSize));
-								attachedItems.Add(pResolveAttachments);
-
-								for (var k = 0; k < colorAttachmentCount; ++k)
-								{
-									var color = currentSubpass.ResolveAttachments[k];
-
-									var attachment = new VkAttachmentReference
+									return new VkAttachmentReference
 									{
 										attachment = color.Attachment,
 										layout = (VkImageLayout)color.Layout,
 									};
-									IntPtr localAttachmentPtr = IntPtr.Add(pResolveAttachments, k * attReferenceSize);
-									Marshal.StructureToPtr(attachment, localAttachmentPtr, false);
-								}
+								});
+							attachedItems.Add(pColorAttachments);
+
+							if (currentSubpass.ResolveAttachments != null)
+							{
+								pResolveAttachments = VkInteropsUtility.AllocateHGlobalArray(
+									currentSubpass.ResolveAttachments,
+									(resolve) =>
+									{
+										return new VkAttachmentReference
+										{
+											attachment = resolve.Attachment,
+											layout = (VkImageLayout)resolve.Layout,
+										};
+									});
+								attachedItems.Add(pResolveAttachments);
 							}
 						}
 
@@ -2158,31 +2071,21 @@ namespace Magnesium.Vulkan
 				var pDependencies = IntPtr.Zero;
 				if (dependencyCount > 0)
 				{
-					var dependencyStructSize = Marshal.SizeOf(typeof(VkSubpassDependency));
-
-					pDependencies = Marshal.AllocHGlobal((int)(dependencyStructSize * dependencyCount));
-					attachedItems.Add(pDependencies);
-
-					var dependencyOffset = 0;
-					for (var i = 0; i < dependencyCount; ++i)
-					{
-						var currentDependency = pCreateInfo.Dependencies[i];
-
-						var temp = new VkSubpassDependency
+					pDependencies = VkInteropsUtility.AllocateHGlobalArray(
+						pCreateInfo.Dependencies,
+                     	(src) => {
+						return new VkSubpassDependency
 						{
-							srcSubpass = currentDependency.SrcSubpass,
-							dstSubpass = currentDependency.DstSubpass,
-							srcStageMask = (VkPipelineStageFlags)currentDependency.SrcStageMask,
-							dstStageMask = (VkPipelineStageFlags)currentDependency.DstStageMask,
-							srcAccessMask = (VkAccessFlags)currentDependency.SrcAccessMask,
-							dstAccessMask = (VkAccessFlags)currentDependency.DstAccessMask,
-							dependencyFlags = (VkDependencyFlags)currentDependency.DependencyFlags,
+							srcSubpass = src.SrcSubpass,
+							dstSubpass = src.DstSubpass,
+							srcStageMask = (VkPipelineStageFlags)src.SrcStageMask,
+							dstStageMask = (VkPipelineStageFlags)src.DstStageMask,
+							srcAccessMask = (VkAccessFlags)src.SrcAccessMask,
+							dstAccessMask = (VkAccessFlags)src.DstAccessMask,
+							dependencyFlags = (VkDependencyFlags)src.DependencyFlags,
 						};
-
-						var dest = IntPtr.Add(pDependencies, dependencyOffset);
-						Marshal.StructureToPtr(temp, dest, false);
-						dependencyOffset += dependencyStructSize;
-					}
+					});
+					attachedItems.Add(pDependencies);
 				}
 
 				var createInfo = new VkRenderPassCreateInfo
@@ -2234,8 +2137,7 @@ namespace Magnesium.Vulkan
 
 			Debug.Assert(!mIsDisposed);
 
-			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = GetAllocatorHandle(allocator);
 
 			ulong internalHandle = 0UL;
 			var createInfo = new VkCommandPoolCreateInfo
@@ -2322,8 +2224,7 @@ namespace Magnesium.Vulkan
 
 			Debug.Assert(!mIsDisposed);
 
-			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = GetAllocatorHandle(allocator);
 
 			var attachedItems = new List<IntPtr>();
 
@@ -2331,7 +2232,12 @@ namespace Magnesium.Vulkan
 			{
 
 				var createInfoStructSize = Marshal.SizeOf(typeof(VkSwapchainCreateInfoKHR));
-				var swapChainCount = pCreateInfos != null ? (uint) pCreateInfos.Length : 0U;
+				var swapChainCount = 0U;
+
+				if (pCreateInfos != null)
+				{
+					swapChainCount = (uint)pCreateInfos.Length;
+				}
 
 				var swapChainCreateInfos = new VkSwapchainCreateInfoKHR[swapChainCount];
 				for (var i = 0; i < swapChainCount; ++i)
@@ -2365,8 +2271,7 @@ namespace Magnesium.Vulkan
 
 			Debug.Assert(!mIsDisposed);
 
-			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			var allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+			var allocatorPtr = GetAllocatorHandle(allocator);
 
 			var attachedItems = new List<IntPtr>();
 
