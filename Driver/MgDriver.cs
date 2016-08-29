@@ -1,5 +1,4 @@
 ﻿using System;
-using Magnesium;
 using System.Diagnostics;
 
 namespace Magnesium
@@ -173,12 +172,12 @@ namespace Magnesium
 		{
 			if (gpu == null)
 			{
-				throw new ArgumentNullException ("gpu");
+				throw new ArgumentNullException (nameof(gpu));
 			}
 
 			if (queueCreateInfo == null)
 			{
-				throw new ArgumentNullException ("queueCreateInfo");
+				throw new ArgumentNullException (nameof(queueCreateInfo));
 			}
 
 			const string VK_KHR_SWAPCHAIN_EXTENSION_NAME = "VK_KHR_swapchain";
