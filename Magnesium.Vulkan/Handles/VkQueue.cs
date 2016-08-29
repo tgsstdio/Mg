@@ -56,19 +56,10 @@ namespace Magnesium.Vulkan
 									});
 								attachedItems.Add(pWaitSemaphores);
 
-								pWaitDstStageMask = Marshal.AllocHGlobal((int)(waitSemaphoreCount * sizeof(VkPipelineStageFlags)));
-								attachedItems.Add(pWaitDstStageMask);
-
-								var flagStride = sizeof(VkPipelineStageFlags);
-								var offset = 0;
-								foreach (var ws in currentInfo.WaitSemaphores)
-								{
-									var mask = ws.WaitDstStageMask;
-
-									var dest = IntPtr.Add(pWaitDstStageMask, offset);
-									Marshal.StructureToPtr(mask, dest, false);
-									offset += flagStride;
-								}
+								pWaitDstStageMask = VkInteropsUtility.AllocateHGlobalArray(
+									currentInfo.WaitSemaphores,
+									(mask) => { return mask; });
+								attachedItems.Add(pWaitDstStageMask);	
 							}
 						}
 
@@ -162,25 +153,22 @@ namespace Magnesium.Vulkan
 
 					for (var i = 0; i < bindInfoCount; ++i)
 					{
-						var waitSemaphoreCount = 0U;
-						var pWaitSemaphores = IntPtr.Zero;
-						// TODO : stuff here 
+						var current = pBindInfo[i];
 
-						var bufferBindCount = 0U;
-						var pBufferBinds = IntPtr.Zero;
-						// TODO : stuff here 
+						uint waitSemaphoreCount;
+						var pWaitSemaphores = ExtractSemaphores(attachedItems, current.WaitSemaphores, out waitSemaphoreCount);
 
-						var imageOpaqueBindCount = 0U;
-						var pImageOpaqueBinds = IntPtr.Zero;
-						// TODO : stuff here 
+						uint bufferBindCount;
+						var pBufferBinds = ExtractBufferBinds(attachedItems, current.BufferBinds, out bufferBindCount);
 
-						var imageBindCount = 0U;
-						var pImageBinds = IntPtr.Zero;
-						// TODO : stuff here 
+						uint imageOpaqueBindCount;
+						var pImageOpaqueBinds = ExtractImageOpaqueBinds(attachedItems, current.ImageOpaqueBinds, out imageOpaqueBindCount);
 
-						var signalSemaphoreCount = 0U;
-						var pSignalSemaphores = IntPtr.Zero;
-						// TODO : stuff here 
+						uint imageBindCount;
+						var pImageBinds = ExtractImageBinds(attachedItems, current.ImageBinds, out imageBindCount);
+
+						uint signalSemaphoreCount;
+						var pSignalSemaphores = ExtractSemaphores(attachedItems, current.SignalSemaphores, out signalSemaphoreCount);
 
 						bindInfos[i] = new VkBindSparseInfo
 						{
@@ -209,6 +197,200 @@ namespace Magnesium.Vulkan
 					Marshal.FreeHGlobal(item);
 				}
 			}
+		}
+
+		static IntPtr ExtractImageBinds(List<IntPtr> attachedItems, MgSparseImageMemoryBindInfo[] imageBinds, out uint imageBindCount)
+		{
+			var dest = IntPtr.Zero;
+			uint count = 0U;
+
+			if (imageBinds != null)
+			{
+				count = (uint)imageBinds.Length;
+				if (count > 0)
+				{
+					dest = VkInteropsUtility.AllocateNestedHGlobalArray(
+						attachedItems,
+						imageBinds,
+						(items, bind) => 
+						{
+							var bImage = (VkImage)bind.Image;
+							Debug.Assert(bImage != null);
+
+							Debug.Assert(bind.Binds != null);
+							var bindCount = (uint)bind.Binds.Length;
+
+							var pBinds = VkInteropsUtility.AllocateHGlobalArray(
+								bind.Binds,
+								(arg) =>
+								{
+									var bDeviceMemory = (VkDeviceMemory)arg.Memory;
+									Debug.Assert(bDeviceMemory != null);
+
+									return new VkSparseImageMemoryBind
+									{
+										subresource = new VkImageSubresource
+										{
+											aspectMask = (VkImageAspectFlags)arg.Subresource.AspectMask,
+											arrayLayer = arg.Subresource.ArrayLayer,
+											mipLevel= arg.Subresource.MipLevel,
+										},
+										offset = arg.Offset,
+										extent = arg.Extent,
+										memory = bDeviceMemory.Handle,
+										memoryOffset = arg.MemoryOffset,
+										flags = (VkSparseMemoryBindFlags)arg.Flags,
+									};
+								});
+							items.Add(pBinds);
+
+							return new VkSparseImageMemoryBindInfo
+							{
+								image = bImage.Handle,
+								bindCount = bindCount,
+								pBinds = pBinds,
+							};
+						});
+
+					attachedItems.Add(dest);
+				}
+			}
+
+			imageBindCount = count;
+			return dest;
+		}
+
+		static IntPtr ExtractImageOpaqueBinds(List<IntPtr> attachedItems, MgSparseImageOpaqueMemoryBindInfo[] imageOpaqueBinds, out uint imageOpaqueBindCount)
+		{
+			var dest = IntPtr.Zero;
+			uint count = 0U;
+
+			if (imageOpaqueBinds != null)
+			{
+				count = (uint)imageOpaqueBinds.Length;
+				if (count > 0)
+				{
+					dest = VkInteropsUtility.AllocateNestedHGlobalArray(
+						attachedItems,
+						imageOpaqueBinds,
+						(items, bind) =>
+						{
+							var bImage = (VkImage)bind.Image;
+							Debug.Assert(bImage != null);
+
+							Debug.Assert(bind.Binds != null);
+							var bindCount = (uint)bind.Binds.Length;
+							var pBinds = VkInteropsUtility.AllocateHGlobalArray(
+								bind.Binds,
+								(arg) =>
+								{
+									var bDeviceMemory = (VkDeviceMemory)arg.Memory;
+									Debug.Assert(bDeviceMemory != null);
+
+									return new VkSparseMemoryBind
+									{
+										resourceOffset = arg.ResourceOffset,
+										size = arg.Size,
+										memory = bDeviceMemory.Handle,
+										memoryOffset = arg.MemoryOffset,
+										flags = (VkSparseMemoryBindFlags)arg.Flags,
+									};
+								});
+							items.Add(pBinds);
+
+							return new VkSparseImageOpaqueMemoryBindInfo
+							{
+								image = bImage.Handle,
+								bindCount = bindCount,
+								pBinds = pBinds,
+							};
+						});
+					attachedItems.Add(dest);
+				}
+			}
+
+			imageOpaqueBindCount = count;
+			return dest;
+		}
+
+		static IntPtr ExtractBufferBinds(List<IntPtr> attachedItems, MgSparseBufferMemoryBindInfo[] bufferBinds, out uint bufferBindCount)
+		{
+			var dest = IntPtr.Zero;
+			uint count = 0U;
+
+			if (bufferBinds != null)
+			{
+				count = (uint)bufferBinds.Length;
+				if (count > 0)
+				{
+					dest = VkInteropsUtility.AllocateNestedHGlobalArray(
+						attachedItems,
+						bufferBinds,
+						(items, bind) =>
+						{
+							var bBuffer = (VkBuffer)bind.Buffer;
+							Debug.Assert(bBuffer != null);
+
+							Debug.Assert(bind.Binds != null);
+							var bindCount = (uint) bind.Binds.Length;
+							var pBinds = VkInteropsUtility.AllocateHGlobalArray(
+								bind.Binds,
+								(arg) =>
+								{
+									var bDeviceMemory = (VkDeviceMemory)arg.Memory;
+									Debug.Assert(bDeviceMemory != null);
+
+									return new VkSparseMemoryBind
+									{
+										resourceOffset = arg.ResourceOffset,
+										size = arg.Size,
+										memory = bDeviceMemory.Handle,
+										memoryOffset = arg.MemoryOffset,
+										flags = (VkSparseMemoryBindFlags)arg.Flags,
+									};
+								});
+							items.Add(pBinds);
+							
+							return new VkSparseBufferMemoryBindInfo
+							{
+								buffer = bBuffer.Handle,
+								bindCount = bindCount,
+								pBinds = pBinds,
+							};
+						}
+					);
+					attachedItems.Add(dest);
+				}
+			}
+
+			bufferBindCount = count;
+			return dest;
+		}
+
+		static IntPtr ExtractSemaphores(List<IntPtr> attachedItems, IMgSemaphore[] semaphores, out uint semaphoreCount)
+		{
+			var dest = IntPtr.Zero;
+			uint count = 0U;
+
+			if (semaphores != null)
+			{
+				semaphoreCount = (uint)semaphores.Length;
+				if (semaphoreCount > 0)
+				{
+					dest = VkInteropsUtility.ExtractUInt64HandleArray(
+						semaphores,
+						(arg) =>
+						{
+							var bSemaphore = (VkSemaphore)arg;
+							Debug.Assert(bSemaphore != null);
+							return bSemaphore.Handle;
+						}
+					);
+					attachedItems.Add(dest);
+				}
+			}
+			semaphoreCount = count;
+			return dest;
 		}
 
 		public Result QueuePresentKHR(MgPresentInfoKHR pPresentInfo)

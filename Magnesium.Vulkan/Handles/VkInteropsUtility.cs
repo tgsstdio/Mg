@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
@@ -51,6 +52,23 @@ namespace Magnesium.Vulkan
 			Marshal.Copy(tempBuffer, 0, array, arraySizeInBytes);
 
 			return array;
+		}
+
+		internal static IntPtr AllocateNestedHGlobalArray<TMgReference, TVkData>(List<IntPtr> allocatedItems, TMgReference[] references, Func<List<IntPtr>, TMgReference, TVkData> initializeData)
+		{
+			var stride = Marshal.SizeOf(typeof(TVkData));
+			var dependencyCount = references.Length;
+			var dstArray = Marshal.AllocHGlobal(stride * dependencyCount);
+
+			var offset = 0;
+			for (var i = 0; i < dependencyCount; ++i)
+			{
+				var temp = initializeData(allocatedItems, references[i]);
+				var localDest = IntPtr.Add(dstArray, offset);
+				Marshal.StructureToPtr(temp, localDest, false);
+				offset += stride;
+			}
+			return dstArray;
 		}
 
 		internal static IntPtr AllocateHGlobalArray<TMgReference, TVkData>(TMgReference[] references, Func<TMgReference, TVkData> initializeData)

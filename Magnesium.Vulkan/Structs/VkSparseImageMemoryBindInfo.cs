@@ -4,11 +4,11 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan
 {
-	[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Ansi)]
+	[StructLayout(LayoutKind.Sequential)]
 	internal struct VkSparseImageMemoryBindInfo
 	{
 		public UInt64 image { get; set; }
 		public UInt32 bindCount { get; set; }
-		public VkSparseImageMemoryBind pBinds { get; set; }
-	}
+		public IntPtr pBinds { get; set; } // VkSparseImageMemoryBind[]
+}
 }
