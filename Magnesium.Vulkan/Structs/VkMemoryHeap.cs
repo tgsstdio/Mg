@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan
 {
-	[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Ansi)]
+	[StructLayout(LayoutKind.Sequential)]
 	internal struct VkMemoryHeap
 	{
 		public UInt64 size { get; set; }

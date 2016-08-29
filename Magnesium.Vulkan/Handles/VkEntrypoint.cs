@@ -2,6 +2,7 @@ using Magnesium;
 using System;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Magnesium.Vulkan
 {
@@ -70,7 +71,7 @@ namespace Magnesium.Vulkan
 		{
 			if (!string.IsNullOrWhiteSpace(name))
 			{
-				var dest = Marshal.StringToHGlobalAnsi(name);
+				var dest = VkInteropsUtility.NativeUtf8FromString(name);
 				allocatedItems.Add(dest);
 				return dest;
 			}
@@ -95,7 +96,7 @@ namespace Magnesium.Vulkan
 				var names = new IntPtr[noOfElements];
 				for (int i = 0; i < noOfElements; ++i)
 				{
-					names[i] = Marshal.StringToHGlobalAnsi(array[i]);
+					names[i] = VkInteropsUtility.NativeUtf8FromString(array[i]);
 					allocatedItems.Add(names[i]);
 				}
 
@@ -129,10 +130,18 @@ namespace Magnesium.Vulkan
 			{
 				properties[i] = new MgLayerProperties
 				{
-					LayerName = layerProperties[i].layerName,
+					LayerName =
+						Encoding.UTF8.GetString(
+						layerProperties[i].layerName,
+						0,
+						layerProperties[i].layerName.Length),
 					SpecVersion = layerProperties[i].specVersion,
 					ImplementationVersion = layerProperties[i].implementationVersion,
-					Description = layerProperties[i].description,
+					Description = 
+						Encoding.UTF8.GetString(
+						layerProperties[i].description,
+						0,
+						layerProperties[i].description.Length),
 				};
 			}
 			return last;
@@ -140,30 +149,49 @@ namespace Magnesium.Vulkan
 
 		public Result EnumerateInstanceExtensionProperties(string layerName, out MgExtensionProperties[] pProperties)
 		{
-			UInt32 pPropertyCount = 0;
-
-			var first = Interops.vkEnumerateInstanceExtensionProperties(layerName, ref pPropertyCount, null);
-
-			if (first != Result.SUCCESS)
+			var pLayerName = IntPtr.Zero;
+			try
 			{
-				pProperties = null;
-				return first;
-			}
+				pLayerName = VkInteropsUtility.NativeUtf8FromString(layerName);
 
-			var extensionProperties = new VkExtensionProperties[pPropertyCount];
-			var last = Interops.vkEnumerateInstanceExtensionProperties(layerName, ref pPropertyCount, extensionProperties);
+				UInt32 pPropertyCount = 0;
+				var first = Interops.vkEnumerateInstanceExtensionProperties(pLayerName, ref pPropertyCount, null);
 
-			pProperties = new MgExtensionProperties[pPropertyCount];
-			for (uint i = 0; i < pPropertyCount; ++i)
-			{
-				pProperties[i] = new MgExtensionProperties
+				if (first != Result.SUCCESS)
 				{
-					ExtensionName = extensionProperties[i].extensionName,
-					SpecVersion = extensionProperties[i].specVersion,
-				};
+					pProperties = null;
+					return first;
+				}
+
+				var extensionProperties = new VkExtensionProperties[pPropertyCount];
+				var last = Interops.vkEnumerateInstanceExtensionProperties(pLayerName, ref pPropertyCount, extensionProperties);
+
+				pProperties = new MgExtensionProperties[pPropertyCount];
+				for (uint i = 0; i < pPropertyCount; ++i)
+				{
+					pProperties[i] = new MgExtensionProperties
+					{
+						ExtensionName = Encoding.UTF8.GetString(
+							extensionProperties[i].extensionName,
+							0,
+							extensionProperties[i].extensionName.Length),
+						SpecVersion = extensionProperties[i].specVersion,
+					};
+				}
+				return last;
 			}
-			return last;
+			finally
+			{
+				if (pLayerName != IntPtr.Zero)
+				{
+
+				}
+			}
 		}
 
+		public IMgAllocationCallbacks CreateAllocationCallbacks()
+		{
+			return new MgVkAllocationCallbacks();
+		}
 	}
 }

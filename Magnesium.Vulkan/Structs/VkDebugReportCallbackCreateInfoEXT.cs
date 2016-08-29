@@ -15,7 +15,7 @@ namespace Magnesium.Vulkan
 		string pMessage,
 		IntPtr pUserData);
 
-	[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Ansi)]
+	[StructLayout(LayoutKind.Sequential)]
 	internal struct VkDebugReportCallbackCreateInfoEXT
 	{
 		public VkStructureType sType { get; set; }

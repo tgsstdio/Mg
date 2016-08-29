@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Magnesium.Vulkan
 {
@@ -29,6 +30,7 @@ namespace Magnesium.Vulkan
 		{
 			var pCreateInfo = default(VkPhysicalDeviceProperties);
 			Interops.vkGetPhysicalDeviceProperties(Handle, pCreateInfo);
+
 			pProperties = new MgPhysicalDeviceProperties
 			{
 				ApiVersion = pCreateInfo.apiVersion,
@@ -36,7 +38,7 @@ namespace Magnesium.Vulkan
 				VendorID = pCreateInfo.vendorID,
 				DeviceID = pCreateInfo.deviceID,
 				DeviceType =  (MgPhysicalDeviceType) pCreateInfo.deviceType,
-				DeviceName = pCreateInfo.deviceName,
+				DeviceName = Encoding.UTF8.GetString(pCreateInfo.deviceName, 0, pCreateInfo.deviceName.Length),
 				PipelineCacheUUID = new Guid(pCreateInfo.pipelineCacheUUID),
 				Limits = new MgPhysicalDeviceLimits
 				{
@@ -543,10 +545,18 @@ namespace Magnesium.Vulkan
 			{
 				pProperties[i] = new MgLayerProperties
 				{
-					LayerName = layers[i].layerName,
+					LayerName = 
+						Encoding.UTF8.GetString(
+						layers[i].layerName,
+						0,
+						layers[i].layerName.Length),
 					SpecVersion = layers[i].specVersion,
 					ImplementationVersion = layers[i].implementationVersion,
-					Description = layers[i].description,
+					Description = 
+						Encoding.UTF8.GetString(
+						layers[i].description,
+						0,
+						layers[i].description.Length),
 				};
 			}
 
@@ -580,7 +590,11 @@ namespace Magnesium.Vulkan
 				{
 					pProperties[i] = new MgExtensionProperties
 					{
-						ExtensionName = extensions[i].extensionName,
+						ExtensionName = 
+							Encoding.UTF8.GetString(
+							extensions[i].extensionName,
+							0,
+							extensions[i].extensionName.Length),
 						SpecVersion = extensions[i].specVersion,
 					};
 				}

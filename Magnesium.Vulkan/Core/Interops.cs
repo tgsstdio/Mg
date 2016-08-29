@@ -50,7 +50,7 @@ namespace Magnesium.Vulkan
 		internal extern static Result vkEnumerateInstanceLayerProperties(ref UInt32 pPropertyCount, [In, Out] VkLayerProperties[] pProperties);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static Result vkEnumerateInstanceExtensionProperties([MarshalAs(UnmanagedType.LPStr)] string pLayerName, ref UInt32 pPropertyCount, [In, Out] VkExtensionProperties[] pProperties);
+		internal extern static Result vkEnumerateInstanceExtensionProperties(IntPtr pLayerName, ref UInt32 pPropertyCount, [In, Out] VkExtensionProperties[] pProperties);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static Result vkEnumerateDeviceLayerProperties(IntPtr physicalDevice, ref UInt32 pPropertyCount, [In, Out] VkLayerProperties[] pProperties);

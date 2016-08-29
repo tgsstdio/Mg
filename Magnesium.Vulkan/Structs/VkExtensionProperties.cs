@@ -4,11 +4,11 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan
 {
-	[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Ansi)]
+	[StructLayout(LayoutKind.Sequential)]
 	internal struct VkExtensionProperties
 	{
-		[MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-		public string extensionName;
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
+		public byte[] extensionName;
 		public UInt32 specVersion;
 	}
 }

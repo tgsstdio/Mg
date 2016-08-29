@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan
 {
-	[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Ansi)]
+	[StructLayout(LayoutKind.Sequential)]
 	internal struct VkPhysicalDeviceProperties
 	{
 		public UInt32 apiVersion;
@@ -12,8 +12,8 @@ namespace Magnesium.Vulkan
 		public UInt32 vendorID;
 		public UInt32 deviceID;
 		public VkPhysicalDeviceType deviceType;
-		[MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-		public string deviceName;
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
+		public byte[] deviceName;
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst= 16)]
 		public Byte[] pipelineCacheUUID;
 		public VkPhysicalDeviceLimits limits;
