@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 namespace Magnesium
 {
-    public class MgClearAttachment
+	[StructLayout(LayoutKind.Sequential)]
+    public struct MgClearAttachment
 	{
 		public MgImageAspectFlagBits AspectMask { get; set; }
 		public UInt32 ColorAttachment { get; set; }

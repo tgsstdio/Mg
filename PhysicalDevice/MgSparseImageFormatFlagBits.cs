@@ -3,7 +3,7 @@
 namespace Magnesium
 {
     [Flags] 
-	public enum MgSparseImageFormatFlagBits : byte
+	public enum MgSparseImageFormatFlagBits : uint
 	{
 		// Image uses a single miptail region for all array layers
 		SINGLE_MIPTAIL_BIT = 1 << 0,

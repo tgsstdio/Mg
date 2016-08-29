@@ -38,6 +38,20 @@ namespace Magnesium
 		ERROR_TOO_MANY_OBJECTS = -10,
 		// Requested format is not supported on this device
 		ERROR_FORMAT_NOT_SUPPORTED = -11,
+		// VK_KHR_surface error 1
+		ERROR_SURFACE_LOST_KHR = -1000000000,
+		// VK_KHR_surface error 2
+		ERROR_NATIVE_WINDOW_IN_USE_KHR = -1000000001,
+		// VK_KHR_swapchain error 1
+		SUBOPTIMAL_KHR = 1000001003,
+		// VK_KHR_swapchain error 2
+		ERROR_OUT_OF_DATE_KHR = -1000001004,
+		// VK_KHR_display_swapchain error 1
+		ERROR_INCOMPATIBLE_DISPLAY_KHR = -1000003001,
+		// VK_EXT_debug_report error 1
+		ERROR_VALIDATION_FAILED_EXT = -1000011001,
+		// VK_NV_glsl_shader error 1
+		ERROR_INVALID_SHADER_NV = -1000012000,
 	}
 
 }

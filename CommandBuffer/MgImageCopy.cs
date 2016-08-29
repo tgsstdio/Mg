@@ -1,6 +1,9 @@
-﻿namespace Magnesium
+﻿using System.Runtime.InteropServices;
+
+namespace Magnesium
 {
-    public class MgImageCopy
+	[StructLayout(LayoutKind.Sequential)]
+    public struct MgImageCopy
 	{
 		public MgImageSubresourceLayers SrcSubresource { get; set; }
 		public MgOffset3D SrcOffset { get; set; }

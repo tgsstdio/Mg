@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 namespace Magnesium
 {
-    public class MgSparseImageMemoryRequirements
+	[StructLayout(LayoutKind.Sequential)]
+    public struct MgSparseImageMemoryRequirements
 	{
 		public MgSparseImageFormatProperties FormatProperties { get; set; }
 		public UInt32 ImageMipTailFirstLod { get; set; }

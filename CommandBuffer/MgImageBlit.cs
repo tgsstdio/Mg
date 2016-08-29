@@ -1,11 +1,19 @@
-﻿namespace Magnesium
+﻿using System.Runtime.InteropServices;
+
+namespace Magnesium
 {
-    public class MgImageBlit
+	[StructLayout(LayoutKind.Sequential)]
+    public struct MgImageBlit
 	{
-		public MgImageSubresourceLayers SrcSubresource { get; set; }
-		public MgOffset3D[] SrcOffsets { get; set; } // 2
-		public MgImageSubresourceLayers DstSubresource { get; set; }
-		public MgOffset3D[] DstOffsets { get; set; } // 2
+		public MgImageSubresourceLayers SrcSubresource;
+
+		[MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.Struct, SizeConst = 2)]
+		public MgOffset3D[] SrcOffsets; // 2
+
+		public MgImageSubresourceLayers DstSubresource;
+
+		[MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.Struct, SizeConst = 2)]
+		public MgOffset3D[] DstOffsets; // 2
 	}
 }
 

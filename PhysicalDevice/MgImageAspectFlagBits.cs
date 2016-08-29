@@ -3,7 +3,7 @@
 namespace Magnesium
 {
     [Flags] 
-	public enum MgImageAspectFlagBits : byte
+	public enum MgImageAspectFlagBits : uint
 	{
 		COLOR_BIT = 1 << 0,
 		DEPTH_BIT = 1 << 1,

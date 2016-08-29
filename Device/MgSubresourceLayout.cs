@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 namespace Magnesium
 {
-    public class MgSubresourceLayout
+	[StructLayout(LayoutKind.Sequential)]
+    public struct MgSubresourceLayout
 	{
 		public UInt64 Offset { get; set; }
 		public UInt64 Size { get; set; }

@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 namespace Magnesium
 {
-    public class MgStencilOpState
+	[StructLayout(LayoutKind.Sequential)]
+    public struct MgStencilOpState
 	{
 		public MgStencilOp FailOp { get; set; }
 		public MgStencilOp PassOp { get; set; }

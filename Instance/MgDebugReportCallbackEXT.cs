@@ -1,8 +1,8 @@
 ﻿namespace Magnesium
 {
-    public class MgDebugReportCallbackEXT
+    public interface IMgDebugReportCallbackEXT
 	{
-
+		void DestroyDebugReportCallbackEXT(IMgInstance instance, IMgAllocationCallbacks allocator);
 	}
 }
 

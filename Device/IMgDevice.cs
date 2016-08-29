@@ -49,7 +49,7 @@ namespace Magnesium
 		//void DestroyShaderModule(MgShaderModule shaderModule, MgAllocationCallbacks allocator);
 		Result CreatePipelineCache(MgPipelineCacheCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgPipelineCache pPipelineCache);
 		//void DestroyPipelineCache(IMgPipelineCache pipelineCache, MgAllocationCallbacks allocator);
-		Result GetPipelineCacheData(IMgPipelineCache pipelineCache, UIntPtr pDataSize, IntPtr pData);
+		Result GetPipelineCacheData(IMgPipelineCache pipelineCache, out byte[] pData);
 		Result MergePipelineCaches(IMgPipelineCache dstCache, IMgPipelineCache[] pSrcCaches);
 		Result CreateGraphicsPipelines(IMgPipelineCache pipelineCache, MgGraphicsPipelineCreateInfo[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgPipeline[] pPipelines);
 		Result CreateComputePipelines(IMgPipelineCache pipelineCache, MgComputePipelineCreateInfo[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgPipeline[] pPipelines);

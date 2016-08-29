@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 namespace Magnesium
 {
-    public class MgImageSubresourceLayers
+	[StructLayout(LayoutKind.Sequential)]
+    public struct MgImageSubresourceLayers
 	{
 		public MgImageAspectFlagBits AspectMask { get; set; }
 		public UInt32 MipLevel { get; set; }

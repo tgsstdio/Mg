@@ -1,6 +1,9 @@
-﻿namespace Magnesium
+﻿using System.Runtime.InteropServices;
+
+namespace Magnesium
 {
-    public class MgSparseImageFormatProperties
+	[StructLayout(LayoutKind.Sequential)]
+    public struct MgSparseImageFormatProperties
 	{
 		public MgImageAspectFlagBits AspectMask { get; set; }
 		public MgExtent3D ImageGranularity { get; set; }

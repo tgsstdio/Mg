@@ -34,7 +34,7 @@ namespace Magnesium
 
 	public delegate void PFN_vkVoidFunction();
 
-	public delegate void PFN_vkDebugReportCallbackEXT(
+	public delegate bool PFN_MgDebugReportCallbackEXT(
 		MgDebugReportFlagBitsEXT flags,
 		MgDebugReportObjectTypeEXT objectType,
 		UInt64 @object,

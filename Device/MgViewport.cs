@@ -1,6 +1,9 @@
-﻿namespace Magnesium
+﻿using System.Runtime.InteropServices;
+
+namespace Magnesium
 {
-    public class MgViewport
+	[StructLayout(LayoutKind.Sequential)]
+    public struct MgViewport
 	{
 		public float X { get; set; }
 		public float Y { get; set; }

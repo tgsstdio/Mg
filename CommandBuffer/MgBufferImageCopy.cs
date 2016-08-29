@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 namespace Magnesium
 {
-    public class MgBufferImageCopy
+	[StructLayout(LayoutKind.Sequential)]
+    public struct MgBufferImageCopy
 	{
 		public UInt64 BufferOffset { get; set; }
 		public UInt32 BufferRowLength { get; set; }

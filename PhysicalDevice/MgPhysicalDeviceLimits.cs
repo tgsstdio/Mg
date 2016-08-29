@@ -68,7 +68,7 @@ namespace Magnesium
 		public float MaxSamplerAnisotropy { get; set; }
 		public UInt32 MaxViewports { get; set; }
 		public MgVec2Ui MaxViewportDimensions { get; set; } // 2
-		public MgVec2Ui ViewportBoundsRange { get; set; } // 2
+		public MgVec2f ViewportBoundsRange { get; set; } // 2
 		public UInt32 ViewportSubPixelBits { get; set; }
 		public UIntPtr MinMemoryMapAlignment { get; set; }
 		public UInt64 MinTexelBufferOffsetAlignment { get; set; }

@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 namespace Magnesium
 {
-    public class MgMemoryRequirements
+	[StructLayout(LayoutKind.Sequential)]
+    public struct MgMemoryRequirements
 	{
 		public UInt64 Size { get; set; }
 		public UInt64 Alignment { get; set; }
