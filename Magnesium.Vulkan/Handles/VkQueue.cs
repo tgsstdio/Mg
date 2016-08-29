@@ -395,8 +395,100 @@ namespace Magnesium.Vulkan
 
 		public Result QueuePresentKHR(MgPresentInfoKHR pPresentInfo)
 		{
-			throw new NotImplementedException();
+			if (pPresentInfo == null)
+				throw new ArgumentNullException(nameof(pPresentInfo));
+
+			var attachedItems = new List<IntPtr>();
+			try
+			{
+				uint waitSemaphoreCount;
+				var pWaitSemaphores = ExtractSemaphores(attachedItems, pPresentInfo.WaitSemaphores, out waitSemaphoreCount);
+
+				IntPtr pSwapchains;
+				IntPtr pImageIndices;
+				uint swapchainCount = ExtractSwapchains(attachedItems, pPresentInfo.Images, out pSwapchains, out pImageIndices);
+
+				var pResults = ExtractResults(attachedItems, pPresentInfo.Results);
+
+				var presentInfo = new VkPresentInfoKHR
+				{
+					sType = VkStructureType.StructureTypePresentInfoKhr,
+					pNext = IntPtr.Zero,
+					waitSemaphoreCount = waitSemaphoreCount,
+					pWaitSemaphores = pWaitSemaphores,
+					swapchainCount = swapchainCount,
+					pSwapchains = pSwapchains,
+					pImageIndices = pImageIndices,
+					pResults = pResults,
+				};
+
+				var result = Interops.vkQueuePresentKHR(Handle, presentInfo);
+
+				// MUST ABLE TO RETURN 
+				if (pResults != IntPtr.Zero)
+				{
+					var stride = Marshal.SizeOf(typeof(Result));
+					var swapChains = new Result[swapchainCount];
+					var offset = 0;
+					for (var i = 0; i < swapchainCount; ++i)
+					{
+						var src = IntPtr.Add(pResults, offset);
+						swapChains[i] = (Magnesium.Result)Marshal.PtrToStructure(src, typeof(Magnesium.Result));
+						offset += stride;
+					}
+
+					pPresentInfo.Results = swapChains;
+				}
+
+				return result;
+			}
+			finally
+			{
+				foreach (var item in attachedItems)
+				{
+					Marshal.FreeHGlobal(item);
+				}
+			}
 		}
 
+		static IntPtr ExtractResults(List<IntPtr> attachedItems, Result[] results)
+		{
+			if (results == null)
+				return IntPtr.Zero;
+
+			var stride = Marshal.SizeOf(typeof(Result));
+			var dest = Marshal.AllocHGlobal(stride * results.Length);
+			attachedItems.Add(dest);
+			return dest;
+		}
+
+		uint ExtractSwapchains(List<IntPtr> attachedItems, MgPresentInfoKHRImage[] images, out IntPtr swapchains, out IntPtr imageIndices)
+		{
+			var pSwapchains = IntPtr.Zero;
+			var pImageIndices = IntPtr.Zero;
+			uint count = 0U;
+
+			if (images != null)
+			{
+				count = (uint)images.Length;
+				if (count > 0)
+				{
+					pSwapchains = VkInteropsUtility.ExtractUInt64HandleArray(
+						images,
+						(sc) => 
+						{ 
+							var bSwapchain = (VkSwapchainKHR)sc.Swapchain;
+							Debug.Assert(bSwapchain != null);
+							return bSwapchain.Handle;
+						});
+					attachedItems.Add(pSwapchains);
+
+
+				}
+			}
+			swapchains = pSwapchains;
+			imageIndices = pImageIndices;
+			return count;
+		}
 	}
 }

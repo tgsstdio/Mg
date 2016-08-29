@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Magnesium.Vulkan
 {
@@ -19,6 +20,17 @@ namespace Magnesium.Vulkan
 			return nativeUtf8;
 		}
 
+		// Using Hans Passant's answer
+		// http://stackoverflow.com/questions/10773440/conversion-in-net-native-utf-8-managed-string
+		public static string StringFromNativeUtf8(IntPtr nativeUtf8)
+		{
+			int len = 0;
+			while (Marshal.ReadByte(nativeUtf8, len) != 0) ++len;
+			byte[] buffer = new byte[len];
+			Marshal.Copy(nativeUtf8, buffer, 0, buffer.Length);
+			return Encoding.UTF8.GetString(buffer, 0, buffer.Length);
+		}
+
 		internal static IntPtr ExtractUInt64HandleArray<TVkType>(TVkType[] arrayItems, Func<TVkType, UInt64> extractHandle)
 		{
 			return ExtractHandleArray<TVkType, UInt64>(arrayItems, extractHandle);
@@ -27,6 +39,22 @@ namespace Magnesium.Vulkan
 		internal static IntPtr ExtractIntPtrHandleArray<TVkType>(TVkType[] arrayItems, Func<TVkType, IntPtr> extractHandle)
 		{
 			return ExtractHandleArray<TVkType, IntPtr>(arrayItems, extractHandle);
+		}
+
+		// REMEMBER TO FREE ALLOCATED MEMORY i.e. Marshal.FreeHGlobal
+		internal static IntPtr AllocateUInt32Array(UInt32[] values)
+		{
+			Debug.Assert(values != null);
+
+			var arrayLength = values.Length;
+			var arraySizeInBytes = (int)(arrayLength * sizeof(UInt32));
+			var arrayPtr = Marshal.AllocHGlobal(arraySizeInBytes);
+
+			var tempBuffer = new byte[arraySizeInBytes];
+			Buffer.BlockCopy(values, 0, tempBuffer, 0, arraySizeInBytes);
+			Marshal.Copy(tempBuffer, 0, arrayPtr, arraySizeInBytes);
+
+			return arrayPtr;
 		}
 
 		/// DON'T FORGET TO Marshal.FreeHGlobal the returned value

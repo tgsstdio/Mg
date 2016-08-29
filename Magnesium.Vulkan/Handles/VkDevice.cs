@@ -412,7 +412,7 @@ namespace Magnesium.Vulkan
 				if (pCreateInfo.QueueFamilyIndices != null)
 				{
 					queueFamilyIndexCount = (uint)pCreateInfo.QueueFamilyIndices.Length;
-					pQueueFamilyIndices = AllocateUInt32Array(pCreateInfo.QueueFamilyIndices);
+					pQueueFamilyIndices = VkInteropsUtility.AllocateUInt32Array(pCreateInfo.QueueFamilyIndices);
 				}
 
 				var createInfo = new VkBufferCreateInfo
@@ -487,7 +487,7 @@ namespace Magnesium.Vulkan
 				if (pCreateInfo.QueueFamilyIndices != null)
 				{
 					queueFamilyIndexCount = (uint)pCreateInfo.QueueFamilyIndices.Length;
-					pQueueFamilyIndices = AllocateUInt32Array(pCreateInfo.QueueFamilyIndices);
+					pQueueFamilyIndices = VkInteropsUtility.AllocateUInt32Array(pCreateInfo.QueueFamilyIndices);
 				}
 
 				ulong internalHandle = 0;
@@ -924,22 +924,6 @@ namespace Magnesium.Vulkan
 			}
 		}
 
-		// REMEMBER TO FREE ALLOCATED MEMORY i.e. Marshal.FreeHGlobal
-		static IntPtr AllocateUInt32Array(UInt32[] values)
-		{
-			Debug.Assert(values != null);
-
-			var arrayLength = values.Length;
-			var arraySizeInBytes = (int)(arrayLength * sizeof(UInt32));
-			var arrayPtr = Marshal.AllocHGlobal(arraySizeInBytes);
-
-			var tempBuffer = new byte[arraySizeInBytes];
-			Buffer.BlockCopy(values, 0, tempBuffer, 0, arraySizeInBytes);
-			Marshal.Copy(tempBuffer, 0, arrayPtr, arraySizeInBytes);					
-			
-			return arrayPtr;
-		}
-
 		static IntPtr ExtractDepthStencilState(List<IntPtr> attachedItems, MgPipelineDepthStencilStateCreateInfo depthStencilState)
 		{
 			if (depthStencilState == null)
@@ -998,7 +982,7 @@ namespace Magnesium.Vulkan
 			{
 				if (multisample.SampleMask.Length > 0)
 				{
-					pSampleMask = AllocateUInt32Array(multisample.SampleMask);
+					pSampleMask = VkInteropsUtility.AllocateUInt32Array(multisample.SampleMask);
 					attachedItems.Add(pSampleMask);
 				}	
 			}
@@ -2043,7 +2027,7 @@ namespace Magnesium.Vulkan
 
 						if (preserveAttachmentCount > 0)
 						{
-							pPreserveAttachments = AllocateUInt32Array(currentSubpass.PreserveAttachments);
+							pPreserveAttachments = VkInteropsUtility.AllocateUInt32Array(currentSubpass.PreserveAttachments);
 							attachedItems.Add(pPreserveAttachments);
 						}	
 
@@ -2308,7 +2292,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo.QueueFamilyIndices != null)
 			{
 				queueFamilyIndexCount = (uint)pCreateInfo.QueueFamilyIndices.Length;	
-				pQueueFamilyIndices = AllocateUInt32Array(pCreateInfo.QueueFamilyIndices); 
+				pQueueFamilyIndices = VkInteropsUtility.AllocateUInt32Array(pCreateInfo.QueueFamilyIndices); 
 				attachedItems.Add(pQueueFamilyIndices);
 			}
 
