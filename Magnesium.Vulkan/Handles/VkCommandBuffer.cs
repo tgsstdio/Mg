@@ -786,7 +786,7 @@ namespace Magnesium.Vulkan
 					pClearValues = clearValues,
 				};
 
-				Interops.vkCmdBeginRenderPass(this.Handle, beginInfo, (Magnesium.Vulkan.VkSubpassContents)contents);
+				Interops.vkCmdBeginRenderPass(this.Handle, ref beginInfo, (Magnesium.Vulkan.VkSubpassContents)contents);
 			}
 			finally
 			{

@@ -97,7 +97,7 @@ namespace Magnesium.Vulkan
 			var allocatorHandle = GetAllocatorHandle(allocator);
 
 			UInt64 handle = 0UL;
-			var result = Interops.vkCreateDisplayPlaneSurfaceKHR(Handle, pCreateInfo, allocatorHandle, ref handle);
+			var result = Interops.vkCreateDisplayPlaneSurfaceKHR(Handle, ref pCreateInfo, allocatorHandle, ref handle);
 			pSurface = new VkSurfaceKHR(handle);
 
 			return result;
@@ -122,7 +122,7 @@ namespace Magnesium.Vulkan
 			};
 
 			var surfaceHandle = 0UL;
-			var result = Interops.vkCreateAndroidSurfaceKHR(Handle, createInfo, allocatorHandle, ref surfaceHandle);
+			var result = Interops.vkCreateAndroidSurfaceKHR(Handle, ref createInfo, allocatorHandle, ref surfaceHandle);
 			pSurface = new VkSurfaceKHR(surfaceHandle);
 
 			return result;

@@ -29,7 +29,7 @@ namespace Magnesium.Vulkan
 		public void GetPhysicalDeviceProperties(out MgPhysicalDeviceProperties pProperties)
 		{
 			var pCreateInfo = default(VkPhysicalDeviceProperties);
-			Interops.vkGetPhysicalDeviceProperties(Handle, pCreateInfo);
+			Interops.vkGetPhysicalDeviceProperties(Handle, ref pCreateInfo);
 
 			pProperties = new MgPhysicalDeviceProperties
 			{
@@ -190,7 +190,7 @@ namespace Magnesium.Vulkan
 		public void GetPhysicalDeviceMemoryProperties(out MgPhysicalDeviceMemoryProperties pMemoryProperties)
 		{
 			var memoryProperties = default(VkPhysicalDeviceMemoryProperties);
-			Interops.vkGetPhysicalDeviceMemoryProperties(Handle, memoryProperties);
+			Interops.vkGetPhysicalDeviceMemoryProperties(Handle, ref memoryProperties);
 
 			var memoryHeaps = new MgMemoryHeap[memoryProperties.memoryHeapCount];
 			for (var i = 0; i < memoryProperties.memoryHeapCount; ++i)
@@ -223,7 +223,7 @@ namespace Magnesium.Vulkan
 		{
 			var features = default(VkPhysicalDeviceFeatures);
 
-			Interops.vkGetPhysicalDeviceFeatures(Handle, features);
+			Interops.vkGetPhysicalDeviceFeatures(Handle, ref features);
 
 			pFeatures = new MgPhysicalDeviceFeatures
 			{
@@ -316,7 +316,7 @@ namespace Magnesium.Vulkan
 				bTiling,
 				bUsage,
 				bFlags,
-				properties
+				ref properties
 		   );
 
 			pImageFormatProperties = new MgImageFormatProperties
@@ -381,7 +381,7 @@ namespace Magnesium.Vulkan
 					ppEnabledExtensionNames = ppEnabledExtensionNames,
 					pEnabledFeatures = pEnabledFeatures,
 				};
-				var result = Interops.vkCreateDevice(Handle, createInfo, allocatorPtr, ref internalHandle);
+				var result = Interops.vkCreateDevice(Handle, ref createInfo, allocatorPtr, ref internalHandle);
 				pDevice = new VkDevice(internalHandle);
 				return result;
 			}
@@ -788,7 +788,7 @@ namespace Magnesium.Vulkan
 			Debug.Assert(bMode != null);
 
 			var capabilities = default(VkDisplayPlaneCapabilitiesKHR);
-			var result = Interops.vkGetDisplayPlaneCapabilitiesKHR(Handle, bMode.Handle, planeIndex, capabilities);
+			var result = Interops.vkGetDisplayPlaneCapabilitiesKHR(Handle, bMode.Handle, planeIndex, ref capabilities);
 
 			pCapabilities = new MgDisplayPlaneCapabilitiesKHR
 			{
@@ -828,7 +828,7 @@ namespace Magnesium.Vulkan
 			Debug.Assert(bSurface != null);
 
 			var pCreateInfo = default(VkSurfaceCapabilitiesKHR);
-			var result = Interops.vkGetPhysicalDeviceSurfaceCapabilitiesKHR(Handle, bSurface.Handle, pCreateInfo);
+			var result = Interops.vkGetPhysicalDeviceSurfaceCapabilitiesKHR(Handle, bSurface.Handle, ref pCreateInfo);
 
 			pSurfaceCapabilities = new MgSurfaceCapabilitiesKHR
 			{
@@ -938,7 +938,7 @@ namespace Magnesium.Vulkan
 			};
 
 			var modeHandle = 0UL;
-			var result = Interops.vkCreateDisplayModeKHR(this.Handle, bDisplay.Handle, createInfo, allocatorPtr, ref modeHandle);
+			var result = Interops.vkCreateDisplayModeKHR(this.Handle, bDisplay.Handle, ref createInfo, allocatorPtr, ref modeHandle);
 			pMode = new VkDisplayModeKHR(modeHandle);
 
 			return result;

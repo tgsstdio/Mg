@@ -422,7 +422,7 @@ namespace Magnesium.Vulkan
 					pResults = pResults,
 				};
 
-				var result = Interops.vkQueuePresentKHR(Handle, presentInfo);
+				var result = Interops.vkQueuePresentKHR(Handle, ref presentInfo);
 
 				// MUST ABLE TO RETURN 
 				if (pResults != IntPtr.Zero)
