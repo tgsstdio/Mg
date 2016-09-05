@@ -30,8 +30,16 @@ namespace InstanceDemo
 			{
 				var entrypoint = new VkEntrypoint();
 
-				using (IMgDriver driver = new MgDriver(entrypoint))
-				{
+
+                IMgAllocationCallbacks callback = entrypoint.CreateAllocationCallbacks();
+                callback.PfnInternalAllocation = DebugInternalAllocation;
+                callback.PfnAllocation = DebugAllocateFunction;
+                callback.PfnReallocation = DebugReallocationFunction;
+                callback.PfnInternalFree = DebugInternalFree;
+                callback.PfnFree = null;
+
+				using (var driver = new MgDriver(entrypoint))
+				{                    
 					driver.Initialize(new MgApplicationInfo
 					{
 						ApiVersion = MgApplicationInfo.GenerateApiVersion(1,0,17),
@@ -39,10 +47,12 @@ namespace InstanceDemo
 						ApplicationVersion = 1,
 						EngineName = "Magnesium.Vulkan",
 						EngineVersion = 1,
-					});
+					},
+                    MgEnableExtensionsOption.ALL);
 
-                    using (var device = driver.CreateLogicalDevice())
-                    {
+                    using (var device = driver.CreateLogicalDevice(null, MgEnableExtensionsOption.ALL))
+                    {                                                             
+
                         if (device.Queues.Length > 0)
                         {
                             Console.WriteLine(nameof(device.Queues.Length) + " : " + device.Queues.Length);
@@ -50,7 +60,7 @@ namespace InstanceDemo
                             using (var partition = device.Queues[0].CreatePartition())
                             {
                                 IMgBuffer buffer;
-                                var result = partition.Device.CreateBuffer(new MgBufferCreateInfo { SharingMode = MgSharingMode.EXCLUSIVE, Size = 1024, Usage = MgBufferUsageFlagBits.VERTEX_BUFFER_BIT }, null, out buffer);
+                                var result = partition.Device.CreateBuffer(new MgBufferCreateInfo { SharingMode = MgSharingMode.EXCLUSIVE, Size = 1024, Usage = MgBufferUsageFlagBits.VERTEX_BUFFER_BIT }, callback, out buffer);
                                 buffer.DestroyBuffer(partition.Device, null);
                             }
                         }
@@ -62,5 +72,25 @@ namespace InstanceDemo
 				Console.WriteLine(ex);
 			}
 		}
-	}
+
+        private static void DebugInternalFree(IntPtr pUserData, IntPtr size, uint allocationType, uint allocationScope)
+        {
+            Console.WriteLine(nameof(DebugInternalFree));
+        }
+
+        private static void DebugReallocationFunction(IntPtr pUserData, IntPtr pOriginal, IntPtr size, IntPtr alignment, uint allocationScope)
+        {
+            Console.WriteLine(nameof(DebugReallocationFunction));
+        }
+
+        private static void DebugInternalAllocation(IntPtr pUserData, IntPtr size, uint allocationType, uint allocationScope)
+        {
+            Console.WriteLine("DebugInternalAllocation");
+        }
+
+        private static void DebugAllocateFunction(IntPtr pUserData, IntPtr size, IntPtr alignment, uint allocationScope)
+        {
+            Console.WriteLine(nameof(size) + " : " + size);
+        }
+    }
 }

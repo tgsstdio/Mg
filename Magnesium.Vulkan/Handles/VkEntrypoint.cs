@@ -105,18 +105,10 @@ namespace Magnesium.Vulkan
 			{
 				properties[i] = new MgLayerProperties
 				{
-					LayerName =
-						Encoding.UTF8.GetString(
-						layerProperties[i].layerName,
-						0,
-						layerProperties[i].layerName.Length),
+					LayerName = VkInteropsUtility.ByteArrayToTrimmedString(layerProperties[i].layerName),
 					SpecVersion = layerProperties[i].specVersion,
 					ImplementationVersion = layerProperties[i].implementationVersion,
-					Description = 
-						Encoding.UTF8.GetString(
-						layerProperties[i].description,
-						0,
-						layerProperties[i].description.Length),
+					Description = VkInteropsUtility.ByteArrayToTrimmedString(layerProperties[i].description),
 				};
 			}
 			return last;
@@ -127,7 +119,8 @@ namespace Magnesium.Vulkan
 			var pLayerName = IntPtr.Zero;
 			try
 			{
-				pLayerName = VkInteropsUtility.NativeUtf8FromString(layerName);
+                if (!string.IsNullOrWhiteSpace(layerName))
+                    pLayerName = VkInteropsUtility.NativeUtf8FromString(layerName);
 
 				UInt32 pPropertyCount = 0;
 				var first = Interops.vkEnumerateInstanceExtensionProperties(pLayerName, ref pPropertyCount, null);
@@ -146,10 +139,7 @@ namespace Magnesium.Vulkan
 				{
 					pProperties[i] = new MgExtensionProperties
 					{
-						ExtensionName = Encoding.UTF8.GetString(
-							extensionProperties[i].extensionName,
-							0,
-							extensionProperties[i].extensionName.Length),
+						ExtensionName = VkInteropsUtility.ByteArrayToTrimmedString(extensionProperties[i].extensionName),
 						SpecVersion = extensionProperties[i].specVersion,
 					};
 				}

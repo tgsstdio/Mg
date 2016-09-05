@@ -6,30 +6,43 @@ using System.Text;
 
 namespace Magnesium.Vulkan
 {
-	internal static class VkInteropsUtility
-	{
-		// Using Hans Passant's answer
-		// http://stackoverflow.com/questions/10773440/conversion-in-net-native-utf-8-managed-string
-		internal static IntPtr NativeUtf8FromString(string managedString)
-		{
-			int len = System.Text.Encoding.UTF8.GetByteCount(managedString);
-			byte[] buffer = new byte[len + 1];
-			System.Text.Encoding.UTF8.GetBytes(managedString, 0, managedString.Length, buffer, 0);
-			IntPtr nativeUtf8 = Marshal.AllocHGlobal(buffer.Length);
-			Marshal.Copy(buffer, 0, nativeUtf8, buffer.Length);
-			return nativeUtf8;
-		}
+    internal static class VkInteropsUtility
+    {
+        // Using Hans Passant's answer
+        // http://stackoverflow.com/questions/10773440/conversion-in-net-native-utf-8-managed-string
+        internal static IntPtr NativeUtf8FromString(string managedString)
+        {
+            int len = System.Text.Encoding.UTF8.GetByteCount(managedString);
+            byte[] buffer = new byte[len + 1];
+            System.Text.Encoding.UTF8.GetBytes(managedString, 0, managedString.Length, buffer, 0);
+            IntPtr nativeUtf8 = Marshal.AllocHGlobal(buffer.Length);
+            Marshal.Copy(buffer, 0, nativeUtf8, buffer.Length);
+            return nativeUtf8;
+        }
 
-		// Using Hans Passant's answer
-		// http://stackoverflow.com/questions/10773440/conversion-in-net-native-utf-8-managed-string
-		public static string StringFromNativeUtf8(IntPtr nativeUtf8)
-		{
-			int len = 0;
-			while (Marshal.ReadByte(nativeUtf8, len) != 0) ++len;
-			byte[] buffer = new byte[len];
-			Marshal.Copy(nativeUtf8, buffer, 0, buffer.Length);
-			return Encoding.UTF8.GetString(buffer, 0, buffer.Length);
-		}
+        // Using Hans Passant's answer
+        // http://stackoverflow.com/questions/10773440/conversion-in-net-native-utf-8-managed-string
+        public static string StringFromNativeUtf8(IntPtr nativeUtf8)
+        {
+            int len = 0;
+            while (Marshal.ReadByte(nativeUtf8, len) != 0) ++len;
+            byte[] buffer = new byte[len];
+            Marshal.Copy(nativeUtf8, buffer, 0, buffer.Length);
+            // trim off white spaces
+            var unformattedString = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
+            return unformattedString.TrimEnd();
+        }
+
+        internal static string ByteArrayToTrimmedString(byte[] chunk)
+        {
+            int len = 0;
+            while (chunk[len] != 0) ++len;
+            var unformatted = Encoding.UTF8.GetString(
+                chunk,
+                0,
+                len);
+            return unformatted;
+        }
 
 		internal static IntPtr ExtractUInt64HandleArray<TVkType>(TVkType[] arrayItems, Func<TVkType, UInt64> extractHandle)
 		{

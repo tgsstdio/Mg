@@ -34,30 +34,30 @@ namespace Magnesium.Vulkan
 		{
 			Marshal.FreeHGlobal(Handle);
 
-			if (mAllocationHandle.HasValue)
-			{
-				mAllocationHandle.Value.Free();
-			}
+			//if (mAllocationHandle.HasValue)
+			//{
+			//	mAllocationHandle.Value.Free();
+			//}
 
-			if (mReallocationHandle.HasValue)
-			{
-				mReallocationHandle.Value.Free();
-			}
+			//if (mReallocationHandle.HasValue)
+			//{
+			//	mReallocationHandle.Value.Free();
+			//}
 
-			if (mFreeHandle.HasValue)
-			{
-				mFreeHandle.Value.Free();
-			}
+			//if (mFreeHandle.HasValue)
+			//{
+			//	mFreeHandle.Value.Free();
+			//}
 
-			if (mInternalAllocHandle.HasValue)
-			{
-				mInternalAllocHandle.Value.Free();
-			}
+			//if (mInternalAllocHandle.HasValue)
+			//{
+			//	mInternalAllocHandle.Value.Free();
+			//}
 
-			if (mInternalFreeHandle.HasValue)
-			{
-				mInternalFreeHandle.Value.Free();
-			}
+			//if (mInternalFreeHandle.HasValue)
+			//{
+			//	mInternalFreeHandle.Value.Free();
+			//}
 		}
 
 		#region UserData
@@ -82,7 +82,7 @@ namespace Magnesium.Vulkan
 
 		#region PfnAllocation
 
-		private GCHandle? mAllocationHandle;
+		//private GCHandle? mAllocationHandle;
 		private PFN_vkAllocationFunction mAllocationFunction;
 		public PFN_vkAllocationFunction PfnAllocation
 		{
@@ -92,15 +92,15 @@ namespace Magnesium.Vulkan
 			}
 			set
 			{
-				if (mAllocationHandle.HasValue)
-				{
-					mAllocationHandle.Value.Free();
-				}
+				//if (mAllocationHandle.HasValue)
+				//{
+				//	mAllocationHandle.Value.Free();
+				//}
 				mAllocationFunction = value;
-				mAllocationHandle = GCHandle.Alloc(mAllocationFunction);
+				//mAllocationHandle = GCHandle.Alloc(mAllocationFunction);
 				SetInternalData(
 					VKIntPtrPositions.PfnAllocation,
-					Marshal.GetFunctionPointerForDelegate(mAllocationFunction));
+					(mAllocationFunction != null) ?Marshal.GetFunctionPointerForDelegate(mAllocationFunction) : IntPtr.Zero);
 			}
 		}
 
@@ -108,7 +108,7 @@ namespace Magnesium.Vulkan
 		#endregion
 
 		#region PfnAllocation
-		private GCHandle? mReallocationHandle;
+		//private GCHandle? mReallocationHandle;
 		private PFN_vkReallocationFunction mReallocationFunction;
 		public PFN_vkReallocationFunction PfnReallocation
 		{ 
@@ -118,22 +118,22 @@ namespace Magnesium.Vulkan
 			}
 			set
 			{
-				if (mReallocationHandle.HasValue)
-				{
-					mReallocationHandle.Value.Free();
-				}
+				//if (mReallocationHandle.HasValue)
+				//{
+				//	mReallocationHandle.Value.Free();
+				//}
 				mReallocationFunction = value;
-				mReallocationHandle = GCHandle.Alloc(mReallocationFunction);
+				//mReallocationHandle = GCHandle.Alloc(mReallocationFunction, GCHandleType.Pinned);
 				SetInternalData(
 					VKIntPtrPositions.PfnReallocation,
-					Marshal.GetFunctionPointerForDelegate(mReallocationFunction));
+					(mReallocationFunction != null) ? Marshal.GetFunctionPointerForDelegate(mReallocationFunction) : IntPtr.Zero);
 			}
 		}
 
 		#endregion
 
 		#region PfnFree
-		private GCHandle? mFreeHandle;
+		//private GCHandle? mFreeHandle;
 		private PFN_vkFreeFunction mFreeFunction;
 		public PFN_vkFreeFunction PfnFree { 
 			get
@@ -142,15 +142,18 @@ namespace Magnesium.Vulkan
 			}
 			set
 			{
-				if (mFreeHandle.HasValue)
-				{
-					mFreeHandle.Value.Free();
-				}
+				//if (mFreeHandle.HasValue)
+				//{
+				//	mFreeHandle.Value.Free();
+				//}
 				mFreeFunction = value;
-				mFreeHandle = GCHandle.Alloc(mFreeFunction, GCHandleType.Pinned);
-				SetInternalData(
-					VKIntPtrPositions.PfnFree,
-					Marshal.GetFunctionPointerForDelegate(mFreeFunction));
+
+                //mFreeHandle = GCHandle.Alloc(mFreeFunction, GCHandleType.Pinned);
+                SetInternalData(
+                    VKIntPtrPositions.PfnFree,
+                    (mFreeFunction != null) ? Marshal.GetFunctionPointerForDelegate(mFreeFunction) : IntPtr.Zero);
+                
+
 			}
 		}
 		#endregion
@@ -158,7 +161,7 @@ namespace Magnesium.Vulkan
 		#region PfnInternalAllocation
 
 		private PFN_vkInternalAllocationNotification mInternalAllocFunction;
-		private GCHandle? mInternalAllocHandle;
+		//private GCHandle? mInternalAllocHandle;
 		public PFN_vkInternalAllocationNotification PfnInternalAllocation
 		{ 
 			get
@@ -167,15 +170,15 @@ namespace Magnesium.Vulkan
 			}
 			set
 			{
-				if (mInternalAllocHandle.HasValue)
-				{
-					mInternalAllocHandle.Value.Free();
-				}
+				//if (mInternalAllocHandle.HasValue)
+				//{
+				//	mInternalAllocHandle.Value.Free();
+				//}
 				mInternalAllocFunction = value;
-				mInternalAllocHandle = GCHandle.Alloc(mInternalAllocFunction, GCHandleType.Pinned);
+				//mInternalAllocHandle = GCHandle.Alloc(value, GCHandleType.Pinned);
 				SetInternalData(
 					VKIntPtrPositions.PfnInternalAllocation,
-					Marshal.GetFunctionPointerForDelegate(mInternalAllocFunction));
+                     (mInternalAllocFunction != null) ?  Marshal.GetFunctionPointerForDelegate(mInternalAllocFunction) : IntPtr.Zero);
 			}
 		}
 
@@ -183,7 +186,7 @@ namespace Magnesium.Vulkan
 
 		#region PfnInternalFree
 
-		private GCHandle? mInternalFreeHandle;
+		//private GCHandle? mInternalFreeHandle;
 		private PFN_vkInternalFreeNotification mInternalFreeFunction;
 		public PFN_vkInternalFreeNotification PfnInternalFree 
 		{ 
@@ -193,15 +196,15 @@ namespace Magnesium.Vulkan
 			}
 			set
 			{
-				if (mInternalFreeHandle.HasValue)
-				{
-					mInternalFreeHandle.Value.Free();
-				}
+				//if (mInternalFreeHandle.HasValue)
+				//{
+				//	mInternalFreeHandle.Value.Free();
+				//}
 				mInternalFreeFunction = value;
-				mInternalFreeHandle = GCHandle.Alloc(mInternalFreeHandle, GCHandleType.Pinned);
+				//mInternalFreeHandle = GCHandle.Alloc(mInternalFreeHandle, GCHandleType.Pinned);
 				SetInternalData(
 					VKIntPtrPositions.PfnInternalFree,
-					Marshal.GetFunctionPointerForDelegate(mInternalFreeFunction));
+                    (mInternalFreeFunction != null) ? Marshal.GetFunctionPointerForDelegate(mInternalFreeFunction) : IntPtr.Zero);
 			}
 		}
 
