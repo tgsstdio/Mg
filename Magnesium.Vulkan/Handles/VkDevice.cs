@@ -252,7 +252,7 @@ namespace Magnesium.Vulkan
 			};
 
 			ulong pFence = 0UL;
-			var result = Interops.vkCreateFence(Handle, createInfo, allocatorPtr, ref pFence);
+			var result = Interops.vkCreateFence(Handle, ref createInfo, allocatorPtr, ref pFence);
 			fence = new VkFence(pFence);
 			return result;
 		}
@@ -429,7 +429,7 @@ namespace Magnesium.Vulkan
 				};
 
 				var internalHandle = 0UL;
-				var result = Interops.vkCreateBuffer(Handle, createInfo, allocatorPtr, ref internalHandle);
+				var result = Interops.vkCreateBuffer(Handle, ref createInfo, allocatorPtr, ref internalHandle);
 				pBuffer = new VkBuffer(internalHandle);
 				return result;
 			}
@@ -510,7 +510,7 @@ namespace Magnesium.Vulkan
 					pQueueFamilyIndices = pQueueFamilyIndices,
 					initialLayout = (VkImageLayout)pCreateInfo.InitialLayout,
 				};
-				var result = Interops.vkCreateImage(Handle, createInfo, allocatorPtr, ref internalHandle);
+				var result = Interops.vkCreateImage(Handle, ref createInfo, allocatorPtr, ref internalHandle);
 				pImage = new VkImage(internalHandle);
 				return result;
 			}
@@ -1582,7 +1582,7 @@ namespace Magnesium.Vulkan
 				};
 
 				var internalHandle = 0UL;
-				var result = Interops.vkCreateDescriptorPool(Handle, createInfo, allocatorPtr, ref internalHandle);
+				var result = Interops.vkCreateDescriptorPool(Handle, ref createInfo, allocatorPtr, ref internalHandle);
 				pDescriptorPool = new VkDescriptorPool(internalHandle);
 				return result;
 			}
@@ -2131,7 +2131,7 @@ namespace Magnesium.Vulkan
 				flags = (VkCommandPoolCreateFlags)pCreateInfo.Flags,
 				queueFamilyIndex = pCreateInfo.QueueFamilyIndex,
 			};
-			var result = Interops.vkCreateCommandPool(Handle, createInfo, allocatorPtr, ref internalHandle);
+			var result = Interops.vkCreateCommandPool(Handle, ref createInfo, allocatorPtr, ref internalHandle);
 			pCommandPool = new VkCommandPool(internalHandle);
 			return result;
 		}
@@ -2264,7 +2264,7 @@ namespace Magnesium.Vulkan
 				var createInfo = GenerateSwapchainCreateInfoKHR(pCreateInfo, attachedItems);
 
 				ulong internalHandle = 0;
-				var result = Interops.vkCreateSwapchainKHR(Handle, createInfo, allocatorPtr, ref internalHandle);
+				var result = Interops.vkCreateSwapchainKHR(Handle, ref createInfo, allocatorPtr, ref internalHandle);
 				pSwapchain = new VkSwapchainKHR(internalHandle);
 				return result;
 			}

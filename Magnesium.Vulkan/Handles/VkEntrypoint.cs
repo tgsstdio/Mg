@@ -14,32 +14,32 @@ namespace Magnesium.Vulkan
 			try
 			{
 				uint enabledLayerCount;
-				var ppEnabledLayerNames = CopyStringArrays(allocatedItems, createInfo.EnabledLayerNames, out enabledLayerCount);
+				var ppEnabledLayerNames = VkInteropsUtility.CopyStringArrays(allocatedItems, createInfo.EnabledLayerNames, out enabledLayerCount);
 
 				uint enabledExtensionCount;
-				var ppEnabledExtensionNames  = CopyStringArrays(allocatedItems, createInfo.EnabledExtensionNames, out enabledExtensionCount);
+				var ppEnabledExtensionNames  = VkInteropsUtility.CopyStringArrays(allocatedItems, createInfo.EnabledExtensionNames, out enabledExtensionCount);
 
 				var pApplicationInfo = IntPtr.Zero;
-				//if (createInfo.ApplicationInfo != null)
-				//{
-				//	var acInfo = new VkApplicationInfo
-				//	{
-				//		sType = VkStructureType.StructureTypeApplicationInfo,
-				//		pNext = IntPtr.Zero,
-				//		apiVersion = createInfo.ApplicationInfo.ApiVersion,
-				//		applicationVersion = createInfo.ApplicationInfo.ApplicationVersion,
-				//		engineVersion = createInfo.ApplicationInfo.EngineVersion,
-				//		pApplicationName = CopySingleString(allocatedItems, createInfo.ApplicationInfo.ApplicationName),
-				//		pEngineName = CopySingleString(allocatedItems, createInfo.ApplicationInfo.EngineName),
-				//	};
+				if (createInfo.ApplicationInfo != null)
+				{
+					var acInfo = new VkApplicationInfo
+					{
+						sType = VkStructureType.StructureTypeApplicationInfo,
+						pNext = IntPtr.Zero,
+						apiVersion = createInfo.ApplicationInfo.ApiVersion,
+						applicationVersion = createInfo.ApplicationInfo.ApplicationVersion,
+						engineVersion = createInfo.ApplicationInfo.EngineVersion,
+						pApplicationName = CopySingleString(allocatedItems, createInfo.ApplicationInfo.ApplicationName),
+						pEngineName = CopySingleString(allocatedItems, createInfo.ApplicationInfo.EngineName),
+					};
 
-				//	var destPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(VkApplicationInfo)));
-				//	allocatedItems.Add(destPtr);
+					var destPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(VkApplicationInfo)));
+					allocatedItems.Add(destPtr);
 
-				//	Marshal.StructureToPtr(acInfo, destPtr, false);
+					Marshal.StructureToPtr(acInfo, destPtr, false);
 
-				//	pApplicationInfo = destPtr;
-				//}
+					pApplicationInfo = destPtr;
+				}
 
 				var ici = new VkInstanceCreateInfo
 				{
@@ -64,10 +64,10 @@ namespace Magnesium.Vulkan
 			}
 			finally
 			{
-				foreach (var mem in allocatedItems)
-				{
-					Marshal.FreeHGlobal(mem);
-				}
+				//foreach (var mem in allocatedItems)
+				//{
+				//	Marshal.FreeHGlobal(mem);
+				//}
 			}
 		}
 
@@ -83,41 +83,6 @@ namespace Magnesium.Vulkan
 			{
 				return IntPtr.Zero;
 			}
-		}
-
-		static IntPtr CopyStringArrays(List<IntPtr> allocatedItems, string[] array, out uint count)
-		{
-            
-
-		//	if (array == null)
-		//	{
-				count = 0U;
-				return IntPtr.Zero;
-			//}
-
-			int noOfElements = array.Length;
-
-			var dest = IntPtr.Zero;
-			//  EnabledLayerNames
-			if (noOfElements > 0)
-			{
-				var POINTER_SIZE = Marshal.SizeOf(typeof(IntPtr));
-
-				dest = Marshal.AllocHGlobal(POINTER_SIZE * noOfElements);
-				allocatedItems.Add(dest);
-
-				var names = new IntPtr[noOfElements];
-				for (int i = 0; i < noOfElements; ++i)
-				{
-					names[i] = VkInteropsUtility.NativeUtf8FromString(array[i]);
-					allocatedItems.Add(names[i]);
-				}
-
-				Marshal.Copy(names, 0, dest, noOfElements);
-			}
-
-			count = (uint) noOfElements;
-			return dest;
 		}
 
 		public Result EnumerateInstanceLayerProperties(out MgLayerProperties[] properties)

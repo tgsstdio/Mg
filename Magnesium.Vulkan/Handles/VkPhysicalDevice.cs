@@ -330,7 +330,14 @@ namespace Magnesium.Vulkan
 			return result;
 		}
 
-		public Result CreateDevice(MgDeviceCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDevice pDevice)
+		/// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pCreateInfo"></param>
+        /// <param name="allocator"></param>
+        /// <param name="pDevice"></param>
+        /// <returns></returns>
+        public Result CreateDevice(MgDeviceCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDevice pDevice)
 		{
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
@@ -343,29 +350,19 @@ namespace Magnesium.Vulkan
 			{
 				var queueCreateInfoCount = 0U;
 				var pQueueCreateInfos = IntPtr.Zero;
-				if (pCreateInfo.QueueCreateInfos != null)
-				{
-					queueCreateInfoCount = (uint)pCreateInfo.QueueCreateInfos.Length;
-					if (queueCreateInfoCount > 0)
-					{
-						pQueueCreateInfos = GenerateQueueCreateInfos(attachedItems, pCreateInfo.QueueCreateInfos);
-					}
-				}
-
-				var enabledLayerCount = 0U;
-				var ppEnabledLayerNames = GenerateEnabledLayerNames();
+                if (pCreateInfo.QueueCreateInfos != null)
+                {
+                    queueCreateInfoCount = (uint)pCreateInfo.QueueCreateInfos.Length;
+                    if (queueCreateInfoCount > 0)
+                    {
+                        pQueueCreateInfos = GenerateQueueCreateInfos(attachedItems, pCreateInfo.QueueCreateInfos);
+                    }
+                }
 
 				var enabledExtensionCount = 0U;
-				var ppEnabledExtensionNames = IntPtr.Zero;
-				if (pCreateInfo.EnabledExtensionNames != null)
-				{
-					enabledExtensionCount = (uint)pCreateInfo.EnabledExtensionNames.Length;
-					if (enabledExtensionCount > 0)
-					{
-						ppEnabledExtensionNames = GenerateExtensionNames(attachedItems, pCreateInfo.EnabledExtensionNames);
-					}
-				}
-				var pEnabledFeatures = GenerateEnabledFeatures(attachedItems, pCreateInfo.EnabledFeatures);
+                var ppEnabledExtensionNames = VkInteropsUtility.CopyStringArrays(attachedItems, pCreateInfo.EnabledExtensionNames, out enabledExtensionCount);
+
+                var pEnabledFeatures = GenerateEnabledFeatures(attachedItems, pCreateInfo.EnabledFeatures);
 
 				var internalHandle = IntPtr.Zero;
 				var createInfo = new VkDeviceCreateInfo
@@ -375,9 +372,12 @@ namespace Magnesium.Vulkan
 					flags = pCreateInfo.Flags,
 					queueCreateInfoCount = queueCreateInfoCount,
 					pQueueCreateInfos = pQueueCreateInfos,
-					enabledLayerCount = enabledLayerCount,
-					ppEnabledLayerNames = ppEnabledLayerNames,
-					enabledExtensionCount = enabledExtensionCount,
+
+                    // https://www.khronos.org/registry/vulkan/specs/1.0-wsi_extensions/xhtml/vkspec.html#extended-functionality-device-layer-deprecation
+                    ppEnabledLayerNames = IntPtr.Zero,
+                    enabledLayerCount = 0U,
+
+                    enabledExtensionCount = enabledExtensionCount,
 					ppEnabledExtensionNames = ppEnabledExtensionNames,
 					pEnabledFeatures = pEnabledFeatures,
 				};
@@ -466,58 +466,32 @@ namespace Magnesium.Vulkan
 				Marshal.StructureToPtr(dataItem, dest, false);
 				return dest;
 			}
-		}
-
-		IntPtr GenerateExtensionNames(List<IntPtr> attachedItems, string[] enabledExtensionNames)
-		{
-			if (enabledExtensionNames == null)
-				return IntPtr.Zero;
-
-			var stride = Marshal.SizeOf(typeof(IntPtr));
-			var arrayLength = enabledExtensionNames.Length;
-			var pEnabledExtensionNames = Marshal.AllocHGlobal(stride * arrayLength);
-			attachedItems.Add(pEnabledExtensionNames);
-
-			var pExtensions = new IntPtr[arrayLength];
-			foreach (var name in enabledExtensionNames)
-			{
-				var handle = VkInteropsUtility.NativeUtf8FromString(name);
-				attachedItems.Add(handle);
-			}
-			Marshal.Copy(pExtensions, 0, pEnabledExtensionNames, arrayLength);
-
-			return pEnabledExtensionNames;
-		}
-  
-		IntPtr GenerateEnabledLayerNames()
-		{
-			// https://www.khronos.org/registry/vulkan/specs/1.0-wsi_extensions/xhtml/vkspec.html#extended-functionality-device-layer-deprecation
-			return IntPtr.Zero;
-		}
+		}  
 
 		IntPtr GenerateQueueCreateInfos(List<IntPtr> attachedItems, MgDeviceQueueCreateInfo[] queueCreateInfos)
 		{
-			var pQueueCreateInfos = VkInteropsUtility.AllocateHGlobalArray(
-				queueCreateInfos,
-				(item) =>
+			var pQueueCreateInfos = VkInteropsUtility.AllocateNestedHGlobalArray(
+                attachedItems,
+                queueCreateInfos,
+				(items, qcr) =>
 				{
-					var queueCount = item.QueueCount;
+					var queueCount = qcr.QueueCount;
 
-					Debug.Assert(item.QueuePriorities != null);
-					int arrayLength = item.QueuePriorities.Length;
-					Debug.Assert(item.QueueCount == arrayLength);
+					Debug.Assert(qcr.QueuePriorities != null);
+					int arrayLength = qcr.QueuePriorities.Length;
+					Debug.Assert(qcr.QueueCount == arrayLength);
 
 					var pQueuePriorities = Marshal.AllocHGlobal(sizeof(float) * arrayLength);
-					attachedItems.Add(pQueuePriorities);
-					Marshal.Copy(item.QueuePriorities, 0, pQueuePriorities, arrayLength);
+                    items.Add(pQueuePriorities);
+					Marshal.Copy(qcr.QueuePriorities, 0, pQueuePriorities, arrayLength);
 
 					return new VkDeviceQueueCreateInfo
 					{
 						sType = VkStructureType.StructureTypeDeviceQueueCreateInfo,
 						pNext = IntPtr.Zero,
-						flags = item.Flags,
-						queueFamilyIndex = item.QueueFamilyIndex,
-						queueCount = item.QueueCount,
+						flags = qcr.Flags,
+						queueFamilyIndex = qcr.QueueFamilyIndex,
+						queueCount = qcr.QueueCount,
 						pQueuePriorities = pQueuePriorities,
 					};
 				});

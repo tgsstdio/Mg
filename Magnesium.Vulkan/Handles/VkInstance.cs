@@ -149,7 +149,7 @@ namespace Magnesium.Vulkan
 			// TODO : MIGHT NEED GetInstanceProcAddr INSTEAD
 
 			var surfaceHandle = 0UL;
-			var result = Interops.vkCreateWin32SurfaceKHR(Handle, createInfo, allocatorHandle, ref surfaceHandle);
+			var result = Interops.vkCreateWin32SurfaceKHR(Handle, ref createInfo, allocatorHandle, ref surfaceHandle);
 			pSurface = new VkSurfaceKHR(surfaceHandle);
 
 			return result;
@@ -174,7 +174,7 @@ namespace Magnesium.Vulkan
 			};
 
 			var callback = 0UL;
-			var result = Interops.vkCreateDebugReportCallbackEXT(Handle, createInfo, allocatorHandle, ref callback);
+			var result = Interops.vkCreateDebugReportCallbackEXT(Handle, ref createInfo, allocatorHandle, ref callback);
 			// TODO : figure out translation
 			pCallback = new VkDebugReportCallbackEXT(callback);
 

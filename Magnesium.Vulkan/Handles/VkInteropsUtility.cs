@@ -116,6 +116,40 @@ namespace Magnesium.Vulkan
 
 			return dstArray;
 		}
-	}
+
+        internal static IntPtr CopyStringArrays(List<IntPtr> allocatedItems, string[] array, out uint count)
+        {
+
+            if (array == null)
+            {
+                count = 0U;
+                return IntPtr.Zero;
+            }
+
+            int noOfElements = array.Length;
+
+            var dest = IntPtr.Zero;
+            //  EnabledLayerNames
+            if (noOfElements > 0)
+            {
+                var POINTER_SIZE = Marshal.SizeOf(typeof(IntPtr));
+
+                dest = Marshal.AllocHGlobal(POINTER_SIZE * noOfElements);
+                allocatedItems.Add(dest);
+
+                var names = new IntPtr[noOfElements];
+                for (int i = 0; i < noOfElements; ++i)
+                {
+                    names[i] = VkInteropsUtility.NativeUtf8FromString(array[i]);
+                    allocatedItems.Add(names[i]);
+                }
+
+                Marshal.Copy(names, 0, dest, noOfElements);
+            }
+
+            count = (uint)noOfElements;
+            return dest;
+        }
+    }
 }
 
