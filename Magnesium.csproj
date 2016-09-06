@@ -177,7 +177,7 @@
     <Compile Include="Core\MgVec2Ui.cs" />
     <Compile Include="Core\MgVec3Ui.cs" />
     <Compile Include="Device\MgWriteDescriptorSet.cs" />
-    <Compile Include="Device\MgBufferView.cs" />
+    <Compile Include="Device\IMgBufferView.cs" />
     <Compile Include="Device\MgDescriptorBufferInfo.cs" />
     <Compile Include="Device\MgPushConstantRange.cs" />
     <Compile Include="Device\MgQueryPoolCreateInfo.cs" />
@@ -191,7 +191,7 @@
     <Compile Include="Device\MgDescriptorPoolCreateFlagBits.cs" />
     <Compile Include="Device\MgDescriptorPoolSize.cs" />
     <Compile Include="Device\MgDescriptorSetAllocateInfo.cs" />
-    <Compile Include="Device\MgDescriptorSetLayout.cs" />
+    <Compile Include="Device\IMgDescriptorSetLayout.cs" />
     <Compile Include="Device\MgImageCreateInfo.cs" />
     <Compile Include="Device\MgImageSubresource.cs" />
     <Compile Include="Device\MgImageViewType.cs" />
@@ -237,7 +237,7 @@
     <Compile Include="Queue\MgBindSparseInfo.cs" />
     <Compile Include="Queue\MgPresentInfoKHR.cs" />
     <Compile Include="Queue\MgSubmitInfoWaitSemaphoreInfo.cs" />
-    <Compile Include="Device\MgDescriptorSet.cs" />
+    <Compile Include="Device\IMgDescriptorSet.cs" />
     <Compile Include="Driver\IMgImageTools.cs" />
     <Compile Include="Driver\IMgLogicalDevice.cs" />
     <Compile Include="Driver\IMgPresentationLayer.cs" />
