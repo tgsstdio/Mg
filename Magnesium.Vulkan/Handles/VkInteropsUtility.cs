@@ -73,8 +73,8 @@ namespace Magnesium.Vulkan
 		/// DON'T FORGET TO Marshal.FreeHGlobal the returned value
 		private static IntPtr ExtractHandleArray<TVkType, TVkInternalHandle>(TVkType[] arrayItems, Func<TVkType, TVkInternalHandle> extractHandle)
 		{
-			Debug.Assert(arrayItems != null);
-			Debug.Assert(extractHandle != null);
+			Debug.Assert(arrayItems != null, typeof(TVkType).Name + "[] is null");
+			Debug.Assert(extractHandle != null, nameof(extractHandle) + "is null");
 
 			var arrayLength = arrayItems.Length;
 

@@ -1637,7 +1637,7 @@ namespace Magnesium.Vulkan
 				};
 
 				var internalHandles = new ulong[pAllocateInfo.DescriptorSetCount];
-				var result = Interops.vkAllocateDescriptorSets(this.Handle, allocateInfo, internalHandles);
+				var result = Interops.vkAllocateDescriptorSets(this.Handle, ref allocateInfo, internalHandles);
 
 				pDescriptorSets = new VkDescriptorSet[pAllocateInfo.DescriptorSetCount];
 				for (var i = 0; i < pAllocateInfo.DescriptorSetCount; ++i)

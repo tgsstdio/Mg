@@ -95,14 +95,14 @@ namespace Magnesium.Vulkan
 							if (signalSemaphoreCount > 0)
 							{
 								pSignalSemaphores = VkInteropsUtility.ExtractUInt64HandleArray(
-									currentInfo.WaitSemaphores,
+									currentInfo.SignalSemaphores,
 									(arg) =>
 									{
-										var bSemaphore = (VkSemaphore)arg.WaitSemaphore;
+										var bSemaphore = (VkSemaphore)arg;
 										Debug.Assert(bSemaphore != null);
 										return bSemaphore.Handle;
 									});
-								attachedItems.Add(pWaitSemaphores);
+								attachedItems.Add(pSignalSemaphores);
 							}
 						}
 
@@ -483,8 +483,11 @@ namespace Magnesium.Vulkan
 						});
 					attachedItems.Add(pSwapchains);
 
-
-				}
+                    pImageIndices = VkInteropsUtility.AllocateHGlobalArray(
+                        images,
+                        (sc) => { return sc.ImageIndex; });
+                    attachedItems.Add(pImageIndices);
+                }
 			}
 			swapchains = pSwapchains;
 			imageIndices = pImageIndices;
