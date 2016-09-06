@@ -278,7 +278,7 @@ namespace Magnesium.Vulkan
 		internal extern static void vkFreeCommandBuffers(IntPtr device, UInt64 commandPool, UInt32 commandBufferCount, [In, Out] IntPtr[] pCommandBuffers);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe Result vkBeginCommandBuffer(IntPtr commandBuffer, VkCommandBufferBeginInfo pBeginInfo);
+		internal extern static Result vkBeginCommandBuffer(IntPtr commandBuffer, ref VkCommandBufferBeginInfo pBeginInfo);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static Result vkEndCommandBuffer(IntPtr commandBuffer);

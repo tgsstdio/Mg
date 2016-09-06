@@ -174,7 +174,7 @@ namespace Magnesium.Vulkan
 
 			unsafe
 			{
-				var memReqs = stackalloc MgMemoryRequirements[0];
+				var memReqs = stackalloc MgMemoryRequirements[1];
 				Interops.vkGetBufferMemoryRequirements(Handle, bBuffer.Handle, memReqs);
 				pMemoryRequirements = memReqs[0];
 			}
@@ -189,7 +189,7 @@ namespace Magnesium.Vulkan
 
 			unsafe
 			{
-				var memReqs = stackalloc MgMemoryRequirements[0];
+				var memReqs = stackalloc MgMemoryRequirements[1];
 				Interops.vkGetImageMemoryRequirements(Handle, bImage.Handle, memReqs);
 				memoryRequirements = memReqs[0];
 			}
@@ -566,7 +566,7 @@ namespace Magnesium.Vulkan
 					b = (VkComponentSwizzle) pCreateInfo.Components.B,
 					a = (VkComponentSwizzle) pCreateInfo.Components.A,
 				},	
-				subresourceRange = pCreateInfo.SubresourceRange,
+				subresourceRange = pCreateInfo.SubresourceRange,                
 			};
 			ulong internalHandle = 0;
 			var result = Interops.vkCreateImageView(Handle, ref createInfo, allocatorPtr, ref internalHandle);

@@ -66,7 +66,7 @@ namespace Magnesium.Vulkan
 
 				param_0.pInheritanceInfo = inheritanceInfo;
 
-				return Interops.vkBeginCommandBuffer(this.Handle, param_0);
+				return Interops.vkBeginCommandBuffer(this.Handle, ref param_0);
 			}
 			finally
 			{
@@ -597,100 +597,91 @@ namespace Magnesium.Vulkan
 		{
 			unsafe
 			{
-				var memBarrierCount = 0U;
-				VkMemoryBarrier* pMemBarriers = null;
-				if (pMemoryBarriers != null)
+				var memBarrierCount = pMemoryBarriers != null ? (uint)pMemoryBarriers.Length : 0U;
+                var pMemBarriers = stackalloc VkMemoryBarrier[(int)memBarrierCount];
+
+				for (var i = 0; i < memBarrierCount; ++i)
 				{
-					memBarrierCount = (uint)pMemoryBarriers.Length;
-					var tempMem = stackalloc VkMemoryBarrier[pMemoryBarriers.Length];
-					for (var i = 0; i < memBarrierCount; ++i)
+                    pMemBarriers[i] = new VkMemoryBarrier
 					{
-						tempMem[i] = new VkMemoryBarrier
-						{
-							sType = VkStructureType.StructureTypeMemoryBarrier,
-							pNext = IntPtr.Zero,
-							srcAccessMask = (VkAccessFlags)pMemoryBarriers[i].SrcAccessMask,
-							dstAccessMask = (VkAccessFlags)pMemoryBarriers[i].DstAccessMask,
-						};
-					}
-					pMemBarriers = tempMem;
+						sType = VkStructureType.StructureTypeMemoryBarrier,
+						pNext = IntPtr.Zero,
+						srcAccessMask = (VkAccessFlags)pMemoryBarriers[i].SrcAccessMask,
+						dstAccessMask = (VkAccessFlags)pMemoryBarriers[i].DstAccessMask,
+					};
 				}
 
-				uint bufBarrierCount = 0;
-				VkBufferMemoryBarrier* pBufBarriers = null;
-				if (pBufferMemoryBarriers != null)
-				{
-					bufBarrierCount = (uint)pBufferMemoryBarriers.Length;
-					var tempBuf = stackalloc VkBufferMemoryBarrier[pBufferMemoryBarriers.Length];
-					for (var i = 0; i < bufBarrierCount; ++i)
-					{
-						var current = pBufferMemoryBarriers[i];
-						var bBuffer = (VkBuffer) current.Buffer;
-						Debug.Assert(bBuffer != null);
 
-						tempBuf[i] = new VkBufferMemoryBarrier
-						{
-							sType = VkStructureType.StructureTypeBufferMemoryBarrier,
-							pNext = IntPtr.Zero,
-							dstAccessMask = (VkAccessFlags)current.DstAccessMask,
-							srcAccessMask = (VkAccessFlags)current.SrcAccessMask,
-							srcQueueFamilyIndex = current.SrcQueueFamilyIndex,
-							dstQueueFamilyIndex = current.DstQueueFamilyIndex,
-							buffer = bBuffer.Handle,
-							offset = current.Offset,
-							size = current.Size,
-						};
-					}
-					pBufBarriers = tempBuf;
+				uint bufBarrierCount = pBufferMemoryBarriers != null ? (uint)pBufferMemoryBarriers.Length : 0U;
+				var pBufBarriers = stackalloc VkBufferMemoryBarrier[(int) bufBarrierCount];
+				for (var j = 0; j < bufBarrierCount; ++j)
+				{
+					var current = pBufferMemoryBarriers[j];
+					var bBuffer = (VkBuffer) current.Buffer;
+					Debug.Assert(bBuffer != null);
+
+                    pBufBarriers[j] = new VkBufferMemoryBarrier
+					{
+						sType = VkStructureType.StructureTypeBufferMemoryBarrier,
+						pNext = IntPtr.Zero,
+						dstAccessMask = (VkAccessFlags)current.DstAccessMask,
+						srcAccessMask = (VkAccessFlags)current.SrcAccessMask,
+						srcQueueFamilyIndex = current.SrcQueueFamilyIndex,
+						dstQueueFamilyIndex = current.DstQueueFamilyIndex,
+						buffer = bBuffer.Handle,
+						offset = current.Offset,
+						size = current.Size,
+					};
 				}
 
-				uint imgBarriersCount = 0;
-				VkImageMemoryBarrier* pImgBarriers = null;
 
-				if (pImageMemoryBarriers != null)
+                //uint imgBarriersCount = pImageMemoryBarriers != null ? (uint)pImageMemoryBarriers.Length : 0U;
+                var imgBarriersCount = 0U;
+                var pImgBarriers = stackalloc VkImageMemoryBarrier[(int) imgBarriersCount];
+
+				for (var k = 0; k < imgBarriersCount; ++k)
 				{
-					imgBarriersCount = (uint)pImageMemoryBarriers.Length;
-					var tempImg = stackalloc VkImageMemoryBarrier[pImageMemoryBarriers.Length];
-					for (var i = 0; i < bufBarrierCount; ++i)
-					{
-						var current = pImageMemoryBarriers[i];
-						var bImage = (VkImage) current.Image;
-						Debug.Assert(bImage != null);
+					var current = pImageMemoryBarriers[k];
+					var bImage = (VkImage) current.Image;
+					Debug.Assert(bImage != null);
 
-						tempImg[i] = new VkImageMemoryBarrier
+                    pImgBarriers[k] = new VkImageMemoryBarrier
+					{
+						sType = VkStructureType.StructureTypeImageMemoryBarrier,
+						pNext = IntPtr.Zero,
+						dstAccessMask = (VkAccessFlags)current.DstAccessMask,
+						srcAccessMask = (VkAccessFlags)current.SrcAccessMask,
+						oldLayout = (VkImageLayout)current.OldLayout,
+						newLayout = (VkImageLayout)current.NewLayout,
+						srcQueueFamilyIndex = current.SrcQueueFamilyIndex,
+						dstQueueFamilyIndex = current.DstQueueFamilyIndex,
+						image = bImage.Handle,
+						subresourceRange = new VkImageSubresourceRange
 						{
-							sType = VkStructureType.StructureTypeImageMemoryBarrier,
-							pNext = IntPtr.Zero,
-							dstAccessMask = (VkAccessFlags)current.DstAccessMask,
-							srcAccessMask = (VkAccessFlags)current.SrcAccessMask,
-							oldLayout = (Magnesium.Vulkan.VkImageLayout)current.OldLayout,
-							newLayout = (Magnesium.Vulkan.VkImageLayout)current.NewLayout,
-							srcQueueFamilyIndex = current.SrcQueueFamilyIndex,
-							dstQueueFamilyIndex = current.DstQueueFamilyIndex,
-							image = bImage.Handle,
-							subresourceRange = new VkImageSubresourceRange
-							{
-								aspectMask = (Magnesium.Vulkan.VkImageAspectFlags)current.SubresourceRange.AspectMask,
-								baseArrayLayer = current.SubresourceRange.BaseArrayLayer,
-								baseMipLevel = current.SubresourceRange.BaseMipLevel,
-								layerCount = current.SubresourceRange.LayerCount,
-								levelCount = current.SubresourceRange.LevelCount,
-							}
-						};
-					}
-					pImgBarriers = tempImg;
+							aspectMask = (VkImageAspectFlags)current.SubresourceRange.AspectMask,
+							baseArrayLayer = current.SubresourceRange.BaseArrayLayer,
+							baseMipLevel = current.SubresourceRange.BaseMipLevel,
+							layerCount = current.SubresourceRange.LayerCount,
+							levelCount = current.SubresourceRange.LevelCount,
+						}
+					};
 				}
 
-				Interops.vkCmdPipelineBarrier(this.Handle,
+                VkMemoryBarrier* mems = memBarrierCount > 0 ? pMemBarriers : null;
+                VkBufferMemoryBarrier* bufs = bufBarrierCount > 0 ? pBufBarriers : null;
+                VkImageMemoryBarrier* images = imgBarriersCount > 0 ? pImgBarriers : null;
+
+
+                Interops.vkCmdPipelineBarrier(Handle,
                       (VkPipelineStageFlags)srcStageMask,
                       (VkPipelineStageFlags)dstStageMask,
                       (VkDependencyFlags)dependencyFlags,
                       memBarrierCount,
-                      pMemBarriers, 
-                      bufBarrierCount, 
-                      pBufBarriers,
+                      mems, 
+                      bufBarrierCount,
+                      bufs,
                       imgBarriersCount,
-                      pImgBarriers);
+                      images);
 		  	}
 		}
 

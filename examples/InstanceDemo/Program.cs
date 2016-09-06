@@ -31,12 +31,12 @@ namespace InstanceDemo
 				var entrypoint = new VkEntrypoint();
 
 
-                IMgAllocationCallbacks callback = entrypoint.CreateAllocationCallbacks();
-                callback.PfnInternalAllocation = DebugInternalAllocation;
-                callback.PfnAllocation = DebugAllocateFunction;
-                callback.PfnReallocation = DebugReallocationFunction;
-                callback.PfnInternalFree = DebugInternalFree;
-                callback.PfnFree = null;
+				IMgAllocationCallbacks callback = entrypoint.CreateAllocationCallbacks();
+				callback.PfnInternalAllocation = DebugInternalAllocation;
+				callback.PfnAllocation = DebugAllocateFunction;
+				callback.PfnReallocation = DebugReallocationFunction;
+				callback.PfnInternalFree = DebugInternalFree;
+				callback.PfnFree = null;
 
 				using (var driver = new MgDriver(entrypoint))
 				{                    
@@ -48,23 +48,23 @@ namespace InstanceDemo
 						EngineName = "Magnesium.Vulkan",
 						EngineVersion = 1,
 					},
-                    MgEnableExtensionsOption.ALL);
+					MgEnableExtensionsOption.ALL);
 
-                    using (var device = driver.CreateLogicalDevice(null, MgEnableExtensionsOption.ALL))
-                    {                                                             
+					using (var device = driver.CreateLogicalDevice(null, MgEnableExtensionsOption.ALL))
+					{                                                             
 
-                        if (device.Queues.Length > 0)
-                        {
-                            Console.WriteLine(nameof(device.Queues.Length) + " : " + device.Queues.Length);
+						if (device.Queues.Length > 0)
+						{
+							Console.WriteLine(nameof(device.Queues.Length) + " : " + device.Queues.Length);
 
-                            using (var partition = device.Queues[0].CreatePartition())
-                            {
-                                IMgBuffer buffer;
-                                var result = partition.Device.CreateBuffer(new MgBufferCreateInfo { SharingMode = MgSharingMode.EXCLUSIVE, Size = 1024, Usage = MgBufferUsageFlagBits.VERTEX_BUFFER_BIT }, callback, out buffer);
-                                buffer.DestroyBuffer(partition.Device, null);
-                            }
-                        }
-                    }                  
+							using (var partition = device.Queues[0].CreatePartition())
+							{
+								IMgBuffer buffer;
+								var result = partition.Device.CreateBuffer(new MgBufferCreateInfo { SharingMode = MgSharingMode.EXCLUSIVE, Size = 1024, Usage = MgBufferUsageFlagBits.VERTEX_BUFFER_BIT }, callback, out buffer);
+								buffer.DestroyBuffer(partition.Device, callback);
+							}
+						}
+					}                  
 				}
 			}
 			catch (Exception ex)
@@ -73,24 +73,24 @@ namespace InstanceDemo
 			}
 		}
 
-        private static void DebugInternalFree(IntPtr pUserData, IntPtr size, uint allocationType, uint allocationScope)
-        {
-            Console.WriteLine(nameof(DebugInternalFree));
-        }
+		private static void DebugInternalFree(IntPtr pUserData, IntPtr size, uint allocationType, uint allocationScope)
+		{
+			Console.WriteLine(nameof(DebugInternalFree));
+		}
 
-        private static void DebugReallocationFunction(IntPtr pUserData, IntPtr pOriginal, IntPtr size, IntPtr alignment, uint allocationScope)
-        {
-            Console.WriteLine(nameof(DebugReallocationFunction));
-        }
+		private static void DebugReallocationFunction(IntPtr pUserData, IntPtr pOriginal, IntPtr size, IntPtr alignment, uint allocationScope)
+		{
+			Console.WriteLine(nameof(DebugReallocationFunction));
+		}
 
-        private static void DebugInternalAllocation(IntPtr pUserData, IntPtr size, uint allocationType, uint allocationScope)
-        {
-            Console.WriteLine("DebugInternalAllocation");
-        }
+		private static void DebugInternalAllocation(IntPtr pUserData, IntPtr size, uint allocationType, uint allocationScope)
+		{
+			Console.WriteLine("DebugInternalAllocation");
+		}
 
-        private static void DebugAllocateFunction(IntPtr pUserData, IntPtr size, IntPtr alignment, uint allocationScope)
-        {
-            Console.WriteLine(nameof(size) + " : " + size);
-        }
-    }
+		private static void DebugAllocateFunction(IntPtr pUserData, IntPtr size, IntPtr alignment, uint allocationScope)
+		{
+			Console.WriteLine(nameof(size) + " : " + size);
+		}
+	}
 }
