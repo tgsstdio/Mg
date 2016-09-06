@@ -1,6 +1,6 @@
 ﻿namespace Magnesium
 {
-    public enum MgSystemAllocationScope : byte
+    public enum MgSystemAllocationScope : uint
 	{
 		COMMAND = 0,
 		OBJECT = 1,

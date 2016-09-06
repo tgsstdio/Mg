@@ -12,6 +12,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <ReleaseVersion>3.0.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
+    <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,6 +35,7 @@
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Driver\MgEnableExtensionsOption.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Enums\Result.cs" />
     <Compile Include="Device\MgShaderModuleCreateInfo.cs" />
@@ -247,7 +249,6 @@
     <Compile Include="Driver\MgThreadPartition.cs" />
     <Compile Include="Driver\MgLogicalDevice.cs" />
     <Compile Include="Driver\MgDriver.cs" />
-    <Compile Include="Driver\IMgDriver.cs" />
     <Compile Include="Device\IMgDeviceMemory.cs" />
     <Compile Include="Device\IMgBuffer.cs" />
     <Compile Include="Device\IMgCommandPool.cs" />
@@ -289,17 +290,5 @@
     <Compile Include="PhysicalDevice\MgDisplayModeCreateInfoKHR.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-  <ItemGroup>
-    <Folder Include="Enums\" />
-    <Folder Include="Callbacks\" />
-    <Folder Include="ReturnedOnly\" />
-    <Folder Include="Instance\" />
-    <Folder Include="Entrypoint\" />
-    <Folder Include="PhysicalDevice\" />
-    <Folder Include="Core\" />
-    <Folder Include="Device\" />
-    <Folder Include="Queue\" />
-    <Folder Include="CommandBuffer\" />
-    <Folder Include="Driver\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

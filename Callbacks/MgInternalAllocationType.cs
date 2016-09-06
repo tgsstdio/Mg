@@ -1,7 +1,7 @@
 ﻿
 namespace Magnesium
 {
-    public enum MgInternalAllocationType : byte
+    public enum MgInternalAllocationType : uint
 	{
 		EXECUTABLE = 0,
 	};

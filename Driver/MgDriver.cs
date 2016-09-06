@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Magnesium
 {
-	public class MgDriver : IMgDriver
+	public class MgDriver : IDisposable
 	{
 		private IMgEntrypoint mEntrypoint;
 		public MgDriver (IMgEntrypoint entrypoint)
@@ -24,7 +25,32 @@ namespace Magnesium
 			Initialize (appInfo, null, null);
 		}
 
-		public void Initialize (MgApplicationInfo appInfo, string[] enabledLayerNames, string[] enabledExtensionNames)
+        public void Initialize(MgApplicationInfo appInfo, MgEnableExtensionsOption options)
+        {
+            string[] extensions = null;
+            if (options == MgEnableExtensionsOption.ALL)
+            {                
+
+                MgExtensionProperties[] extensionProperties;
+                var err = mEntrypoint.EnumerateInstanceExtensionProperties(null, out extensionProperties);
+
+                Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
+
+                var enabledExtensions = new List<string>();
+                if (extensionProperties != null)
+                {
+                    foreach (var ext in extensionProperties)
+                    {
+                        enabledExtensions.Add(ext.ExtensionName);
+                    }
+                }
+                extensions = enabledExtensions.ToArray();
+            }
+
+            Initialize(appInfo, null, extensions);
+        }
+
+        public void Initialize (MgApplicationInfo appInfo, string[] enabledLayerNames, string[] enabledExtensionNames)
 		{
 			var instCreateInfo = new MgInstanceCreateInfo{
 				ApplicationInfo = appInfo,
@@ -33,18 +59,44 @@ namespace Magnesium
 			};
 
 			var errorCode = mEntrypoint.CreateInstance (instCreateInfo, null, out mInstance);
-			Debug.Assert (errorCode == Result.SUCCESS);
+			Debug.Assert (errorCode == Result.SUCCESS, errorCode + " != Result.SUCCESS");
 		}
 
-		public IMgLogicalDevice CreateLogicalDevice(IMgSurfaceKHR presentationSurface)
+		public IMgLogicalDevice CreateLogicalDevice(IMgSurfaceKHR presentationSurface, MgEnableExtensionsOption option)
 		{
-			return CreateDevice (0, presentationSurface, MgQueueAllocation.One, MgQueueFlagBits.GRAPHICS_BIT);
+            string[] extensions = null;
+
+            IMgPhysicalDevice[] physicalDevices;
+            var errorCode = mInstance.EnumeratePhysicalDevices(out physicalDevices);
+            Debug.Assert(errorCode == Result.SUCCESS, errorCode + " != Result.SUCCESS");
+            IMgPhysicalDevice firstPhysicalDevice = physicalDevices[0];
+
+            if (option == MgEnableExtensionsOption.ALL)
+            {
+
+                MgExtensionProperties[] extensionProperties;
+                var err = firstPhysicalDevice.EnumerateDeviceExtensionProperties(null, out extensionProperties);
+
+                Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
+
+                var enabledExtensions = new List<string>();
+                if (extensionProperties != null)
+                {
+                    foreach (var ext in extensionProperties)
+                    {
+                        enabledExtensions.Add(ext.ExtensionName);
+                    }
+                }
+                extensions = enabledExtensions.ToArray();
+            }            
+
+			return CreateDevice (firstPhysicalDevice, presentationSurface, MgQueueAllocation.One, MgQueueFlagBits.GRAPHICS_BIT, extensions);
 		}
 
-		public IMgLogicalDevice CreateLogicalDevice()
-		{
-			return CreateDevice (0, null, MgQueueAllocation.One, MgQueueFlagBits.GRAPHICS_BIT);
-		}
+		//public IMgLogicalDevice CreateLogicalDevice(MgEnableExtensionsOption option)
+		//{
+		//	return CreateDevice (0, null, MgQueueAllocation.One, MgQueueFlagBits.GRAPHICS_BIT);
+		//}
 
 		static uint FindAppropriateQueueFamily (MgQueueFamilyProperties[] queueProps, MgQueueFlagBits requestedQueueType)
 		{
@@ -131,15 +183,8 @@ namespace Magnesium
 			return requestedQueueNodeIndex;
 		}
 
-		public IMgLogicalDevice CreateDevice(uint physicalDevice, IMgSurfaceKHR presentationSurface, MgQueueAllocation requestCount, MgQueueFlagBits requestedQueueType)
+		public IMgLogicalDevice CreateDevice(IMgPhysicalDevice gpu, IMgSurfaceKHR presentationSurface, MgQueueAllocation requestCount, MgQueueFlagBits requestedQueueType, string[] enabledExtensions)
 		{
-			IMgPhysicalDevice[] physicalDevices;
-			var errorCode = mInstance.EnumeratePhysicalDevices (out physicalDevices);
-			Debug.Assert (errorCode == Result.SUCCESS);
-
-			IMgPhysicalDevice gpu = (physicalDevices != null && physicalDevices.Length > 0)
-				? physicalDevices [physicalDevice] : null;
-
 			// Find a queue that supports graphics operations
 			MgQueueFamilyProperties[] queueProps;
 			gpu.GetPhysicalDeviceQueueFamilyProperties (out queueProps);
@@ -165,10 +210,10 @@ namespace Magnesium
 				QueuePriorities = queuePriorities,
 			};
 
-			return CreateDevice (gpu, queueCreateInfo);
+			return CreateDevice (gpu, queueCreateInfo, enabledExtensions);
 		}
 
-		public IMgLogicalDevice CreateDevice(IMgPhysicalDevice gpu, MgDeviceQueueCreateInfo queueCreateInfo)
+		public IMgLogicalDevice CreateDevice(IMgPhysicalDevice gpu, MgDeviceQueueCreateInfo queueCreateInfo, string[] enabledExtensions)
 		{
 			if (gpu == null)
 			{
@@ -180,11 +225,8 @@ namespace Magnesium
 				throw new ArgumentNullException (nameof(queueCreateInfo));
 			}
 
-			const string VK_KHR_SWAPCHAIN_EXTENSION_NAME = "VK_KHR_swapchain";
 			var deviceCreateInfo = new MgDeviceCreateInfo {
-				EnabledExtensionNames = new[] {
-					VK_KHR_SWAPCHAIN_EXTENSION_NAME
-				},
+				EnabledExtensionNames = enabledExtensions,
 				QueueCreateInfos = new[] {
 					queueCreateInfo
 				},
@@ -192,7 +234,7 @@ namespace Magnesium
 
 			IMgDevice device;
 			var errorCode = gpu.CreateDevice (deviceCreateInfo, null, out device);
-			Debug.Assert (errorCode == Result.SUCCESS);		
+			Debug.Assert (errorCode == Result.SUCCESS, errorCode + " != Result.SUCCESS");		
 
 			// Get the graphics queue
 			var availableQueues = new IMgQueueInfo[queueCreateInfo.QueueCount];
@@ -228,6 +270,7 @@ namespace Magnesium
 
 			mIsDisposed = true;
 		}
-	}
+
+    }
 }
 

@@ -45,7 +45,7 @@ namespace Magnesium
 			var device = mPartition.Device;
 
 			var err = device.CreateImage(imageCreateInfo, allocator, out mappableImage);
-			Debug.Assert(err == Result.SUCCESS);
+			Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
 
 			// Get memory requirements for this image 
 			// like size and alignment
@@ -65,11 +65,11 @@ namespace Magnesium
 
 			// Allocate host memory
 			err = device.AllocateMemory(memAllocInfo, allocator, out mappableMemory);
-			Debug.Assert(err == Result.SUCCESS);
+			Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
 
 			// Bind allocated image for use
 			err = mappableImage.BindImageMemory(device, mappableMemory, 0);
-			Debug.Assert(err == Result.SUCCESS);
+			Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
 
 			// Get sub resource layout
 			// Mip map count, array layer, etc.
@@ -87,7 +87,7 @@ namespace Magnesium
 
 			// Map image memory
 			err = mappableMemory.MapMemory(device, 0, memReqs.Size, 0, out data);
-			Debug.Assert(err == Result.SUCCESS);
+			Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
 
 			// Copy image data into memory
 			//memcpy(data, tex2D[subRes.mipLevel].data(), tex2D[subRes.mipLevel].size());
@@ -114,7 +114,7 @@ namespace Magnesium
 
 			var commands = new IMgCommandBuffer[1];
 			err =  device.AllocateCommandBuffers(cmdBufAllocateInfo, commands);
-			Debug.Assert (err == Result.SUCCESS);
+			Debug.Assert (err == Result.SUCCESS, err + " != Result.SUCCESS");
 
 			var cmdBufInfo = new MgCommandBufferBeginInfo
 			{
@@ -123,7 +123,7 @@ namespace Magnesium
 
 			texture.Command = commands [0];
 			err = commands[0].BeginCommandBuffer(cmdBufInfo);
-			Debug.Assert (err == Result.SUCCESS);
+			Debug.Assert (err == Result.SUCCESS, err + " != Result.SUCCESS");
 
 			// Setup image memory barrier transfer image to shader read layout
 			mImageTools.SetImageLayout(
@@ -136,7 +136,7 @@ namespace Magnesium
 				mipLevels);
 
 			err = texture.Command.EndCommandBuffer();
-			Debug.Assert (err == Result.SUCCESS);
+			Debug.Assert (err == Result.SUCCESS, err + " != Result.SUCCESS");
 
 			var submitInfo = new MgSubmitInfo {				
 				CommandBuffers = commands,
@@ -147,7 +147,7 @@ namespace Magnesium
 
 //			// NOT SURE IF 
 //			err = queue.QueueWaitIdle();
-//			Debug.Assert (err == Result.SUCCESS);
+//			Debug.Assert (err == Result.SUCCESS, err + " != Result.SUCCESS");
 //
 //			device.FreeCommandBuffers(cmdPool, commands);
 //			texture.Command = copyCmd;

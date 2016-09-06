@@ -3,7 +3,7 @@
 namespace Magnesium
 {
     [StructLayout(LayoutKind.Sequential)]	
-	public class MgComponentMapping
+	public struct MgComponentMapping
 	{
 		public MgComponentSwizzle R { get; set; }
 		public MgComponentSwizzle G { get; set; }

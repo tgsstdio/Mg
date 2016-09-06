@@ -1,5 +1,5 @@
-﻿using System.Diagnostics;
-using System;
+﻿using System;
+using System.Diagnostics;
 
 namespace Magnesium
 {
@@ -99,21 +99,23 @@ namespace Magnesium
 
 			if (createInfo == null)
 			{
-				throw new ArgumentNullException ("createInfo");
+				throw new ArgumentNullException (nameof(createInfo));
 			}
 
 			if (createInfo.Command == null)
 			{
-				throw new ArgumentNullException ("createInfo.Command");
+                throw new ArgumentNullException(nameof(createInfo.Command));
 			}
 
 			if (createInfo.Swapchains == null)
 			{
-				throw new ArgumentNullException ("createInfo.Swapchain");
+				throw new ArgumentNullException (nameof(createInfo.Swapchains));
 			}
 
-			// Check if device supports requested sample count for color and depth frame buffer
-			if (
+            Setup();
+
+            // Check if device supports requested sample count for color and depth frame buffer
+            if (
 				(mProperties.Limits.FramebufferColorSampleCounts < createInfo.Samples)
 				|| (mProperties.Limits.FramebufferDepthSampleCounts < createInfo.Samples))
 			{
@@ -123,8 +125,6 @@ namespace Magnesium
 
 			ReleaseUnmanagedResources ();
 			mDeviceCreated = false;
-
-			Setup ();
 
 			CreateDepthStencil (createInfo);
 			CreateRenderpass (createInfo);
@@ -230,7 +230,7 @@ namespace Magnesium
 
 			IMgRenderPass renderPass;
 			err = mPartition.Device.CreateRenderPass(renderPassInfo, null, out renderPass);
-			Debug.Assert(err == Result.SUCCESS);
+			Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
 			mRenderpass = renderPass;
 		}
 
@@ -261,7 +261,7 @@ namespace Magnesium
 			{
 				IMgImage dsImage;
 				err = mPartition.Device.CreateImage (image, null, out dsImage);
-				Debug.Assert (err == Result.SUCCESS);
+				Debug.Assert (err == Result.SUCCESS, err + " != Result.SUCCESS");
 				mImage = dsImage;
 			}
 			mPartition.Device.GetImageMemoryRequirements (mImage, out memReqs);
@@ -273,11 +273,11 @@ namespace Magnesium
 			{
 				IMgDeviceMemory dsDeviceMemory;
 				err = mPartition.Device.AllocateMemory (mem_alloc, null, out dsDeviceMemory);
-				Debug.Assert (err == Result.SUCCESS);
+				Debug.Assert (err == Result.SUCCESS, err + " != Result.SUCCESS");
 				mDeviceMemory = dsDeviceMemory;
 			}
 			err = mImage.BindImageMemory (mPartition.Device, mDeviceMemory, 0);
-			Debug.Assert (err == Result.SUCCESS);
+			Debug.Assert (err == Result.SUCCESS, err + " != Result.SUCCESS");
 			mImageTools.SetImageLayout (createInfo.Command, mImage, MgImageAspectFlagBits.DEPTH_BIT | MgImageAspectFlagBits.STENCIL_BIT, MgImageLayout.UNDEFINED, MgImageLayout.DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 			var depthStencilView = new MgImageViewCreateInfo {
 				Image = mImage,
@@ -295,7 +295,7 @@ namespace Magnesium
 			{
 				IMgImageView dsView;
 				err = mPartition.Device.CreateImageView (depthStencilView, null, out dsView);
-				Debug.Assert (err == Result.SUCCESS);
+				Debug.Assert (err == Result.SUCCESS, err + " != Result.SUCCESS");
 				mView = dsView;
 			}
 		}
@@ -330,7 +330,7 @@ namespace Magnesium
 				};
 
 				var err = mPartition.Device.CreateFramebuffer(frameBufferCreateInfo, null, out frameBuffers[i]);
-				Debug.Assert(err == Result.SUCCESS);
+				Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
 			}
 
 			mFramebuffers = frameBuffers;

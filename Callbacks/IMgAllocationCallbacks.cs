@@ -6,27 +6,27 @@ namespace Magnesium
     public delegate void PFN_vkInternalAllocationNotification(
 		IntPtr pUserData,
 		IntPtr size,
-		MgInternalAllocationType allocationType,
-		MgSystemAllocationScope allocationScope);
+		uint allocationType,
+        uint allocationScope);
 
 	public delegate void PFN_vkInternalFreeNotification(
 		IntPtr pUserData,
 		IntPtr size,
-		MgInternalAllocationType allocationType,
-		MgSystemAllocationScope allocationScope);
+		uint allocationType,
+		uint allocationScope);
 
 	public delegate void PFN_vkReallocationFunction(
 		IntPtr pUserData,
 		IntPtr pOriginal,
 		IntPtr size,
 		IntPtr alignment,
-		MgSystemAllocationScope allocationScope);
+		uint allocationScope);
 
 	public delegate void PFN_vkAllocationFunction(
 		IntPtr pUserData,
 		IntPtr size,
 		IntPtr alignment,
-		MgSystemAllocationScope allocationScope);
+		uint allocationScope);
 
 	public delegate void PFN_vkFreeFunction(
 		IntPtr pUserData,
