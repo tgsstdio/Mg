@@ -1,4 +1,5 @@
 using Magnesium;
+using System;
 using System.Diagnostics;
 
 namespace Magnesium
@@ -38,7 +39,20 @@ namespace Magnesium
 
 		public IMgThreadPartition CreatePartition (MgCommandPoolCreateFlagBits flags, MgDescriptorPoolCreateInfo descPoolCreateInfo)
 		{
-			IMgCommandPool commandPool;
+            if (descPoolCreateInfo == null)
+                throw new ArgumentNullException(nameof(descPoolCreateInfo));
+
+            if (descPoolCreateInfo.MaxSets <= 0)
+                throw new ArgumentOutOfRangeException(nameof(descPoolCreateInfo.MaxSets) + "must be > 0");
+
+            if (descPoolCreateInfo.PoolSizes == null)
+                throw new ArgumentNullException(nameof(descPoolCreateInfo.PoolSizes));
+
+            if (descPoolCreateInfo.PoolSizes.Length <= 0)
+                throw new ArgumentOutOfRangeException(nameof(descPoolCreateInfo.PoolSizes) + "must be > 0");
+
+
+            IMgCommandPool commandPool;
 			var cmdPoolCreateInfo = new MgCommandPoolCreateInfo {
 				QueueFamilyIndex = this.QueueFamilyIndex,
 				Flags = flags
