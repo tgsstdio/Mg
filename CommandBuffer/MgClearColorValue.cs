@@ -5,28 +5,28 @@ namespace Magnesium
     [StructLayout(LayoutKind.Explicit)]
 	public struct MgClearColorValue
 	{
-		public MgClearColorValue (float r, float g, float b, float a)
+		public MgClearColorValue (MgColor4f color)
 		{
 			Int32 = new MgVec4i (0, 0, 0, 0);
 			Uint32 = new MgVec4Ui (0, 0, 0, 0);
 
-			Float32 = new MgColor4f (r, g, b, a);
+			Float32 = color;
 		}
 
-		public MgClearColorValue(int r, int g, int b, int a)
+		public MgClearColorValue(MgVec4i color)
 		{
 			Uint32 = new MgVec4Ui (0, 0, 0, 0);
 			Float32 = new MgColor4f (0f, 0f, 0f, 0f);
 
-			Int32 = new MgVec4i (r, g, b, a);
+			Int32 = color;
 		}
 
-		public MgClearColorValue(uint r, uint g, uint b, uint a)
+		public MgClearColorValue(MgVec4Ui color)
 		{
 			Int32 = new MgVec4i (0, 0, 0, 0);
 			Float32 = new MgColor4f (0f, 0f, 0f, 0f);
 
-			Uint32 = new MgVec4Ui (r, g, b, a);
+			Uint32 = color;
 		}
 
 		[FieldOffset(0)]

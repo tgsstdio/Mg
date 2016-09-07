@@ -15,7 +15,8 @@ namespace Magnesium
 			mLayer = layer;
 			mPartition = partition;
 			mImageTools = imageTools;
-		}
+            Format = MgFormat.UNDEFINED;
+        }
 
 		#region ISwapchain implementation
 
@@ -31,16 +32,16 @@ namespace Magnesium
 			// supported format will be returned.
 			if (surfFormats.Length == 1 && surfFormats[0].Format == MgFormat.UNDEFINED)
 			{
-				mFormat = MgFormat.B8G8R8A8_UNORM;
+				Format = MgFormat.B8G8R8A8_UNORM;
 			}
 			else
 			{
 				Debug.Assert(surfFormats.Length >= 1);
-				mFormat = surfFormats[0].Format;
+				Format = surfFormats[0].Format;
 			}
 			mColorSpace = surfFormats[0].ColorSpace;
 		}
-		private MgFormat mFormat;
+		public MgFormat Format { get; private set; }
 		private MgColorSpaceKHR mColorSpace;
 
 		private IMgSwapchainKHR mSwapChain = null;
@@ -75,6 +76,8 @@ namespace Magnesium
 			Result err;
 			IMgSwapchainKHR oldSwapchain = mSwapChain;
 
+            Setup();
+
 			// Get physical device surface properties and formats
 			MgSurfaceCapabilitiesKHR surfCaps;
 			err = mPartition.PhysicalDevice.GetPhysicalDeviceSurfaceCapabilitiesKHR(mLayer.Surface, out surfCaps);
@@ -94,16 +97,16 @@ namespace Magnesium
 				swapchainExtent.Width = mWidth;
 				swapchainExtent.Height = mHeight;
 			}
-			else
-			{
-				// If the surface size is defined, the swap chain size must match
-				swapchainExtent = surfCaps.CurrentExtent;
-				mWidth = surfCaps.CurrentExtent.Width;
-				mHeight = surfCaps.CurrentExtent.Height;
-			}
+            else
+            {
+                // If the surface size is defined, the swap chain size must match
+                swapchainExtent = surfCaps.CurrentExtent;
+                mWidth = surfCaps.CurrentExtent.Width;
+                mHeight = surfCaps.CurrentExtent.Height;
+            }
 
-			// Prefer mailbox mode if present, it's the lowest latency non-tearing present  mode
-			MgPresentModeKHR swapchainPresentMode = MgPresentModeKHR.FIFO_KHR;
+            // Prefer mailbox mode if present, it's the lowest latency non-tearing present  mode
+            MgPresentModeKHR swapchainPresentMode = MgPresentModeKHR.FIFO_KHR;
 			for (uint i = 0; i < presentModes.Length; i++) 
 			{
 				if (presentModes[i] == MgPresentModeKHR.MAILBOX_KHR) 
@@ -137,7 +140,7 @@ namespace Magnesium
 			var swapchainCI = new MgSwapchainCreateInfoKHR {
 				Surface = mLayer.Surface,
 				MinImageCount = desiredNumberOfSwapchainImages,
-				ImageFormat = mFormat,
+				ImageFormat = Format,
 				ImageColorSpace = mColorSpace,
 				ImageExtent = swapchainExtent,
 				ImageUsage = MgImageUsageFlagBits.COLOR_ATTACHMENT_BIT,
@@ -176,7 +179,7 @@ namespace Magnesium
 			{
 				var buffer = new MgSwapchainBuffer ();
 				var colorAttachmentView = new MgImageViewCreateInfo{
-					Format = mFormat,
+					Format = Format,
 					Components = new MgComponentMapping{
 						R = MgComponentSwizzle.R,
 						G = MgComponentSwizzle.G,

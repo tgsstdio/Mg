@@ -94,22 +94,21 @@ namespace Magnesium
 			}
 		}
 
-		public void Create (MgGraphicsDeviceCreateInfo createInfo)
-		{
+        public void Create(IMgCommandBuffer setupCmdBuffer, IMgSwapchainCollection swapchainCollection, MgGraphicsDeviceCreateInfo createInfo)
+        {
+            if (setupCmdBuffer == null)
+            {
+                throw new ArgumentNullException(nameof(setupCmdBuffer));
+            }
 
-			if (createInfo == null)
+            if (createInfo == null)
 			{
 				throw new ArgumentNullException (nameof(createInfo));
 			}
 
-			if (createInfo.Command == null)
+			if (swapchainCollection == null)
 			{
-                throw new ArgumentNullException(nameof(createInfo.Command));
-			}
-
-			if (createInfo.Swapchains == null)
-			{
-				throw new ArgumentNullException (nameof(createInfo.Swapchains));
+				throw new ArgumentNullException (nameof(swapchainCollection));
 			}
 
             Setup();
@@ -126,10 +125,10 @@ namespace Magnesium
 			ReleaseUnmanagedResources ();
 			mDeviceCreated = false;
 
-			CreateDepthStencil (createInfo);
+			CreateDepthStencil (setupCmdBuffer, createInfo);
 			CreateRenderpass (createInfo);
-			createInfo.Swapchains.Create (createInfo.Command, createInfo.Width, createInfo.Height);
-			CreateFramebuffers (createInfo);
+            swapchainCollection.Create (setupCmdBuffer, createInfo.Width, createInfo.Height);
+			CreateFramebuffers (swapchainCollection, createInfo);
 
 			Scissor = new MgRect2D { 
 				Extent = new MgExtent2D{ Width = createInfo.Width, Height = createInfo.Height },
@@ -234,7 +233,7 @@ namespace Magnesium
 			mRenderpass = renderPass;
 		}
 
-		void CreateDepthStencil (MgGraphicsDeviceCreateInfo createInfo)
+		void CreateDepthStencil (IMgCommandBuffer setupCmdBuffer, MgGraphicsDeviceCreateInfo createInfo)
 		{
 			var image = new MgImageCreateInfo {
 				ImageType = MgImageType.TYPE_2D,
@@ -278,7 +277,7 @@ namespace Magnesium
 			}
 			err = mImage.BindImageMemory (mPartition.Device, mDeviceMemory, 0);
 			Debug.Assert (err == Result.SUCCESS, err + " != Result.SUCCESS");
-			mImageTools.SetImageLayout (createInfo.Command, mImage, MgImageAspectFlagBits.DEPTH_BIT | MgImageAspectFlagBits.STENCIL_BIT, MgImageLayout.UNDEFINED, MgImageLayout.DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+			mImageTools.SetImageLayout (setupCmdBuffer, mImage, MgImageAspectFlagBits.DEPTH_BIT | MgImageAspectFlagBits.STENCIL_BIT, MgImageLayout.UNDEFINED, MgImageLayout.DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 			var depthStencilView = new MgImageViewCreateInfo {
 				Image = mImage,
 				ViewType = MgImageViewType.TYPE_2D,
@@ -307,12 +306,12 @@ namespace Magnesium
 			}
 		}
 
-		void CreateFramebuffers (MgGraphicsDeviceCreateInfo createInfo)
+		void CreateFramebuffers (IMgSwapchainCollection swapchains, MgGraphicsDeviceCreateInfo createInfo)
 		{
 		//IMgFramebuffer[] SetupFrameBuffers(IMgRenderPass renderPass, IMgDepthStencilBuffer depthStencil, IMgSwapchainCollection swapChain, uint width, uint height)
 		//{
 			// Create frame buffers for every swap chain image
-			var frameBuffers = new IMgFramebuffer[createInfo.Swapchains.Buffers.Length];
+			var frameBuffers = new IMgFramebuffer[swapchains.Buffers.Length];
 			for (uint i = 0; i < frameBuffers.Length; i++)
 			{
 				var frameBufferCreateInfo = new MgFramebufferCreateInfo
@@ -320,7 +319,7 @@ namespace Magnesium
 					RenderPass = mRenderpass,
 					Attachments = new []
 					{
-						createInfo.Swapchains.Buffers[i].View,
+                        swapchains.Buffers[i].View,
 						// Depth/Stencil attachment is the same for all frame buffers
 						mView,
 					},
@@ -370,6 +369,6 @@ namespace Magnesium
 
 			mIsDisposed = true;
 		}
-	}
+    }
 }
 

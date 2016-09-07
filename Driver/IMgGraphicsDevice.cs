@@ -26,10 +26,10 @@ namespace Magnesium
 			get;
 		}
 
-		void Create(MgGraphicsDeviceCreateInfo createInfo);
 
 		bool DeviceCreated();
 		bool IsDisposed();
-	}
+        void Create(IMgCommandBuffer setupCmdBuffer, IMgSwapchainCollection mSwapchainCollection, MgGraphicsDeviceCreateInfo dsCreateInfo);
+    }
 }
 
