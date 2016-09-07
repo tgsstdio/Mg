@@ -16,7 +16,7 @@ namespace Magnesium.Vulkan
 
 		public PFN_vkVoidFunction GetDeviceProcAddr(string pName)
 		{
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			return Interops.vkGetDeviceProcAddr(Handle, pName);
 		}
@@ -48,7 +48,7 @@ namespace Magnesium.Vulkan
 
 		public void GetDeviceQueue(uint queueFamilyIndex, uint queueIndex, out IMgQueue pQueue)
 		{
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var queueHandle = IntPtr.Zero;
 			Interops.vkGetDeviceQueue(Handle, queueFamilyIndex, queueIndex, ref queueHandle);
@@ -57,7 +57,7 @@ namespace Magnesium.Vulkan
 
 		public Result DeviceWaitIdle()
 		{
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			return Interops.vkDeviceWaitIdle(Handle);
 		}
@@ -67,7 +67,7 @@ namespace Magnesium.Vulkan
 			if (pAllocateInfo == null)
 				throw new ArgumentNullException(nameof(pAllocateInfo));
 
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -96,7 +96,7 @@ namespace Magnesium.Vulkan
 			if (pMemoryRanges == null)
 				throw new ArgumentNullException(nameof(pMemoryRanges));
 
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			unsafe
 			{
@@ -129,7 +129,7 @@ namespace Magnesium.Vulkan
 			if (pMemoryRanges == null)
 				throw new ArgumentNullException(nameof(pMemoryRanges));
 
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			unsafe
 			{
@@ -167,7 +167,7 @@ namespace Magnesium.Vulkan
 
 		public void GetBufferMemoryRequirements(IMgBuffer buffer, out MgMemoryRequirements pMemoryRequirements)
 		{
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var bBuffer = (VkBuffer)buffer;
 			Debug.Assert(bBuffer != null);
@@ -182,7 +182,7 @@ namespace Magnesium.Vulkan
 
 		public void GetImageMemoryRequirements(IMgImage image, out MgMemoryRequirements memoryRequirements)
 		{
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var bImage = (VkImage)image;
 			Debug.Assert(bImage != null);
@@ -197,7 +197,7 @@ namespace Magnesium.Vulkan
 
 		public void GetImageSparseMemoryRequirements(IMgImage image, out MgSparseImageMemoryRequirements[] sparseMemoryRequirements)
 		{
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var bImage = (VkImage)image;
 			Debug.Assert(bImage != null);
@@ -240,7 +240,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -262,7 +262,7 @@ namespace Magnesium.Vulkan
 			if (pFences == null)
 				throw new ArgumentNullException(nameof(pFences));
 
-			Debug.Assert(!mIsDisposed);		
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");		
 
 			var fenceCount = (uint)pFences.Length;
 
@@ -282,7 +282,7 @@ namespace Magnesium.Vulkan
 			if (fence == null)
 				throw new ArgumentNullException(nameof(fence));
 
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var bFence = (VkFence) fence;
 			Debug.Assert(bFence != null);
@@ -295,7 +295,7 @@ namespace Magnesium.Vulkan
 			if (pFences == null)
 				throw new ArgumentNullException(nameof(pFences));
 
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var fenceCount = (uint)pFences.Length;
 
@@ -315,7 +315,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -338,7 +338,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -361,7 +361,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -387,7 +387,7 @@ namespace Magnesium.Vulkan
 			if (queryPool == null)
 				throw new ArgumentNullException(nameof(queryPool));
 
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var bQueryPool = (VkQueryPool)queryPool;
 			Debug.Assert(bQueryPool != null);
@@ -400,7 +400,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -447,7 +447,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -475,7 +475,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -528,7 +528,7 @@ namespace Magnesium.Vulkan
 			if (image == null)
 				throw new ArgumentNullException(nameof(image));
 
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var bImage = (VkImage)image;
 			Debug.Assert(bImage != null);
@@ -543,7 +543,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -579,7 +579,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -621,7 +621,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -645,7 +645,7 @@ namespace Magnesium.Vulkan
 			if (pipelineCache == null)
 				throw new ArgumentNullException(nameof(pipelineCache));
 
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var bPipelineCache = (VkPipelineCache)pipelineCache;
 			Debug.Assert(bPipelineCache != null);
@@ -677,7 +677,7 @@ namespace Magnesium.Vulkan
 			if (pSrcCaches == null)
 				throw new ArgumentNullException(nameof(pSrcCaches));			
 
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var bDstCache = (VkPipelineCache)dstCache;
 			Debug.Assert(bDstCache != null);
@@ -705,7 +705,7 @@ namespace Magnesium.Vulkan
 				throw new ArgumentOutOfRangeException(nameof(pCreateInfos) + " == 0");
 			}
 
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -1206,7 +1206,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfos == null)
 				throw new ArgumentNullException(nameof(pCreateInfos));
 
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -1330,7 +1330,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -1415,7 +1415,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -1452,7 +1452,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -1545,7 +1545,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -1607,7 +1607,7 @@ namespace Magnesium.Vulkan
 			if (descriptorSetCount != pAllocateInfo.SetLayouts.Length)
 				throw new ArgumentOutOfRangeException(nameof(pAllocateInfo.DescriptorSetCount) + " must equal to " + nameof(pAllocateInfo.SetLayouts.Length));
 
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var bDescriptorPool = (VkDescriptorPool)pAllocateInfo.DescriptorPool;
 			Debug.Assert(bDescriptorPool != null);
@@ -1667,7 +1667,7 @@ namespace Magnesium.Vulkan
 			if (descriptorSetCount == 0)
 				throw new ArgumentOutOfRangeException(nameof(pDescriptorSets.Length) + " == 0");
 
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var bDescriptorPool = (VkDescriptorPool)descriptorPool;
 			Debug.Assert(bDescriptorPool != null); // MAYBE DUPLICATE TESTING 
@@ -1685,7 +1685,7 @@ namespace Magnesium.Vulkan
 
 		public void UpdateDescriptorSets(MgWriteDescriptorSet[] pDescriptorWrites, MgCopyDescriptorSet[] pDescriptorCopies)
 		{
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var writeCount = 0U;
 			if (pDescriptorWrites != null)
@@ -1853,7 +1853,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -1912,7 +1912,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -2101,7 +2101,7 @@ namespace Magnesium.Vulkan
 
 		public void GetRenderAreaGranularity(IMgRenderPass renderPass, out MgExtent2D pGranularity)
 		{
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var bRenderPass = (VkRenderPass)renderPass;
 			Debug.Assert(bRenderPass != null);
@@ -2119,7 +2119,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -2147,7 +2147,7 @@ namespace Magnesium.Vulkan
 			if (pAllocateInfo.CommandBufferCount != pCommandBuffers.Length)
 				throw new ArgumentOutOfRangeException(nameof(pAllocateInfo.CommandBufferCount) + " !=  " + nameof(pCommandBuffers.Length));
 
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var bCommandPool = (VkCommandPool)pAllocateInfo.CommandPool;
 			Debug.Assert(bCommandPool != null);
@@ -2181,7 +2181,7 @@ namespace Magnesium.Vulkan
 
 		public void FreeCommandBuffers(IMgCommandPool commandPool, IMgCommandBuffer[] pCommandBuffers)
 		{
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var bCommandPool = (VkCommandPool) commandPool;
 			Debug.Assert(bCommandPool != null);
@@ -2206,7 +2206,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfos == null)
 				throw new ArgumentNullException(nameof(pCreateInfos));
 
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -2253,7 +2253,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -2323,7 +2323,7 @@ namespace Magnesium.Vulkan
 
 		public Result GetSwapchainImagesKHR(IMgSwapchainKHR swapchain, out IMgImage[] pSwapchainImages)
 		{
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var bSwapchain = (VkSwapchainKHR)swapchain;
 			Debug.Assert(bSwapchain != null);
@@ -2351,7 +2351,7 @@ namespace Magnesium.Vulkan
 
 		public Result AcquireNextImageKHR(IMgSwapchainKHR swapchain, ulong timeout, IMgSemaphore semaphore, IMgFence fence, out uint pImageIndex)
 		{
-			Debug.Assert(!mIsDisposed);
+			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var bSwapchain = (VkSwapchainKHR)swapchain;
 			Debug.Assert(bSwapchain != null);

@@ -56,9 +56,9 @@ namespace Magnesium.Vulkan
 									});
 								attachedItems.Add(pWaitSemaphores);
 
-								pWaitDstStageMask = VkInteropsUtility.AllocateHGlobalArray(
+								pWaitDstStageMask = VkInteropsUtility.AllocateHGlobalArray<MgSubmitInfoWaitSemaphoreInfo, uint>(
 									currentInfo.WaitSemaphores,
-									(mask) => { return mask; });
+									(arg) => { return (uint) arg.WaitDstStageMask; });
 								attachedItems.Add(pWaitDstStageMask);	
 							}
 						}

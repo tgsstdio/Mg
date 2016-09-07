@@ -635,8 +635,7 @@ namespace Magnesium.Vulkan
 				}
 
 
-                //uint imgBarriersCount = pImageMemoryBarriers != null ? (uint)pImageMemoryBarriers.Length : 0U;
-                var imgBarriersCount = 0U;
+                uint imgBarriersCount = pImageMemoryBarriers != null ? (uint)pImageMemoryBarriers.Length : 0U;
                 var pImgBarriers = stackalloc VkImageMemoryBarrier[(int) imgBarriersCount];
 
 				for (var k = 0; k < imgBarriersCount; ++k)
