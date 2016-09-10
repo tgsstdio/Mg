@@ -2,6 +2,14 @@
 
 C# graphics frontend interface to Vulkan (or any graphics library)
 
+# Version 4.0.0
+ - New implementations
+	- Magnesium.Vulkan
+	- Magnesium.OpenGL
+	- Magnesium.OpenGL.AndroidGL (OpenTK)	
+	- Magnesium.OpenGL.DesktopGL (OpenTK)
+	- Magnesium.Metal (Metal iOS API)
+
 # Version 3.0.0
  - Breaking changes from classes to interfaces due to Magnesium.Vulkan implementation 
 
