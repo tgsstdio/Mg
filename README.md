@@ -3,7 +3,7 @@
 C# graphics frontend interface to Vulkan (or any graphics library)
 
 # Version 3.0.0
- - Breaking changes from classes to interfaces
+ - Breaking changes from classes to interfaces due to Magnesium.Vulkan implementation 
 
 # Version 2.0.0
  - Breaking changes to function
