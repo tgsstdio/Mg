@@ -3,11 +3,12 @@
 C# graphics frontend interface to Vulkan (or any graphics library)
 
 # Version 4.0.0
- - New implementations
-	- Magnesium.Vulkan
-	- Magnesium.OpenGL
-	- Magnesium.OpenGL.AndroidGL (OpenTK)	
-	- Magnesium.OpenGL.DesktopGL (OpenTK)
+ - Moving all implementations under one roof/repository
+	- Magnesium (interface only)
+	- Magnesium.Vulkan (vulkan implementation from existing repository)
+	- Magnesium.OpenGL (implementation created for MonoGame)
+	- Magnesium.OpenGL.AndroidGL (implementation created for MonoGame, OpenTK)	
+	- Magnesium.OpenGL.DesktopGL (implementation created for MonoGame, OpenTK)
 	- Magnesium.Metal (Metal iOS API)
 
 # Version 3.0.0
