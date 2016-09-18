@@ -46,9 +46,12 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-bin/*.*
+bin/*
 **/bin/*.*
 obj/**
+*/[Pp]ackages/*
+*/[Bb]in/*
+*/[Oo]bj/*
 **/obj/*.*
 Build/*.nupkg
 *.userprefs
