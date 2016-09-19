@@ -46,13 +46,7 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-bin/*.*
-[Bb]in/*
-**/bin/*.*
-obj/**
-[Oo]bj/*
-**/obj/*.*
+Magnesium/bin/*
+Magnesium/obj/*
 Build/*.nupkg
 *.userprefs
-Magnesium/obj/*
-Magnesium/.vs/Magnesium/v14/.suo

@@ -1,0 +1,294 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectGuid>{9F9AC448-9D17-43E5-8889-285426290891}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Magnesium</RootNamespace>
+    <AssemblyName>Magnesium</AssemblyName>
+    <TargetFrameworkProfile>Profile111</TargetFrameworkProfile>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <ReleaseVersion>3.0.0</ReleaseVersion>
+    <SynchReleaseVersion>false</SynchReleaseVersion>
+    <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin\Release\</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Driver\MgEnableExtensionsOption.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Enums\Result.cs" />
+    <Compile Include="Device\MgShaderModuleCreateInfo.cs" />
+    <Compile Include="Entrypoint\MgApplicationInfo.cs" />
+    <Compile Include="Entrypoint\MgInstanceCreateInfo.cs" />
+    <Compile Include="Entrypoint\IMgEntrypoint.cs" />
+    <Compile Include="ReturnedOnly\MgExtensionProperties.cs" />
+    <Compile Include="ReturnedOnly\MgLayerProperties.cs" />
+    <Compile Include="PhysicalDevice\MgDeviceCreateInfo.cs" />
+    <Compile Include="Callbacks\MgSystemAllocationScope.cs" />
+    <Compile Include="CommandBuffer\MgBufferCopy.cs" />
+    <Compile Include="CommandBuffer\MgBufferMemoryBarrier.cs" />
+    <Compile Include="CommandBuffer\MgBufferImageCopy.cs" />
+    <Compile Include="CommandBuffer\MgImageSubresourceLayers.cs" />
+    <Compile Include="Core\MgOffset3D.cs" />
+    <Compile Include="Core\MgExtent3D.cs" />
+    <Compile Include="CommandBuffer\MgClearAttachment.cs" />
+    <Compile Include="PhysicalDevice\MgImageAspectFlagBits.cs" />
+    <Compile Include="CommandBuffer\MgClearValue.cs" />
+    <Compile Include="CommandBuffer\MgClearColorValue.cs" />
+    <Compile Include="Core\MgVec4f.cs" />
+    <Compile Include="Core\MgVec4i.cs" />
+    <Compile Include="Core\MgVec4Ui.cs" />
+    <Compile Include="CommandBuffer\MgClearDepthStencilValue.cs" />
+    <Compile Include="CommandBuffer\MgClearRect.cs" />
+    <Compile Include="CommandBuffer\MgCommandBufferBeginInfo.cs" />
+    <Compile Include="CommandBuffer\MgCommandBufferUsageFlagBits.cs" />
+    <Compile Include="CommandBuffer\MgCommandBufferInheritanceInfo.cs" />
+    <Compile Include="CommandBuffer\MgCommandBufferResetFlagBits.cs" />
+    <Compile Include="CommandBuffer\MgStencilFaceFlagBits.cs" />
+    <Compile Include="Device\MgPipelineBindPoint.cs" />
+    <Compile Include="Enums\MgImageLayout.cs" />
+    <Compile Include="CommandBuffer\MgImageResolve.cs" />
+    <Compile Include="Device\MgImageSubresourceRange.cs" />
+    <Compile Include="Device\MgQueryControlFlagBits.cs" />
+    <Compile Include="Device\MgShaderStageFlagBits.cs" />
+    <Compile Include="CommandBuffer\MgRenderPassBeginInfo.cs" />
+    <Compile Include="CommandBuffer\MgSubpassContents.cs" />
+    <Compile Include="PhysicalDevice\MgColorSpaceKHR.cs" />
+    <Compile Include="PhysicalDevice\MgCompositeAlphaFlagBitsKHR.cs" />
+    <Compile Include="PhysicalDevice\MgDeviceQueueCreateInfo.cs" />
+    <Compile Include="PhysicalDevice\MgDisplayModeParametersKHR.cs" />
+    <Compile Include="PhysicalDevice\MgDisplayPlaneAlphaFlagBitsKHR.cs" />
+    <Compile Include="PhysicalDevice\MgDisplayModePropertiesKHR.cs" />
+    <Compile Include="Instance\IMgDisplayModeKHR.cs" />
+    <Compile Include="PhysicalDevice\MgDisplayPlaneCapabilitiesKHR.cs" />
+    <Compile Include="Core\MgOffset2D.cs" />
+    <Compile Include="Core\MgExtent2D.cs" />
+    <Compile Include="PhysicalDevice\MgMemoryHeap.cs" />
+    <Compile Include="PhysicalDevice\MgMemoryHeapFlagBits.cs" />
+    <Compile Include="PhysicalDevice\MgImageFormatProperties.cs" />
+    <Compile Include="Enums\MgSampleCountFlagBits.cs" />
+    <Compile Include="PhysicalDevice\MgMemoryType.cs" />
+    <Compile Include="PhysicalDevice\MgQueueFlagBits.cs" />
+    <Compile Include="PhysicalDevice\MgSparseImageFormatFlagBits.cs" />
+    <Compile Include="PhysicalDevice\MgSparseImageFormatProperties.cs" />
+    <Compile Include="PhysicalDevice\MgSurfaceCapabilitiesKHR.cs" />
+    <Compile Include="PhysicalDevice\MgSurfaceFormatKHR.cs" />
+    <Compile Include="Enums\MgFormat.cs" />
+    <Compile Include="PhysicalDevice\MgQueueFamilyProperties.cs" />
+    <Compile Include="PhysicalDevice\MgPhysicalDeviceSparseProperties.cs" />
+    <Compile Include="PhysicalDevice\MgPhysicalDeviceMemoryProperties.cs" />
+    <Compile Include="PhysicalDevice\MgPhysicalDeviceProperties.cs" />
+    <Compile Include="PhysicalDevice\MgPhysicalDeviceType.cs" />
+    <Compile Include="PhysicalDevice\MgPhysicalDeviceLimits.cs" />
+    <Compile Include="PhysicalDevice\MgPhysicalDeviceFeatures.cs" />
+    <Compile Include="PhysicalDevice\MgPresentModeKHR.cs" />
+    <Compile Include="PhysicalDevice\MgMemoryPropertyFlagBits.cs" />
+    <Compile Include="PhysicalDevice\MgDisplayPlanePropertiesKHR.cs" />
+    <Compile Include="PhysicalDevice\MgDisplayPropertiesKHR.cs" />
+    <Compile Include="Enums\MgImageTiling.cs" />
+    <Compile Include="Enums\MgImageType.cs" />
+    <Compile Include="Enums\MgImageUsageFlagBits.cs" />
+    <Compile Include="Enums\MgImageCreateFlagBits.cs" />
+    <Compile Include="PhysicalDevice\MgFormatProperties.cs" />
+    <Compile Include="PhysicalDevice\MgFormatFeatureFlagBits.cs" />
+    <Compile Include="Instance\MgSurfaceTransformFlagBitsKHR.cs" />
+    <Compile Include="Instance\MgWin32SurfaceCreateInfoKHR.cs" />
+    <Compile Include="Instance\MgDebugReportObjectTypeEXT.cs" />
+    <Compile Include="Instance\MgDisplaySurfaceCreateInfoKHR.cs" />
+    <Compile Include="Instance\MgDebugReportFlagBitsEXT.cs" />
+    <Compile Include="Instance\MgDebugReportCallbackEXT.cs" />
+    <Compile Include="Instance\MgDebugReportCallbackCreateInfoEXT.cs" />
+    <Compile Include="Enums\MgAccessFlagBits.cs" />
+    <Compile Include="Enums\MgBlendFactor.cs" />
+    <Compile Include="Enums\MgBufferUsageFlagBits.cs" />
+    <Compile Include="Enums\MgComponentSwizzle.cs" />
+    <Compile Include="Enums\MgDescriptorType.cs" />
+    <Compile Include="Enums\MgLogicOp.cs" />
+    <Compile Include="Enums\MgFilter.cs" />
+    <Compile Include="Enums\MgFrontFace.cs" />
+    <Compile Include="Enums\MgDependencyFlagBits.cs" />
+    <Compile Include="Enums\MgPolygonMode.cs" />
+    <Compile Include="Enums\MgPrimitiveTopology.cs" />
+    <Compile Include="Enums\MgQueryPipelineStatisticFlagBits.cs" />
+    <Compile Include="Enums\MgCompareOp.cs" />
+    <Compile Include="Enums\MgBlendOp.cs" />
+    <Compile Include="Enums\MgSharingMode.cs" />
+    <Compile Include="Enums\MgStencilOp.cs" />
+    <Compile Include="Device\MgAttachmentDescription.cs" />
+    <Compile Include="Device\MgAttachmentDescriptionFlagBits.cs" />
+    <Compile Include="Device\MgAttachmentLoadOp.cs" />
+    <Compile Include="Device\MgBufferCreateFlagBits.cs" />
+    <Compile Include="Device\MgMappedMemoryRange.cs" />
+    <Compile Include="Device\MgSemaphoreCreateInfo.cs" />
+    <Compile Include="Device\MgEventCreateInfo.cs" />
+    <Compile Include="Device\MgQueryResultFlagBits.cs" />
+    <Compile Include="Device\MgCommandPoolCreateInfo.cs" />
+    <Compile Include="Device\MgCommandBufferAllocateInfo.cs" />
+    <Compile Include="Device\MgFenceCreateInfo.cs" />
+    <Compile Include="Device\MgFramebufferCreateInfo.cs" />
+    <Compile Include="Device\MgFenceCreateFlagBits.cs" />
+    <Compile Include="Device\MgGraphicsPipelineCreateInfo.cs" />
+    <Compile Include="Device\MgPipelineCreateFlagBits.cs" />
+    <Compile Include="Device\MgPipelineDynamicStateCreateInfo.cs" />
+    <Compile Include="Device\MgPipelineColorBlendStateCreateInfo.cs" />
+    <Compile Include="Device\MgPipelineDepthStencilStateCreateInfo.cs" />
+    <Compile Include="Device\MgPipelineMultisampleStateCreateInfo.cs" />
+    <Compile Include="Device\MgPipelineRasterizationStateCreateInfo.cs" />
+    <Compile Include="Device\MgPipelineViewportStateCreateInfo.cs" />
+    <Compile Include="Device\MgPipelineTessellationStateCreateInfo.cs" />
+    <Compile Include="Device\MgPipelineInputAssemblyStateCreateInfo.cs" />
+    <Compile Include="Device\MgPipelineVertexInputStateCreateInfo.cs" />
+    <Compile Include="Device\MgPipelineShaderStageCreateInfo.cs" />
+    <Compile Include="Device\MgDescriptorSetLayoutCreateInfo.cs" />
+    <Compile Include="Device\MgDynamicState.cs" />
+    <Compile Include="Device\MgPipelineCacheCreateInfo.cs" />
+    <Compile Include="Device\MgPipelineColorBlendAttachmentState.cs" />
+    <Compile Include="Device\MgPipelineLayoutCreateInfo.cs" />
+    <Compile Include="Device\MgPipelineStageFlagBits.cs" />
+    <Compile Include="CommandBuffer\MgImageBlit.cs" />
+    <Compile Include="CommandBuffer\MgImageMemoryBarrier.cs" />
+    <Compile Include="CommandBuffer\MgMemoryBarrier.cs" />
+    <Compile Include="CommandBuffer\MgIndexType.cs" />
+    <Compile Include="CommandBuffer\MgImageCopy.cs" />
+    <Compile Include="Core\MgComponentMapping.cs" />
+    <Compile Include="Core\MgRect2D.cs" />
+    <Compile Include="Core\MgVec2f.cs" />
+    <Compile Include="Core\MgVec2Ui.cs" />
+    <Compile Include="Core\MgVec3Ui.cs" />
+    <Compile Include="Device\MgWriteDescriptorSet.cs" />
+    <Compile Include="Device\IMgBufferView.cs" />
+    <Compile Include="Device\MgDescriptorBufferInfo.cs" />
+    <Compile Include="Device\MgPushConstantRange.cs" />
+    <Compile Include="Device\MgQueryPoolCreateInfo.cs" />
+    <Compile Include="Device\MgQueryType.cs" />
+    <Compile Include="Device\MgSubpassDescription.cs" />
+    <Compile Include="Device\MgAttachmentReference.cs" />
+    <Compile Include="Device\MgBorderColor.cs" />
+    <Compile Include="Device\MgCommandPoolResetFlagBits.cs" />
+    <Compile Include="Device\MgCullModeFlagBits.cs" />
+    <Compile Include="Device\MgDescriptorPoolCreateInfo.cs" />
+    <Compile Include="Device\MgDescriptorPoolCreateFlagBits.cs" />
+    <Compile Include="Device\MgDescriptorPoolSize.cs" />
+    <Compile Include="Device\MgDescriptorSetAllocateInfo.cs" />
+    <Compile Include="Device\IMgDescriptorSetLayout.cs" />
+    <Compile Include="Device\MgImageCreateInfo.cs" />
+    <Compile Include="Device\MgImageSubresource.cs" />
+    <Compile Include="Device\MgImageViewType.cs" />
+    <Compile Include="Device\MgMemoryRequirements.cs" />
+    <Compile Include="Device\MgMemoryAllocateInfo.cs" />
+    <Compile Include="Device\MgRenderPassCreateInfo.cs" />
+    <Compile Include="Device\MgSubpassDependency.cs" />
+    <Compile Include="Device\MgSamplerAddressMode.cs" />
+    <Compile Include="Device\MgSamplerCreateInfo.cs" />
+    <Compile Include="Device\MgSamplerMipmapMode.cs" />
+    <Compile Include="Device\MgSparseImageMemoryRequirements.cs" />
+    <Compile Include="Device\MgSpecializationInfo.cs" />
+    <Compile Include="Device\MgSpecializationMapEntry.cs" />
+    <Compile Include="Device\MgStencilOpState.cs" />
+    <Compile Include="Device\MgSubresourceLayout.cs" />
+    <Compile Include="Device\MgSwapchainCreateInfoKHR.cs" />
+    <Compile Include="Device\MgVertexInputBindingDescription.cs" />
+    <Compile Include="Device\MgVertexInputRate.cs" />
+    <Compile Include="Device\MgViewport.cs" />
+    <Compile Include="Device\MgVertexInputAttributeDescription.cs" />
+    <Compile Include="Device\MgDescriptorSetLayoutBinding.cs" />
+    <Compile Include="Device\MgDescriptorImageInfo.cs" />
+    <Compile Include="Device\MgComputePipelineCreateInfo.cs" />
+    <Compile Include="Device\MgCommandPoolCreateFlagBits.cs" />
+    <Compile Include="Device\MgCopyDescriptorSet.cs" />
+    <Compile Include="Device\MgCommandBufferLevel.cs" />
+    <Compile Include="Device\MgBufferCreateInfo.cs" />
+    <Compile Include="Device\MgBufferViewCreateInfo.cs" />
+    <Compile Include="Device\MgAttachmentStoreOp.cs" />
+    <Compile Include="Device\MgImageViewCreateInfo.cs" />
+    <Compile Include="Device\IMgDevice.cs" />
+    <Compile Include="CommandBuffer\IMgCommandBuffer.cs" />
+    <Compile Include="PhysicalDevice\IMgPhysicalDevice.cs" />
+    <Compile Include="Queue\IMgQueue.cs" />
+    <Compile Include="Instance\IMgInstance.cs" />
+    <Compile Include="Queue\MgSubmitInfo.cs" />
+    <Compile Include="Queue\MgSparseImageMemoryBind.cs" />
+    <Compile Include="Queue\MgSparseImageMemoryBindInfo.cs" />
+    <Compile Include="Queue\MgSparseMemoryBindFlagBits.cs" />
+    <Compile Include="Queue\MgSparseMemoryBind.cs" />
+    <Compile Include="Queue\MgSparseBufferMemoryBindInfo.cs" />
+    <Compile Include="Queue\MgSparseImageOpaqueMemoryBindInfo.cs" />
+    <Compile Include="Queue\MgBindSparseInfo.cs" />
+    <Compile Include="Queue\MgPresentInfoKHR.cs" />
+    <Compile Include="Queue\MgSubmitInfoWaitSemaphoreInfo.cs" />
+    <Compile Include="Device\IMgDescriptorSet.cs" />
+    <Compile Include="Driver\IMgImageTools.cs" />
+    <Compile Include="Driver\IMgLogicalDevice.cs" />
+    <Compile Include="Driver\IMgPresentationLayer.cs" />
+    <Compile Include="Driver\IMgQueueInfo.cs" />
+    <Compile Include="Driver\IMgThreadPartition.cs" />
+    <Compile Include="Driver\MgImageTools.cs" />
+    <Compile Include="Driver\MgQueueAllocation.cs" />
+    <Compile Include="Driver\MgQueueInfo.cs" />
+    <Compile Include="Driver\MgThreadPartition.cs" />
+    <Compile Include="Driver\MgLogicalDevice.cs" />
+    <Compile Include="Driver\MgDriver.cs" />
+    <Compile Include="Device\IMgDeviceMemory.cs" />
+    <Compile Include="Device\IMgBuffer.cs" />
+    <Compile Include="Device\IMgCommandPool.cs" />
+    <Compile Include="Device\IMgImage.cs" />
+    <Compile Include="Device\IMgSampler.cs" />
+    <Compile Include="Device\IMgSemaphore.cs" />
+    <Compile Include="Device\IMgSwapchainKHR.cs" />
+    <Compile Include="Device\IMgDescriptorPool.cs" />
+    <Compile Include="Device\IMgPipeline.cs" />
+    <Compile Include="Device\IMgFence.cs" />
+    <Compile Include="Device\IMgImageView.cs" />
+    <Compile Include="Device\IMgPipelineLayout.cs" />
+    <Compile Include="Device\IMgShaderModule.cs" />
+    <Compile Include="Core\MgColor4f.cs" />
+    <Compile Include="Device\MgColorComponentFlagBits.cs" />
+    <Compile Include="Driver\IMgTextureGenerator.cs" />
+    <Compile Include="Driver\MgTextureInfo.cs" />
+    <Compile Include="Driver\MgImageMipmap.cs" />
+    <Compile Include="Driver\MgImageSource.cs" />
+    <Compile Include="Driver\MgLinearImageOptimizer.cs" />
+    <Compile Include="Driver\MgStagingBufferOptimizer.cs" />
+    <Compile Include="Driver\MgSwapchainBuffer.cs" />
+    <Compile Include="Queue\MgPresentInfoKHRImage.cs" />
+    <Compile Include="Driver\MgGraphicsDeviceCreateInfo.cs" />
+    <Compile Include="Driver\IMgGraphicsDevice.cs" />
+    <Compile Include="Driver\MgSwapchainCollection.cs" />
+    <Compile Include="Driver\MgDefaultGraphicsDevice.cs" />
+    <Compile Include="Driver\IMgSwapchainCollection.cs" />
+    <Compile Include="Instance\MgAndroidSurfaceCreateInfoKHR.cs" />
+    <Compile Include="Callbacks\IMgAllocationCallbacks.cs" />
+    <Compile Include="Device\IMgRenderPass.cs" />
+    <Compile Include="Device\IMgQueryPool.cs" />
+    <Compile Include="Device\IMgEvent.cs" />
+    <Compile Include="Device\IMgFramebuffer.cs" />
+    <Compile Include="Callbacks\MgInternalAllocationType.cs" />
+    <Compile Include="Device\IMgPipelineCache.cs" />
+    <Compile Include="Instance\IMgSurfaceKHR.cs" />
+    <Compile Include="PhysicalDevice\IMgDisplayKHR.cs" />
+    <Compile Include="PhysicalDevice\MgDisplayModeCreateInfoKHR.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+  <ItemGroup />
+</Project>

@@ -1,0 +1,164 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectGuid>{84924A0F-0D4C-4B0C-B16A-4F26DD838AF2}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Magnesium.OpenGL</RootNamespace>
+    <AssemblyName>Magnesium.OpenGL</AssemblyName>
+    <TargetFrameworkProfile>Profile111</TargetFrameworkProfile>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Driver\GLEntrypoint.cs" />
+    <Compile Include="Queue\IGLQueue.cs" />
+    <Compile Include="Entrypoint\GLVertexAttributeType.cs" />
+    <Compile Include="Instance\GLInstance.cs" />
+    <Compile Include="PhysicalDevice\GLPhysicalDevice.cs" />
+    <Compile Include="Device\GLDevice.cs" />
+    <Compile Include="Device\IGLDeviceMemory.cs" />
+    <Compile Include="Device\GLPipelineLayout.cs" />
+    <Compile Include="Device\GLDescriptorSetLayout.cs" />
+    <Compile Include="Device\GLUniformBinding.cs" />
+    <Compile Include="Device\IGLSwapchainKHR.cs" />
+    <Compile Include="Device\GLDescriptorBindingGroup.cs" />
+    <Compile Include="Device\GLDescriptorBinding.cs" />
+    <Compile Include="Device\GLBufferDescriptor.cs" />
+    <Compile Include="Device\GLDescriptorSet.cs" />
+    <Compile Include="Device\GLImageDescriptor.cs" />
+    <Compile Include="Device\GLVariableBind.cs" />
+    <Compile Include="Device\GLFramebuffer.cs" />
+    <Compile Include="Device\GLImage.cs" />
+    <Compile Include="Device\GLImageArraySubresource.cs" />
+    <Compile Include="Device\GLImageLevelSubresource.cs" />
+    <Compile Include="Device\GLSampler.cs" />
+    <Compile Include="Entrypoint\IGLDeviceEntrypoint.cs" />
+    <Compile Include="Device\GLImageView.cs" />
+    <Compile Include="Entrypoint\DefaultGLDeviceEntrypoint.cs" />
+    <Compile Include="Device\GLShaderModule.cs" />
+    <Compile Include="Entrypoint\IGLShaderModuleEntrypoint.cs" />
+    <Compile Include="Entrypoint\IGLDeviceImageViewEntrypoint.cs" />
+    <Compile Include="Entrypoint\IGLDeviceImageEntrypoint.cs" />
+    <Compile Include="Entrypoint\IGLImageDescriptorEntrypoint.cs" />
+    <Compile Include="Entrypoint\IGLCmdVBOEntrypoint.cs" />
+    <Compile Include="Device\IGLBuffer.cs" />
+    <Compile Include="Entrypoint\IGLBufferEntrypoint.cs" />
+    <Compile Include="Entrypoint\IGLDeviceMemoryEntrypoint.cs" />
+    <Compile Include="Entrypoint\IGLSamplerEntrypoint.cs" />
+    <Compile Include="Device\IGLSemaphore.cs" />
+    <Compile Include="Entrypoint\IGLSemaphoreEntrypoint.cs" />
+    <Compile Include="Device\GLProgramUniformBinder.cs" />
+    <Compile Include="Device\IGLDescriptorPool.cs" />
+    <Compile Include="Entrypoint\IGLDescriptorPoolEntrypoint.cs" />
+    <Compile Include="Device\GLCommandPool.cs" />
+    <Compile Include="Device\GLRenderPass.cs" />
+    <Compile Include="CommandBuffer\GLCommandBuffer.cs" />
+    <Compile Include="CommandBuffer\GLCmdComputeCommand.cs" />
+    <Compile Include="CommandBuffer\IGLCmdBufferRepository.cs" />
+    <Compile Include="CommandBuffer\GLCmdRenderPassCommand.cs" />
+    <Compile Include="CommandBuffer\GLCmdDrawCommand.cs" />
+    <Compile Include="CommandBuffer\GLCmdInternalDraw.cs" />
+    <Compile Include="CommandBuffer\GLCmdInternalDrawIndexed.cs" />
+    <Compile Include="CommandBuffer\GLCmdInternalDrawIndexedIndirect.cs" />
+    <Compile Include="CommandBuffer\GLCmdInternalDrawIndirect.cs" />
+    <Compile Include="CommandBuffer\CmdBufferInstructionSetTransformer.cs" />
+    <Compile Include="Device\IGLRenderPass.cs" />
+    <Compile Include="Device\GLClearAttachmentType.cs" />
+    <Compile Include="Device\GLClearAttachmentInfo.cs" />
+    <Compile Include="CommandBuffer\DynamicStateItemStore.cs" />
+    <Compile Include="GraphicsPipeline\IGLGraphicsPipeline.cs" />
+    <Compile Include="GraphicsPipeline\GLGraphicsPipelineStencilState.cs" />
+    <Compile Include="GraphicsPipeline\GLGraphicsPipelineStencilMasks.cs" />
+    <Compile Include="GraphicsPipeline\GLGraphicsPipelineDepthState.cs" />
+    <Compile Include="GraphicsPipeline\GLGraphicsPipelineBlendColorAttachmentState.cs" />
+    <Compile Include="GraphicsPipeline\GLGraphicsPipelineBlendColorState.cs" />
+    <Compile Include="GraphicsPipeline\GLVertexBufferBinder.cs" />
+    <Compile Include="GraphicsPipeline\GLVertexBufferBinding.cs" />
+    <Compile Include="GraphicsPipeline\GLVertexAttributeInfo.cs" />
+    <Compile Include="GraphicsPipeline\GLVertexAttribFunction.cs" />
+    <Compile Include="GraphicsPipeline\GLGraphicsPipelineDynamicStateFlagBits.cs" />
+    <Compile Include="GraphicsPipeline\GLGraphicsPipelineFlagBits.cs" />
+    <Compile Include="CommandBuffer\GLCmdArraySlice.cs" />
+    <Compile Include="CommandBuffer\GLCmdScissorParameter.cs" />
+    <Compile Include="CommandBuffer\GLCmdViewportParameter.cs" />
+    <Compile Include="CommandBuffer\IGLCmdMergeableParameter.cs" />
+    <Compile Include="CommandBuffer\GLCmdBufferStore.cs" />
+    <Compile Include="CommandBuffer\IGLCmdBufferStore.cs" />
+    <Compile Include="CommandBuffer\GLCmdVertexBufferParameter.cs" />
+    <Compile Include="CommandBuffer\GLCmdIndexBufferParameter.cs" />
+    <Compile Include="CommandBuffer\GLCmdDescriptorSetParameter.cs" />
+    <Compile Include="CommandBuffer\GLCmdDepthBiasParameter.cs" />
+    <Compile Include="CommandBuffer\GLCmdDepthBoundsParameter.cs" />
+    <Compile Include="CommandBuffer\ICmdBufferInstructionSetComposer.cs" />
+    <Compile Include="CommandBuffer\GLCmdVertexBufferObject.cs" />
+    <Compile Include="CommandBuffer\GLCmdBufferDrawItem.cs" />
+    <Compile Include="CommandBuffer\GLCmdBufferPipelineItem.cs" />
+    <Compile Include="CommandBuffer\GLCmdClearValuesParameter.cs" />
+    <Compile Include="CommandBuffer\GLCommandBufferFlagBits.cs" />
+    <Compile Include="CommandBuffer\GLClearValueArrayItem.cs" />
+    <Compile Include="CommandBuffer\CmdBufferInstructionSet.cs" />
+    <Compile Include="CommandBuffer\CmdImageInstructionSet.cs" />
+    <Compile Include="CommandBuffer\GLCmdTexImageData.cs" />
+    <Compile Include="CommandBuffer\IGLCmdBufferStoreResettable.cs" />
+    <Compile Include="GraphicsPipeline\GLVertexInputAttribute.cs" />
+    <Compile Include="GraphicsPipeline\GLGraphicsPipeline.cs" />
+    <Compile Include="CommandBuffer\GLCmdBufferRepository.cs" />
+    <Compile Include="Entrypoint\IGLGraphicsPipelineEntrypoint.cs" />
+    <Compile Include="Entrypoint\IGLImageFormatEntrypoint.cs" />
+    <Compile Include="Entrypoint\GLInternalImageFormat.cs" />
+    <Compile Include="Queue\GLQueue.cs" />
+    <Compile Include="Queue\GLQueueSubmission.cs" />
+    <Compile Include="Queue\IGLQueueRenderer.cs" />
+    <Compile Include="Queue\GLQueueSubmitOrder.cs" />
+    <Compile Include="Queue\IGLQueueFence.cs" />
+    <Compile Include="Queue\GLQueueRenderer.cs" />
+    <Compile Include="Entrypoint\IGLCmdBlendEntrypoint.cs" />
+    <Compile Include="Entrypoint\IGLCmdDrawEntrypoint.cs" />
+    <Compile Include="Entrypoint\IGLCmdRasterizationEntrypoint.cs" />
+    <Compile Include="Entrypoint\IGLCmdScissorsEntrypoint.cs" />
+    <Compile Include="Entrypoint\IGLCmdStencilEntrypoint.cs" />
+    <Compile Include="Entrypoint\IGLCmdDepthEntrypoint.cs" />
+    <Compile Include="Entrypoint\IGLCmdShaderProgramCache.cs" />
+    <Compile Include="Queue\GLQueueRendererStencilState.cs" />
+    <Compile Include="Queue\GLQueueRendererRasterizerState.cs" />
+    <Compile Include="Entrypoint\IGLErrorHandler.cs" />
+    <Compile Include="Queue\GLQueueClearBufferMask.cs" />
+    <Compile Include="Queue\GLQueueRendererClearValueState.cs" />
+    <Compile Include="Entrypoint\IGLFramebufferHelperSelector.cs" />
+    <Compile Include="Entrypoint\IGLFramebufferSupport.cs" />
+    <Compile Include="Entrypoint\IGLFramebufferHelper.cs" />
+    <Compile Include="Entrypoint\IGLExtensionLookup.cs" />
+    <Compile Include="Entrypoint\IGLCmdClearEntrypoint.cs" />
+    <Compile Include="Entrypoint\IGLCmdImageEntrypoint.cs" />
+    <Compile Include="Entrypoint\IGLGraphicsPipelineCompiler.cs" />
+    <Compile Include="Entrypoint\GLSLGraphicsPipelineCompilier.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\Magnesium\Magnesium.csproj">
+      <Project>{9f9ac448-9d17-43e5-8889-285426290891}</Project>
+      <Name>Magnesium</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>
