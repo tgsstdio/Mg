@@ -47,8 +47,10 @@ Temporary Items
 .apdisk
 
 bin/*.*
+[Bb]in/*
 **/bin/*.*
 obj/**
+[Oo]bj/*
 **/obj/*.*
 Build/*.nupkg
 *.userprefs
