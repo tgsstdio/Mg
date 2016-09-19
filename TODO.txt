@@ -1,0 +1,23 @@
+* Vulkan version number utility
+* delegate and callbacks
+* Make sure strings are passed and received as UTF-8 in 11 instances
+ - VkInstanceCreateInfo - DONE 
+	- ppEnabledLayerNames - DONE
+	- ppEnabledExtensionNames - DONE
+ - VkApplicationInfo - DONE
+	- pApplicationName - DONE
+	- pEngineName - DONE
+ - VkPhysicalDeviceProperties - DONE
+	- deviceName - DONE
+ - VkDeviceCreateInfo - DONE
+	- ppEnabledExtensionNames - DONE
+ - compute & graphics VkPipelineShaderStageCreateInfo - DONE
+	- pName - DONE
+ - VkLayerProperties - DONE
+	- layerName - DONE
+	- description - DONE
+ - vkEnumerateInstanceExtensionProperties - DONE
+ - vkEnumerateDeviceExtensionProperties - DONE
+
+
+

@@ -1,4 +1,0 @@
-[submodule "Magnesium.Vulkan"]
-	path = Magnesium.Vulkan
-	url = https://github.com/tgsstdio/Magnesium.Vulkan.git
-	branch = master

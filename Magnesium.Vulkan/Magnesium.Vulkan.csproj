@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8EF770D0-2DBC-4A8C-BF5D-DC3D429190F8}</ProjectGuid>
+    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Magnesium.Vulkan</RootNamespace>
+    <AssemblyName>Magnesium.Vulkan</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Profile111</TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Enums\VkAccessFlags.cs" />
+    <Compile Include="Enums\VkAttachmentDescriptionFlags.cs" />
+    <Compile Include="Enums\VkAttachmentLoadOp.cs" />
+    <Compile Include="Enums\VkAttachmentStoreOp.cs" />
+    <Compile Include="Enums\VkBlendFactor.cs" />
+    <Compile Include="Enums\VkBlendOp.cs" />
+    <Compile Include="Enums\VkBorderColor.cs" />
+    <Compile Include="Enums\VkBufferCreateFlags.cs" />
+    <Compile Include="Enums\VkBufferUsageFlags.cs" />
+    <Compile Include="Enums\VkColorComponentFlags.cs" />
+    <Compile Include="Enums\VkColorSpaceKhr.cs" />
+    <Compile Include="Enums\VkCommandBufferLevel.cs" />
+    <Compile Include="Enums\VkCommandBufferResetFlags.cs" />
+    <Compile Include="Enums\VkCommandBufferUsageFlags.cs" />
+    <Compile Include="Enums\VkCommandPoolCreateFlags.cs" />
+    <Compile Include="Enums\VkCommandPoolResetFlags.cs" />
+    <Compile Include="Enums\VkCompareOp.cs" />
+    <Compile Include="Enums\VkComponentSwizzle.cs" />
+    <Compile Include="Enums\VkCompositeAlphaFlagsKhr.cs" />
+    <Compile Include="Enums\VkCullModeFlags.cs" />
+    <Compile Include="Enums\VkDebugReportErrorExt.cs" />
+    <Compile Include="Enums\VkDebugReportFlagsExt.cs" />
+    <Compile Include="Enums\VkDebugReportObjectTypeExt.cs" />
+    <Compile Include="Enums\VkDependencyFlags.cs" />
+    <Compile Include="Enums\VkDescriptorPoolCreateFlags.cs" />
+    <Compile Include="Enums\VkDescriptorType.cs" />
+    <Compile Include="Enums\VkDisplayPlaneAlphaFlagsKhr.cs" />
+    <Compile Include="Enums\VkDynamicState.cs" />
+    <Compile Include="Enums\VkFenceCreateFlags.cs" />
+    <Compile Include="Enums\VkFilter.cs" />
+    <Compile Include="Enums\VkFormat.cs" />
+    <Compile Include="Enums\VkFormatFeatureFlags.cs" />
+    <Compile Include="Enums\VkFrontFace.cs" />
+    <Compile Include="Enums\VkImageAspectFlags.cs" />
+    <Compile Include="Enums\VkImageCreateFlags.cs" />
+    <Compile Include="Enums\VkImageLayout.cs" />
+    <Compile Include="Enums\VkImageTiling.cs" />
+    <Compile Include="Enums\VkImageType.cs" />
+    <Compile Include="Enums\VkImageUsageFlags.cs" />
+    <Compile Include="Enums\VkImageViewType.cs" />
+    <Compile Include="Enums\VkIndexType.cs" />
+    <Compile Include="Enums\VkInternalAllocationType.cs" />
+    <Compile Include="Enums\VkLogicOp.cs" />
+    <Compile Include="Enums\VkMemoryHeapFlags.cs" />
+    <Compile Include="Enums\VkMemoryPropertyFlags.cs" />
+    <Compile Include="Enums\VkPhysicalDeviceType.cs" />
+    <Compile Include="Enums\VkPipelineBindPoint.cs" />
+    <Compile Include="Enums\VkPipelineCacheHeaderVersion.cs" />
+    <Compile Include="Enums\VkPipelineCreateFlags.cs" />
+    <Compile Include="Enums\VkPipelineStageFlags.cs" />
+    <Compile Include="Enums\VkPolygonMode.cs" />
+    <Compile Include="Enums\VkPresentModeKhr.cs" />
+    <Compile Include="Enums\VkPrimitiveTopology.cs" />
+    <Compile Include="Enums\VkQueryControlFlags.cs" />
+    <Compile Include="Enums\VkQueryPipelineStatisticFlags.cs" />
+    <Compile Include="Enums\VkQueryResultFlags.cs" />
+    <Compile Include="Enums\VkQueryType.cs" />
+    <Compile Include="Enums\VkQueueFlags.cs" />
+    <Compile Include="Enums\VkRasterizationOrderAMD.cs" />
+    <Compile Include="Enums\VkResult.cs" />
+    <Compile Include="Enums\VkSampleCountFlags.cs" />
+    <Compile Include="Enums\VkSamplerAddressMode.cs" />
+    <Compile Include="Enums\VkSamplerMipmapMode.cs" />
+    <Compile Include="Enums\VkShaderStageFlags.cs" />
+    <Compile Include="Enums\VkSharingMode.cs" />
+    <Compile Include="Enums\VkSparseImageFormatFlags.cs" />
+    <Compile Include="Enums\VkSparseMemoryBindFlags.cs" />
+    <Compile Include="Enums\VkStencilFaceFlags.cs" />
+    <Compile Include="Enums\VkStencilOp.cs" />
+    <Compile Include="Enums\VkStructureType.cs" />
+    <Compile Include="Enums\VkSubpassContents.cs" />
+    <Compile Include="Enums\VkSurfaceTransformFlagsKhr.cs" />
+    <Compile Include="Enums\VkSystemAllocationScope.cs" />
+    <Compile Include="Enums\VkVertexInputRate.cs" />
+    <Compile Include="Structs\VkAllocationCallbacks.cs" />
+    <Compile Include="Structs\VkAndroidSurfaceCreateInfoKHR.cs" />
+    <Compile Include="Structs\VkApplicationInfo.cs" />
+    <Compile Include="Structs\VkAttachmentDescription.cs" />
+    <Compile Include="Structs\VkAttachmentReference.cs" />
+    <Compile Include="Structs\VkBindSparseInfo.cs" />
+    <Compile Include="Structs\VkBufferCopy.cs" />
+    <Compile Include="Structs\VkBufferCreateInfo.cs" />
+    <Compile Include="Structs\VkBufferImageCopy.cs" />
+    <Compile Include="Structs\VkBufferMemoryBarrier.cs" />
+    <Compile Include="Structs\VkBufferViewCreateInfo.cs" />
+    <Compile Include="Structs\VkCommandBufferAllocateInfo.cs" />
+    <Compile Include="Structs\VkCommandBufferBeginInfo.cs" />
+    <Compile Include="Structs\VkCommandBufferInheritanceInfo.cs" />
+    <Compile Include="Structs\VkCommandPoolCreateInfo.cs" />
+    <Compile Include="Structs\VkComponentMapping.cs" />
+    <Compile Include="Structs\VkComputePipelineCreateInfo.cs" />
+    <Compile Include="Structs\VkCopyDescriptorSet.cs" />
+    <Compile Include="Structs\VkDebugMarkerMarkerInfoEXT.cs" />
+    <Compile Include="Structs\VkDebugMarkerObjectNameInfoEXT.cs" />
+    <Compile Include="Structs\VkDebugMarkerObjectTagInfoEXT.cs" />
+    <Compile Include="Structs\VkDebugReportCallbackCreateInfoEXT.cs" />
+    <Compile Include="Structs\VkDedicatedAllocationBufferCreateInfoNV.cs" />
+    <Compile Include="Structs\VkDedicatedAllocationImageCreateInfoNV.cs" />
+    <Compile Include="Structs\VkDedicatedAllocationMemoryAllocateInfoNV.cs" />
+    <Compile Include="Structs\VkDescriptorBufferInfo.cs" />
+    <Compile Include="Structs\VkDescriptorImageInfo.cs" />
+    <Compile Include="Structs\VkDescriptorPoolCreateInfo.cs" />
+    <Compile Include="Structs\VkDescriptorPoolSize.cs" />
+    <Compile Include="Structs\VkDescriptorSetAllocateInfo.cs" />
+    <Compile Include="Structs\VkDescriptorSetLayoutBinding.cs" />
+    <Compile Include="Structs\VkDescriptorSetLayoutCreateInfo.cs" />
+    <Compile Include="Structs\VkDeviceCreateInfo.cs" />
+    <Compile Include="Structs\VkDeviceQueueCreateInfo.cs" />
+    <Compile Include="Structs\VkDispatchIndirectCommand.cs" />
+    <Compile Include="Structs\VkDisplayModeCreateInfoKHR.cs" />
+    <Compile Include="Structs\VkDisplayPlaneCapabilitiesKHR.cs" />
+    <Compile Include="Structs\VkDisplayPlanePropertiesKHR.cs" />
+    <Compile Include="Structs\VkDisplayPresentInfoKHR.cs" />
+    <Compile Include="Structs\VkDisplayPropertiesKHR.cs" />
+    <Compile Include="Structs\VkDisplaySurfaceCreateInfoKHR.cs" />
+    <Compile Include="Structs\VkDrawIndexedIndirectCommand.cs" />
+    <Compile Include="Structs\VkDrawIndirectCommand.cs" />
+    <Compile Include="Structs\VkEventCreateInfo.cs" />
+    <Compile Include="Structs\VkExtensionProperties.cs" />
+    <Compile Include="Structs\VkFenceCreateInfo.cs" />
+    <Compile Include="Structs\VkFormatProperties.cs" />
+    <Compile Include="Structs\VkFramebufferCreateInfo.cs" />
+    <Compile Include="Structs\VkGraphicsPipelineCreateInfo.cs" />
+    <Compile Include="Structs\VkImageBlit.cs" />
+    <Compile Include="Structs\VkImageCopy.cs" />
+    <Compile Include="Structs\VkImageCreateInfo.cs" />
+    <Compile Include="Structs\VkImageFormatProperties.cs" />
+    <Compile Include="Structs\VkImageMemoryBarrier.cs" />
+    <Compile Include="Structs\VkImageResolve.cs" />
+    <Compile Include="Structs\VkImageSubresource.cs" />
+    <Compile Include="Structs\VkImageSubresourceLayers.cs" />
+    <Compile Include="Structs\VkImageSubresourceRange.cs" />
+    <Compile Include="Structs\VkImageViewCreateInfo.cs" />
+    <Compile Include="Structs\VkInstanceCreateInfo.cs" />
+    <Compile Include="Structs\VkLayerProperties.cs" />
+    <Compile Include="Structs\VkMappedMemoryRange.cs" />
+    <Compile Include="Structs\VkMemoryAllocateInfo.cs" />
+    <Compile Include="Structs\VkMemoryBarrier.cs" />
+    <Compile Include="Structs\VkMemoryHeap.cs" />
+    <Compile Include="Structs\VkMemoryType.cs" />
+    <Compile Include="Structs\VkMirSurfaceCreateInfoKHR.cs" />
+    <Compile Include="Structs\VkPhysicalDeviceFeatures.cs" />
+    <Compile Include="Structs\VkPhysicalDeviceLimits.cs" />
+    <Compile Include="Structs\VkPhysicalDeviceMemoryProperties.cs" />
+    <Compile Include="Structs\VkPhysicalDeviceProperties.cs" />
+    <Compile Include="Structs\VkPhysicalDeviceSparseProperties.cs" />
+    <Compile Include="Structs\VkPipelineCacheCreateInfo.cs" />
+    <Compile Include="Structs\VkPipelineColorBlendAttachmentState.cs" />
+    <Compile Include="Structs\VkPipelineColorBlendStateCreateInfo.cs" />
+    <Compile Include="Structs\VkPipelineDepthStencilStateCreateInfo.cs" />
+    <Compile Include="Structs\VkPipelineDynamicStateCreateInfo.cs" />
+    <Compile Include="Structs\VkPipelineInputAssemblyStateCreateInfo.cs" />
+    <Compile Include="Structs\VkPipelineLayoutCreateInfo.cs" />
+    <Compile Include="Structs\VkPipelineMultisampleStateCreateInfo.cs" />
+    <Compile Include="Structs\VkPipelineRasterizationStateCreateInfo.cs" />
+    <Compile Include="Structs\VkPipelineRasterizationStateRasterizationOrderAMD.cs" />
+    <Compile Include="Structs\VkPipelineShaderStageCreateInfo.cs" />
+    <Compile Include="Structs\VkPipelineTessellationStateCreateInfo.cs" />
+    <Compile Include="Structs\VkPipelineVertexInputStateCreateInfo.cs" />
+    <Compile Include="Structs\VkPipelineViewportStateCreateInfo.cs" />
+    <Compile Include="Structs\VkPresentInfoKHR.cs" />
+    <Compile Include="Structs\VkPushConstantRange.cs" />
+    <Compile Include="Structs\VkQueryPoolCreateInfo.cs" />
+    <Compile Include="Structs\VkQueueFamilyProperties.cs" />
+    <Compile Include="Structs\VkRenderPassBeginInfo.cs" />
+    <Compile Include="Structs\VkRenderPassCreateInfo.cs" />
+    <Compile Include="Structs\VkSamplerCreateInfo.cs" />
+    <Compile Include="Structs\VkSemaphoreCreateInfo.cs" />
+    <Compile Include="Structs\VkShaderModuleCreateInfo.cs" />
+    <Compile Include="Structs\VkSparseBufferMemoryBindInfo.cs" />
+    <Compile Include="Structs\VkSparseImageFormatProperties.cs" />
+    <Compile Include="Structs\VkSparseImageMemoryBind.cs" />
+    <Compile Include="Structs\VkSparseImageMemoryBindInfo.cs" />
+    <Compile Include="Structs\VkSparseImageMemoryRequirements.cs" />
+    <Compile Include="Structs\VkSparseImageOpaqueMemoryBindInfo.cs" />
+    <Compile Include="Structs\VkSparseMemoryBind.cs" />
+    <Compile Include="Structs\VkSpecializationInfo.cs" />
+    <Compile Include="Structs\VkSpecializationMapEntry.cs" />
+    <Compile Include="Structs\VkStencilOpState.cs" />
+    <Compile Include="Structs\VkSubmitInfo.cs" />
+    <Compile Include="Structs\VkSubpassDependency.cs" />
+    <Compile Include="Structs\VkSubpassDescription.cs" />
+    <Compile Include="Structs\VkSubresourceLayout.cs" />
+    <Compile Include="Structs\VkSurfaceCapabilitiesKHR.cs" />
+    <Compile Include="Structs\VkSurfaceFormatKHR.cs" />
+    <Compile Include="Structs\VkSwapchainCreateInfoKHR.cs" />
+    <Compile Include="Structs\VkVertexInputAttributeDescription.cs" />
+    <Compile Include="Structs\VkVertexInputBindingDescription.cs" />
+    <Compile Include="Structs\VkWaylandSurfaceCreateInfoKHR.cs" />
+    <Compile Include="Structs\VkWin32SurfaceCreateInfoKHR.cs" />
+    <Compile Include="Structs\VkWriteDescriptorSet.cs" />
+    <Compile Include="Structs\VkXcbSurfaceCreateInfoKHR.cs" />
+    <Compile Include="Structs\VkXlibSurfaceCreateInfoKHR.cs" />
+    <Compile Include="Core\Interops.cs" />
+    <Compile Include="Core\MgVkAllocationCallbacks.cs" />
+    <Compile Include="Core\VkBool32.cs" />
+    <Compile Include="Handles\VkBuffer.cs" />
+    <Compile Include="Handles\VkBufferView.cs" />
+    <Compile Include="Handles\VkCommandBuffer.cs" />
+    <Compile Include="Handles\VkCommandPool.cs" />
+    <Compile Include="Handles\VkDebugReportCallbackEXT.cs" />
+    <Compile Include="Handles\VkDescriptorPool.cs" />
+    <Compile Include="Handles\VkDescriptorSet.cs" />
+    <Compile Include="Handles\VkDescriptorSetLayout.cs" />
+    <Compile Include="Handles\VkDevice.cs" />
+    <Compile Include="Handles\VkDeviceMemory.cs" />
+    <Compile Include="Handles\VkDisplayModeKHR.cs" />
+    <Compile Include="Handles\VkEntrypoint.cs" />
+    <Compile Include="Handles\VkEvent.cs" />
+    <Compile Include="Handles\VkFence.cs" />
+    <Compile Include="Handles\VkFramebuffer.cs" />
+    <Compile Include="Handles\VkImage.cs" />
+    <Compile Include="Handles\VkImageView.cs" />
+    <Compile Include="Handles\VkInstance.cs" />
+    <Compile Include="Handles\VkPhysicalDevice.cs" />
+    <Compile Include="Handles\VkPipeline.cs" />
+    <Compile Include="Handles\VkPipelineCache.cs" />
+    <Compile Include="Handles\VkPipelineLayout.cs" />
+    <Compile Include="Handles\VkQueryPool.cs" />
+    <Compile Include="Handles\VkQueue.cs" />
+    <Compile Include="Handles\VkRenderPass.cs" />
+    <Compile Include="Handles\VkSampler.cs" />
+    <Compile Include="Handles\VkSemaphore.cs" />
+    <Compile Include="Handles\VkShaderModule.cs" />
+    <Compile Include="Handles\VkSurfaceKHR.cs" />
+    <Compile Include="Handles\VkSwapchainKHR.cs" />
+    <Compile Include="Handles\VkDisplayKHR.cs" />
+    <Compile Include="Structs\VkDisplayModePropertiesKHR.cs" />
+    <Compile Include="Handles\VkInteropsUtility.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Core\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\MonoGame\Magnesium\Magnesium.csproj">
+      <Project>{9F9AC448-9D17-43E5-8889-285426290891}</Project>
+      <Name>Magnesium</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+</Project>
