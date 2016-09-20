@@ -1,0 +1,67 @@
+﻿<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{32B6046B-4432-4DDF-9718-EB5C3A1A0285}</ProjectGuid>
+    <ProjectTypeGuids>{A3F8F2AB-B479-4A4A-A458-A89E7DC349F1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Magnesium.Metal</RootNamespace>
+    <AssemblyName>Magnesium.Metal</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkIdentifier>Xamarin.Mac</TargetFrameworkIdentifier>
+    <MonoMacResourcePrefix>Resources</MonoMacResourcePrefix>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <EnableCodeSigning>false</EnableCodeSigning>
+    <CreatePackage>false</CreatePackage>
+    <EnablePackageSigning>false</EnablePackageSigning>
+    <IncludeMonoRuntime>false</IncludeMonoRuntime>
+    <UseSGen>false</UseSGen>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <EnableCodeSigning>false</EnableCodeSigning>
+    <CreatePackage>false</CreatePackage>
+    <EnablePackageSigning>false</EnablePackageSigning>
+    <IncludeMonoRuntime>false</IncludeMonoRuntime>
+    <UseSGen>false</UseSGen>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="Xamarin.Mac" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AmtDevice.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="AmtEntrypoint.cs" />
+    <Compile Include="AmtInstance.cs" />
+    <Compile Include="AmtPhysicalDevice.cs" />
+    <Compile Include="IAmtDeviceQuery.cs" />
+    <Compile Include="AmtQueue.cs" />
+    <Compile Include="AmtCommandPool.cs" />
+    <Compile Include="AmtImage.cs" />
+    <Compile Include="AmtShaderModule.cs" />
+    <Compile Include="AmtGraphicsPipeline.cs" />
+    <Compile Include="AmtRenderPass.cs" />
+    <Compile Include="AmtRenderPassAttachmentDestination.cs" />
+    <Compile Include="AmtRenderPassClearAttachment.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Magnesium\Magnesium.csproj">
+      <Project>{9F9AC448-9D17-43E5-8889-285426290891}</Project>
+      <Name>Magnesium</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
+</Project>
