@@ -1,15 +1,23 @@
 ﻿using System;
+using Foundation;
+using Metal;
+
 namespace Magnesium.Metal
 {
-	public class AmtShaderModule : IMgShaderModule
+	internal class AmtShaderModule : IMgShaderModule
 	{
-		public AmtShaderModule()
+		public IMTLFunction Function { get; internal set; }
+		public AmtShaderModule(MgShaderModuleCreateInfo pCreateInfo)
 		{
+			Info = pCreateInfo;
 		}
 
+		public MgShaderModuleCreateInfo Info { get; private set; }
+
+		private bool mIsDisposed = false;
 		public void DestroyShaderModule(IMgDevice device, IMgAllocationCallbacks allocator)
 		{
-			throw new NotImplementedException();
+			
 		}
 	}
 }

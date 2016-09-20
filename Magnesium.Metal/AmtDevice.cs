@@ -89,7 +89,7 @@ namespace Magnesium.Metal
 
 			foreach (var info in pCreateInfos)
 			{
-				var layout = info.Layout as GLPipelineLayout;
+				var layout = (AmtPipelineLayout) info.Layout;
 				if (layout == null)
 				{
 					throw new ArgumentException("pCreateInfos[].Layout");
@@ -110,20 +110,38 @@ namespace Magnesium.Metal
 					throw new ArgumentNullException("pCreateInfos[].RasterizationState");
 				}
 
+				if (info.RenderPass == null)
+				{
+					throw new ArgumentNullException("pCreateInfos[].RenderPass");
+				}
+
+				var renderPass = (AmtRenderPass) info.RenderPass;
+
+				var sampleCount = (info.MultisampleState != null) ? TranslateSampleCount(info.MultisampleState.RasterizationSamples) : 1; 
+
 				// Create a reusable pipeline state
 				var pipelineStateDescriptor = new MTLRenderPipelineDescriptor
 				{
-					Label = "MyPipeline",
-					SampleCount = view.SampleCount,
+					SampleCount = sampleCount,
 					VertexFunction = vertexProgram,
 					FragmentFunction = fragmentProgram,
 					VertexDescriptor = vertexDescriptor,
-					DepthAttachmentPixelFormat = view.DepthStencilPixelFormat,
-					StencilAttachmentPixelFormat = view.DepthStencilPixelFormat,
-					 
 				};
 
-				pipelineStateDescriptor.ColorAttachments[0].PixelFormat = view.ColorPixelFormat;
+				nint colorAttachmentIndex = 0;
+				foreach (var attachment in renderPass.ClearAttachments)
+				{
+					if (attachment.Destination == AmtRenderPassAttachmentDestination.COLOR)
+					{
+						pipelineStateDescriptor.ColorAttachments[colorAttachmentIndex].PixelFormat = TranslateFormat(attachment.Format);
+
+					}
+					else if (attachment.Destination == AmtRenderPassAttachmentDestination.DEPTH_AND_STENCIL)
+					{
+						pipelineStateDescriptor.DepthAttachmentPixelFormat = TranslateFormat(attachment.Format);
+						pipelineStateDescriptor.StencilAttachmentPixelFormat = TranslateFormat(attachment.Format);
+					}
+				}
 
 				Foundation.NSError error;
 				var pipelineState = mDevice.CreateRenderPipelineState(pipelineStateDescriptor, out error);
@@ -363,7 +381,7 @@ namespace Magnesium.Metal
 
 			//TODO : Figure this out
 			var storageMode = MTLStorageMode.Shared;
-			var resourceOptions = MTLResourceOptions.CpuCacheModeDefault;\
+			var resourceOptions = MTLResourceOptions.CpuCacheModeDefault;
 			var cpuCacheMode = MTLCpuCacheMode.DefaultCache;
 
 			var descriptor = new MTLTextureDescriptor
@@ -409,7 +427,8 @@ namespace Magnesium.Metal
 
 		public Result CreateRenderPass(MgRenderPassCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgRenderPass pRenderPass)
 		{
-			throw new NotImplementedException();
+			pRenderPass = new AmtRenderPass(pCreateInfo);
+			return Result.SUCCESS;
 		}
 
 		public Result CreateSampler(MgSamplerCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgSampler pSampler)
