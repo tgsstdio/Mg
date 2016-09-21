@@ -57,7 +57,9 @@
     <Compile Include="AmtRenderPassAttachmentDestination.cs" />
     <Compile Include="AmtRenderPassClearAttachment.cs" />
     <Compile Include="AmtPipelineLayout.cs" />
-    <Compile Include="AmtMetalShaderCompiler.cs" />
+    <Compile Include="IAmtFormatExtensions.cs" />
+    <Compile Include="AmtVertexLayoutBinding.cs" />
+    <Compile Include="AmtVertexAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Magnesium\Magnesium.csproj">

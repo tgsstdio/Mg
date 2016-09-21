@@ -69,6 +69,10 @@ Tools/*/*/bin/*
 Tools/*/*/obj/*
 Tools/*/packages/*
 
+Magnesium.OpenGL/[Bb]in/*
+Magnesium.OpenGL/[Oo]bj/*
+Magnesium.OpenGL.DesktopGL/[Bb]in/*
+Magnesium.OpenGL.DesktopGL/[Oo]bj/*
 Magnesium.Vulkan/bin/*
 Magnesium.Vulkan/obj/*
 Magnesium.Vulkan/.vs/Magnesium.Vulkan/v14/.suo
