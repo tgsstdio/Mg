@@ -46,12 +46,12 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-bin/*.*
 [Bb]in/*
-**/bin/*.*
-obj/**
+*/[Bb]in/*
 [Oo]bj/*
-**/obj/*.*
+*/[Oo]bj/*
+[Pp]ackages/*
+*/[Pp]ackages/*
 Build/*.nupkg
 *.userprefs
 Magnesium/obj/*
