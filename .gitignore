@@ -61,6 +61,7 @@ Magnesium/.vs/Magnesium/v14/.suo
 
 bin/*
 obj/*
+Magnesium.Vulkan\.vs\Magnesium.Vulkan\v14\.suo
 packages/*/*
 Tools/*/bin/*
 Tools/*/obj/*
