@@ -35,7 +35,9 @@
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Driver\IMgPresentationLayer.cs" />
     <Compile Include="Driver\MgEnableExtensionsOption.cs" />
+    <Compile Include="Driver\MgPresentationLayer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Enums\Result.cs" />
     <Compile Include="Device\MgShaderModuleCreateInfo.cs" />
@@ -240,7 +242,7 @@
     <Compile Include="Device\IMgDescriptorSet.cs" />
     <Compile Include="Driver\IMgImageTools.cs" />
     <Compile Include="Driver\IMgLogicalDevice.cs" />
-    <Compile Include="Driver\IMgPresentationLayer.cs" />
+    <Compile Include="Driver\IMgPresentationSurface.cs" />
     <Compile Include="Driver\IMgQueueInfo.cs" />
     <Compile Include="Driver\IMgThreadPartition.cs" />
     <Compile Include="Driver\MgImageTools.cs" />
