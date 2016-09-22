@@ -41,6 +41,7 @@ namespace Magnesium.Metal
 
 			InitializeShaderFunctions(device, info);
 			InitializeVertexDescriptor(info.VertexInputState);
+			InitiailizeDepthStateDescriptor(info.DepthStencilState);
 			//InitialiseColorAttachments(info);
 
 			//Foundation.NSError error;
@@ -56,6 +57,124 @@ namespace Magnesium.Metal
 			//};
 
 			//var depthState = device.CreateDepthStencilState(depthStateDesc);
+		}
+
+		public AmtStencilInfo BackStencil { get; private set;}
+		public bool DepthWriteEnabled { get; private set; }
+		public MTLCompareFunction DepthCompareFunction { get; private set;}
+
+		public AmtStencilInfo FrontStencil { get; private set; }
+
+		void InitiailizeDepthStateDescriptor(MgPipelineDepthStencilStateCreateInfo depthStencil)
+		{
+			if (depthStencil != null)
+			{
+				DepthCompareFunction = GetCompareFunction(depthStencil.DepthCompareOp);
+				DepthWriteEnabled = depthStencil.DepthWriteEnable;
+
+				{
+					var localState = depthStencil.Back;
+					BackStencil = new AmtStencilInfo
+					{
+						WriteMask = localState.WriteMask,
+						ReadMask = localState.CompareMask,
+						StencilCompareFunction = GetCompareFunction(localState.CompareOp),
+						DepthFailure = GetStencilOperation(localState.DepthFailOp),
+						DepthStencilPass = GetStencilOperation(localState.PassOp),
+						StencilFailure = GetStencilOperation(localState.FailOp),
+					};
+				}
+
+				{
+					var localState = depthStencil.Front;
+					BackStencil = new AmtStencilInfo
+					{
+						WriteMask = localState.WriteMask,
+						ReadMask = localState.CompareMask,
+						StencilCompareFunction = GetCompareFunction(localState.CompareOp),
+						DepthFailure = GetStencilOperation(localState.DepthFailOp),
+						DepthStencilPass = GetStencilOperation(localState.PassOp),
+						StencilFailure = GetStencilOperation(localState.FailOp),
+					};
+				}
+			}
+			else
+			{
+				// VULKAN : If there is no depth framebuffer attachment, it is as if the depth test always passes.
+				DepthCompareFunction = MTLCompareFunction.Always;
+				DepthWriteEnabled = true;
+
+				// USE OPENGL DEFAULTS
+
+				BackStencil = new AmtStencilInfo
+				{
+					WriteMask = ~0U,
+					ReadMask = int.MaxValue,
+					StencilCompareFunction = MTLCompareFunction.Always,
+					DepthFailure = MTLStencilOperation.Keep,
+					DepthStencilPass = MTLStencilOperation.Keep,
+					StencilFailure = MTLStencilOperation.Keep,
+				};
+
+				FrontStencil = new AmtStencilInfo
+				{
+					WriteMask = ~0U,
+					ReadMask = int.MaxValue,
+					StencilCompareFunction = MTLCompareFunction.Always,
+					DepthFailure = MTLStencilOperation.Keep,
+					DepthStencilPass = MTLStencilOperation.Keep,
+					StencilFailure = MTLStencilOperation.Keep,
+				};
+			}
+		}
+
+		MTLStencilOperation GetStencilOperation(MgStencilOp stencilOp)
+		{
+			switch (stencilOp)
+			{
+				default:
+					throw new NotSupportedException();
+				case MgStencilOp.DECREMENT_AND_CLAMP:
+					return MTLStencilOperation.DecrementClamp;
+				case MgStencilOp.DECREMENT_AND_WRAP:
+					return MTLStencilOperation.DecrementWrap;
+				case MgStencilOp.INCREMENT_AND_CLAMP:
+					return MTLStencilOperation.IncrementClamp;
+				case MgStencilOp.INCREMENT_AND_WRAP:
+					return MTLStencilOperation.IncrementWrap;
+				case MgStencilOp.INVERT:
+					return MTLStencilOperation.Invert;
+				case MgStencilOp.KEEP:
+					return MTLStencilOperation.Keep;
+				case MgStencilOp.REPLACE:
+					return MTLStencilOperation.Replace;
+				case MgStencilOp.ZERO:
+					return MTLStencilOperation.Zero;
+			}
+		}
+
+		MTLCompareFunction GetCompareFunction(MgCompareOp depthCompareOp)
+		{
+			switch (depthCompareOp)
+			{
+				default:
+					throw new NotSupportedException();
+				case MgCompareOp.LESS:
+					return MTLCompareFunction.Less;
+				case MgCompareOp.LESS_OR_EQUAL:
+					return MTLCompareFunction.LessEqual;
+				case MgCompareOp.GREATER:
+					return MTLCompareFunction.Greater;
+				case MgCompareOp.GREATER_OR_EQUAL:
+					return MTLCompareFunction.GreaterEqual;
+				case MgCompareOp.NEVER:
+					return MTLCompareFunction.Never;
+				case MgCompareOp.NOT_EQUAL:
+					return MTLCompareFunction.NotEqual;
+				case MgCompareOp.EQUAL:
+					return MTLCompareFunction.Equal;
+
+			}
 		}
 
 		static void InitialiseColorAttachments(AmtRenderPass renderPass, MTLRenderPipelineDescriptor dest)
@@ -77,17 +196,8 @@ namespace Magnesium.Metal
 			}
 		}
 
-
-
-
-
-
 		public AmtVertexAttribute[] Attributes { get; private set; }
-
-
-
-
-		private AmtVertexLayoutBinding[] Layouts;
+		public AmtVertexLayoutBinding[] Layouts { get; private set;}
 		private void InitializeVertexDescriptor(MgPipelineVertexInputStateCreateInfo vertexInput)
 		{
 			{

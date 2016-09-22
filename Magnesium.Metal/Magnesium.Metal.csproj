@@ -60,6 +60,7 @@
     <Compile Include="IAmtFormatExtensions.cs" />
     <Compile Include="AmtVertexLayoutBinding.cs" />
     <Compile Include="AmtVertexAttribute.cs" />
+    <Compile Include="AmtStencilInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Magnesium\Magnesium.csproj">
