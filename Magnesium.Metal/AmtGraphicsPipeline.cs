@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using Foundation;
@@ -44,26 +45,57 @@ namespace Magnesium.Metal
 			InitiailizeDepthStateDescriptor(info.DepthStencilState);
 			InitializeRasterization(info.RasterizationState);
 			InitializationInputAssembly(info.InputAssemblyState);
-			//InitialiseColorAttachments(info);
+			InitializeColorBlending(info.ColorBlendState);
+			InitializeDynamicStates(info.DynamicState);
+			InitializeResources(layout, info.VertexInputState);
+		}
 
-			//Foundation.NSError error;
-			//var pipelineState = device.CreateRenderPipelineState(PipelineStateDescriptor, out error);
-			//if (pipelineState == null)
-			//	Console.WriteLine("Failed to created pipeline state, error {0}", error);
 
-			//var depthStateDesc = new MTLDepthStencilDescriptor
-			//{
-			//	DepthCompareFunction = MTLCompareFunction.Less,
-			//	DepthWriteEnabled = true,
+		void InitializeResources(AmtPipelineLayout layout, MgPipelineVertexInputStateCreateInfo vertexInputState)
+		{
+			Debug.Assert(layout != null, nameof(layout) + " is null");
 
-			//};
+			// Vertex data is made up of 
+			// vertex buffers in vertex input state
 
-			//var depthState = device.CreateDepthStencilState(depthStateDesc);
+			var slots = new SortedList<uint, AmtPipelineVertexBufferBinding>();
+
+			var bindingOffset = 0U;
+			foreach (var definition in vertexInputState.VertexBindingDescriptions)
+			{
+				slots.Add(definition.Binding, new AmtPipelineVertexBufferBinding
+				{
+					Binding = definition.Binding,
+					DescriptorCount = 1,
+					Category = AmtBufferCategory.VertexBuffer,
+				});
+				++bindingOffset;
+			}
+
+			var combinedBuffers = new List<AmtPipelineVertexBufferBinding>();
+			combinedBuffers.AddRange(slots.Values);
+			combinedBuffers.AddRange(layout.VertexStage.VertexBuffers);
+
+
+
+			// then buffer, uniform, ssbo, ssbo dynamics sorted by binding
+
+
+			// Next is samples and textures (with the same positional order no) sorted by binding 
+
+			// Fragment 
+
+			// Next is samples and textures (with the same positional order no) sorted by binding 
+		}
+
+		void InitializeDynamicStates(MgPipelineDynamicStateCreateInfo dynamicState)
+		{
+			throw new NotImplementedException();
 		}
 
 		public AmtBlendColorState ColorBlendEnums { get; private set; }
 		public MgColor4f BlendConstants { get; set; }
-		void PopulateColorBlend(MgPipelineColorBlendStateCreateInfo colorBlend)
+		void InitializeColorBlending(MgPipelineColorBlendStateCreateInfo colorBlend)
 		{
 			ColorBlendEnums = new AmtBlendColorState();
 			if (colorBlend != null)

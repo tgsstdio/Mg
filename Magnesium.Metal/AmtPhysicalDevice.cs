@@ -67,6 +67,9 @@ namespace Magnesium.Metal
 
 				// METAL - logic op missing
 				LogicOp = false,
+
+				// METAL - one viewport/scissor only
+				MultiViewport = false,
 			};
 		}
 
@@ -92,6 +95,9 @@ namespace Magnesium.Metal
 				
 				Limits = new MgPhysicalDeviceLimits
 				{
+					// METAL : one set only for a pipeline
+					MaxBoundDescriptorSets = 1,
+
 					// METAL - one viewport only
 					MaxViewports = 1,
 

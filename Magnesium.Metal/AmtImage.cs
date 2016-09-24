@@ -5,10 +5,18 @@ namespace Magnesium.Metal
 {
 	internal class AmtImage : IMgImage
 	{
-		private IMTLTexture mTexture;
+		private IMTLTexture mOriginalTexture;
+		public IMTLTexture OriginalTexture
+		{
+			get
+			{
+				return mOriginalTexture;
+			}
+		}
+
 		public AmtImage(IMTLTexture texture)
 		{
-			mTexture = texture;
+			mOriginalTexture = texture;
 		}
 
 		public Result BindImageMemory(IMgDevice device, IMgDeviceMemory memory, ulong memoryOffset)

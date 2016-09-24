@@ -82,6 +82,14 @@
     <Compile Include="AmtEncoderBag.cs" />
     <Compile Include="AmtBlendColorState.cs" />
     <Compile Include="AmtBlendColorAttachmentState.cs" />
+    <Compile Include="AmtDescriptorSetLayout.cs" />
+    <Compile Include="AmtPipelineResourceBinding.cs" />
+    <Compile Include="AmtPipelineVertexBufferBinding.cs" />
+    <Compile Include="AmtPipelineTextureBinding.cs" />
+    <Compile Include="AmtPipelineSamplerBinding.cs" />
+    <Compile Include="AmtPipelineStageResourceLayout.cs" />
+    <Compile Include="AmtImageView.cs" />
+    <Compile Include="AmtSampler.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Magnesium\Magnesium.csproj">

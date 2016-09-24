@@ -232,7 +232,8 @@ namespace Magnesium.Metal
 
 		public Result CreateImageView(MgImageViewCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgImageView pView)
 		{
-			throw new NotImplementedException();
+			pView = new AmtImageView(pCreateInfo);
+			return Result.SUCCESS;
 		}
 
 		public Result CreatePipelineCache(MgPipelineCacheCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgPipelineCache pPipelineCache)
@@ -242,7 +243,11 @@ namespace Magnesium.Metal
 
 		public Result CreatePipelineLayout(MgPipelineLayoutCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgPipelineLayout pPipelineLayout)
 		{
-			throw new NotImplementedException();
+			if (pCreateInfo == null)
+				throw new ArgumentNullException(nameof(pCreateInfo));
+			
+			pPipelineLayout = new AmtPipelineLayout(pCreateInfo);
+			return Result.SUCCESS;
 		}
 
 		public Result CreateQueryPool(MgQueryPoolCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgQueryPool queryPool)
@@ -258,7 +263,8 @@ namespace Magnesium.Metal
 
 		public Result CreateSampler(MgSamplerCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgSampler pSampler)
 		{
-			throw new NotImplementedException();
+			pSampler = new AmtSampler(mDevice, pCreateInfo);
+			return Result.SUCCESS;
 		}
 
 		public Result CreateSemaphore(MgSemaphoreCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgSemaphore pSemaphore)
@@ -283,7 +289,7 @@ namespace Magnesium.Metal
 
 		public void DestroyDevice(IMgAllocationCallbacks allocator)
 		{
-			throw new NotImplementedException();
+
 		}
 
 		public Result DeviceWaitIdle()
