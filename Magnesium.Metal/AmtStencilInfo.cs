@@ -10,5 +10,19 @@ namespace Magnesium.Metal
 		public uint ReadMask { get; internal set; }
 		public MTLStencilOperation StencilFailure { get; internal set; }
 		public uint WriteMask { get; internal set; }
+		public uint StencilReference { get; internal set; }
+
+		public MTLStencilDescriptor GetDescriptor()
+		{
+			return new MTLStencilDescriptor
+			{
+				DepthFailureOperation = DepthFailure,
+				DepthStencilPassOperation = DepthStencilPass,
+				ReadMask = ReadMask,
+				WriteMask = WriteMask,
+				StencilCompareFunction = StencilCompareFunction,
+				StencilFailureOperation = StencilFailure,
+			};
+		}
 	}
 }

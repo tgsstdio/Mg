@@ -22,7 +22,28 @@ namespace Magnesium.Metal
 
 		public Result AllocateCommandBuffers(MgCommandBufferAllocateInfo pAllocateInfo, IMgCommandBuffer[] pCommandBuffers)
 		{
-			throw new NotImplementedException();
+			if (pAllocateInfo == null)
+				throw new ArgumentNullException(nameof(pAllocateInfo));
+
+			if (pCommandBuffers == null)
+				throw new ArgumentNullException(nameof(pCommandBuffers));
+
+			if (pAllocateInfo.CommandBufferCount != pCommandBuffers.Length)
+				throw new ArgumentOutOfRangeException(nameof(pAllocateInfo.CommandBufferCount) + " !=  " + nameof(pCommandBuffers.Length));
+
+			var commandPool = (AmtCommandPool)pAllocateInfo.CommandPool;
+			Debug.Assert(commandPool != null, nameof(pAllocateInfo.CommandPool) + " is null");
+
+			var arraySize = pAllocateInfo.CommandBufferCount;
+
+			for (var i = 0; i < arraySize; ++i)
+			{
+				var cmdBuf = commandPool.Queue.CommandBuffer();
+				pCommandBuffers[i] = new AmtCommandBuffer(cmdBuf);
+			}
+
+
+			return Result.SUCCESS;
 		}
 
 		public Result AllocateDescriptorSets(MgDescriptorSetAllocateInfo pAllocateInfo, out IMgDescriptorSet[] pDescriptorSets)

@@ -1,6 +1,12 @@
-﻿namespace Magnesium.Metal
+﻿using System;
+
+namespace Magnesium.Metal
 {
-	class AmtPipelineLayout
+	class AmtPipelineLayout : IMgPipelineLayout
 	{
+		public void DestroyPipelineLayout(IMgDevice device, IMgAllocationCallbacks allocator)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

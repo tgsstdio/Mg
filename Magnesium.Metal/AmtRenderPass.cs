@@ -70,6 +70,65 @@ namespace Magnesium.Metal
 			}
 		}
 
+		public enum AmtClearValueType
+		{
+			DEPTH_STENCIL,
+			COLOR_INT,
+			COLOR_UINT,
+			COLOR_FLOAT
+		}
+
+		static AmtClearValueType GetClearValueType(MgFormat format)
+		{
+			switch (format)
+			{
+				case MgFormat.D16_UNORM:
+				case MgFormat.D16_UNORM_S8_UINT:
+				case MgFormat.D24_UNORM_S8_UINT:
+				case MgFormat.D32_SFLOAT:
+				case MgFormat.D32_SFLOAT_S8_UINT:
+					return AmtClearValueType.DEPTH_STENCIL;
+
+				case MgFormat.R8_SINT:
+				case MgFormat.R8G8_SINT:
+				case MgFormat.R8G8B8_SINT:
+				case MgFormat.R8G8B8A8_SINT:
+				case MgFormat.R16_SINT:
+				case MgFormat.R16G16_SINT:
+				case MgFormat.R16G16B16_SINT:
+				case MgFormat.R16G16B16A16_SINT:
+				case MgFormat.R32_SINT:
+				case MgFormat.R32G32_SINT:
+				case MgFormat.R32G32B32_SINT:
+				case MgFormat.R32G32B32A32_SINT:
+				case MgFormat.R64_SINT:
+				case MgFormat.R64G64_SINT:
+				case MgFormat.R64G64B64_SINT:
+				case MgFormat.R64G64B64A64_SINT:
+					return AmtClearValueType.COLOR_INT;
+
+				case MgFormat.R8_UINT:
+				case MgFormat.R8G8_UINT:
+				case MgFormat.R8G8B8_UINT:
+				case MgFormat.R8G8B8A8_UINT:
+				case MgFormat.R16_UINT:
+				case MgFormat.R16G16_UINT:
+				case MgFormat.R16G16B16_UINT:
+				case MgFormat.R16G16B16A16_UINT:
+				case MgFormat.R32_UINT:
+				case MgFormat.R64_UINT:
+					return AmtClearValueType.COLOR_UINT;
+
+				case MgFormat.R32_SFLOAT:
+				case MgFormat.R32G32_SFLOAT:
+				case MgFormat.R32G32B32_SFLOAT:
+				case MgFormat.R32G32B32A32_SFLOAT:
+					return AmtClearValueType.COLOR_FLOAT;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
 		public AmtRenderPassClearAttachment[] ClearAttachments { get; private set; }
 
 		public AmtRenderPass(MgRenderPassCreateInfo createInfo)
@@ -93,6 +152,7 @@ namespace Magnesium.Metal
 					Index = (uint)i,
 					Format = attachment.Format,
 
+					ClearValueType = GetClearValueType(attachment.Format),
 					Divisor = GetAttachmentDivisor(attachment.Format),
 					Destination = AmtRenderPassAttachmentDestination.IGNORE,
 					StoreAction = TranslateStoreOp(attachment.StoreOp),
@@ -121,6 +181,25 @@ namespace Magnesium.Metal
 			var depthStencil = subpass.DepthStencilAttachment;
 			  
 			ClearAttachments[depthStencil.Attachment].Destination = AmtRenderPassAttachmentDestination.DEPTH_AND_STENCIL;
+		}
+
+		static void InitialiseColorAttachments(AmtRenderPass renderPass, MTLRenderPipelineDescriptor dest)
+		{
+
+			nint colorAttachmentIndex = 0;
+			foreach (var attachment in renderPass.ClearAttachments)
+			{
+				if (attachment.Destination == AmtRenderPassAttachmentDestination.COLOR)
+				{
+					dest.ColorAttachments[colorAttachmentIndex].PixelFormat = AmtFormatExtensions.GetPixelFormat(attachment.Format);
+					++colorAttachmentIndex;
+				}
+				else if (attachment.Destination == AmtRenderPassAttachmentDestination.DEPTH_AND_STENCIL)
+				{
+					dest.DepthAttachmentPixelFormat = AmtFormatExtensions.GetPixelFormat(attachment.Format);
+					dest.StencilAttachmentPixelFormat = AmtFormatExtensions.GetPixelFormat(attachment.Format);
+				}
+			}
 		}
 
 		MTLLoadAction TranslateLoadOp(MgAttachmentLoadOp loadOp)

@@ -57,7 +57,17 @@ namespace Magnesium.Metal
 
 		public void GetPhysicalDeviceFeatures(out MgPhysicalDeviceFeatures pFeatures)
 		{
-			throw new NotImplementedException();
+			pFeatures = new MgPhysicalDeviceFeatures
+			{
+				// METAL - no variable line width
+				WideLines = false,
+
+				// METAL - depth bounds unavailable
+				DepthBounds = false,
+
+				// METAL - logic op missing
+				LogicOp = false,
+			};
 		}
 
 		public void GetPhysicalDeviceFormatProperties(MgFormat format, out MgFormatProperties pFormatProperties)
@@ -77,7 +87,19 @@ namespace Magnesium.Metal
 
 		public void GetPhysicalDeviceProperties(out MgPhysicalDeviceProperties pProperties)
 		{
-			throw new NotImplementedException();
+			pProperties = new MgPhysicalDeviceProperties
+			{
+				
+				Limits = new MgPhysicalDeviceLimits
+				{
+					// METAL - one viewport only
+					MaxViewports = 1,
+
+					// METAL - no line width
+					LineWidthRange = new MgVec2f { X = 1f, Y = 1f },
+					LineWidthGranularity = 0f,
+				},
+			};
 		}
 
 		public void GetPhysicalDeviceQueueFamilyProperties(out MgQueueFamilyProperties[] pQueueFamilyProperties)

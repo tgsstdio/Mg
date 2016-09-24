@@ -11,5 +11,6 @@ namespace Magnesium.Metal
 		public MTLStoreAction StoreAction { get; internal set; }
 		public MTLLoadAction LoadAction { get; internal set; }
 		public MgFormat Format { get; internal set; }
+		public AmtRenderPass.AmtClearValueType ClearValueType { get; internal set; }
 	}
 }
