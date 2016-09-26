@@ -9,7 +9,7 @@ namespace Magnesium.Metal
 		public AmtGraphicsEncoderItemBag()
 		{
 			mBlendConstants = new AmtEncoderItemCollection<MgColor4f>();
-			mPipelineStates = new AmtEncoderItemCollection<IMTLRenderPipelineState>();
+			mPipelineStates = new AmtEncoderItemCollection<AmtPipelineEncoderState>();
 			mDepthStencilStates = new AmtEncoderItemCollection<IMTLDepthStencilState>();
 			mDepthBias = new AmtEncoderItemCollection<AmtDepthBiasEncoderState>();
 			mStencilReferences = new AmtEncoderItemCollection<AmtStencilReferenceEncoderState>();
@@ -55,8 +55,8 @@ namespace Magnesium.Metal
 			}
 		}
 
-		private readonly AmtEncoderItemCollection<IMTLRenderPipelineState> mPipelineStates;
-		public AmtEncoderItemCollection<IMTLRenderPipelineState> PipelineStates
+		private readonly AmtEncoderItemCollection<AmtPipelineEncoderState> mPipelineStates;
+		public AmtEncoderItemCollection<AmtPipelineEncoderState> PipelineStates
 		{
 			get
 			{

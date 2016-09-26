@@ -11,6 +11,7 @@ namespace Magnesium.Metal
 	{
 		public IMTLFunction VertexFunction { get; private set; }
 		public IMTLFunction FragmentFunction { get; private set; }
+		public AmtPipelineLayout Layout { get; private set; }
 
 		public AmtGraphicsPipeline(IMTLDevice device, MgGraphicsPipelineCreateInfo info)
 		{
@@ -19,6 +20,7 @@ namespace Magnesium.Metal
 			{
 				throw new ArgumentException(nameof(info.Layout));
 			}
+			Layout = layout;
 
 			if (info.VertexInputState == null)
 			{
@@ -35,25 +37,26 @@ namespace Magnesium.Metal
 				throw new ArgumentNullException(nameof(info.RasterizationState));
 			}
 
+			// TODO : WHY DO I NEED RENDERPASS HERE
 			if (info.RenderPass == null)
 			{
 				throw new ArgumentNullException(nameof(info.RenderPass));
 			}
 
-			InitializeShaderFunctions(device, info);
+			InitializeShaderFunctions(device, info.Stages);
 			InitializeVertexDescriptor(info.VertexInputState);
 			InitiailizeDepthStateDescriptor(info.DepthStencilState);
 			InitializeRasterization(info.RasterizationState);
 			InitializationInputAssembly(info.InputAssemblyState);
 			InitializeColorBlending(info.ColorBlendState);
 			InitializeDynamicStates(info.DynamicState);
-			InitializeResources(layout, info.VertexInputState);
+			InitializeResources(info.VertexInputState);
 		}
 
+		public AmtPipelineLayoutBufferBinding[] VertexBufferBindings { get; private set; }
 
-		void InitializeResources(AmtPipelineLayout layout, MgPipelineVertexInputStateCreateInfo vertexInputState)
+		void InitializeResources(MgPipelineVertexInputStateCreateInfo vertexInputState)
 		{
-			Debug.Assert(layout != null, nameof(layout) + " is null");
 
 			// Vertex data is made up of 
 			// vertex buffers in vertex input state
@@ -74,9 +77,9 @@ namespace Magnesium.Metal
 
 			var combinedBuffers = new List<AmtPipelineLayoutBufferBinding>();
 			combinedBuffers.AddRange(slots.Values);
-			combinedBuffers.AddRange(layout.VertexStage.VertexBuffers);
+			combinedBuffers.AddRange(Layout.VertexStage.VertexBuffers);
 
-
+			VertexBufferBindings = combinedBuffers.ToArray();
 
 			// then buffer, uniform, ssbo, ssbo dynamics sorted by binding
 
@@ -558,11 +561,11 @@ namespace Magnesium.Metal
 			}
 		}
 
-		public void InitializeShaderFunctions(IMTLDevice device, MgGraphicsPipelineCreateInfo info)
+		public void InitializeShaderFunctions(IMTLDevice device, MgPipelineShaderStageCreateInfo[] stages)
 		{
 			IMTLFunction frag = null;
 			IMTLFunction vert = null;
-			foreach (var stage in info.Stages)
+			foreach (var stage in stages)
 			{
 				IMTLFunction shaderFunc = null;
 

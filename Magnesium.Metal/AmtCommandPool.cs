@@ -6,7 +6,12 @@ namespace Magnesium.Metal
 	public class AmtCommandPool : IMgCommandPool
 	{
 		private IMTLCommandQueue mQueue;
-		public IMTLCommandQueue Queue {get; private set;}
+		public IMTLCommandQueue Queue {
+			get
+			{
+				return mQueue;
+			}
+		}
 		public AmtCommandPool(IMTLCommandQueue queue)
 		{
 			mQueue = queue;

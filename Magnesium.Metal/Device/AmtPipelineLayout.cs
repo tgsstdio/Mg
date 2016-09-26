@@ -2,7 +2,7 @@
 
 namespace Magnesium.Metal
 {
-	class AmtPipelineLayout : IMgPipelineLayout
+	public class AmtPipelineLayout : IMgPipelineLayout
 	{
 		public AmtPipelineLayoutStageResource FragmentStage { get; private set; }
 

@@ -111,7 +111,7 @@ namespace Magnesium.Metal
 
 			Foundation.NSError err;
 			var pipelineState = mDevice.CreateRenderPipelineState(pipelineDescriptor, out err);
-
+			// TODO : CHECK ERROR HERE
 
 
 			var dsDescriptor = new MTLDepthStencilDescriptor
@@ -138,7 +138,13 @@ namespace Magnesium.Metal
 				FrontReference = mFrontReference,
 				BackReference = mBackReference,
 			};
-
+			var nextIndex = mItemBag.PipelineStates.Push(pipeDetail);
+			mItemBag.Instructions.Add(new AmtCommandEncoderInstruction
+			{
+				Category = AmtCommandEncoderCategory.Graphics,
+				Index = (uint)nextIndex,
+				Operation = CmdSetPipeline,
+			});
 		}
 
 

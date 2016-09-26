@@ -14,7 +14,6 @@ namespace Magnesium.Metal
 
 		public MgShaderModuleCreateInfo Info { get; private set; }
 
-		private bool mIsDisposed = false;
 		public void DestroyShaderModule(IMgDevice device, IMgAllocationCallbacks allocator)
 		{
 			
