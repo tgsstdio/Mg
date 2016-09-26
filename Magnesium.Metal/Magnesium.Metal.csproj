@@ -42,60 +42,83 @@
     <Reference Include="Xamarin.Mac" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AmtDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="AmtEntrypoint.cs" />
-    <Compile Include="AmtInstance.cs" />
-    <Compile Include="AmtPhysicalDevice.cs" />
-    <Compile Include="IAmtDeviceQuery.cs" />
-    <Compile Include="AmtQueue.cs" />
     <Compile Include="AmtCommandPool.cs" />
-    <Compile Include="AmtImage.cs" />
-    <Compile Include="AmtShaderModule.cs" />
-    <Compile Include="AmtGraphicsPipeline.cs" />
-    <Compile Include="AmtRenderPass.cs" />
-    <Compile Include="AmtRenderPassAttachmentDestination.cs" />
-    <Compile Include="AmtRenderPassClearAttachment.cs" />
-    <Compile Include="AmtPipelineLayout.cs" />
     <Compile Include="IAmtFormatExtensions.cs" />
-    <Compile Include="AmtVertexLayoutBinding.cs" />
-    <Compile Include="AmtVertexAttribute.cs" />
-    <Compile Include="AmtStencilInfo.cs" />
     <Compile Include="AmtCommandBuffer.cs" />
     <Compile Include="AmtFramebuffer.cs" />
     <Compile Include="GLCommandBuffer.cs" />
     <Compile Include="AmtCmdRenderPassCommand.cs" />
     <Compile Include="IAmtCmdBufferRepository.cs" />
-    <Compile Include="AmtCmdDrawCommand.cs" />
     <Compile Include="AmtCmdComputeCommand.cs" />
-    <Compile Include="AmtCmdBufferInstructionSet.cs" />
-    <Compile Include="AmtCmdBlitInstructionSet.cs" />
-    <Compile Include="AmtCmdDescriptorSetParameter.cs" />
-    <Compile Include="AmtCmdVertexBufferParameter.cs" />
-    <Compile Include="AmtCmdInternalDrawIndexed.cs" />
-    <Compile Include="AmtCmdInternalDrawIndexedIndirect.cs" />
     <Compile Include="AmtCmdTexImageData.cs" />
-    <Compile Include="AmtCmdIndexBufferParameter.cs" />
-    <Compile Include="AmtCmdInternalDrawIndirect.cs" />
-    <Compile Include="AmtDescriptorSet.cs" />
-    <Compile Include="AmtGraphicsEncoder.cs" />
-    <Compile Include="AmtEncoderBag.cs" />
-    <Compile Include="AmtBlendColorState.cs" />
-    <Compile Include="AmtBlendColorAttachmentState.cs" />
-    <Compile Include="AmtDescriptorSetLayout.cs" />
-    <Compile Include="AmtPipelineResourceBinding.cs" />
-    <Compile Include="AmtPipelineVertexBufferBinding.cs" />
-    <Compile Include="AmtPipelineTextureBinding.cs" />
-    <Compile Include="AmtPipelineSamplerBinding.cs" />
-    <Compile Include="AmtPipelineStageResourceLayout.cs" />
-    <Compile Include="AmtImageView.cs" />
-    <Compile Include="AmtSampler.cs" />
+    <Compile Include="CommandBuffer\AmtBlendColorAttachmentEncoderState.cs" />
+    <Compile Include="CommandBuffer\AmtDrawIndexedEncoderState.cs" />
+    <Compile Include="CommandBuffer\AmtDrawCommandEncoderState.cs" />
+    <Compile Include="CommandBuffer\AmtDrawIndexedIndirectEncoderState.cs" />
+    <Compile Include="CommandBuffer\AmtVertexBufferEncoderState.cs" />
+    <Compile Include="CommandBuffer\AmtDrawIndirectEncoderState.cs" />
+    <Compile Include="Entrypoint\AmtEntrypoint.cs" />
+    <Compile Include="Entrypoint\IAmtDeviceQuery.cs" />
+    <Compile Include="Device\AmtDescriptorSet.cs" />
+    <Compile Include="Device\AmtDevice.cs" />
+    <Compile Include="Device\AmtDescriptorSetLayout.cs" />
+    <Compile Include="Device\AmtPipelineLayout.cs" />
+    <Compile Include="Device\AmtImage.cs" />
+    <Compile Include="Device\AmtImageView.cs" />
+    <Compile Include="GraphicsPipelines\AmtGraphicsPipelineDynamicStateFlagBits.cs" />
+    <Compile Include="GraphicsPipelines\AmtGraphicsPipelineStencilInfo.cs" />
+    <Compile Include="Device\AmtPipelineLayoutResourceBinding.cs" />
+    <Compile Include="Device\AmtPipelineLayoutStageResource.cs" />
+    <Compile Include="Device\AmtPipelineLayoutSamplerBinding.cs" />
+    <Compile Include="Device\AmtPipelineLayoutTextureBinding.cs" />
+    <Compile Include="Device\AmtPipelineLayoutBufferBinding.cs" />
+    <Compile Include="Device\AmtPipelineLayoutBufferBindingCategory.cs" />
+    <Compile Include="Device\AmtSampler.cs" />
+    <Compile Include="Device\AmtRenderPass.cs" />
+    <Compile Include="Device\AmtRenderPassAttachmentDestination.cs" />
+    <Compile Include="Device\AmtRenderPassClearAttachment.cs" />
+    <Compile Include="Device\AmtRenderPassClearValueType.cs" />
+    <Compile Include="Device\AmtShaderModule.cs" />
+    <Compile Include="CommandBuffer\AmtDepthBiasEncoderState.cs" />
+    <Compile Include="CommandBuffer\AmtStencilReferenceEncoderState.cs" />
+    <Compile Include="CommandBuffer\AmtEncoderItemCollection.cs" />
+    <Compile Include="CommandBuffer\AmtPipelineEncoderState.cs" />
+    <Compile Include="GraphicsPipelines\AmtGraphicsPipeline.cs" />
+    <Compile Include="CommandBuffer\AmtGraphicsEncoderItemBag.cs" />
+    <Compile Include="CommandBuffer\AmtGraphicsEncoder.cs" />
+    <Compile Include="CommandBuffer\AmtCommandEncoder.cs" />
+    <Compile Include="CommandBuffer\AmtCommandEncoderInstruction.cs" />
+    <Compile Include="CommandBuffer\AmtGraphicsEncoderItemGrid.cs" />
+    <Compile Include="PhysicalDevice\AmtPhysicalDevice.cs" />
+    <Compile Include="Entrypoint\AmtInstance.cs" />
+    <Compile Include="CommandBuffer\AmtCommandRecording.cs" />
+    <Compile Include="CommandBuffer\AmtBlitEncoderItemGrid.cs" />
+    <Compile Include="CommandBuffer\AmtComputeEncoderItemGrid.cs" />
+    <Compile Include="CommandBuffer\AmtDrawEncoderState.cs" />
+    <Compile Include="CommandBuffer\AmtGraphicsRecording.cs" />
+    <Compile Include="CommandBuffer\AmtBlitRecording.cs" />
+    <Compile Include="CommandBuffer\AmtComputeRecording.cs" />
+    <Compile Include="CommandBuffer\AmtCommandEncoderCategory.cs" />
+    <Compile Include="CommandBuffer\AmtDescriptorSetRecordingState.cs" />
+    <Compile Include="GraphicsPipelines\AmtGraphicsPipelineVertexLayoutBinding.cs" />
+    <Compile Include="Queue\AmtQueue.cs" />
+    <Compile Include="GraphicsPipelines\AmtGraphicsPipelineVertexAttribute.cs" />
+    <Compile Include="CommandBuffer\AmtCmdIndexBufferParameter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Magnesium\Magnesium.csproj">
       <Project>{9F9AC448-9D17-43E5-8889-285426290891}</Project>
       <Name>Magnesium</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="CommandBuffer\" />
+    <Folder Include="Entrypoint\" />
+    <Folder Include="Device\" />
+    <Folder Include="GraphicsPipelines\" />
+    <Folder Include="PhysicalDevice\" />
+    <Folder Include="Queue\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
 </Project>

@@ -2,5 +2,6 @@
 {
 	class AmtCmdComputeCommand
 	{
+		public IMgPipeline Pipeline { get; internal set; }
 	}
 }

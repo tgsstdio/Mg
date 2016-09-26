@@ -13,7 +13,7 @@ namespace Magnesium.Metal
 		private AmtCmdComputeCommand mIncompleteComputeCommand;
 		private AmtCmdRenderPassCommand mIncompleteRenderPass;
 		private List<AmtCmdRenderPassCommand> mRenderPasses = new List<AmtCmdRenderPassCommand>();
-		private List<AmtCmdDrawCommand> mIncompleteDraws = new List<AmtCmdDrawCommand>();
+		private List<AmtDrawCommandEncoderState> mIncompleteDraws = new List<AmtDrawCommandEncoderState>();
 
 		private IAmtCmdBufferRepository mRepository;
 		public AmtCommandBuffer2 (bool canBeManuallyReset, IAmtCmdBufferRepository repository)
@@ -39,18 +39,13 @@ namespace Magnesium.Metal
 			return Result.SUCCESS;
 		}
 
-		public AmtCmdBlitInstructionSet ImageInstructions { get; private set; }
-		public AmtCmdBufferInstructionSet InstructionSet { get; private set; }
 		public Result EndCommandBuffer ()
 		{
 			mIsRecording = false;
 			mIsExecutable = true;
 
-			var mSetComposer = new CmdBufferInstructionSetTransformer (mVBO, mRepository);
-			InstructionSet = mSetComposer.Compose (mRepository, mRenderPasses);
+			// Convert loose item bag into "hard" item grids
 
-			ImageInstructions = new AmtCmdBufferInstructionSet ();
-			ImageInstructions.LoadImageData = mImageCopies.ToArray ();				
 
 			return Result.SUCCESS;
 		}
@@ -59,19 +54,11 @@ namespace Magnesium.Metal
 		{
 			mIncompleteRenderPass = null;
 			mIncompleteComputeCommand = null;
+			// TODO : Clear item bags unless CONTINUE has been passed in
 			mRepository.Clear ();
 			mRenderPasses.Clear ();
 			mIncompleteDraws.Clear ();
 
-			if (InstructionSet != null)
-			{
-				foreach (var vbo in InstructionSet.VBOs)
-				{
-					vbo.Dispose ();
-				}
-				InstructionSet = null;
-			}
-			ImageInstructions = null;
 
 			mImageCopies.Clear ();
 		}
@@ -158,7 +145,7 @@ namespace Magnesium.Metal
 			IMgDescriptorSet[] pDescriptorSets,
 			uint[] pDynamicOffsets)
 		{
-			var parameter = new AmtCmdDescriptorSetParameter ();		
+			var parameter = new AmtDescriptorSetRecordingState ();		
 			parameter.Bindpoint = pipelineBindPoint;
 			parameter.Layout = layout;
 			parameter.FirstSet = firstSet;
@@ -178,20 +165,21 @@ namespace Magnesium.Metal
 
 		public void CmdBindVertexBuffers (uint firstBinding, IMgBuffer[] pBuffers, ulong[] pOffsets)
 		{
-			var param = new AmtCmdVertexBufferParameter ();
+			var param = new AmtVertexBufferEncoderState ();
 			param.firstBinding = firstBinding;
 			param.pBuffers = pBuffers;
 			param.pOffsets = pOffsets;
 			mRepository.VertexBuffers.Add (param);
 		}
 
-		void StoreDrawCommand (AmtCmdDrawCommand command)
+		void StoreDrawCommand (AmtDrawCommandEncoderState command)
 		{
 			if (mRepository.MapRepositoryFields (ref command))
 			{
 				if (mIncompleteRenderPass != null)
 				{
-					mIncompleteRenderPass.DrawCommands.Add (command);
+					// TODO : add draw command to instruction list
+					//mIncompleteRenderPass.DrawCommands.Add (command);
 				} 
 				else
 				{
@@ -209,7 +197,7 @@ namespace Magnesium.Metal
 			// primcount => instanceCount Specifies the number of instances of the indexed geometry that should be drawn.
 			// baseinstance => firstInstance Specifies the base instance for use in fetching instanced vertex attributes.
 
-			var command = new AmtCmdDrawCommand ();
+			var command = new AmtDrawCommandEncoderState ();
 			command.Draw.vertexCount = vertexCount;
 			command.Draw.instanceCount = instanceCount;
 			command.Draw.firstVertex = firstVertex;
@@ -228,8 +216,8 @@ namespace Magnesium.Metal
 				// TODO : need to handle negetive offset
 			//mDrawCommands.Add (mIncompleteDrawCommand);
 
-			var command = new AmtCmdDrawCommand ();
-			command.DrawIndexed = new AmtCmdInternalDrawIndexed ();
+			var command = new AmtDrawCommandEncoderState ();
+			command.DrawIndexed = new AmtDrawIndexedEncoderState ();
 			command.DrawIndexed.indexCount = indexCount;
 			command.DrawIndexed.instanceCount = instanceCount;
 			command.DrawIndexed.firstIndex = firstIndex;
@@ -261,8 +249,8 @@ namespace Magnesium.Metal
 //			} DrawArraysIndirectCommand;
 			//mDrawCommands.Add (mIncompleteDrawCommand);
 
-			var command = new AmtCmdDrawCommand ();
-			command.DrawIndirect = new AmtCmdInternalDrawIndirect ();
+			var command = new AmtDrawCommandEncoderState ();
+			command.DrawIndirect = new AmtDrawIndirectEncoderState ();
 			command.DrawIndirect.buffer = buffer;
 			command.DrawIndirect.offset = offset;
 			command.DrawIndirect.drawCount = drawCount;
@@ -299,8 +287,8 @@ namespace Magnesium.Metal
 //				uint  baseInstance;
 //			} DrawElementsIndirectCommand;
 			//mDrawCommands.Add (mIncompleteDrawCommand);
-			var command = new AmtCmdDrawCommand ();
-			command.DrawIndexedIndirect = new AmtCmdInternalDrawIndexedIndirect();
+			var command = new AmtDrawCommandEncoderState ();
+			command.DrawIndexedIndirect = new AmtDrawIndexedIndirectEncoderState();
 			command.DrawIndexedIndirect.buffer = buffer;
 			command.DrawIndexedIndirect.offset = offset;
 			command.DrawIndexedIndirect.drawCount = drawCount;

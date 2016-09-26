@@ -1,10 +1,12 @@
-﻿namespace Magnesium.Metal
+﻿using System.Collections.Generic;
+
+namespace Magnesium.Metal
 {
 	public interface IAmtCmdBufferRepository
 	{
-		object DescriptorSets { get; set; }
-		object IndexBuffers { get; set; }
-		object VertexBuffers { get; set; }
+		IList<AmtDescriptorSetRecordingState> DescriptorSets { get; set; }
+		IList<AmtCmdIndexBufferParameter> IndexBuffers { get; set; }
+		IList<AmtVertexBufferEncoderState> VertexBuffers { get; set; }
 
 		void PushGraphicsPipeline(AmtGraphicsPipeline glPipeline);
 		void PushViewports(uint firstViewport, MgViewport[] pViewports);
@@ -16,6 +18,7 @@
 		void SetCompareMask(MgStencilFaceFlagBits faceMask, uint compareMask);
 		void SetWriteMask(MgStencilFaceFlagBits faceMask, uint writeMask);
 		void SetStencilReference(MgStencilFaceFlagBits faceMask, uint reference);
-		bool MapRepositoryFields(ref AmtCmdDrawCommand command);
+		bool MapRepositoryFields(ref AmtDrawCommandEncoderState command);
+		void Clear();
 	}
 }
