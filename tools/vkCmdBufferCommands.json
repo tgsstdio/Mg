@@ -1,6 +1,6 @@
 [
-{"queues": "compute", "cmdbufferlevel": "primary,secondary", "name": "vkCmdDispatch", "renderpass": "outside", "compute":"dispatchThreadgroups"},
-{"queues": "compute", "cmdbufferlevel": "primary,secondary", "name": "vkCmdDispatchIndirect", "renderpass": "outside", "compute":"dispatchThreadgroups"},
+{"done":"compute", "queues": "compute", "cmdbufferlevel": "primary,secondary", "name": "vkCmdDispatch", "renderpass": "outside", "compute":"dispatchThreadgroups"},
+{"done":"compute", "queues": "compute", "cmdbufferlevel": "primary,secondary", "name": "vkCmdDispatchIndirect", "renderpass": "outside", "compute":"dispatchThreadgroups"},
 {"queues": "graphics", "cmdbufferlevel": "primary", "name": "vkCmdBeginRenderPass", "renderpass": "outside"},
 {"queues": "graphics", "cmdbufferlevel": "primary", "name": "vkCmdEndRenderPass", "renderpass": "inside"},
 {"queues": "graphics", "cmdbufferlevel": "primary", "name": "vkCmdNextSubpass", "renderpass": "inside"},

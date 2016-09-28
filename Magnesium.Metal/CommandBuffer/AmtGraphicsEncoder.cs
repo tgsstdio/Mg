@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Metal;
 
@@ -6,11 +7,15 @@ namespace Magnesium.Metal
 {
 	public class AmtGraphicsEncoder
 	{
-		private AmtGraphicsEncoderItemBag mItemBag;
+		private AmtGraphicsEncoderItemBag mBag;
 		private IMTLDevice mDevice;
-		public AmtGraphicsEncoder(AmtGraphicsEncoderItemBag bag, IMTLDevice device)
+
+		List<AmtCommandEncoderInstruction> mInstructions;
+
+		public AmtGraphicsEncoder(List<AmtCommandEncoderInstruction> instructions, AmtGraphicsEncoderItemBag bag, IMTLDevice device)
 		{
-			mItemBag = bag;
+			mInstructions = instructions;
+			mBag = bag;
 			mDevice = device;
 		}
 
@@ -138,8 +143,9 @@ namespace Magnesium.Metal
 				FrontReference = mFrontReference,
 				BackReference = mBackReference,
 			};
-			var nextIndex = mItemBag.PipelineStates.Push(pipeDetail);
-			mItemBag.Instructions.Add(new AmtCommandEncoderInstruction
+			var nextIndex = mBag.PipelineStates.Push(pipeDetail);
+
+			mInstructions.Add(new AmtCommandEncoderInstruction
 			{
 				Category = AmtCommandEncoderCategory.Graphics,
 				Index = (uint)nextIndex,
@@ -170,8 +176,9 @@ namespace Magnesium.Metal
 
 		public void SetBlendConstants(MgColor4f color)
 		{
-			var nextIndex =mItemBag.BlendConstants.Push(color);
-			mItemBag.Instructions.Add(new AmtCommandEncoderInstruction
+			var nextIndex =mBag.BlendConstants.Push(color);
+
+			mInstructions.Add(new AmtCommandEncoderInstruction
 			{
 				Index = (uint) nextIndex,
 				Operation = SetCmdBlendColors,
@@ -190,8 +197,9 @@ namespace Magnesium.Metal
 				ZNear = viewport.MinDepth,
 				ZFar = viewport.MaxDepth,
 			};
-			var nextIndex = mItemBag.Viewports.Push(item);
-			mItemBag.Instructions.Add(new AmtCommandEncoderInstruction
+			var nextIndex = mBag.Viewports.Push(item);
+
+			mInstructions.Add(new AmtCommandEncoderInstruction
 			{
 				Index = nextIndex,
 				Operation = CmdSetViewport,
@@ -215,9 +223,11 @@ namespace Magnesium.Metal
 				SlopeScale = depthBiasSlopeFactor
 			};
 
-			var nextIndex = mItemBag.DepthBias.Push(item);
-			mItemBag.Instructions.Add(new AmtCommandEncoderInstruction
+			var nextIndex = mBag.DepthBias.Push(item);
+
+			mInstructions.Add(new AmtCommandEncoderInstruction
 			{
+				Category = AmtCommandEncoderCategory.Graphics,
 				Index = nextIndex,
 				Operation = SetCmdDepthBias,
 			});
@@ -239,9 +249,11 @@ namespace Magnesium.Metal
 					Front = reference,
 					Back = reference,
 				};
-				var nextIndex = mItemBag.StencilReferences.Push(item);
-				mItemBag.Instructions.Add(new AmtCommandEncoderInstruction
+				var nextIndex = mBag.StencilReferences.Push(item);
+
+				mInstructions.Add(new AmtCommandEncoderInstruction
 				{
+					
 					Index = (uint)nextIndex,
 					Operation = SetCmdStencilReference,
 				});
@@ -255,8 +267,8 @@ namespace Magnesium.Metal
 					Front = mFrontReference,
 					Back = reference,
 				};
-				var nextIndex = mItemBag.StencilReferences.Push(item);
-				mItemBag.Instructions.Add(new AmtCommandEncoderInstruction
+				var nextIndex = mBag.StencilReferences.Push(item);
+				mInstructions.Add(new AmtCommandEncoderInstruction
 				{
 					Index = (uint)nextIndex,
 					Operation = SetCmdStencilReference,
@@ -271,8 +283,8 @@ namespace Magnesium.Metal
 					Front = reference,
 					Back = mBackReference,
 				};
-				var nextIndex = mItemBag.StencilReferences.Push(item);
-				mItemBag.Instructions.Add(new AmtCommandEncoderInstruction
+				var nextIndex = mBag.StencilReferences.Push(item);
+				mInstructions.Add(new AmtCommandEncoderInstruction
 				{
 					Index = (uint)nextIndex,
 					Operation = SetCmdStencilReference,

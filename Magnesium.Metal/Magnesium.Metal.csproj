@@ -47,9 +47,7 @@
     <Compile Include="IAmtFormatExtensions.cs" />
     <Compile Include="AmtCommandBuffer.cs" />
     <Compile Include="AmtFramebuffer.cs" />
-    <Compile Include="GLCommandBuffer.cs" />
     <Compile Include="AmtCmdRenderPassCommand.cs" />
-    <Compile Include="IAmtCmdBufferRepository.cs" />
     <Compile Include="AmtCmdComputeCommand.cs" />
     <Compile Include="AmtCmdTexImageData.cs" />
     <Compile Include="CommandBuffer\AmtBlendColorAttachmentEncoderState.cs" />
@@ -105,6 +103,15 @@
     <Compile Include="Queue\AmtQueue.cs" />
     <Compile Include="GraphicsPipelines\AmtGraphicsPipelineVertexAttribute.cs" />
     <Compile Include="CommandBuffer\AmtCmdIndexBufferParameter.cs" />
+    <Compile Include="CommandBuffer\AmtComputeEncoderItemBag.cs" />
+    <Compile Include="AmtBuffer.cs" />
+    <Compile Include="CommandBuffer\AmtDispatchEncoderState.cs" />
+    <Compile Include="CommandBuffer\AmtDispatchIndirectEncoderState.cs" />
+    <Compile Include="CommandBuffer\AmtComputeEncoder.cs" />
+    <Compile Include="CommandBuffer\IAmtComputeEncoder.cs" />
+    <Compile Include="CommandBuffer\AmtComputePipeline.cs" />
+    <Compile Include="CommandBuffer\GLCommandBuffer.cs" />
+    <Compile Include="CommandBuffer\IAmtGraphicsEncoder.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Magnesium\Magnesium.csproj">

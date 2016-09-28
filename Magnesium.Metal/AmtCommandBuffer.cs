@@ -4,11 +4,11 @@ using Metal;
 
 namespace Magnesium.Metal
 {
-	class AmtCommandBuffer : IMgCommandBuffer
+	class AmtCommandBuffer3 : IMgCommandBuffer
 	{
 		IMTLCommandBuffer cmdBuf;
 
-		public AmtCommandBuffer(IMTLCommandBuffer cmdBuf)
+		public AmtCommandBuffer3(IMTLCommandBuffer cmdBuf)
 		{
 			this.cmdBuf = cmdBuf;
 		}

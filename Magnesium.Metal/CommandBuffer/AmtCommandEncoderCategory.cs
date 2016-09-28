@@ -6,6 +6,6 @@ namespace Magnesium.Metal
 	{
 		Graphics = 0x1,
 		Blit = 0x2,
-		Image = 0x4,
+		Compute = 0x4,
 	}
 }

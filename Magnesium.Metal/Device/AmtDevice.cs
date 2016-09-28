@@ -77,7 +77,15 @@ namespace Magnesium.Metal
 
 		public Result CreateComputePipelines(IMgPipelineCache pipelineCache, MgComputePipelineCreateInfo[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgPipeline[] pPipelines)
 		{
-			throw new NotImplementedException();
+			var output = new List<IMgPipeline>();
+
+			foreach (var info in pCreateInfos)
+			{
+				var pipeline = new AmtComputePipeline(mDevice, info);
+				output.Add(pipeline);
+			}
+			pPipelines = output.ToArray();
+			return Result.SUCCESS;
 		}
 
 		public Result CreateDescriptorPool(MgDescriptorPoolCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDescriptorPool pDescriptorPool)
