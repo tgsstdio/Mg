@@ -121,11 +121,13 @@ namespace Magnesium.Metal
 		private uint mFrontReference;
 		private uint mBackReference;
 
+		private AmtGraphicsPipeline mCurrentPipeline;
 		public void BindPipeline(IMgPipeline pipeline)
 		{
 			Debug.Assert(pipeline != null);
 
 			var bPipeline = (AmtGraphicsPipeline)pipeline;
+			mCurrentPipeline = bPipeline;
 
 			var pipelineDescriptor = new MTLRenderPipelineDescriptor
 			{
@@ -362,13 +364,52 @@ namespace Magnesium.Metal
 		public void Clear()
 		{
 			mBag.Clear();
+			mCurrentPipeline = null;
 			mCurrentRenderPass = null;
+			mIndexBuffer = null;
 		}
+
+		#region SetScissor methods
 
 		public void SetScissor(uint firstScissor, MgRect2D[] pScissors)
 		{
-			throw new NotImplementedException();
+			if (firstScissor != 0)
+				throw new ArgumentOutOfRangeException(nameof(firstScissor) + " != 0");
+
+			var scissor = pScissors[0];
+
+			if (scissor.Offset.X < 0)
+				throw new ArgumentOutOfRangeException(nameof(pScissors) + "[0].X must be >= 0"); 
+
+			if (scissor.Offset.Y < 0)
+				throw new ArgumentOutOfRangeException(nameof(pScissors) + "[0].Y must be >= 0");
+
+			var item = new MTLScissorRect
+			{
+				X = (nuint) scissor.Offset.X,
+				Y = (nuint) scissor.Offset.Y,
+				Width = (nuint) scissor.Extent.Width,
+				Height = (nuint) scissor.Extent.Height
+			};
+
+			var nextIndex = mBag.Scissors.Push(item);
+			mInstructions.Add(new AmtCommandEncoderInstruction
+			{
+				Category = AmtCommandEncoderCategory.Graphics,
+				Index = nextIndex,
+				Operation = CmdSetScissor,
+			});
 		}
+
+		private static void CmdSetScissor(AmtCommandRecording recording, uint index)
+		{
+			var stage = recording.Graphics;
+			Debug.Assert(stage.Encoder != null, nameof(stage.Encoder) + " is null");
+			var item = stage.Grid.Scissors[index];
+			stage.Encoder.SetScissorRect(item);
+		}
+
+		#endregion
 
 		public void SetStencilCompareMask(MgStencilFaceFlagBits faceMask, uint compareMask)
 		{
@@ -403,6 +444,261 @@ namespace Magnesium.Metal
 
 		#endregion
 
+		#region DrawIndexed and DrawIndexedIndirect methods
 
+		public void DrawIndexed(uint indexCount, uint instanceCount, uint firstIndex, int vertexOffset, uint firstInstance)
+		{
+			if (mCurrentPipeline == null)
+				return;
+
+			if (mIndexBuffer == null)
+				return;
+
+			var item = new AmtDrawIndexedEncoderState
+			{
+				PrimitiveType = mCurrentPipeline.Topology,
+				IndexCount = indexCount,
+				IndexType = mIndexType,
+				IndexBuffer = mIndexBuffer.Buffer,
+				BufferOffset = mBufferOffset,
+				InstanceCount = instanceCount,
+				VertexOffset = vertexOffset,
+				FirstInstance = firstInstance,
+			};
+
+			var nextIndex = mBag.DrawIndexeds.Push(item);
+
+			mInstructions.Add(new AmtCommandEncoderInstruction
+			{
+				Category = AmtCommandEncoderCategory.Graphics,
+				Index = nextIndex,
+				Operation = CmdDrawIndexed,
+			});
+		}
+
+		static void CmdDrawIndexed(AmtCommandRecording recording, uint index)
+		{
+			var stage = recording.Graphics;
+			var item = stage.Grid.DrawIndexed[index];
+			Debug.Assert(stage.Encoder != null, nameof(stage.Encoder) + " is null");
+			stage.Encoder.DrawIndexedPrimitives(
+				item.PrimitiveType,
+				item.IndexCount,
+				item.IndexType,
+				item.IndexBuffer,
+				item.BufferOffset,
+				item.InstanceCount,
+				item.VertexOffset,
+				item.FirstInstance);
+		}
+
+		private AmtBuffer mIndexBuffer;
+		private nuint mBufferOffset;
+		private MTLIndexType mIndexType;
+		public void BindIndexBuffer(IMgBuffer buffer, ulong offset, MgIndexType indexType)
+		{
+			if (buffer == null)
+				throw new ArgumentNullException(nameof(buffer));
+
+			var bBuffer = (AmtBuffer)buffer;
+
+			if (offset > nuint.MaxValue)
+				throw new ArgumentOutOfRangeException(nameof(offset) + " must be <= nuint.MaxValue");
+
+			mIndexType = TranslateIndexType(indexType);
+
+			mIndexBuffer = bBuffer;
+
+			mBufferOffset = (nuint) offset;
+
+		}
+
+		static MTLIndexType TranslateIndexType(MgIndexType indexType)
+		{
+			switch(indexType)
+			{
+				default:
+					throw new NotSupportedException();
+				case MgIndexType.UINT16:
+	                return MTLIndexType.UInt16;
+				case MgIndexType.UINT32:
+	                return MTLIndexType.UInt32;
+			}
+		}
+
+		public void DrawIndexedIndirect(IMgBuffer buffer, ulong offset, uint drawCount, uint stride)
+		{
+			if (buffer == null)
+			{
+				throw new ArgumentNullException(nameof(buffer));
+			}
+
+			if (offset > nuint.MaxValue)
+			{
+				throw new ArgumentOutOfRangeException(nameof(offset) + " must be <= nuint.MaxValue");
+			}
+
+			if (stride % 4 != 0)
+			{
+				throw new ArgumentException("stride must be multiple of 4 bytes");
+			}
+
+			if (mCurrentPipeline == null)
+				return;
+
+			if (mIndexBuffer == null)
+				return;
+
+			var bIndirectBuffer = (AmtBuffer)buffer;
+
+			var item = new AmtDrawIndexedIndirectEncoderState
+			{
+				DrawCount = drawCount,
+				Stride = (nuint) stride,
+				PrimitiveType = mCurrentPipeline.Topology,
+				IndexType = mIndexType,
+				IndexBuffer = mIndexBuffer.Buffer,
+				IndexBufferOffset = mBufferOffset,
+				IndirectBuffer = bIndirectBuffer.Buffer,
+				IndirectBufferOffset = (nuint) offset, 
+			};
+
+			var nextIndex = mBag.DrawIndexedIndirects.Push(item);
+
+			mInstructions.Add(new AmtCommandEncoderInstruction
+			{
+				Category = AmtCommandEncoderCategory.Graphics,
+				Index =nextIndex,
+				Operation = CmdDrawIndexedIndirect,
+			});
+
+		}
+
+		static void CmdDrawIndexedIndirect(AmtCommandRecording recording, uint index)
+		{
+			var stage = recording.Graphics;
+			Debug.Assert(stage.Encoder != null, nameof(stage.Encoder) + " is null");
+			var item = stage.Grid.DrawIndexedIndirects[index];
+
+			var drawCount = item.DrawCount;
+			var stride = item.Stride;
+
+			nuint offset = item.IndirectBufferOffset;
+			for (var i = 0; i < drawCount; ++i)
+			{
+				stage.Encoder.DrawIndexedPrimitives(
+					primitiveType: item.PrimitiveType,
+					indexType: item.IndexType,
+					indexBuffer: item.IndexBuffer,
+					indexBufferOffset: item.IndexBufferOffset,
+					indirectBuffer: item.IndirectBuffer,
+					indirectBufferOffset: offset
+				);
+				offset += stride;
+			}
+		}
+
+		#endregion
+
+		#region CmdDraw methods
+
+		public void Draw(uint vertexCount, uint instanceCount, uint firstVertex, uint firstInstance)
+		{
+			if (mCurrentPipeline == null)
+				return;
+
+			var item = new AmtDrawEncoderState
+			{
+				PrimitiveType = mCurrentPipeline.Topology,
+				VertexCount = vertexCount,
+				InstanceCount = instanceCount,
+				FirstVertex = firstVertex,
+				FirstInstance = firstInstance,
+			};
+
+			var nextIndex = mBag.Draws.Push(item);
+			mInstructions.Add(new AmtCommandEncoderInstruction
+			{
+				Category = AmtCommandEncoderCategory.Graphics,
+				Index = nextIndex,
+				Operation = CmdDraw,
+			});
+				
+		}
+
+		private static void CmdDraw(AmtCommandRecording recording, uint index)
+		{
+			var stage = recording.Graphics;
+			Debug.Assert(stage.Encoder != null, nameof(stage.Encoder) + " is null");
+			var item = stage.Grid.Draws[index];
+			stage.Encoder.DrawPrimitives(item.PrimitiveType, item.FirstVertex, item.VertexCount, item.InstanceCount, item.FirstInstance);
+		}
+
+		#endregion
+
+		#region DrawIndirect methods
+
+		public void DrawIndirect(IMgBuffer buffer, ulong offset, uint drawCount, uint stride)
+		{
+			if (buffer == null)
+			{
+				throw new ArgumentNullException(nameof(buffer));
+			}
+
+			if (offset > nuint.MaxValue)
+			{
+				throw new ArgumentOutOfRangeException(nameof(offset) + " must be <= nuint.MaxValue");
+			}
+
+			if (stride % 4 != 0)
+			{
+				throw new ArgumentException("stride must be multiple of 4 bytes");
+			}
+
+			if (mCurrentPipeline == null)
+				return;
+
+			var bIndirectBuffer = (AmtBuffer)buffer;
+
+			var item = new AmtDrawIndirectEncoderState
+			{
+				PrimitiveType = mCurrentPipeline.Topology,
+				DrawCount = drawCount,
+				IndirectBuffer = bIndirectBuffer.Buffer,
+				IndirectBufferOffset = (nuint) offset,
+				Stride = (nuint) stride,
+			};
+
+			var nextIndex = mBag.DrawIndirects.Push(item);
+			mInstructions.Add(new AmtCommandEncoderInstruction
+			{
+				Category = AmtCommandEncoderCategory.Graphics,
+				Index = nextIndex,
+				Operation = CmdDrawIndirect,
+			});
+				
+		}
+
+		private static void CmdDrawIndirect(AmtCommandRecording recording, uint index)
+		{
+			var stage = recording.Graphics;
+			Debug.Assert(stage.Encoder != null, nameof(stage.Encoder) + " is null");
+			var item = stage.Grid.DrawIndirects[index];
+
+			var drawCount = item.DrawCount;
+			var stride = item.Stride;
+
+			nuint offset = item.IndirectBufferOffset;
+			for (var i = 0; i < drawCount; ++i)
+			{
+				stage.Encoder.DrawPrimitives(
+					item.PrimitiveType,
+					item.IndirectBuffer,
+					offset);
+             	offset += stride;
+		 	}
+		}
+
+		#endregion
 	}
 }

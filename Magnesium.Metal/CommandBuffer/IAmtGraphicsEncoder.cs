@@ -14,5 +14,11 @@
 		void BeginRenderPass(MgRenderPassBeginInfo pRenderPassBegin, MgSubpassContents contents);
 		void EndRenderPass();
 		void NextSubpass(MgSubpassContents contents);
+
+		void DrawIndexed(uint indexCount, uint instanceCount, uint firstIndex, int vertexOffset, uint firstInstance);
+		void BindIndexBuffer(IMgBuffer buffer, ulong offset, MgIndexType indexType);
+		void DrawIndexedIndirect(IMgBuffer buffer, ulong offset, uint drawCount, uint stride);
+		void Draw(uint vertexCount, uint instanceCount, uint firstVertex, uint firstInstance);
+		void DrawIndirect(IMgBuffer buffer, ulong offset, uint drawCount, uint stride);
 	}
 }

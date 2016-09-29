@@ -14,7 +14,12 @@ namespace Magnesium.Metal
 			mDepthBias = new AmtEncoderItemCollection<AmtDepthBiasEncoderState>();
 			mStencilReferences = new AmtEncoderItemCollection<AmtStencilReferenceEncoderState>();
 			mRenderPasses = new AmtEncoderItemCollection<MTLRenderPassDescriptor>();
+			mScissors = new AmtEncoderItemCollection<MTLScissorRect>();
 			mViewports = new AmtEncoderItemCollection<MTLViewport>();
+			mDraws = new AmtEncoderItemCollection<AmtDrawEncoderState>();
+			mDrawIndirects = new AmtEncoderItemCollection<AmtDrawIndirectEncoderState>();
+			mDrawIndexeds = new AmtEncoderItemCollection<AmtDrawIndexedEncoderState>();
+			mDrawIndexedIndirects = new AmtEncoderItemCollection<AmtDrawIndexedIndirectEncoderState>();
 		}
 
 		public void Clear()
@@ -24,8 +29,58 @@ namespace Magnesium.Metal
 			mDepthStencilStates.Clear();
 			mDepthBias.Clear();
 			mStencilReferences.Clear();
+			mScissors.Clear();
 			mViewports.Clear();
 			mRenderPasses.Clear();
+			mDraws.Clear();
+			mDrawIndirects.Clear();
+			mDrawIndexeds.Clear();
+			mDrawIndexedIndirects.Clear();
+		}
+
+		private AmtEncoderItemCollection<MTLScissorRect> mScissors;
+		public AmtEncoderItemCollection<MTLScissorRect> Scissors
+		{
+			get
+			{
+				return mScissors;
+			}
+		}
+
+		private AmtEncoderItemCollection<AmtDrawIndirectEncoderState> mDrawIndirects;
+		public AmtEncoderItemCollection<AmtDrawIndirectEncoderState> DrawIndirects
+		{
+			get
+			{
+				return mDrawIndirects;
+			}
+		}
+
+		private AmtEncoderItemCollection<AmtDrawEncoderState> mDraws;
+		public AmtEncoderItemCollection<AmtDrawEncoderState> Draws
+		{
+			get
+			{
+				return mDraws;
+			}
+		}
+
+		private AmtEncoderItemCollection<AmtDrawIndexedIndirectEncoderState> mDrawIndexedIndirects;
+		public AmtEncoderItemCollection<AmtDrawIndexedIndirectEncoderState> DrawIndexedIndirects
+		{
+			get
+			{
+				return mDrawIndexedIndirects;
+			}
+		}
+
+		private AmtEncoderItemCollection<AmtDrawIndexedEncoderState> mDrawIndexeds;
+		public AmtEncoderItemCollection<AmtDrawIndexedEncoderState> DrawIndexeds
+		{
+			get
+			{
+				return mDrawIndexeds;
+			}
 		}
 
 		private readonly AmtEncoderItemCollection<MTLViewport> mViewports;

@@ -162,11 +162,7 @@ namespace Magnesium.Metal
 
 		public void CmdBindIndexBuffer(IMgBuffer buffer, ulong offset, MgIndexType indexType)
 		{
-			//var param = new AmtCmdIndexBufferParameter();
-			//param.buffer = buffer;
-			//param.offset = offset;
-			//param.indexType = indexType;
-			//mRepository.IndexBuffers.Add(param);
+			mGraphics.BindIndexBuffer(buffer, offset, indexType);
 		}
 
 		public void CmdBindVertexBuffers(uint firstBinding, IMgBuffer[] pBuffers, ulong[] pOffsets)
@@ -178,129 +174,24 @@ namespace Magnesium.Metal
 			//mRepository.VertexBuffers.Add(param);
 		}
 
-		void StoreDrawCommand(AmtDrawCommandEncoderState command)
-		{
-			//if (mRepository.MapRepositoryFields(ref command))
-			//{
-			//	if (mIncompleteRenderPass != null)
-			//	{
-			//		// TODO : add draw command to instruction list
-			//		//mIncompleteRenderPass.DrawCommands.Add (command);
-			//	}
-			//	else
-			//	{
-			//		mIncompleteDraws.Add(command);
-			//	}
-			//}
-		}
-
 		public void CmdDraw(uint vertexCount, uint instanceCount, uint firstVertex, uint firstInstance)
 		{
-			//void glDrawArraysInstancedBaseInstance(GLenum mode​, GLint first​, GLsizei count​, GLsizei primcount​, GLuint baseinstance​);
-			//mDrawCommands.Add (mIncompleteDrawCommand);
-			// first => firstVertex
-			// count => vertexCount
-			// primcount => instanceCount Specifies the number of instances of the indexed geometry that should be drawn.
-			// baseinstance => firstInstance Specifies the base instance for use in fetching instanced vertex attributes.
-
-			var command = new AmtDrawCommandEncoderState();
-			command.Draw.vertexCount = vertexCount;
-			command.Draw.instanceCount = instanceCount;
-			command.Draw.firstVertex = firstVertex;
-			command.Draw.firstInstance = firstInstance;
-
-			StoreDrawCommand(command);
+			mGraphics.Draw(vertexCount, instanceCount, firstVertex, firstInstance);
 		}
 
 		public void CmdDrawIndexed(uint indexCount, uint instanceCount, uint firstIndex, int vertexOffset, uint firstInstance)
 		{
-			// void glDrawElementsInstancedBaseVertex(GLenum mode​, GLsizei count​, GLenum type​, GLvoid *indices​, GLsizei primcount​, GLint basevertex​);
-			// count => indexCount Specifies the number of elements to be rendered. (divide by elements)
-			// indices => firstIndex Specifies a byte offset (cast to a pointer type) (multiple by data size)
-			// primcount => instanceCount Specifies the number of instances of the indexed geometry that should be drawn.
-			// basevertex => vertexOffset Specifies a constant that should be added to each element of indices​ when chosing elements from the enabled vertex arrays.
-			// TODO : need to handle negetive offset
-			//mDrawCommands.Add (mIncompleteDrawCommand);
-
-			var command = new AmtDrawCommandEncoderState();
-			command.DrawIndexed = new AmtDrawIndexedEncoderState();
-			command.DrawIndexed.indexCount = indexCount;
-			command.DrawIndexed.instanceCount = instanceCount;
-			command.DrawIndexed.firstIndex = firstIndex;
-			command.DrawIndexed.vertexOffset = vertexOffset;
-			command.DrawIndexed.firstInstance = firstInstance;
-
-			StoreDrawCommand(command);
+			mGraphics.DrawIndexed(indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
 		}
 
 		public void CmdDrawIndirect(IMgBuffer buffer, ulong offset, uint drawCount, uint stride)
 		{
-			// ARB_multi_draw_indirect
-			//			typedef struct VkDrawIndirectCommand {
-			//				uint32_t    vertexCount;
-			//				uint32_t    instanceCount; 
-			//				uint32_t    firstVertex; 
-			//				uint32_t    firstInstance;
-			//			} VkDrawIndirectCommand;
-			// glMultiDrawArraysIndirect 
-			//void glMultiDrawArraysIndirect(GLenum mode​, const void *indirect​, GLsizei drawcount​, GLsizei stride​);
-			// indirect => buffer + offset IntPtr
-			// drawCount => drawCount
-			// stride => stride
-			//			typedef  struct {
-			//				uint  count;
-			//				uint  instanceCount;
-			//				uint  first;
-			//				uint  baseInstance;
-			//			} DrawArraysIndirectCommand;
-			//mDrawCommands.Add (mIncompleteDrawCommand);
-
-			var command = new AmtDrawCommandEncoderState();
-			command.DrawIndirect = new AmtDrawIndirectEncoderState();
-			command.DrawIndirect.buffer = buffer;
-			command.DrawIndirect.offset = offset;
-			command.DrawIndirect.drawCount = drawCount;
-			command.DrawIndirect.stride = stride;
-
-			StoreDrawCommand(command);
+			mGraphics.DrawIndirect(buffer, offset, drawCount, stride);
 		}
 
 		public void CmdDrawIndexedIndirect(IMgBuffer buffer, ulong offset, uint drawCount, uint stride)
 		{
-			//			typedef struct VkDrawIndexedIndirectCommand {
-			//				uint32_t    indexCount;
-			//				uint32_t    instanceCount;
-			//				uint32_t    firstIndex;
-			//				int32_t     vertexOffset;
-			//				uint32_t    firstInstance;
-			//			} VkDrawIndexedIndirectCommand;
-			// void glMultiDrawElementsIndirect(GLenum mode​, GLenum type​, const void *indirect​, GLsizei drawcount​, GLsizei stride​);
-			// indirect  => buffer + offset (IntPtr)
-			// drawcount => drawcount
-			// stride => stride
-			//			glDrawElementsInstancedBaseVertexBaseInstance(mode,
-			//				cmd->count,
-			//				type,
-			//				cmd->firstIndex * size-of-type,
-			//				cmd->instanceCount,
-			//				cmd->baseVertex,
-			//				cmd->baseInstance);
-			//			typedef  struct {
-			//				uint  count;
-			//				uint  instanceCount;
-			//				uint  firstIndex;
-			//				uint  baseVertex; // TODO: negetive index
-			//				uint  baseInstance;
-			//			} DrawElementsIndirectCommand;
-			//mDrawCommands.Add (mIncompleteDrawCommand);
-			var command = new AmtDrawCommandEncoderState();
-			command.DrawIndexedIndirect = new AmtDrawIndexedIndirectEncoderState();
-			command.DrawIndexedIndirect.buffer = buffer;
-			command.DrawIndexedIndirect.offset = offset;
-			command.DrawIndexedIndirect.drawCount = drawCount;
-			command.DrawIndexedIndirect.stride = stride;
-
-			StoreDrawCommand(command);
+			mGraphics.DrawIndexedIndirect(buffer, offset, drawCount, stride);
 		}
 
 		public void CmdDispatch(uint x, uint y, uint z)
@@ -308,7 +199,6 @@ namespace Magnesium.Metal
 			mCompute.Dispatch(x, y, z);
 		}
 
-		private List<AmtCommandEncoderInstruction> mInstructions;
 		public void CmdDispatchIndirect(IMgBuffer buffer, ulong offset)
 		{
 			mCompute.DispatchIndirect(buffer, offset);

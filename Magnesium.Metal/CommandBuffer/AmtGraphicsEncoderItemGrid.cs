@@ -10,6 +10,11 @@ namespace Magnesium.Metal
 		public IMTLDepthStencilState[] DepthStencilStates { get; internal set; }
 		public AmtDepthBiasEncoderState[] DepthBias { get; internal set; }
 		public AmtStencilReferenceEncoderState[] StencilReferences { get; internal set; }
+		public MTLScissorRect[] Scissors { get; internal set;}
 		public MTLViewport[] Viewports { get; internal set; }
+		public AmtDrawEncoderState[] Draws { get; internal set;}
+		public AmtDrawIndirectEncoderState[] DrawIndirects { get; internal set;}
+		public AmtDrawIndexedEncoderState[] DrawIndexed { get; internal set; }
+		public AmtDrawIndexedIndirectEncoderState[] DrawIndexedIndirects { get; internal set;}
 	}
 }
