@@ -177,11 +177,11 @@ namespace Magnesium.Metal
 			ClearAttachments[depthStencil.Attachment].Destination = AmtRenderPassAttachmentDestination.DEPTH_AND_STENCIL;
 		}
 
-		static void InitialiseColorAttachments(AmtRenderPass renderPass, MTLRenderPipelineDescriptor dest)
+		public void InitializeFormat(MTLRenderPipelineDescriptor dest)
 		{
 
 			nint colorAttachmentIndex = 0;
-			foreach (var attachment in renderPass.ClearAttachments)
+			foreach (var attachment in ClearAttachments)
 			{
 				if (attachment.Destination == AmtRenderPassAttachmentDestination.COLOR)
 				{

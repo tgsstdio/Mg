@@ -112,6 +112,8 @@
     <Compile Include="CommandBuffer\AmtComputePipeline.cs" />
     <Compile Include="CommandBuffer\GLCommandBuffer.cs" />
     <Compile Include="CommandBuffer\IAmtGraphicsEncoder.cs" />
+    <Compile Include="AmtSampleCountFlagBitExtensions.cs" />
+    <Compile Include="CommandBuffer\AmtDepthStencilStateEncoderState.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Magnesium\Magnesium.csproj">

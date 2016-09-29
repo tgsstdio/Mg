@@ -43,6 +43,8 @@ namespace Magnesium.Metal
 				throw new ArgumentNullException(nameof(info.RenderPass));
 			}
 
+			RenderPass = (AmtRenderPass)info.RenderPass;
+
 			InitializeShaderFunctions(device, info.Stages);
 			InitializeVertexDescriptor(info.VertexInputState);
 			InitiailizeDepthStateDescriptor(info.DepthStencilState);
@@ -51,7 +53,86 @@ namespace Magnesium.Metal
 			InitializeColorBlending(info.ColorBlendState);
 			InitializeDynamicStates(info.DynamicState);
 			InitializeResources(info.VertexInputState);
+			InitializeViewportAndScissor(info.ViewportState);
+			InitializeMultisampleInfo(info.MultisampleState);
 		}
+
+		public bool AlphaToCoverageEnabled { get; private set; }
+		public bool AlphaToOneEnabled { get; private set; }
+		public nuint SampleCount { get; private set; }
+
+		void InitializeMultisampleInfo(MgPipelineMultisampleStateCreateInfo multisampleState)
+		{
+			if (multisampleState != null)
+			{
+				AlphaToCoverageEnabled = multisampleState.AlphaToCoverageEnable;
+				AlphaToOneEnabled = multisampleState.AlphaToOneEnable;
+				SampleCount = AmtSampleCountFlagBitExtensions.TranslateSampleCount(
+								multisampleState.RasterizationSamples);
+			}
+			else
+			{
+				// NO MULTISAMPLING
+				AlphaToCoverageEnabled = false;
+				AlphaToOneEnabled = false;
+				SampleCount = 1;
+			}
+		}
+
+		public MTLViewport? Viewport { get; private set;}
+		public MTLScissorRect? ScissorRect { get; private set;}
+		void InitializeViewportAndScissor(MgPipelineViewportStateCreateInfo viewportState)
+		{
+			// if dynamic state has not been supplied, then default viewport is mandatory
+
+			bool isViewportUserSupplied = (DynamicStates & AmtGraphicsPipelineDynamicStateFlagBits.VIEWPORT) 
+												== AmtGraphicsPipelineDynamicStateFlagBits.VIEWPORT;
+			if (viewportState.Viewports == null)
+			{
+				(!isViewportUserSupplied)
+				{
+					throw new InvalidOperationException(nameof(viewportState.Viewports) + " must be supplied.");
+				}
+			}
+			else
+			{
+				var vp = viewportState.Viewports[0];
+
+				Viewport = new MTLViewport
+				{
+					Height = vp.Height,
+					Width = vp.Width,
+					OriginX = vp.X,
+					OriginY = vp.Y,
+					// HOPE THIS IS RIGHT
+					ZNear = vp.MinDepth,
+					ZFar = vp.MaxDepth,
+				};
+			}
+
+			bool isScissorUserSupplied = (DynamicStates & AmtGraphicsPipelineDynamicStateFlagBits.SCISSOR)
+												== AmtGraphicsPipelineDynamicStateFlagBits.SCISSOR;
+			// if dynamic state has not been supplied, then default viewport is mandatory
+			if (viewportState.Scissors == null)
+			{
+				if (!isScissorUserSupplied)
+					throw new InvalidOperationException(nameof(viewportState.Scissors) + " must be supplied.");
+			}
+			else
+			{
+				var scissor = viewportState.Scissors[0];
+
+				ScissorRect = new MTLScissorRect
+				{
+					X = (nuint)scissor.Offset.X,
+					Y = (nuint)scissor.Offset.Y,
+					Width = (nuint)scissor.Extent.Width,
+					Height = (nuint)scissor.Extent.Height
+				};
+			}
+		}
+
+		public AmtRenderPass RenderPass { get; internal set;}
 
 		public AmtPipelineLayoutBufferBinding[] VertexBufferBindings { get; private set; }
 
@@ -182,7 +263,7 @@ namespace Magnesium.Metal
 
 		private struct AmtColorWriteMaskKey
 		{
-			public MgColorComponentFlagBits CompareMask { get; set;}
+			public MgColorComponentFlagBits Compare { get; set;}
 			public MTLColorWriteMask WriteMask { get; set;}
 		}
 
@@ -190,17 +271,17 @@ namespace Magnesium.Metal
 		static MTLColorWriteMask TranslateColorWriteMask(MgColorComponentFlagBits writeMask)
 		{
 			AmtColorWriteMaskKey[] masks = new []{
-				new AmtColorWriteMaskKey{CompareMask = MgColorComponentFlagBits.R_BIT, WriteMask = MTLColorWriteMask.Red},
-				new AmtColorWriteMaskKey{CompareMask = MgColorComponentFlagBits.G_BIT, WriteMask = MTLColorWriteMask.Green},
-				new AmtColorWriteMaskKey{CompareMask = MgColorComponentFlagBits.B_BIT, WriteMask = MTLColorWriteMask.Blue},
-				new AmtColorWriteMaskKey{CompareMask = MgColorComponentFlagBits.A_BIT, WriteMask = MTLColorWriteMask.Alpha},
+				new AmtColorWriteMaskKey{Compare = MgColorComponentFlagBits.R_BIT, WriteMask = MTLColorWriteMask.Red},
+				new AmtColorWriteMaskKey{Compare = MgColorComponentFlagBits.G_BIT, WriteMask = MTLColorWriteMask.Green},
+				new AmtColorWriteMaskKey{Compare = MgColorComponentFlagBits.B_BIT, WriteMask = MTLColorWriteMask.Blue},
+				new AmtColorWriteMaskKey{Compare = MgColorComponentFlagBits.A_BIT, WriteMask = MTLColorWriteMask.Alpha},
 			};
 
 			MTLColorWriteMask output = MTLColorWriteMask.None;
 
 			foreach (var key in masks)
 			{
-				if ((writeMask & key.CompareMask) == key.CompareMask)
+				if ((writeMask & key.Compare) == key.Compare)
 				{
 					output |= key.WriteMask;
 				}
@@ -305,6 +386,8 @@ namespace Magnesium.Metal
 
 		public MTLTriangleFillMode FillMode { get; private set;}
 
+		public bool RasterizationDiscardEnabled { get; private set; }
+
 		void InitializeRasterization(MgPipelineRasterizationStateCreateInfo rasterizationState)
 		{
 			CullMode = TranslateCullMode(rasterizationState.CullMode);
@@ -313,6 +396,7 @@ namespace Magnesium.Metal
 			ConstantFactor = rasterizationState.DepthBiasConstantFactor;
 			Winding = TranslateWinding(rasterizationState.FrontFace);
 			FillMode = TranslateFillMode(rasterizationState.PolygonMode);
+			RasterizationDiscardEnabled = rasterizationState.RasterizerDiscardEnable;
 		}
 
 		MTLTriangleFillMode TranslateFillMode(MgPolygonMode polygonMode)

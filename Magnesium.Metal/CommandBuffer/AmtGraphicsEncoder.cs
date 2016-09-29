@@ -129,12 +129,26 @@ namespace Magnesium.Metal
 			var bPipeline = (AmtGraphicsPipeline)pipeline;
 			mCurrentPipeline = bPipeline;
 
+			// FIXME : SHOULD BE DELAYED PIPELINE CREATION TO EVERY DRAW CALLS TO CORRECTLY SIMULATE DYNAMIC STATES
 			var pipelineDescriptor = new MTLRenderPipelineDescriptor
 			{
 				VertexFunction = bPipeline.VertexFunction,
 				FragmentFunction = bPipeline.FragmentFunction,
 				VertexDescriptor = bPipeline.GetVertexDescriptor(),
+				AlphaToCoverageEnabled = bPipeline.AlphaToCoverageEnabled,
+				RasterizationEnabled = !bPipeline.RasterizationDiscardEnabled,
+				AlphaToOneEnabled = bPipeline.AlphaToOneEnabled
+
 			};
+
+			if (mCurrentRenderPass != null)
+			{
+				mCurrentRenderPass.InitializeFormat(pipelineDescriptor);
+			}
+			else
+			{
+				mCurrentPipeline.RenderPass.InitializeFormat(pipelineDescriptor);
+			}
 
 			Debug.Assert(bPipeline.Attachments != null);
 			for (var i = 0; i < bPipeline.Attachments.Length; ++i)
@@ -154,30 +168,38 @@ namespace Magnesium.Metal
 			var pipelineState = mDevice.CreateRenderPipelineState(pipelineDescriptor, out err);
 			// TODO : CHECK ERROR HERE
 
+			SetupDepthStencil(bPipeline);
 
-			var dsDescriptor = new MTLDepthStencilDescriptor
+			var blendColors = mCurrentPipeline.BlendConstants;
+			if ((mCurrentPipeline.DynamicStates & AmtGraphicsPipelineDynamicStateFlagBits.BLEND_CONSTANTS) == AmtGraphicsPipelineDynamicStateFlagBits.STENCIL_REFERENCE)
 			{
-				DepthCompareFunction = bPipeline.DepthCompareFunction,
-				DepthWriteEnabled = bPipeline.DepthWriteEnabled,
-				BackFaceStencil = bPipeline.BackStencil.GetDescriptor(),
-				FrontFaceStencil = bPipeline.FrontStencil.GetDescriptor(),
-			};
+				blendColors = mBlendConstants;
+			}
 
-			var depthStencil = mDevice.CreateDepthStencilState(dsDescriptor);
+			var viewport = mViewport;
+			if (mCurrentPipeline.Viewport.HasValue)
+			{
+				viewport = mCurrentPipeline.Viewport.Value;
+			}
 
-			//mFrontReference = bPipeline.FrontStencil.StencilReference;
-			//mBackReference = bPipeline.BackStencil.StencilReference;
+			var scissorRect = mScissor;
+			if (mCurrentPipeline.ScissorRect.HasValue)
+			{
+				scissorRect = mCurrentPipeline.ScissorRect.Value;
+			}
 
 			var pipeDetail = new AmtPipelineEncoderState
 			{
 				PipelineState = pipelineState,
-				DepthStencilState = depthStencil,
-
+				//DepthStencilState = depthStencil,
+				Viewport = viewport,
 				CullMode = bPipeline.CullMode,
+				BlendConstants = blendColors,
+				Scissor = scissorRect,
 
 				Winding = bPipeline.Winding,
-				FrontReference = mFrontReference,
-				BackReference = mBackReference,
+				//FrontReference = frontReference,
+				//BackReference = backReference,
 			};
 			var nextIndex = mBag.PipelineStates.Push(pipeDetail);
 
@@ -187,6 +209,70 @@ namespace Magnesium.Metal
 				Index = (uint)nextIndex,
 				Operation = CmdSetPipeline,
 			});
+
+		}
+
+		uint mFrontCompare;
+		uint mBackCompare;
+
+		uint mFrontWrite;
+		uint mBackWrite;
+
+		void SetupDepthStencil(AmtGraphicsPipeline bPipeline)
+		{
+			var frontCompareMask = bPipeline.FrontStencil.ReadMask;
+			var backCompareMask = bPipeline.BackStencil.ReadMask;
+
+
+			// ONLY if pipeline ATTACHED and dynamic state has been set
+			if ((mCurrentPipeline.DynamicStates & AmtGraphicsPipelineDynamicStateFlagBits.STENCIL_COMPARE_MASK) == AmtGraphicsPipelineDynamicStateFlagBits.STENCIL_COMPARE_MASK)
+			{
+				frontCompareMask = mFrontCompare;
+				backCompareMask = mBackCompare;
+			}
+
+			var frontWriteMask = bPipeline.FrontStencil.WriteMask;
+			var backWriteMask = bPipeline.BackStencil.WriteMask;
+
+			// ONLY if pipeline ATTACHED and dynamic state has been set
+			if ((mCurrentPipeline.DynamicStates & AmtGraphicsPipelineDynamicStateFlagBits.STENCIL_WRITE_MASK) == AmtGraphicsPipelineDynamicStateFlagBits.STENCIL_WRITE_MASK)
+			{
+				frontCompareMask = mFrontWrite;
+				backCompareMask = mBackWrite;
+			}
+
+			var dsDescriptor = new MTLDepthStencilDescriptor
+			{
+				DepthCompareFunction = bPipeline.DepthCompareFunction,
+				DepthWriteEnabled = bPipeline.DepthWriteEnabled,
+				BackFaceStencil = bPipeline.BackStencil.GetDescriptor(),
+				FrontFaceStencil = bPipeline.FrontStencil.GetDescriptor(),
+			};
+			dsDescriptor.FrontFaceStencil.ReadMask = frontCompareMask;
+			dsDescriptor.FrontFaceStencil.WriteMask = frontWriteMask;
+			dsDescriptor.BackFaceStencil.ReadMask = backCompareMask;
+			dsDescriptor.BackFaceStencil.WriteMask = backWriteMask;
+
+			var depthStencil = mDevice.CreateDepthStencilState(dsDescriptor);
+
+			var frontReference = bPipeline.FrontStencil.StencilReference;
+			var backReference = bPipeline.BackStencil.StencilReference;
+
+			// ONLY if pipeline ATTACHED and dynamic state has been set
+			if ((mCurrentPipeline.DynamicStates & AmtGraphicsPipelineDynamicStateFlagBits.STENCIL_REFERENCE) == AmtGraphicsPipelineDynamicStateFlagBits.STENCIL_REFERENCE)
+			{
+				frontReference = mFrontReference;
+				backReference = mBackReference;
+			}
+
+			var item = new AmtDepthStencilStateEncoderState
+			{
+				DepthStencilState = depthStencil,
+				FrontReference = frontReference,
+				BackReference = backReference,
+			};
+
+			// TODO : add depth/stencil to bag, create delegate
 		}
 
 		private static void CmdSetPipeline(AmtCommandRecording recording, uint index)
@@ -196,13 +282,15 @@ namespace Magnesium.Metal
 
 			var item = stage.Grid.Pipelines[index];
 			arg1.SetRenderPipelineState(item.PipelineState);
-			arg1.SetDepthStencilState(item.DepthStencilState);
+			//arg1.SetDepthStencilState(item.DepthStencilState);
 			arg1.SetViewport(item.Viewport);
 			arg1.SetCullMode(item.CullMode);
 			arg1.SetScissorRect(item.Scissor);
 			arg1.SetTriangleFillMode(item.FillMode);
 			arg1.SetFrontFacingWinding(item.Winding);
-			arg1.SetStencilFrontReferenceValue(item.FrontReference, item.BackReference);
+			var color = item.BlendConstants;
+			arg1.SetBlendColor(color.R, color.G, color.B, color.A);
+		//	arg1.SetStencilFrontReferenceValue(item.FrontReference, item.BackReference);
 
 		}
 
@@ -210,6 +298,7 @@ namespace Magnesium.Metal
 
 		#region SetBlendConstants methods
 
+		private MgColor4f mBlendConstants;
 		public void SetBlendConstants(MgColor4f color)
 		{
 			var nextIndex = mBag.BlendConstants.Push(color);
@@ -219,6 +308,7 @@ namespace Magnesium.Metal
 				Index = (uint) nextIndex,
 				Operation = SetCmdBlendColors,
 			});
+			mBlendConstants = color;
 		}
 
 		private static void SetCmdBlendColors(AmtCommandRecording recording, uint index)
@@ -232,6 +322,7 @@ namespace Magnesium.Metal
 
 		#region SetViewports methods
 
+		private MTLViewport mViewport;
 		public void SetViewports(uint firstViewport, MgViewport[] viewports)
 		{
 			if (firstViewport != 0)
@@ -257,6 +348,7 @@ namespace Magnesium.Metal
 				Operation = CmdSetViewport,
 
 			});
+			mViewport = item;
 		}
 
 		static void CmdSetViewport(AmtCommandRecording recording, uint index)
@@ -272,6 +364,12 @@ namespace Magnesium.Metal
 
 		public void SetDepthBias(float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor)
 		{
+			// ONLY if pipeline ATTACHED and dynamic state has been set
+			if (mCurrentPipeline != null && ((mCurrentPipeline.DynamicStates & AmtGraphicsPipelineDynamicStateFlagBits.DEPTH_BIAS) != AmtGraphicsPipelineDynamicStateFlagBits.DEPTH_BIAS))
+			{
+				return;
+			}
+
 			var item = new AmtDepthBiasEncoderState
 			{
 				DepthBias = depthBiasConstantFactor,
@@ -287,6 +385,7 @@ namespace Magnesium.Metal
 				Index = nextIndex,
 				Operation = SetCmdDepthBias,
 			});
+
 		}
 
 		private static void SetCmdDepthBias(AmtCommandRecording recording, uint index)
@@ -399,7 +498,10 @@ namespace Magnesium.Metal
 				Index = nextIndex,
 				Operation = CmdSetScissor,
 			});
+				mScissor = item;
 		}
+
+		private MTLScissorRect mScissor;
 
 		private static void CmdSetScissor(AmtCommandRecording recording, uint index)
 		{
@@ -411,6 +513,8 @@ namespace Magnesium.Metal
 
 		#endregion
 
+		private uint frontCompareMask;
+		private uint backCompareMask;
 		public void SetStencilCompareMask(MgStencilFaceFlagBits faceMask, uint compareMask)
 		{
 			throw new NotImplementedException();
