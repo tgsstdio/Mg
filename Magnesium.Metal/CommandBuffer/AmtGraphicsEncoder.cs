@@ -5,7 +5,7 @@ using Metal;
 
 namespace Magnesium.Metal
 {
-	public class AmtGraphicsEncoder
+	public class AmtGraphicsEncoder : IAmtGraphicsEncoder
 	{
 		private AmtGraphicsEncoderItemBag mBag;
 		private IMTLDevice mDevice;
@@ -19,20 +19,52 @@ namespace Magnesium.Metal
 			mDevice = device;
 		}
 
-		private AmtRenderPass mRenderPass;
+		#region NextSubpass methods
 
-		public void SetRenderpass(IMgRenderPass renderpass, MgClearValue[] clearValues)
+		public void NextSubpass(MgSubpassContents contents)
 		{
-			Debug.Assert(renderpass != null);
-			var bRenderPass = (AmtRenderPass)renderpass;
-
-			var descriptor = new MTLRenderPassDescriptor { };
-			SetClearValues(bRenderPass, clearValues, descriptor);
-
-
+			
 		}
 
-		static void SetClearValues(AmtRenderPass renderPass, MgClearValue[] clearValues, MTLRenderPassDescriptor dest)
+		#endregion
+
+		#region BeginRenderPass methods
+
+		private AmtRenderPass mCurrentRenderPass;
+		public void BeginRenderPass(MgRenderPassBeginInfo pRenderPassBegin, MgSubpassContents contents)
+		{
+			if (pRenderPassBegin != null)
+				throw new ArgumentNullException(nameof(pRenderPassBegin));
+
+			var bRenderPass = (AmtRenderPass)pRenderPassBegin.RenderPass;
+			Debug.Assert(bRenderPass != null, nameof(pRenderPassBegin.RenderPass) + " is null");
+			mCurrentRenderPass = bRenderPass;
+
+			var bFramebuffer = (AmtFramebuffer)pRenderPassBegin.Framebuffer;
+			Debug.Assert(bFramebuffer != null, nameof(pRenderPassBegin.Framebuffer) + " is null");
+
+			var descriptor = new MTLRenderPassDescriptor { };
+			InitializeClearValues(bRenderPass, pRenderPassBegin.ClearValues, descriptor);
+
+			var nextIndex = mBag.RenderPasses.Push(descriptor);
+			mInstructions.Add(new AmtCommandEncoderInstruction
+			{
+				Category = AmtCommandEncoderCategory.Graphics,
+				Index = nextIndex,
+				Operation = CmdSetBeginRenderPass,
+			});
+		}
+
+		static void CmdSetBeginRenderPass(AmtCommandRecording recording, uint index)
+		{
+			var cmdBuf = recording.CommandBuffer;
+			Debug.Assert(cmdBuf != null, nameof(recording.CommandBuffer) + " is null");
+			var stage = recording.Graphics;
+			var item = stage.Grid.RenderPasses[index];
+			stage.Encoder = cmdBuf.CreateRenderCommandEncoder(item);
+		}
+
+		static void InitializeClearValues(AmtRenderPass renderPass, MgClearValue[] clearValues, MTLRenderPassDescriptor dest)
 		{
 			for (var i = 0; i < clearValues.Length; ++i)
 			{
@@ -82,12 +114,16 @@ namespace Magnesium.Metal
 			}
 		}
 
+		#endregion
+
+		#region BindPipeline methods
+
 		private uint mFrontReference;
 		private uint mBackReference;
-		public void SetPipeline(IMgPipeline pipeline)
+
+		public void BindPipeline(IMgPipeline pipeline)
 		{
 			Debug.Assert(pipeline != null);
-
 
 			var bPipeline = (AmtGraphicsPipeline)pipeline;
 
@@ -97,8 +133,6 @@ namespace Magnesium.Metal
 				FragmentFunction = bPipeline.FragmentFunction,
 				VertexDescriptor = bPipeline.GetVertexDescriptor(),
 			};
-
-
 
 			Debug.Assert(bPipeline.Attachments != null);
 			for (var i = 0; i < bPipeline.Attachments.Length; ++i)
@@ -153,8 +187,6 @@ namespace Magnesium.Metal
 			});
 		}
 
-
-
 		private static void CmdSetPipeline(AmtCommandRecording recording, uint index)
 		{
 			var stage = recording.Graphics;
@@ -170,13 +202,15 @@ namespace Magnesium.Metal
 			arg1.SetFrontFacingWinding(item.Winding);
 			arg1.SetStencilFrontReferenceValue(item.FrontReference, item.BackReference);
 
-
-
 		}
+
+		#endregion
+
+		#region SetBlendConstants methods
 
 		public void SetBlendConstants(MgColor4f color)
 		{
-			var nextIndex =mBag.BlendConstants.Push(color);
+			var nextIndex = mBag.BlendConstants.Push(color);
 
 			mInstructions.Add(new AmtCommandEncoderInstruction
 			{
@@ -185,17 +219,33 @@ namespace Magnesium.Metal
 			});
 		}
 
-		public void SetViewport(MgViewport viewport)
+		private static void SetCmdBlendColors(AmtCommandRecording recording, uint index)
 		{
+			var stage = recording.Graphics;
+			var color = stage.Grid.BlendConstants[index];
+			stage.Encoder.SetBlendColor(color.R, color.G, color.B, color.A);
+		}
+
+		#endregion
+
+		#region SetViewports methods
+
+		public void SetViewports(uint firstViewport, MgViewport[] viewports)
+		{
+			if (firstViewport != 0)
+				throw new ArgumentOutOfRangeException(firstViewport + " != 0");
+
+			var vp = viewports[0];
+
 			var item = new MTLViewport
 			{
-				Height = viewport.Height,
-				Width = viewport.Width,
-				OriginX = viewport.X,
-				OriginY = viewport.Y,
+				Height = vp.Height,
+				Width = vp.Width,
+				OriginX = vp.X,
+				OriginY = vp.Y,
 				// HOPE THIS IS RIGHT
-				ZNear = viewport.MinDepth,
-				ZFar = viewport.MaxDepth,
+				ZNear = vp.MinDepth,
+				ZFar = vp.MaxDepth,
 			};
 			var nextIndex = mBag.Viewports.Push(item);
 
@@ -213,6 +263,10 @@ namespace Magnesium.Metal
 			var item = stage.Grid.Viewports[index];
 			stage.Encoder.SetViewport(item);
 		}
+
+		#endregion
+
+		#region SetDepthBias methods
 
 		public void SetDepthBias(float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor)
 		{
@@ -239,6 +293,8 @@ namespace Magnesium.Metal
 			var item = stage.Grid.DepthBias[index];
 			stage.Encoder.SetDepthBias(item.DepthBias, item.SlopeScale, item.Clamp);
 		}
+
+		#endregion
 
 		public void SetStencilReference(MgStencilFaceFlagBits faceMask, UInt32 reference)
 		{
@@ -301,11 +357,52 @@ namespace Magnesium.Metal
 			stage.Encoder.SetStencilFrontReferenceValue(item.Front, item.Back);
 		}
 
-		private static void SetCmdBlendColors(AmtCommandRecording recording, uint index)
+
+
+		public void Clear()
+		{
+			mBag.Clear();
+			mCurrentRenderPass = null;
+		}
+
+		public void SetScissor(uint firstScissor, MgRect2D[] pScissors)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void SetStencilCompareMask(MgStencilFaceFlagBits faceMask, uint compareMask)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void SetStencilWriteMask(MgStencilFaceFlagBits faceMask, uint writeMask)
+		{
+			throw new NotImplementedException();
+		}
+
+		#region EndRenderPass methods
+
+		public void EndRenderPass()
+		{
+			mInstructions.Add(new AmtCommandEncoderInstruction
+			{
+				Category = AmtCommandEncoderCategory.Graphics,
+				Index = 0,
+				Operation = CmdEndRenderPass,
+			});
+		             
+		}
+
+		private static void CmdEndRenderPass(AmtCommandRecording recording, uint index)
 		{
 			var stage = recording.Graphics;
-			var color = stage.Grid.BlendConstants[index];
-			stage.Encoder.SetBlendColor(color.R, color.G, color.B, color.A);
+			Debug.Assert(stage.Encoder != null, nameof(stage.Encoder) + " is null");
+			stage.Encoder.EndEncoding();
+			stage.Encoder = null;
 		}
+
+		#endregion
+
+
 	}
 }

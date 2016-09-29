@@ -7,4 +7,3 @@
 		public AmtDispatchIndirectEncoderState[] DispatchIndirect { get; set;}
 	}
 }
-}

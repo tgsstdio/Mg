@@ -13,7 +13,7 @@ namespace Magnesium.Metal
 			mDepthStencilStates = new AmtEncoderItemCollection<IMTLDepthStencilState>();
 			mDepthBias = new AmtEncoderItemCollection<AmtDepthBiasEncoderState>();
 			mStencilReferences = new AmtEncoderItemCollection<AmtStencilReferenceEncoderState>();
-			//mInstructions = new List<AmtCommandEncoderInstruction>();
+			mRenderPasses = new AmtEncoderItemCollection<MTLRenderPassDescriptor>();
 			mViewports = new AmtEncoderItemCollection<MTLViewport>();
 		}
 
@@ -25,7 +25,7 @@ namespace Magnesium.Metal
 			mDepthBias.Clear();
 			mStencilReferences.Clear();
 			mViewports.Clear();
-			//mInstructions.Clear();
+			mRenderPasses.Clear();
 		}
 
 		private readonly AmtEncoderItemCollection<MTLViewport> mViewports;
@@ -37,14 +37,14 @@ namespace Magnesium.Metal
 			}
 		}
 
-		//private readonly List<AmtCommandEncoderInstruction> mInstructions;
-		//public List<AmtCommandEncoderInstruction> Instructions
-		//{
-		//	get
-		//	{
-		//		return mInstructions;
-		//	}
-		//}
+		private readonly AmtEncoderItemCollection<MTLRenderPassDescriptor> mRenderPasses;
+		public AmtEncoderItemCollection<MTLRenderPassDescriptor> RenderPasses
+		{
+			get
+			{
+				return mRenderPasses;
+			}
+		}
 
 		private readonly AmtEncoderItemCollection<MgColor4f> mBlendConstants;
 		public AmtEncoderItemCollection<MgColor4f> BlendConstants

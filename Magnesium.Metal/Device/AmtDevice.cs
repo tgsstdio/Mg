@@ -36,10 +36,17 @@ namespace Magnesium.Metal
 
 			var arraySize = pAllocateInfo.CommandBufferCount;
 
+
+
 			for (var i = 0; i < arraySize; ++i)
 			{
 				var cmdBuf = commandPool.Queue.CommandBuffer();
-				pCommandBuffers[i] = new AmtCommandBuffer(cmdBuf);
+				var instructions = new List<AmtCommandEncoderInstruction>();
+				var computeBag = new AmtComputeEncoderItemBag();
+				var compute = new AmtComputeEncoder(instructions, mDevice, computeBag);
+				var graphicsBag = new AmtGraphicsEncoderItemBag();
+				var graphics = new AmtGraphicsEncoder(instructions, graphicsBag, mDevice);
+				pCommandBuffers[i] = new AmtCommandBuffer2(false, graphics, compute);
 			}
 
 

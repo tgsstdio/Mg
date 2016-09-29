@@ -18,6 +18,8 @@ namespace Magnesium.Metal
 
 		IAmtComputeEncoder mCompute;
 
+		IAmtGraphicsEncoder mGraphics;
+
 		public AmtCommandBuffer2(bool canBeManuallyReset, IAmtGraphicsEncoder graphics, IAmtComputeEncoder compute)
 		{
 			mIsRecording = false;
@@ -46,7 +48,7 @@ namespace Magnesium.Metal
 			mIsRecording = false;
 			mIsExecutable = true;
 
-			// Convert loose item bag into "hard" item grids
+			// TODO : Convert loose item bag into "hard" item grids
 
 
 			return Result.SUCCESS;
@@ -90,7 +92,7 @@ namespace Magnesium.Metal
 
 		public void CmdSetViewport(uint firstViewport, MgViewport[] pViewports)
 		{
-			mGraphics.SetViewport(firstViewport, pViewports);
+			mGraphics.SetViewports(firstViewport, pViewports);
 		}
 
 		public void CmdSetScissor(uint firstScissor, MgRect2D[] pScissors)
@@ -100,8 +102,8 @@ namespace Magnesium.Metal
 
 		public void CmdSetLineWidth(float lineWidth)
 		{
-			// METAL : no wide lines
-			//mGraphics.PushLineWidth(lineWidth);
+			// METAL : non supported
+			// mGraphics.PushLineWidth(lineWidth);
 		}
 
 		public void CmdSetDepthBias(float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor)
@@ -114,12 +116,12 @@ namespace Magnesium.Metal
 
 		public void CmdSetBlendConstants(MgColor4f blendConstants)
 		{
-			mGraphics.PushBlendConstants(blendConstants);
+			mGraphics.SetBlendConstants(blendConstants);
 		}
 
 		public void CmdSetDepthBounds(float minDepthBounds, float maxDepthBounds)
 		{
-			// METAL : no depth bounds
+			// METAL : not supported
 			//mRepository.PushDepthBounds(
 			//	minDepthBounds,
 			//	maxDepthBounds
@@ -149,47 +151,47 @@ namespace Magnesium.Metal
 			IMgDescriptorSet[] pDescriptorSets,
 			uint[] pDynamicOffsets)
 		{
-			var parameter = new AmtDescriptorSetRecordingState();
-			parameter.Bindpoint = pipelineBindPoint;
-			parameter.Layout = layout;
-			parameter.FirstSet = firstSet;
-			parameter.DynamicOffsets = pDynamicOffsets;
-			parameter.DescriptorSets = pDescriptorSets;
-			mRepository.DescriptorSets.Add(parameter);
+			//var parameter = new AmtDescriptorSetRecordingState();
+			//parameter.Bindpoint = pipelineBindPoint;
+			//parameter.Layout = layout;
+			//parameter.FirstSet = firstSet;
+			//parameter.DynamicOffsets = pDynamicOffsets;
+			//parameter.DescriptorSets = pDescriptorSets;
+			//mRepository.DescriptorSets.Add(parameter);
 		}
 
 		public void CmdBindIndexBuffer(IMgBuffer buffer, ulong offset, MgIndexType indexType)
 		{
-			var param = new AmtCmdIndexBufferParameter();
-			param.buffer = buffer;
-			param.offset = offset;
-			param.indexType = indexType;
-			mRepository.IndexBuffers.Add(param);
+			//var param = new AmtCmdIndexBufferParameter();
+			//param.buffer = buffer;
+			//param.offset = offset;
+			//param.indexType = indexType;
+			//mRepository.IndexBuffers.Add(param);
 		}
 
 		public void CmdBindVertexBuffers(uint firstBinding, IMgBuffer[] pBuffers, ulong[] pOffsets)
 		{
-			var param = new AmtVertexBufferEncoderState();
-			param.firstBinding = firstBinding;
-			param.pBuffers = pBuffers;
-			param.pOffsets = pOffsets;
-			mRepository.VertexBuffers.Add(param);
+			//var param = new AmtVertexBufferEncoderState();
+			//param.firstBinding = firstBinding;
+			//param.pBuffers = pBuffers;
+			//param.pOffsets = pOffsets;
+			//mRepository.VertexBuffers.Add(param);
 		}
 
 		void StoreDrawCommand(AmtDrawCommandEncoderState command)
 		{
-			if (mRepository.MapRepositoryFields(ref command))
-			{
-				if (mIncompleteRenderPass != null)
-				{
-					// TODO : add draw command to instruction list
-					//mIncompleteRenderPass.DrawCommands.Add (command);
-				}
-				else
-				{
-					mIncompleteDraws.Add(command);
-				}
-			}
+			//if (mRepository.MapRepositoryFields(ref command))
+			//{
+			//	if (mIncompleteRenderPass != null)
+			//	{
+			//		// TODO : add draw command to instruction list
+			//		//mIncompleteRenderPass.DrawCommands.Add (command);
+			//	}
+			//	else
+			//	{
+			//		mIncompleteDraws.Add(command);
+			//	}
+			//}
 		}
 
 		public void CmdDraw(uint vertexCount, uint instanceCount, uint firstVertex, uint firstInstance)
@@ -439,34 +441,17 @@ namespace Magnesium.Metal
 
 		public void CmdBeginRenderPass (MgRenderPassBeginInfo pRenderPassBegin, MgSubpassContents contents)
 		{
-			//if (pRenderPassBegin != null)
-			//	throw new ArgumentNullException(nameof(pRenderPassBegin));
-
-			//var bRenderPass = (AmtRenderPass)pRenderPassBegin.RenderPass;
-			//Debug.Assert(bRenderPass != null, nameof(pRenderPassBegin.RenderPass) + " is null");
-
-			//var bFramebuffer = (AmtFramebuffer)pRenderPassBegin.Framebuffer;
-			//Debug.Assert(bFramebuffer != null, nameof(pRenderPassBegin.Framebuffer) + " is null");
-
-			//var clearValuesCount = pRenderPassBegin.ClearValues != null ? pRenderPassBegin.ClearValues.Length : 0;
-
-			//// TRANSLATE CLEAR VALUES TO DOUBLE VEC4 OR STENCIL, DEPTH
-
-			//mIncompleteRenderPass = new AmtCmdRenderPassCommand ();
-			//mIncompleteRenderPass.Origin = pRenderPassBegin.RenderPass;
-			//mIncompleteRenderPass.ClearValues = pRenderPassBegin.ClearValues;
-			//mIncompleteRenderPass.Contents = contents;
 			mGraphics.BeginRenderPass(pRenderPassBegin, contents);
 		}
 
 		public void CmdNextSubpass (MgSubpassContents contents)
 		{
-			throw new NotImplementedException ();
+			mGraphics.NextSubpass(contents);
 		}
 
 		public void CmdEndRenderPass ()
 		{
-			mRenderPasses.Add (mIncompleteRenderPass);
+			mGraphics.EndRenderPass ();
 		}
 
 		public void CmdExecuteCommands (IMgCommandBuffer[] pCommandBuffers)

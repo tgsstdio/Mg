@@ -6,6 +6,7 @@ namespace Magnesium.Metal
 {
 	public class AmtCommandRecording
 	{
+		public IMTLCommandBuffer CommandBuffer { get; set;}
 		public AmtCommandEncoderInstruction[] Instructions { get; set; }
 		public void Play()
 		{
