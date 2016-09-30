@@ -380,7 +380,7 @@ namespace Magnesium.Metal
 
 		public float SlopeScale { get; private set; }
 
-		public float ConstantFactor { get; private set; }
+		public float DepthBiasConstantFactor { get; private set; }
 
 		public MTLWinding Winding { get; private set; }
 
@@ -393,7 +393,7 @@ namespace Magnesium.Metal
 			CullMode = TranslateCullMode(rasterizationState.CullMode);
 			Clamp = rasterizationState.DepthBiasClamp;
 			SlopeScale = rasterizationState.DepthBiasSlopeFactor;
-			ConstantFactor = rasterizationState.DepthBiasConstantFactor;
+			DepthBiasConstantFactor = rasterizationState.DepthBiasConstantFactor;
 			Winding = TranslateWinding(rasterizationState.FrontFace);
 			FillMode = TranslateFillMode(rasterizationState.PolygonMode);
 			RasterizationDiscardEnabled = rasterizationState.RasterizerDiscardEnable;
