@@ -9,7 +9,8 @@ namespace Magnesium.Metal
 	{
 		private IMTLDevice mDevice; 
 		private IAmtDeviceQuery mQuery;
-		public AmtDevice(IMTLDevice systemDefault, IAmtDeviceQuery mQuery)
+		private AmtQueue mQueue;
+		public AmtDevice(IMTLDevice systemDefault, IAmtDeviceQuery mQuery, AmtQueue queue)
 		{
 			this.mDevice = systemDefault;
 			this.mQuery = mQuery;
@@ -355,7 +356,7 @@ namespace Magnesium.Metal
 
 		public void GetDeviceQueue(uint queueFamilyIndex, uint queueIndex, out IMgQueue pQueue)
 		{
-			throw new NotImplementedException();
+			pQueue = mQueue;
 		}
 
 		public Result GetFenceStatus(IMgFence fence)

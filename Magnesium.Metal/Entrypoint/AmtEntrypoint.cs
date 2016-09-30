@@ -18,7 +18,8 @@ namespace Magnesium.Metal
 
 		public Result CreateInstance(MgInstanceCreateInfo createInfo, IMgAllocationCallbacks allocator, out IMgInstance instance)
 		{
-			var device = new AmtDevice(MTLDevice.SystemDefault, mQuery);
+			var queue = new AmtQueue();
+			var device = new AmtDevice(MTLDevice.SystemDefault, mQuery, queue);
 			var physicalDevice = new AmtPhysicalDevice(device);
 			instance = new AmtInstance(physicalDevice);
 			return Result.SUCCESS;
@@ -26,12 +27,14 @@ namespace Magnesium.Metal
 
 		public Result EnumerateInstanceExtensionProperties(string layerName, out MgExtensionProperties[] pProperties)
 		{
-			throw new NotImplementedException();
+			pProperties = new MgExtensionProperties[] { };
+			return Result.SUCCESS;
 		}
 
 		public Result EnumerateInstanceLayerProperties(out MgLayerProperties[] properties)
 		{
-			throw new NotImplementedException();
+			properties = new MgLayerProperties[] { };
+			return Result.SUCCESS;
 		}
 	}
 }

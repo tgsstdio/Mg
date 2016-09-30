@@ -4,10 +4,12 @@ using System.Threading;
 
 using AppKit;
 using Foundation;
+using Magnesium.Metal;
 using Metal;
 using MetalKit;
 using ModelIO;
 using OpenTK;
+using SimpleInjector;
 
 namespace MetalSample
 {
@@ -60,6 +62,7 @@ namespace MetalSample
 			inflightSemaphore = new Semaphore(MaxInflightBuffers, MaxInflightBuffers);
 
 			SetupMetal();
+			SetupMagnesium();
 			if (device != null)
 			{
 				SetupView();
@@ -69,6 +72,52 @@ namespace MetalSample
 			else {
 				Console.WriteLine("Metal is not supported on this device");
 				View = new NSView(View.Frame);
+			}
+		}
+
+		void SetupMagnesium()
+		{
+			try
+			{
+				using (var container = new Container())
+				{
+					var deviceQuery = new AmtDeviceQuery { NoOfCommandBufferSlots = 5 };
+					container.Register<Magnesium.MgDriver>();
+					container.RegisterSingleton<Magnesium.Metal.IAmtDeviceQuery>(deviceQuery);
+					container.Register<Magnesium.IMgEntrypoint, Magnesium.Metal.AmtEntrypoint>(Lifestyle.Singleton);
+					container.Register<Magnesium.IMgPresentationSurface, Magnesium.Metal.AmtPresentationSurface>(Lifestyle.Singleton);
+					         
+					using (var scope = new Scope(container))
+					using (var driver = scope.GetInstance<Magnesium.MgDriver>())
+					{
+						driver.Initialize(
+							new Magnesium.MgApplicationInfo
+							{
+								ApplicationName = "MetalSample",
+								EngineName = "Magnesium",
+								ApplicationVersion = 1,
+								EngineVersion = 1,
+								ApiVersion = Magnesium.MgApplicationInfo.GenerateApiVersion(1, 0, 17),
+							},
+							  Magnesium.MgEnableExtensionsOption.ALL
+						 );
+						using (var presentationSurface = scope.GetInstance<Magnesium.IMgPresentationSurface>())
+						{
+							presentationSurface.Initialize();
+							using (var device = driver.CreateLogicalDevice(
+								presentationSurface.Surface,
+								Magnesium.MgEnableExtensionsOption.ALL))
+							{
+
+
+							}
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.Message);
 			}
 		}
 

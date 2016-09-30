@@ -36,7 +36,7 @@ namespace Magnesium.Metal
 
 		public void DestroyInstance(IMgAllocationCallbacks allocator)
 		{
-			throw new NotImplementedException();
+
 		}
 
 		public Result EnumeratePhysicalDevices(out IMgPhysicalDevice[] physicalDevices)

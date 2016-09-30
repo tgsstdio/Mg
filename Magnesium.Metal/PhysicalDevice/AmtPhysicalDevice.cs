@@ -22,7 +22,8 @@ namespace Magnesium.Metal
 
 		public Result EnumerateDeviceExtensionProperties(string layerName, out MgExtensionProperties[] pProperties)
 		{
-			throw new NotImplementedException();
+			pProperties = new MgExtensionProperties[] { };
+			return Result.SUCCESS;
 		}
 
 		public Result EnumerateDeviceLayerProperties(out MgLayerProperties[] pProperties)
@@ -110,7 +111,12 @@ namespace Magnesium.Metal
 
 		public void GetPhysicalDeviceQueueFamilyProperties(out MgQueueFamilyProperties[] pQueueFamilyProperties)
 		{
-			throw new NotImplementedException();
+			// ONE QUEUE FOR ALL
+			pQueueFamilyProperties = new[] {
+				new MgQueueFamilyProperties {
+					QueueFlags = MgQueueFlagBits.GRAPHICS_BIT | MgQueueFlagBits.COMPUTE_BIT,
+				}
+			};
 		}
 
 		public void GetPhysicalDeviceSparseImageFormatProperties(MgFormat format, MgImageType type, MgSampleCountFlagBits samples, MgImageUsageFlagBits usage, MgImageTiling tiling, out MgSparseImageFormatProperties[] pProperties)

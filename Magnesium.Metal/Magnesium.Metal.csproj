@@ -120,6 +120,9 @@
     <Compile Include="Device\AmtDescriptorSetSamplerBinding.cs" />
     <Compile Include="Device\AmtDescriptorSetTextureBinding.cs" />
     <Compile Include="CommandBuffer\AmtVertexBufferBinding.cs" />
+    <Compile Include="Entrypoint\AmtDeviceQuery.cs" />
+    <Compile Include="Entrypoint\AmtPresentationSurface.cs" />
+    <Compile Include="Entrypoint\AmtSurfaceKHR.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Magnesium\Magnesium.csproj">
