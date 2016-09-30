@@ -9,6 +9,9 @@ namespace Magnesium.Metal
 		public IMTLFunction Function { get; internal set; }
 		public AmtShaderModule(MgShaderModuleCreateInfo pCreateInfo)
 		{
+			if (pCreateInfo == null)
+				throw new ArgumentNullException(nameof(pCreateInfo));
+
 			Info = pCreateInfo;
 		}
 

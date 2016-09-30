@@ -5,17 +5,33 @@ namespace Magnesium.Metal
 {
 	public class AmtBuffer : IMgBuffer
 	{
-		public IMTLBuffer Buffer
+		public MgBufferUsageFlagBits Usage { get; private set; }
+
+		public MgSharingMode SharingMode { get; private set; }
+
+		public AmtBuffer(IMTLDevice mDevice, MgBufferCreateInfo pCreateInfo)
 		{
-			get
+			if (pCreateInfo == null)
+				throw new ArgumentNullException(nameof(pCreateInfo));
+
+			if (pCreateInfo.Size > nuint.MaxValue)
 			{
-				throw new NotImplementedException();
+				throw new ArgumentOutOfRangeException(nameof(pCreateInfo.Size) + " must be <= nuint.MaxValue");
 			}
 
-			set
-			{
-				throw new NotImplementedException();
-			}
+			Length = (nuint)pCreateInfo.Size;
+			var options = MTLResourceOptions.CpuCacheModeDefault;
+			Buffer = mDevice.CreateBuffer(Length, options);
+			Usage = pCreateInfo.Usage;
+			SharingMode = pCreateInfo.SharingMode;
+		}
+
+		public nuint Length { get; private set; }
+
+		public IMTLBuffer Buffer
+		{
+			get;
+			private set;
 		}
 
 		public Result BindBufferMemory(IMgDevice device, IMgDeviceMemory memory, ulong memoryOffset)
@@ -25,7 +41,7 @@ namespace Magnesium.Metal
 
 		public void DestroyBuffer(IMgDevice device, IMgAllocationCallbacks allocator)
 		{
-			throw new NotImplementedException();
+			
 		}
 	}
 }

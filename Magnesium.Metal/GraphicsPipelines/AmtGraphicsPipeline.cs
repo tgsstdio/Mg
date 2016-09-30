@@ -89,7 +89,7 @@ namespace Magnesium.Metal
 												== AmtGraphicsPipelineDynamicStateFlagBits.VIEWPORT;
 			if (viewportState.Viewports == null)
 			{
-				(!isViewportUserSupplied)
+				if (!isViewportUserSupplied)
 				{
 					throw new InvalidOperationException(nameof(viewportState.Viewports) + " must be supplied.");
 				}
@@ -116,7 +116,9 @@ namespace Magnesium.Metal
 			if (viewportState.Scissors == null)
 			{
 				if (!isScissorUserSupplied)
+				{
 					throw new InvalidOperationException(nameof(viewportState.Scissors) + " must be supplied.");
+				}
 			}
 			else
 			{

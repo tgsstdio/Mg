@@ -114,6 +114,7 @@
     <Compile Include="CommandBuffer\IAmtGraphicsEncoder.cs" />
     <Compile Include="AmtSampleCountFlagBitExtensions.cs" />
     <Compile Include="CommandBuffer\AmtDepthStencilStateEncoderState.cs" />
+    <Compile Include="CommandBuffer\IAmtCommandEncoder.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Magnesium\Magnesium.csproj">

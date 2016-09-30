@@ -11,22 +11,14 @@ namespace Magnesium.Metal
 		private bool mIsExecutable = false;
 		private bool mCanBeManuallyReset;
 
-		private AmtCmdComputeCommand mIncompleteComputeCommand;
-		private AmtCmdRenderPassCommand mIncompleteRenderPass;
-		private List<AmtCmdRenderPassCommand> mRenderPasses = new List<AmtCmdRenderPassCommand>();
-		private List<AmtDrawCommandEncoderState> mIncompleteDraws = new List<AmtDrawCommandEncoderState>();
+		IAmtCommandEncoder mCommand;
 
-		IAmtComputeEncoder mCompute;
-
-		IAmtGraphicsEncoder mGraphics;
-
-		public AmtCommandBuffer2(bool canBeManuallyReset, IAmtGraphicsEncoder graphics, IAmtComputeEncoder compute)
+		public AmtCommandBuffer2(bool canBeManuallyReset, IAmtCommandEncoder command)
 		{
 			mIsRecording = false;
 			mIsExecutable = false;
 			mCanBeManuallyReset = canBeManuallyReset;
-			mGraphics = graphics;
-			mCompute = compute;
+			mCommand = command;
 		}
 
 		#region IMgCommandBuffer implementation
@@ -56,16 +48,8 @@ namespace Magnesium.Metal
 
 		public void ResetAllData()
 		{
-			mIncompleteRenderPass = null;
-			mIncompleteComputeCommand = null;
 			// TODO : Clear item bags unless CONTINUE has been passed in
-			mGraphics.Clear();
-			mCompute.Clear();
-			mRenderPasses.Clear();
-			mIncompleteDraws.Clear();
-
-
-			mImageCopies.Clear();
+			mCommand.Clear();
 		}
 
 		public Result ResetCommandBuffer(MgCommandBufferResetFlagBits flags)
@@ -82,22 +66,22 @@ namespace Magnesium.Metal
 		{
 			if (pipelineBindPoint == MgPipelineBindPoint.COMPUTE)
 			{
-				mCompute.BindPipeline(pipeline);
+				mCommand.Compute.BindPipeline(pipeline);
 			}
 			else
 			{
-				mGraphics.BindPipeline(pipeline);
+				mCommand.Graphics.BindPipeline(pipeline);
 			}
 		}
 
 		public void CmdSetViewport(uint firstViewport, MgViewport[] pViewports)
 		{
-			mGraphics.SetViewports(firstViewport, pViewports);
+			mCommand.Graphics.SetViewports(firstViewport, pViewports);
 		}
 
 		public void CmdSetScissor(uint firstScissor, MgRect2D[] pScissors)
 		{
-			mGraphics.SetScissor(firstScissor, pScissors);
+			mCommand.Graphics.SetScissor(firstScissor, pScissors);
 		}
 
 		public void CmdSetLineWidth(float lineWidth)
@@ -108,7 +92,7 @@ namespace Magnesium.Metal
 
 		public void CmdSetDepthBias(float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor)
 		{
-			mGraphics.SetDepthBias(
+			mCommand.Graphics.SetDepthBias(
 				depthBiasConstantFactor,
 				depthBiasClamp,
 				depthBiasSlopeFactor);
@@ -116,7 +100,7 @@ namespace Magnesium.Metal
 
 		public void CmdSetBlendConstants(MgColor4f blendConstants)
 		{
-			mGraphics.SetBlendConstants(blendConstants);
+			mCommand.Graphics.SetBlendConstants(blendConstants);
 		}
 
 		public void CmdSetDepthBounds(float minDepthBounds, float maxDepthBounds)
@@ -130,17 +114,17 @@ namespace Magnesium.Metal
 
 		public void CmdSetStencilCompareMask(MgStencilFaceFlagBits faceMask, uint compareMask)
 		{
-			mGraphics.SetStencilCompareMask(faceMask, compareMask);
+			mCommand.Graphics.SetStencilCompareMask(faceMask, compareMask);
 		}
 
 		public void CmdSetStencilWriteMask(MgStencilFaceFlagBits faceMask, uint writeMask)
 		{
-			mGraphics.SetStencilWriteMask(faceMask, writeMask);
+			mCommand.Graphics.SetStencilWriteMask(faceMask, writeMask);
 		}
 
 		public void CmdSetStencilReference(MgStencilFaceFlagBits faceMask, uint reference)
 		{
-			mGraphics.SetStencilReference(faceMask, reference);
+			mCommand.Graphics.SetStencilReference(faceMask, reference);
 		}
 
 		public void CmdBindDescriptorSets(
@@ -162,7 +146,7 @@ namespace Magnesium.Metal
 
 		public void CmdBindIndexBuffer(IMgBuffer buffer, ulong offset, MgIndexType indexType)
 		{
-			mGraphics.BindIndexBuffer(buffer, offset, indexType);
+			mCommand.Graphics.BindIndexBuffer(buffer, offset, indexType);
 		}
 
 		public void CmdBindVertexBuffers(uint firstBinding, IMgBuffer[] pBuffers, ulong[] pOffsets)
@@ -172,36 +156,38 @@ namespace Magnesium.Metal
 			//param.pBuffers = pBuffers;
 			//param.pOffsets = pOffsets;
 			//mRepository.VertexBuffers.Add(param);
+
+
 		}
 
 		public void CmdDraw(uint vertexCount, uint instanceCount, uint firstVertex, uint firstInstance)
 		{
-			mGraphics.Draw(vertexCount, instanceCount, firstVertex, firstInstance);
+			mCommand.Graphics.Draw(vertexCount, instanceCount, firstVertex, firstInstance);
 		}
 
 		public void CmdDrawIndexed(uint indexCount, uint instanceCount, uint firstIndex, int vertexOffset, uint firstInstance)
 		{
-			mGraphics.DrawIndexed(indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
+			mCommand.Graphics.DrawIndexed(indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
 		}
 
 		public void CmdDrawIndirect(IMgBuffer buffer, ulong offset, uint drawCount, uint stride)
 		{
-			mGraphics.DrawIndirect(buffer, offset, drawCount, stride);
+			mCommand.Graphics.DrawIndirect(buffer, offset, drawCount, stride);
 		}
 
 		public void CmdDrawIndexedIndirect(IMgBuffer buffer, ulong offset, uint drawCount, uint stride)
 		{
-			mGraphics.DrawIndexedIndirect(buffer, offset, drawCount, stride);
+			mCommand.Graphics.DrawIndexedIndirect(buffer, offset, drawCount, stride);
 		}
 
 		public void CmdDispatch(uint x, uint y, uint z)
 		{
-			mCompute.Dispatch(x, y, z);
+			mCommand.Compute.Dispatch(x, y, z);
 		}
 
 		public void CmdDispatchIndirect(IMgBuffer buffer, ulong offset)
 		{
-			mCompute.DispatchIndirect(buffer, offset);
+			mCommand.Compute.DispatchIndirect(buffer, offset);
 		}
 
 		public void CmdCopyBuffer (IMgBuffer srcBuffer, IMgBuffer dstBuffer, MgBufferCopy[] pRegions)
@@ -274,29 +260,9 @@ namespace Magnesium.Metal
 			throw new NotImplementedException ();
 		}
 
-		private List<AmtCmdTexImageData> mImageCopies = new List<AmtCmdTexImageData> ();
 		public void CmdPipelineBarrier (MgPipelineStageFlagBits srcStageMask, MgPipelineStageFlagBits dstStageMask, MgDependencyFlagBits dependencyFlags, MgMemoryBarrier[] pMemoryBarriers, MgBufferMemoryBarrier[] pBufferMemoryBarriers, MgImageMemoryBarrier[] pImageMemoryBarriers)
 		{
-			if (pImageMemoryBarriers != null)
-			{
-				foreach (var imgBarrier in pImageMemoryBarriers)
-				{	
-					LoadImageData (imgBarrier);
-				}
-			}
 
-		}
-
-		/**
-		 * Image memory barriers initialisation are co-opted to call glCompressedTexSubImage1/2/3DExt
-		 * to load data into the texture storage
-	     **/
-		void LoadImageData (MgImageMemoryBarrier imgBarrier)
-		{
-			if (imgBarrier != null)
-			{
-
-			}
 		}
 
 		public void CmdBeginQuery (IMgQueryPool queryPool, uint query, MgQueryControlFlagBits flags)
@@ -331,17 +297,17 @@ namespace Magnesium.Metal
 
 		public void CmdBeginRenderPass (MgRenderPassBeginInfo pRenderPassBegin, MgSubpassContents contents)
 		{
-			mGraphics.BeginRenderPass(pRenderPassBegin, contents);
+			mCommand.Graphics.BeginRenderPass(pRenderPassBegin, contents);
 		}
 
 		public void CmdNextSubpass (MgSubpassContents contents)
 		{
-			mGraphics.NextSubpass(contents);
+			mCommand.Graphics.NextSubpass(contents);
 		}
 
 		public void CmdEndRenderPass ()
 		{
-			mGraphics.EndRenderPass ();
+			mCommand.Graphics.EndRenderPass ();
 		}
 
 		public void CmdExecuteCommands (IMgCommandBuffer[] pCommandBuffers)

@@ -1,18 +1,14 @@
 ﻿using System;
 namespace Magnesium.Metal
 {
-	public class AmtCommandEncoder
+	public class AmtCommandEncoder :IAmtCommandEncoder
 	{
-		public AmtCommandEncoder(AmtGraphicsEncoder graphics)
+		public AmtCommandEncoder(IAmtGraphicsEncoder graphics, IAmtComputeEncoder compute)
 		{
-			mGraphics = graphics;
+			Graphics = graphics;
+			Compute = compute;
 		}
-		private readonly AmtGraphicsEncoder mGraphics;
-		public AmtGraphicsEncoder Graphics { 
-			get
-			{
-				return mGraphics;
-			}
-		}
+		public IAmtGraphicsEncoder Graphics { get; private set; }
+		public IAmtComputeEncoder Compute { get; private set;}
 	}
 }

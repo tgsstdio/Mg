@@ -46,7 +46,8 @@ namespace Magnesium.Metal
 				var compute = new AmtComputeEncoder(instructions, mDevice, computeBag);
 				var graphicsBag = new AmtGraphicsEncoderItemBag();
 				var graphics = new AmtGraphicsEncoder(instructions, graphicsBag, mDevice);
-				pCommandBuffers[i] = new AmtCommandBuffer2(false, graphics, compute);
+				var command = new AmtCommandEncoder(graphics, compute);
+				pCommandBuffers[i] = new AmtCommandBuffer2(false, command);
 			}
 
 
@@ -65,10 +66,19 @@ namespace Magnesium.Metal
 
 		public Result CreateBuffer(MgBufferCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgBuffer pBuffer)
 		{
-			nuint length = 0;
+			if (pCreateInfo.Size > nuint.MaxValue)
+			{
+				throw new ArgumentOutOfRangeException(nameof(pCreateInfo.Size) + " must be <= nuint.MaxValue");
+			}
+
+			var length = (nuint) pCreateInfo.Size;
 			var buffer = mDevice.CreateBuffer(length, MTLResourceOptions.CpuCacheModeDefault);
-			throw new NotImplementedException();
+
+			pBuffer = new AmtBuffer(mDevice, pCreateInfo);
+			return Result.SUCCESS;
 		}
+
+
 
 		public Result CreateBufferView(MgBufferViewCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgBufferView pView)
 		{
@@ -102,7 +112,8 @@ namespace Magnesium.Metal
 
 		public Result CreateDescriptorSetLayout(MgDescriptorSetLayoutCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDescriptorSetLayout pSetLayout)
 		{
-			throw new NotImplementedException();
+			pSetLayout = new AmtDescriptorSetLayout(pCreateInfo);
+			return Result.SUCCESS;
 		}
 
 		public Result CreateEvent(MgEventCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgEvent @event)
@@ -122,6 +133,9 @@ namespace Magnesium.Metal
 
 		public Result CreateGraphicsPipelines(IMgPipelineCache pipelineCache, MgGraphicsPipelineCreateInfo[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgPipeline[] pPipelines)
 		{
+			if (pCreateInfos == null)
+				throw new ArgumentNullException(nameof(pCreateInfos));
+
 			var output = new List<IMgPipeline>();
 
 			foreach (var info in pCreateInfos)
@@ -264,7 +278,8 @@ namespace Magnesium.Metal
 
 		public Result CreateShaderModule(MgShaderModuleCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgShaderModule pShaderModule)
 		{
-			throw new NotImplementedException();
+			pShaderModule = new AmtShaderModule(pCreateInfo);
+			return Result.SUCCESS;
 		}
 
 		public Result CreateSharedSwapchainsKHR(MgSwapchainCreateInfoKHR[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgSwapchainKHR[] pSwapchains)

@@ -46,5 +46,8 @@ namespace Magnesium.Metal
 			Debug.Assert(Compute.Encoder != null);
 			Compute.Encoder.EndEncoding();
 		}
+
+		public AmtVertexBufferEncoderState[] VertexBuffers { get; set; }
+		public AmtDescriptorSetRecordingState[] DescriptorSets { get; set; }
 	}
 }
