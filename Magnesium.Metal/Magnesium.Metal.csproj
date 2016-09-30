@@ -45,7 +45,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AmtCommandPool.cs" />
     <Compile Include="IAmtFormatExtensions.cs" />
-    <Compile Include="AmtCommandBuffer.cs" />
     <Compile Include="AmtFramebuffer.cs" />
     <Compile Include="AmtCmdRenderPassCommand.cs" />
     <Compile Include="AmtCmdComputeCommand.cs" />
@@ -110,11 +109,17 @@
     <Compile Include="CommandBuffer\AmtComputeEncoder.cs" />
     <Compile Include="CommandBuffer\IAmtComputeEncoder.cs" />
     <Compile Include="CommandBuffer\AmtComputePipeline.cs" />
-    <Compile Include="CommandBuffer\GLCommandBuffer.cs" />
+    <Compile Include="CommandBuffer\AmtCommandBuffer.cs" />
     <Compile Include="CommandBuffer\IAmtGraphicsEncoder.cs" />
     <Compile Include="AmtSampleCountFlagBitExtensions.cs" />
     <Compile Include="CommandBuffer\AmtDepthStencilStateEncoderState.cs" />
     <Compile Include="CommandBuffer\IAmtCommandEncoder.cs" />
+    <Compile Include="Device\AmtDescriptorPool.cs" />
+    <Compile Include="Device\AmtDescriptorSetBindingMap.cs" />
+    <Compile Include="Device\AmtDescriptorSetBufferBinding.cs" />
+    <Compile Include="Device\AmtDescriptorSetSamplerBinding.cs" />
+    <Compile Include="Device\AmtDescriptorSetTextureBinding.cs" />
+    <Compile Include="CommandBuffer\AmtVertexBufferBinding.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Magnesium\Magnesium.csproj">

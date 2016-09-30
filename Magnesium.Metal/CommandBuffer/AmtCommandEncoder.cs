@@ -10,5 +10,11 @@ namespace Magnesium.Metal
 		}
 		public IAmtGraphicsEncoder Graphics { get; private set; }
 		public IAmtComputeEncoder Compute { get; private set;}
+
+		public void Clear()
+		{
+			Graphics.Clear();
+			Compute.Clear();
+		}
 	}
 }

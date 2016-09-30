@@ -81,7 +81,7 @@ namespace Magnesium.Metal
 				throw new ArgumentNullException(nameof(buffer) + " is null");
 
 			var bBuffer = (AmtBuffer)buffer;
-			var indirect = bBuffer.Buffer;
+			var indirect = bBuffer.VertexBuffer;
 
 			var threadsPerGroupSize = mCurrentPipeline != null ? mCurrentPipeline.ThreadsPerGroupSize : new MTLSize();
 

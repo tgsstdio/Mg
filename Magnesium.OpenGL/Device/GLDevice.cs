@@ -741,7 +741,7 @@ namespace Magnesium.OpenGL
 
 					switch (desc.DescriptorType)
 					{
-					case MgDescriptorType.SAMPLER:
+					//case MgDescriptorType.SAMPLER:
 					case MgDescriptorType.COMBINED_IMAGE_SAMPLER:
 					case MgDescriptorType.SAMPLED_IMAGE:
 

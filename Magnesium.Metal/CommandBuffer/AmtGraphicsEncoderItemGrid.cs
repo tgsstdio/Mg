@@ -16,5 +16,6 @@ namespace Magnesium.Metal
 		public AmtDrawIndirectEncoderState[] DrawIndirects { get; internal set;}
 		public AmtDrawIndexedEncoderState[] DrawIndexed { get; internal set; }
 		public AmtDrawIndexedIndirectEncoderState[] DrawIndexedIndirects { get; internal set;}
+		public AmtVertexBufferEncoderState[] VertexBuffers { get; internal set;}
 	}
 }

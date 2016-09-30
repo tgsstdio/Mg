@@ -20,6 +20,7 @@ namespace Magnesium.Metal
 			mDrawIndirects = new AmtEncoderItemCollection<AmtDrawIndirectEncoderState>();
 			mDrawIndexeds = new AmtEncoderItemCollection<AmtDrawIndexedEncoderState>();
 			mDrawIndexedIndirects = new AmtEncoderItemCollection<AmtDrawIndexedIndirectEncoderState>();
+			mVertexBuffers = new AmtEncoderItemCollection<AmtVertexBufferEncoderState>();
 		}
 
 		public void Clear()
@@ -36,6 +37,16 @@ namespace Magnesium.Metal
 			mDrawIndirects.Clear();
 			mDrawIndexeds.Clear();
 			mDrawIndexedIndirects.Clear();
+			mVertexBuffers.Clear();
+		}
+
+		private AmtEncoderItemCollection<AmtVertexBufferEncoderState> mVertexBuffers;
+		public AmtEncoderItemCollection<AmtVertexBufferEncoderState> VertexBuffers
+		{
+			get
+			{
+				return mVertexBuffers;
+			}
 		}
 
 		private AmtEncoderItemCollection<MTLScissorRect> mScissors;

@@ -5,7 +5,7 @@ using Metal;
 
 namespace Magnesium.Metal
 {
-	public class AmtCommandBuffer2 : IMgCommandBuffer
+	public class AmtCommandBuffer : IMgCommandBuffer
 	{
 		private bool mIsRecording = false;
 		private bool mIsExecutable = false;
@@ -13,8 +13,12 @@ namespace Magnesium.Metal
 
 		IAmtCommandEncoder mCommand;
 
-		public AmtCommandBuffer2(bool canBeManuallyReset, IAmtCommandEncoder command)
+		IMTLCommandBuffer mCmdBuf;
+
+
+		public AmtCommandBuffer(IMTLCommandBuffer cmdBuf, bool canBeManuallyReset, IAmtCommandEncoder command)
 		{
+			mCmdBuf = cmdBuf;
 			mIsRecording = false;
 			mIsExecutable = false;
 			mCanBeManuallyReset = canBeManuallyReset;
@@ -157,7 +161,7 @@ namespace Magnesium.Metal
 			//param.pOffsets = pOffsets;
 			//mRepository.VertexBuffers.Add(param);
 
-
+			mCommand.Graphics.BindVertexBuffers(firstBinding, pBuffers, pOffsets);
 		}
 
 		public void CmdDraw(uint vertexCount, uint instanceCount, uint firstVertex, uint firstInstance)

@@ -21,14 +21,14 @@ namespace Magnesium.Metal
 
 			Length = (nuint)pCreateInfo.Size;
 			var options = MTLResourceOptions.CpuCacheModeDefault;
-			Buffer = mDevice.CreateBuffer(Length, options);
+			VertexBuffer = mDevice.CreateBuffer(Length, options);
 			Usage = pCreateInfo.Usage;
 			SharingMode = pCreateInfo.SharingMode;
 		}
 
 		public nuint Length { get; private set; }
 
-		public IMTLBuffer Buffer
+		public IMTLBuffer VertexBuffer
 		{
 			get;
 			private set;

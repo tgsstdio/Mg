@@ -5,7 +5,7 @@ namespace Magnesium.Metal
 {
 	public class AmtSampler : IMgSampler
 	{
-		IMTLSamplerState mSampler;
+		public IMTLSamplerState Sampler { get; private set; }
 
 		public AmtSampler(IMTLDevice mDevice, MgSamplerCreateInfo pCreateInfo)
 		{
@@ -28,7 +28,7 @@ namespace Magnesium.Metal
 
 			};
 			
-			mSampler = mDevice.CreateSamplerState(descriptor);
+			Sampler = mDevice.CreateSamplerState(descriptor);
 
 		}
 

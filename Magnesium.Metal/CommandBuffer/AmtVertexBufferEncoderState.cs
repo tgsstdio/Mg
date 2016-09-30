@@ -1,13 +1,11 @@
-﻿namespace Magnesium.Metal
+﻿using System;
+using Metal;
+
+namespace Magnesium.Metal
 {
 	public class AmtVertexBufferEncoderState
 	{
-		internal uint firstBinding;
-		internal IMgBuffer[] pBuffers;
-		internal ulong[] pOffsets;
-
-		public AmtVertexBufferEncoderState()
-		{
-		}
+		public uint FirstBinding { get; set; }
+		public AmtVertexBufferBinding[] Bindings { get; set;}
 	}
 }

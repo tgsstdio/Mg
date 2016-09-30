@@ -47,7 +47,7 @@ namespace Magnesium.Metal
 				var graphicsBag = new AmtGraphicsEncoderItemBag();
 				var graphics = new AmtGraphicsEncoder(instructions, graphicsBag, mDevice);
 				var command = new AmtCommandEncoder(graphics, compute);
-				pCommandBuffers[i] = new AmtCommandBuffer2(false, command);
+				pCommandBuffers[i] = new AmtCommandBuffer(cmdBuf, false, command);
 			}
 
 
@@ -56,7 +56,40 @@ namespace Magnesium.Metal
 
 		public Result AllocateDescriptorSets(MgDescriptorSetAllocateInfo pAllocateInfo, out IMgDescriptorSet[] pDescriptorSets)
 		{
-			throw new NotImplementedException();
+			if (pAllocateInfo == null)
+			{
+				throw new ArgumentNullException(nameof(pAllocateInfo));
+			}
+
+			var pool = (AmtDescriptorPool) pAllocateInfo.DescriptorPool;
+			if (pool == null)
+			{
+				throw new ArgumentNullException(nameof(pAllocateInfo.DescriptorPool));
+			}
+
+			var noOfSetsRequested = pAllocateInfo.SetLayouts.Length;
+			if (pool.RemainingSets < noOfSetsRequested)
+			{
+				throw new InvalidOperationException();
+			}
+
+			pDescriptorSets = new AmtDescriptorSet[noOfSetsRequested];
+
+			for (int i = 0; i < noOfSetsRequested; ++i)
+			{
+				var setLayout = (AmtDescriptorSetLayout) pAllocateInfo.SetLayouts[i];
+
+				AmtDescriptorSet dSet;
+				if (!pool.TryTake(out dSet))
+				{
+					throw new InvalidOperationException();
+				}
+				// copy here
+				dSet.Initialize(setLayout);
+				pDescriptorSets[i] = dSet;
+			}
+
+			return Result.SUCCESS;
 		}
 
 		public Result AllocateMemory(MgMemoryAllocateInfo pAllocateInfo, IMgAllocationCallbacks allocator, out IMgDeviceMemory pMemory)
@@ -66,19 +99,9 @@ namespace Magnesium.Metal
 
 		public Result CreateBuffer(MgBufferCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgBuffer pBuffer)
 		{
-			if (pCreateInfo.Size > nuint.MaxValue)
-			{
-				throw new ArgumentOutOfRangeException(nameof(pCreateInfo.Size) + " must be <= nuint.MaxValue");
-			}
-
-			var length = (nuint) pCreateInfo.Size;
-			var buffer = mDevice.CreateBuffer(length, MTLResourceOptions.CpuCacheModeDefault);
-
 			pBuffer = new AmtBuffer(mDevice, pCreateInfo);
 			return Result.SUCCESS;
 		}
-
-
 
 		public Result CreateBufferView(MgBufferViewCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgBufferView pView)
 		{
@@ -107,7 +130,8 @@ namespace Magnesium.Metal
 
 		public Result CreateDescriptorPool(MgDescriptorPoolCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDescriptorPool pDescriptorPool)
 		{
-			throw new NotImplementedException();
+			pDescriptorPool = new AmtDescriptorPool(pCreateInfo);
+			return Result.SUCCESS;
 		}
 
 		public Result CreateDescriptorSetLayout(MgDescriptorSetLayoutCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDescriptorSetLayout pSetLayout)
@@ -247,9 +271,6 @@ namespace Magnesium.Metal
 
 		public Result CreatePipelineLayout(MgPipelineLayoutCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgPipelineLayout pPipelineLayout)
 		{
-			if (pCreateInfo == null)
-				throw new ArgumentNullException(nameof(pCreateInfo));
-			
 			pPipelineLayout = new AmtPipelineLayout(pCreateInfo);
 			return Result.SUCCESS;
 		}
@@ -394,7 +415,69 @@ namespace Magnesium.Metal
 
 		public void UpdateDescriptorSets(MgWriteDescriptorSet[] pDescriptorWrites, MgCopyDescriptorSet[] pDescriptorCopies)
 		{
-			throw new NotImplementedException();
+			if (pDescriptorWrites != null)
+			{
+				foreach (var desc in pDescriptorWrites)
+				{
+					var localSet = (AmtDescriptorSet) desc.DstSet;
+					if (localSet == null)
+					{
+						throw new ArgumentNullException(nameof(desc.DstSet));
+					}
+
+					var x = desc.DstBinding; // SHOULD ALWAYS BE ZERO
+					if (x != 0)
+					{
+						throw new ArgumentException(nameof(desc.DstBinding));
+					}
+
+					int offset = (int)desc.DstArrayElement;
+					int count = (int)desc.DescriptorCount;
+
+					// HOPEFULLY DESCRIPTOR SETS ARE GROUPED BY COMMON TYPES
+					foreach (var map in new[] { localSet.Compute, localSet.Fragment, localSet.Vertex })
+					{
+						switch (desc.DescriptorType)
+						{
+							//case MgDescriptorType.SAMPLER:
+							case MgDescriptorType.COMBINED_IMAGE_SAMPLER:
+							case MgDescriptorType.SAMPLED_IMAGE:
+								
+								for (int i = 0; i < count; ++i)
+								{
+									MgDescriptorImageInfo info = desc.ImageInfo[i];
+
+									var localSampler = (AmtSampler)info.Sampler;
+									var localView = (AmtImageView)info.ImageView;
+
+									var index = offset + i;
+									map.Textures[index].Texture = localView.Image;
+									map.SamplerStates[index].Sampler = localSampler.Sampler;
+								}
+
+								break;
+							case MgDescriptorType.UNIFORM_BUFFER:
+							case MgDescriptorType.UNIFORM_BUFFER_DYNAMIC:
+							case MgDescriptorType.STORAGE_BUFFER:
+							case MgDescriptorType.STORAGE_BUFFER_DYNAMIC:
+								// HOPEFULLY DESCRIPTOR SETS ARE GROUPED BY COMMON TYPES
+								for (int i = 0; i < count; ++i)
+								{
+									var info = desc.BufferInfo[i];
+
+									var buf = (AmtBuffer)info.Buffer;
+
+									var index = offset + i;
+									map.Buffers[index].Buffer = buf.VertexBuffer;
+								}
+								break;
+							default:
+								throw new NotSupportedException();
+						}
+					}
+
+				}
+			}
 		}
 
 		public Result WaitForFences(IMgFence[] pFences, bool waitAll, ulong timeout)

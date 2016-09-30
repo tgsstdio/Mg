@@ -6,7 +6,7 @@ namespace Magnesium.Metal
 {
 	public class AmtImageView : IMgImageView
 	{
-		private IMTLTexture mViewImage;
+		public IMTLTexture Image { get; private set;}
 		public AmtImageView(MgImageViewCreateInfo pCreateInfo)
 		{
 			if (pCreateInfo == null)
@@ -18,7 +18,7 @@ namespace Magnesium.Metal
 
 			var bImage = (AmtImage)pCreateInfo.Image;
 
-			mViewImage = bImage.OriginalTexture.CreateTextureView(
+			Image = bImage.OriginalTexture.CreateTextureView(
 				AmtFormatExtensions.GetPixelFormat(pCreateInfo.Format),
 				TranslateTextureType(pCreateInfo.ViewType),
 				GenerateLevelRange(pCreateInfo.SubresourceRange),

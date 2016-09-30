@@ -759,7 +759,7 @@ namespace Magnesium.Metal
 				PrimitiveType = mCurrentPipeline.Topology,
 				IndexCount = indexCount,
 				IndexType = mIndexType,
-				IndexBuffer = mIndexBuffer.Buffer,
+				IndexBuffer = mIndexBuffer.VertexBuffer,
 				BufferOffset = mBufferOffset,
 				InstanceCount = instanceCount,
 				VertexOffset = vertexOffset,
@@ -857,9 +857,9 @@ namespace Magnesium.Metal
 				Stride = (nuint) stride,
 				PrimitiveType = mCurrentPipeline.Topology,
 				IndexType = mIndexType,
-				IndexBuffer = mIndexBuffer.Buffer,
+				IndexBuffer = mIndexBuffer.VertexBuffer,
 				IndexBufferOffset = mBufferOffset,
-				IndirectBuffer = bIndirectBuffer.Buffer,
+				IndirectBuffer = bIndirectBuffer.VertexBuffer,
 				IndirectBufferOffset = (nuint) offset, 
 			};
 
@@ -964,7 +964,7 @@ namespace Magnesium.Metal
 			{
 				PrimitiveType = mCurrentPipeline.Topology,
 				DrawCount = drawCount,
-				IndirectBuffer = bIndirectBuffer.Buffer,
+				IndirectBuffer = bIndirectBuffer.VertexBuffer,
 				IndirectBufferOffset = (nuint) offset,
 				Stride = (nuint) stride,
 			};
@@ -998,6 +998,63 @@ namespace Magnesium.Metal
              	offset += stride;
 		 	}
 		}
+
+		#endregion
+
+		#region BindVertexBuffers methods
+
+		public void BindVertexBuffers(uint firstBinding, IMgBuffer[] pBuffers, ulong[] pOffsets)
+		{
+			if (pBuffers == null)
+				throw new ArgumentNullException(nameof(pBuffers));
+			
+			var count = pBuffers.Length;
+
+			var buffers = new AmtVertexBufferBinding[count];
+			for (var i = 0; i < count; ++i)
+			{
+				var offset = (nuint) pOffsets[i];
+				var bBuffer = (AmtBuffer)pBuffers[i];
+
+				buffers[i] = new AmtVertexBufferBinding
+				{
+					VertexBuffer = bBuffer.VertexBuffer,
+					VertexOffset = offset,
+				};
+			}
+
+			var item = new AmtVertexBufferEncoderState
+			{
+				FirstBinding = firstBinding,
+				Bindings = buffers,
+			};
+
+			var nextIndex = mBag.VertexBuffers.Push(item);
+
+			mInstructions.Add( new AmtCommandEncoderInstruction
+			{
+				Category = AmtCommandEncoderCategory.Graphics,
+				Index = nextIndex,
+				Operation = CmdBindVertexBuffers,
+			});
+		}
+
+		private static void CmdBindVertexBuffers(AmtCommandRecording recording, uint index)
+		{
+			var stage = recording.Graphics;
+			Debug.Assert(stage.Encoder != null, nameof(stage.Encoder) + " is null");
+			var item = stage.Grid.VertexBuffers[index];
+
+			var arrayIndex = item.FirstBinding;
+			var count = item.Bindings.Length;
+			for (var i = 0; i < count; ++i)
+			{
+				var binding = item.Bindings[i];
+				stage.Encoder.SetVertexBuffer(binding.VertexBuffer, binding.VertexOffset, arrayIndex);
+				++arrayIndex; 
+			}
+		}
+
 
 		#endregion
 	}

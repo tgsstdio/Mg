@@ -12,7 +12,7 @@ namespace Magnesium.Metal
 
 		public AmtPipelineLayout(MgPipelineLayoutCreateInfo createInfo)
 		{
-			if (createInfo != null)
+			if (createInfo == null)
 			{
 				throw new ArgumentNullException(nameof(createInfo));
 			}
