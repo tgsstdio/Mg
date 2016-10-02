@@ -9,8 +9,8 @@ namespace Magnesium.Metal
 	{
 		private IMTLDevice mDevice; 
 		private IAmtDeviceQuery mQuery;
-		private AmtQueue mQueue;
-		public AmtDevice(IMTLDevice systemDefault, IAmtDeviceQuery mQuery, AmtQueue queue)
+		private GLQueue mQueue;
+		public AmtDevice(IMTLDevice systemDefault, IAmtDeviceQuery mQuery, GLQueue queue)
 		{
 			this.mDevice = systemDefault;
 			this.mQuery = mQuery;
@@ -37,20 +37,17 @@ namespace Magnesium.Metal
 
 			var arraySize = pAllocateInfo.CommandBufferCount;
 
-
-
 			for (var i = 0; i < arraySize; ++i)
 			{
 				var cmdBuf = commandPool.Queue.CommandBuffer();
-				var instructions = new List<AmtCommandEncoderInstruction>();
-				var computeBag = new AmtComputeEncoderItemBag();
+				var instructions = new AmtIncrementalChunkifier();
+				var computeBag = new AmtComputeBag();
 				var compute = new AmtComputeEncoder(instructions, mDevice, computeBag);
-				var graphicsBag = new AmtGraphicsEncoderItemBag();
-				var graphics = new AmtGraphicsEncoder(instructions, graphicsBag, mDevice);
-				var command = new AmtCommandEncoder(graphics, compute);
-				pCommandBuffers[i] = new AmtCommandBuffer(cmdBuf, false, command);
+				var graphicsBag = new AmtGraphicsBag();
+				var graphics = new AmtGraphicsEncoder(instructions, mDevice, graphicsBag);
+				var command = new AmtCommandEncoder(instructions, graphics, compute);
+				pCommandBuffers[i] = new AmtCommandBuffer(commandPool.Queue, commandPool.CanIndividuallyReset, command);
 			}
-
 
 			return Result.SUCCESS;
 		}
@@ -112,7 +109,7 @@ namespace Magnesium.Metal
 		public Result CreateCommandPool(MgCommandPoolCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgCommandPool pCommandPool)
 		{
 			var queue = mDevice.CreateCommandQueue(mQuery.NoOfCommandBufferSlots);
-			pCommandPool = new AmtCommandPool(queue);
+			pCommandPool = new AmtCommandPool(queue, pCreateInfo);
 			return Result.SUCCESS;
 		}
 
@@ -331,7 +328,7 @@ namespace Magnesium.Metal
 
 		public void FreeCommandBuffers(IMgCommandPool commandPool, IMgCommandBuffer[] pCommandBuffers)
 		{
-			throw new NotImplementedException();
+
 		}
 
 		public Result FreeDescriptorSets(IMgDescriptorPool descriptorPool, IMgDescriptorSet[] pDescriptorSets)

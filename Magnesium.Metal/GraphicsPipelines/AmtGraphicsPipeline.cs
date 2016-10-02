@@ -221,7 +221,7 @@ namespace Magnesium.Metal
 			}
 		}
 
-		public AmtBlendColorAttachmentEncoderState[] Attachments { get; private set; }
+		public AmtBlendColorAttachmentRecord[] Attachments { get; private set; }
 		public MgColor4f BlendConstants { get; set; }
 		void InitializeColorBlending(MgPipelineColorBlendStateCreateInfo colorBlend)
 		{
@@ -232,12 +232,12 @@ namespace Magnesium.Metal
 				if (colorBlend.Attachments != null)
 				{
 					int arrayLength = colorBlend.Attachments.Length;
-					var colorAttachments = new AmtBlendColorAttachmentEncoderState[arrayLength];
+					var colorAttachments = new AmtBlendColorAttachmentRecord[arrayLength];
 					for (uint i = 0; i < arrayLength; ++i)
 					{
 						var attachment = colorBlend.Attachments[i];
 
-						colorAttachments[i] = new AmtBlendColorAttachmentEncoderState
+						colorAttachments[i] = new AmtBlendColorAttachmentRecord
 						{
 							IsBlendingEnabled = attachment.BlendEnable,
 							SourceRgbBlendFactor = TranslateBlendFactor(attachment.SrcColorBlendFactor),
@@ -253,13 +253,13 @@ namespace Magnesium.Metal
 				}
 				else
 				{
-					Attachments = new AmtBlendColorAttachmentEncoderState[] { };
+					Attachments = new AmtBlendColorAttachmentRecord[] { };
 				}
 			}
 			else
 			{
 				BlendConstants = new MgColor4f(0f, 0f, 0f, 0f);
-				Attachments = new AmtBlendColorAttachmentEncoderState[] { };
+				Attachments = new AmtBlendColorAttachmentRecord[] { };
 			}
 		}
 

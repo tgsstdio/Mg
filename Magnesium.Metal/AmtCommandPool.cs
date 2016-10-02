@@ -5,16 +5,24 @@ namespace Magnesium.Metal
 {
 	public class AmtCommandPool : IMgCommandPool
 	{
-		private IMTLCommandQueue mQueue;
-		public IMTLCommandQueue Queue {
+		private readonly IMTLCommandQueue mQueue;
+
+		public IMTLCommandQueue Queue
+		{
 			get
 			{
 				return mQueue;
 			}
 		}
-		public AmtCommandPool(IMTLCommandQueue queue)
+
+		public bool CanIndividuallyReset { get; private set; }
+
+		public AmtCommandPool(IMTLCommandQueue queue, MgCommandPoolCreateInfo pCreateInfo)
 		{
 			mQueue = queue;
+
+			CanIndividuallyReset = (pCreateInfo.Flags & MgCommandPoolCreateFlagBits.RESET_COMMAND_BUFFER_BIT)
+				== MgCommandPoolCreateFlagBits.RESET_COMMAND_BUFFER_BIT;
 		}
 
 		public void DestroyCommandPool(IMgDevice device, IMgAllocationCallbacks allocator)
