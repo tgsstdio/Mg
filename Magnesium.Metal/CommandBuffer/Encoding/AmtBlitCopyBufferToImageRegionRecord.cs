@@ -5,18 +5,18 @@ namespace Magnesium.Metal
 {
 	public class AmtBlitCopyBufferToImageRegionRecord
 	{
-		public nuint SourceSizePerImage { get; internal set; }
+		public nuint BufferImageAllocationSize { get; internal set; }
 
-		public nuint DestinationSlice { get; internal set; }
-		public uint LayerCount { get; internal set; }
+		public nuint BaseArrayLayer { get; internal set; }
+		public uint ImageLayerCount { get; internal set; }
 
-		public MTLOrigin DestinationOffset { get; internal set; }
+		public MTLOrigin ImageOffset { get; internal set; }
 
-		public nuint DestinationLevel { get; internal set; }
+		public nuint ImageMipLevel { get; internal set; }
 
-		public MTLSize SourceSize { get; internal set; }
+		public MTLSize ImageSize { get; internal set; }
 
-		public nuint SourceBytesPerRow { get; internal set; }
-		public nuint SourceOffset { get; internal set; }
+		public nuint BufferBytesPerRow { get; internal set; }
+		public nuint BufferOffset { get; internal set; }
 	}
 }

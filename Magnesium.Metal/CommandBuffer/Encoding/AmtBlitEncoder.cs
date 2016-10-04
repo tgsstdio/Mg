@@ -108,6 +108,145 @@ namespace Magnesium.Metal
 			};
 		}
 
+		#region CopyImageToBuffer methods
+
+		public void CopyImageToBuffer(IMgImage srcImage, MgImageLayout srcImageLayout, IMgBuffer dstBuffer, MgBufferImageCopy[] pRegions)
+		{
+			if (srcImage == null)
+			{
+				throw new ArgumentNullException(nameof(srcImage));
+			}
+
+			if (dstBuffer == null)
+			{
+				throw new ArgumentNullException(nameof(dstBuffer));
+			}
+
+			if (pRegions == null)
+			{
+				throw new ArgumentNullException(nameof(pRegions));
+			}
+
+			var bSrc = (AmtImage)srcImage;
+			var bDst = (AmtBuffer)dstBuffer;
+
+			var regions = new List<AmtBlitCopyBufferToImageRegionRecord>();
+			for (var i = 0; i < pRegions.Length; ++i)
+			{
+				var currentRegion = pRegions[i];
+
+				if (currentRegion.BufferOffset > nuint.MaxValue)
+				{
+					throw new ArgumentOutOfRangeException(
+						"pRegions[" + i + "].BufferOffset must be less than " + nuint.MaxValue);
+				}
+
+				if (currentRegion.BufferRowLength > nuint.MaxValue)
+				{
+					throw new ArgumentOutOfRangeException(
+						"pRegions[" + i + "].DstOffset must be less than " + nuint.MaxValue);
+				}
+
+				var extent = currentRegion.ImageExtent;
+
+				if (extent.Width > nint.MaxValue)
+				{
+					throw new ArgumentOutOfRangeException(
+						"pRegions[" + i + "].ImageExtent.Width  must be <=" + nint.MaxValue);
+				}
+
+				if (extent.Height > nint.MaxValue)
+				{
+					throw new ArgumentOutOfRangeException(
+						"pRegions[" + i + "].ImageExtent.Height must be <= " + nint.MaxValue);
+				}
+
+				if (extent.Depth > nint.MaxValue)
+				{
+					throw new ArgumentOutOfRangeException(
+						"pRegions[" + i + "].ImageExtent.Depth must be <= " + nint.MaxValue);
+				}
+
+				var sourceImageSize = currentRegion.BufferRowLength * currentRegion.BufferImageHeight;
+
+				if (sourceImageSize > nuint.MaxValue)
+				{
+					throw new ArgumentOutOfRangeException(
+						"sourceImageSize (pRegions[" + i
+							+ "].BufferRowLength * BufferImageHeight) must be <= " + nuint.MaxValue);
+				}
+
+				regions.Add(new AmtBlitCopyBufferToImageRegionRecord
+				{
+					BufferOffset = (nuint)currentRegion.BufferOffset,
+					BufferBytesPerRow = (nuint)currentRegion.BufferRowLength,
+					BufferImageAllocationSize = (nuint)sourceImageSize,
+					ImageSize = new MTLSize
+					{
+						Width = (nint)extent.Width,
+						Height = (nint)extent.Height,
+						Depth = (nint)extent.Depth,
+					},
+					BaseArrayLayer = currentRegion.ImageSubresource.BaseArrayLayer,
+					ImageMipLevel = currentRegion.ImageSubresource.MipLevel,
+					ImageLayerCount = currentRegion.ImageSubresource.LayerCount,
+					ImageOffset = new MTLOrigin
+					{
+						X = currentRegion.ImageOffset.X,
+						Y = currentRegion.ImageOffset.Y,
+						Z = currentRegion.ImageOffset.Z,
+					},
+				});
+			}
+
+			var item = new AmtBlitCopyBufferToImageRecord
+			{
+				Image = bSrc.OriginalTexture,
+				Buffer = bDst.VertexBuffer,
+				Regions = regions.ToArray(),
+			};
+
+			var nextIndex = mBag.CopyBufferToImages.Push(item);
+			mInstructions.Add(new AmtEncodingInstruction
+			{
+				Category = AmtEncoderCategory.Blit,
+				Index = nextIndex,
+				Operation = CmdCopyImageToBuffer,
+			});
+		}
+
+		private static void CmdCopyImageToBuffer(AmtCommandRecording recording, uint index)
+		{
+			Debug.Assert(recording != null, nameof(recording) + " is null");
+			var stage = recording.Blit;
+			Debug.Assert(stage != null, nameof(stage) + " is null");
+			Debug.Assert(stage.Encoder != null, nameof(stage.Encoder) + " is null");
+			Debug.Assert(stage.Grid != null, nameof(stage.Grid) + " is null");
+			AmtBlitCopyBufferToImageRecord item = stage.Grid.CopyBufferToImages[index];
+			Debug.Assert(item.Regions != null, nameof(item.Regions) + " is null");
+			foreach (var region in item.Regions)
+			{
+				nuint slice = region.BaseArrayLayer;
+				for (var i = 0; i < region.ImageLayerCount; ++i)
+				{
+					stage.Encoder.CopyFromTexture(
+						item.Image,
+						slice,
+						region.ImageMipLevel,
+						region.ImageOffset,
+						region.ImageSize,
+						item.Buffer,
+						region.BufferOffset,
+						region.BufferBytesPerRow,
+						region.BufferImageAllocationSize
+					);
+					++slice;
+				}
+			}
+		}
+
+		#endregion
+
 		#region CopyBufferToImage methods
 
 		public void CopyBufferToImage(IMgBuffer srcBuffer,
@@ -180,18 +319,18 @@ namespace Magnesium.Metal
 				regions.Add(new AmtBlitCopyBufferToImageRegionRecord
 				{
 					SourceOffset = (nuint)currentRegion.BufferOffset,
-					SourceBytesPerRow = (nuint)currentRegion.BufferRowLength,
-					SourceSizePerImage = (nuint)sourceImageSize,
-					SourceSize = new MTLSize
+					BufferBytesPerRow = (nuint)currentRegion.BufferRowLength,
+					BufferImageAllocationSize = (nuint)sourceImageSize,
+					ImageSize = new MTLSize
 					{
 						Width = (nint) extent.Width,
 						Height = (nint) extent.Height,
 						Depth = (nint)extent.Depth,
 					},
-					DestinationSlice = currentRegion.ImageSubresource.BaseArrayLayer,
-					DestinationLevel = currentRegion.ImageSubresource.MipLevel,
-					LayerCount = currentRegion.ImageSubresource.LayerCount,
-					DestinationOffset = new MTLOrigin
+					BaseArrayLayer = currentRegion.ImageSubresource.BaseArrayLayer,
+					ImageMipLevel = currentRegion.ImageSubresource.MipLevel,
+					ImageLayerCount = currentRegion.ImageSubresource.LayerCount,
+					ImageOffset = new MTLOrigin
 					{
 						X = currentRegion.ImageOffset.X,
 						Y = currentRegion.ImageOffset.Y,
@@ -202,8 +341,8 @@ namespace Magnesium.Metal
 
 			var item = new AmtBlitCopyBufferToImageRecord
 			{
-				Source = bSrcBuffer.VertexBuffer,
-				Destination = bDstImage.OriginalTexture,
+				Buffer = bSrcBuffer.VertexBuffer,
+				Image = bDstImage.OriginalTexture,
 				Regions = regions.ToArray(),
 			};
 
@@ -227,19 +366,19 @@ namespace Magnesium.Metal
 			Debug.Assert(item.Regions != null, nameof(item.Regions) + " is null");
 			foreach (var region in item.Regions)
 			{
-				nuint slice = region.DestinationSlice;
-				for (var i = 0; i < region.LayerCount; ++i)
+				nuint slice = region.BaseArrayLayer;
+				for (var i = 0; i < region.ImageLayerCount; ++i)
 				{
 					stage.Encoder.CopyFromBuffer(
-						item.Source,
+						item.Buffer,
 						region.SourceOffset,
-						region.SourceBytesPerRow,
-						region.SourceSizePerImage,
-						region.SourceSize,
-						item.Destination,
+						region.BufferBytesPerRow,
+						region.BufferImageAllocationSize,
+						region.ImageSize,
+						item.Image,
 						slice,
-						region.DestinationLevel,
-						region.DestinationOffset);
+						region.ImageMipLevel,
+						region.ImageOffset);
 					++slice;
 				}
 			}
@@ -388,7 +527,6 @@ namespace Magnesium.Metal
 				}
 			}
 		}
-
 
 		#endregion
 	}
