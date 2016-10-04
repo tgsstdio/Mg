@@ -207,7 +207,7 @@ namespace Magnesium.Metal
 
 		public void CmdCopyBufferToImage (IMgBuffer srcBuffer, IMgImage dstImage, MgImageLayout dstImageLayout, MgBufferImageCopy[] pRegions)
 		{
-			throw new NotImplementedException ();
+			mCommandEncoder.Blit.CopyBufferToImage(srcBuffer, dstImage, dstImageLayout, pRegions);
 		}
 
 		public void CmdCopyImageToBuffer (IMgImage srcImage, MgImageLayout srcImageLayout, IMgBuffer dstBuffer, MgBufferImageCopy[] pRegions)
