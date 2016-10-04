@@ -318,7 +318,7 @@ namespace Magnesium.Metal
 
 				regions.Add(new AmtBlitCopyBufferToImageRegionRecord
 				{
-					SourceOffset = (nuint)currentRegion.BufferOffset,
+					BufferOffset = (nuint)currentRegion.BufferOffset,
 					BufferBytesPerRow = (nuint)currentRegion.BufferRowLength,
 					BufferImageAllocationSize = (nuint)sourceImageSize,
 					ImageSize = new MTLSize
@@ -371,7 +371,7 @@ namespace Magnesium.Metal
 				{
 					stage.Encoder.CopyFromBuffer(
 						item.Buffer,
-						region.SourceOffset,
+						region.BufferOffset,
 						region.BufferBytesPerRow,
 						region.BufferImageAllocationSize,
 						region.ImageSize,

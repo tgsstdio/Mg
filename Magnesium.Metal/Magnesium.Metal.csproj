@@ -45,7 +45,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AmtCommandPool.cs" />
     <Compile Include="IAmtFormatExtensions.cs" />
-    <Compile Include="AmtFramebuffer.cs" />
     <Compile Include="AmtCmdRenderPassCommand.cs" />
     <Compile Include="AmtCmdComputeCommand.cs" />
     <Compile Include="AmtCmdTexImageData.cs" />
@@ -54,8 +53,8 @@
     <Compile Include="Device\AmtDescriptorSet.cs" />
     <Compile Include="Device\AmtDevice.cs" />
     <Compile Include="Device\AmtDescriptorSetLayout.cs" />
-    <Compile Include="Device\AmtPipelineLayout.cs" />
     <Compile Include="Device\AmtImage.cs" />
+    <Compile Include="Device\AmtPipelineLayout.cs" />
     <Compile Include="Device\AmtImageView.cs" />
     <Compile Include="GraphicsPipelines\AmtGraphicsPipelineDynamicStateFlagBits.cs" />
     <Compile Include="GraphicsPipelines\AmtGraphicsPipelineStencilInfo.cs" />
@@ -146,6 +145,9 @@
     <Compile Include="CommandBuffer\Encoding\AmtBlitCopyBufferToImageRegionRecord.cs" />
     <Compile Include="CommandBuffer\Encoding\AmtBlitCopyImageRecord.cs" />
     <Compile Include="CommandBuffer\Encoding\AmtBlitCopyImageRegionRecord.cs" />
+    <Compile Include="Device\AmtFramebuffer.cs" />
+    <Compile Include="Device\AmtRenderPassSubpassInfo.cs" />
+    <Compile Include="Device\AmtFramebufferSubpassInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Magnesium\Magnesium.csproj">

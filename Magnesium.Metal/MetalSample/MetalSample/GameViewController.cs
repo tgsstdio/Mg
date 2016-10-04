@@ -241,8 +241,10 @@ namespace MetalSample
 				inflightSemaphore.Release();
 			});
 
+
 			// Obtain a renderPassDescriptor generated from the view's drawable textures
 			MTLRenderPassDescriptor renderPassDescriptor = view.CurrentRenderPassDescriptor;
+
 
 			// If we have a valid drawable, begin the commands to render into it
 			if (renderPassDescriptor != null)

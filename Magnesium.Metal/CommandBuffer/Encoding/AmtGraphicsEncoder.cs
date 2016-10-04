@@ -43,7 +43,8 @@ namespace Magnesium.Metal
 			var bFramebuffer = (AmtFramebuffer)pRenderPassBegin.Framebuffer;
 			Debug.Assert(bFramebuffer != null, nameof(pRenderPassBegin.Framebuffer) + " is null");
 
-			var descriptor = InitializeDescriptor(bRenderPass, pRenderPassBegin.ClearValues);
+			const uint FIRST_SUBPASS = 0;
+			var descriptor = InitializeDescriptor(FIRST_SUBPASS, bRenderPass, pRenderPassBegin.ClearValues);
 
 			var nextIndex = mBag.RenderPasses.Push(descriptor);
 			mInstructions.Add(new AmtEncodingInstruction
@@ -71,55 +72,55 @@ namespace Magnesium.Metal
 			stage.Encoder = cmdBuf.CreateRenderCommandEncoder(item);
 		}
 
-		static MTLRenderPassDescriptor InitializeDescriptor(AmtRenderPass renderPass, MgClearValue[] clearValues)
+		static MTLRenderPassDescriptor InitializeDescriptor(uint subpassIndex, AmtRenderPass renderPass, MgClearValue[] clearValues)
 		{
 			var dest = new MTLRenderPassDescriptor { };
 
-			for (var i = 0; i < clearValues.Length; ++i)
+			var subpass = renderPass.Subpasses[subpassIndex];
+
+			foreach (var attachment in subpass.ColorAttachments)
 			{
-				var attachment = renderPass.ClearAttachments[i];
-				var clearValue = clearValues[i];
-				if (attachment.Destination == AmtRenderPassAttachmentDestination.COLOR)
+				var clearValue = clearValues[attachment.Index];
+
+				double r, g, b, a;
+
+				if (attachment.ClearValueType == AmtRenderPassClearValueType.COLOR_INT)
 				{
-					double r, g, b, a;
+					var initialValue = clearValue.Color.Int32;
 
-					if (attachment.ClearValueType == AmtRenderPassClearValueType.COLOR_INT)
-					{
-						var initialValue = clearValue.Color.Int32;
-
-						r = Math.Max(Math.Min(initialValue.X, attachment.Divisor), -attachment.Divisor) / attachment.Divisor;
-						g = Math.Max(Math.Min(initialValue.Y, attachment.Divisor), -attachment.Divisor) / attachment.Divisor;
-						b = Math.Max(Math.Min(initialValue.Z, attachment.Divisor), -attachment.Divisor) / attachment.Divisor;
-						a = Math.Max(Math.Min(initialValue.W, attachment.Divisor), -attachment.Divisor) / attachment.Divisor;
-
-					}
-					else if (attachment.ClearValueType == AmtRenderPassClearValueType.COLOR_INT)
-					{
-						var initialValue = clearValue.Color.Uint32;
-
-						r = Math.Min(initialValue.X, attachment.Divisor) / attachment.Divisor;
-						g = Math.Min(initialValue.Y, attachment.Divisor) / attachment.Divisor;
-						b = Math.Min(initialValue.Z, attachment.Divisor) / attachment.Divisor;
-						a = Math.Min(initialValue.W, attachment.Divisor) / attachment.Divisor;
-					}
-					else
-					{
-						var initialValue = clearValue.Color.Float32;
-
-						r = initialValue.R;
-						g = initialValue.G;
-						b = initialValue.B;
-						a = initialValue.A;
-					}
-
-					dest.ColorAttachments[(nint)attachment.Index].ClearColor = new MTLClearColor(r, g, b, a);
+					r = Math.Max(Math.Min(initialValue.X, attachment.Divisor), -attachment.Divisor) / attachment.Divisor;
+					g = Math.Max(Math.Min(initialValue.Y, attachment.Divisor), -attachment.Divisor) / attachment.Divisor;
+					b = Math.Max(Math.Min(initialValue.Z, attachment.Divisor), -attachment.Divisor) / attachment.Divisor;
+					a = Math.Max(Math.Min(initialValue.W, attachment.Divisor), -attachment.Divisor) / attachment.Divisor;
 
 				}
-				else if (attachment.Destination == AmtRenderPassAttachmentDestination.DEPTH_AND_STENCIL)
+				else if (attachment.ClearValueType == AmtRenderPassClearValueType.COLOR_INT)
 				{
-					dest.DepthAttachment.ClearDepth = clearValue.DepthStencil.Depth;
-					dest.StencilAttachment.ClearStencil = clearValue.DepthStencil.Stencil;
+					var initialValue = clearValue.Color.Uint32;
+
+					r = Math.Min(initialValue.X, attachment.Divisor) / attachment.Divisor;
+					g = Math.Min(initialValue.Y, attachment.Divisor) / attachment.Divisor;
+					b = Math.Min(initialValue.Z, attachment.Divisor) / attachment.Divisor;
+					a = Math.Min(initialValue.W, attachment.Divisor) / attachment.Divisor;
 				}
+				else
+				{
+					var initialValue = clearValue.Color.Float32;
+
+					r = initialValue.R;
+					g = initialValue.G;
+					b = initialValue.B;
+					a = initialValue.A;
+				}
+
+				dest.ColorAttachments[(nint)attachment.Index].ClearColor = new MTLClearColor(r, g, b, a);
+			}
+
+			if (subpass.DepthStencil != null)
+			{
+				var depthValue = clearValues[subpass.DepthStencil.Index];
+				dest.DepthAttachment.ClearDepth = depthValue.DepthStencil.Depth;
+				dest.StencilAttachment.ClearStencil = depthValue.DepthStencil.Stencil;
 			}
 
 			return dest;
@@ -152,13 +153,14 @@ namespace Magnesium.Metal
 
 			};
 
+			var currentSubpass = 0;
 			if (mCurrentRenderPass != null)
 			{
-				mCurrentRenderPass.InitializeFormat(pipelineDescriptor);
+				mCurrentRenderPass.Subpasses[currentSubpass].InitializeFormat(pipelineDescriptor);
 			}
 			else
 			{
-				mCurrentPipeline.RenderPass.InitializeFormat(pipelineDescriptor);
+				mCurrentPipeline.RenderPass.Subpasses[currentSubpass].InitializeFormat(pipelineDescriptor);
 			}
 
 			Debug.Assert(bPipeline.Attachments != null);
