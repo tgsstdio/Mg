@@ -197,7 +197,7 @@ namespace Magnesium.Metal
 
 		public void CmdCopyImage (IMgImage srcImage, MgImageLayout srcImageLayout, IMgImage dstImage, MgImageLayout dstImageLayout, MgImageCopy[] pRegions)
 		{
-			throw new NotImplementedException ();
+			mCommandEncoder.Blit.CmdCopyImage(srcImage, srcImageLayout, dstImage, dstImageLayout, pRegions);
 		}
 
 		public void CmdBlitImage (IMgImage srcImage, MgImageLayout srcImageLayout, IMgImage dstImage, MgImageLayout dstImageLayout, MgImageBlit[] pRegions, MgFilter filter)

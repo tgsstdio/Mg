@@ -110,7 +110,8 @@ namespace Magnesium.Metal
 
 		#region CopyBufferToImage methods
 
-		public void CopyBufferToImage(IMgBuffer srcBuffer, IMgImage dstImage, MgImageLayout dstImageLayout, MgBufferImageCopy[] pRegions)
+		public void CopyBufferToImage(IMgBuffer srcBuffer,
+		                              IMgImage dstImage, MgImageLayout dstImageLayout, MgBufferImageCopy[] pRegions)
 		{
 			if (srcBuffer == null)
 			{
@@ -146,10 +147,6 @@ namespace Magnesium.Metal
 					throw new ArgumentOutOfRangeException(
 						"pRegions[" + i + "].DstOffset must be less than " + nuint.MaxValue);
 				}
-
-
-				//if (pRegions[i].Size > nuint.MaxValue)
-				//	throw new ArgumentOutOfRangeException(nameof(pRegions) + "[" + i + "].Size must be less than " + nuint.MaxValue);
 
 				var extent = currentRegion.ImageExtent;
 
@@ -247,6 +244,151 @@ namespace Magnesium.Metal
 				}
 			}
 		}
+
+		#endregion
+
+		#region CmdCopyImage methods
+
+		public void CmdCopyImage(IMgImage srcImage, MgImageLayout srcImageLayout,
+		                         IMgImage dstImage, MgImageLayout dstImageLayout, MgImageCopy[] pRegions)
+		{
+			if (srcImage == null)
+			{
+				throw new ArgumentNullException(nameof(srcImage));
+			}
+
+			if (dstImage == null)
+			{
+				throw new ArgumentNullException(nameof(dstImage));
+			}
+
+			if (pRegions == null)
+			{
+				throw new ArgumentNullException(nameof(pRegions));
+			}
+
+			var bSrcImage = (AmtImage)srcImage;
+			var bDstImage = (AmtImage)dstImage;
+
+			var regions = new List<AmtBlitCopyImageRegionRecord>();
+			for (var i = 0; i < pRegions.Length; ++i)
+			{
+				var currentRegion = pRegions[i];
+
+				var extent = currentRegion.Extent;
+
+				if (extent.Width > nint.MaxValue)
+				{
+					throw new ArgumentOutOfRangeException(
+						"pRegions[" + i + "].Extent.Width  must be <=" + nint.MaxValue);
+				}
+
+				if (extent.Height > nint.MaxValue)
+				{
+					throw new ArgumentOutOfRangeException(
+						"pRegions[" + i + "].Extent.Height must be <= " + nint.MaxValue);
+				}
+
+				if (extent.Depth > nint.MaxValue)
+				{
+					throw new ArgumentOutOfRangeException(
+						"pRegions[" + i + "].Extent.Depth must be <= " + nint.MaxValue);
+				}
+
+				regions.Add(new AmtBlitCopyImageRegionRecord
+				{
+					SourceSlice = currentRegion.SrcSubresource.BaseArrayLayer,
+					SourceMipLevel = currentRegion.SrcSubresource.MipLevel,
+					SourceOrigin = new MTLOrigin
+					{
+						X = currentRegion.SrcOffset.X,
+						Y = currentRegion.SrcOffset.Y,
+						Z = currentRegion.SrcOffset.Z
+					},
+					SourceLayerCount = currentRegion.SrcSubresource.LayerCount,
+					SourceSize = new MTLSize
+					{
+						Width = (nint) currentRegion.Extent.Width,
+						Height = (nint) currentRegion.Extent.Height,
+						Depth = (nint) currentRegion.Extent.Depth,
+					},
+					DestinationSlice = currentRegion.DstSubresource.BaseArrayLayer,
+					DestinationMipLevel = currentRegion.DstSubresource.MipLevel,
+					DestinationLayerCount = currentRegion.DstSubresource.LayerCount,
+					DestinationOrigin = new MTLOrigin
+					{
+						X = currentRegion.DstOffset.X,
+						Y = currentRegion.DstOffset.Y,
+						Z = currentRegion.DstOffset.Z
+					},
+				});
+			}
+
+			var item = new AmtBlitCopyImageRecord
+			{
+				Source = bSrcImage.OriginalTexture,
+				Destination = bDstImage.OriginalTexture,
+				Regions = regions.ToArray(),
+			};
+
+			var nextIndex = mBag.CopyImages.Push(item);
+			mInstructions.Add(new AmtEncodingInstruction
+			{
+				Category = AmtEncoderCategory.Blit,
+				Index = nextIndex,
+				Operation = CmdCopyImage,
+			});
+		}
+
+		private static void CmdCopyImage(AmtCommandRecording recording, uint index)
+		{
+			Debug.Assert(recording != null, nameof(recording) + " is null");
+			var stage = recording.Blit;
+			Debug.Assert(stage != null, nameof(stage) + " is null");
+			Debug.Assert(stage.Encoder != null, nameof(stage.Encoder) + " is null");
+			Debug.Assert(stage.Grid != null, nameof(stage.Grid) + " is null");
+			AmtBlitCopyImageRecord item = stage.Grid.CopyImages[index];
+			Debug.Assert(item.Regions != null, nameof(item.Regions) + " is null");
+
+			foreach (var region in item.Regions)
+			{
+				nuint srcSlice = region.SourceSlice;
+				nuint dstSlice = region.DestinationSlice;
+				for (var i = 0; i < region.SourceLayerCount; ++i)
+				{
+					stage.Encoder.CopyFromTexture(
+						item.Source,
+						srcSlice,
+						region.SourceMipLevel,
+						region.SourceOrigin,
+						region.SourceSize,
+						item.Destination,
+						dstSlice,
+						region.DestinationMipLevel,
+						region.DestinationOrigin
+					);
+					++srcSlice;
+				}
+
+				srcSlice = region.SourceSlice;
+				for (var i = 0; i < region.DestinationLayerCount; ++i)
+				{
+					stage.Encoder.CopyFromTexture(
+						item.Source,
+						srcSlice,
+						region.SourceMipLevel,
+						region.SourceOrigin,
+						region.SourceSize,
+						item.Destination,
+						dstSlice,
+						region.DestinationMipLevel,
+						region.DestinationOrigin
+					);
+					++dstSlice;
+				}
+			}
+		}
+
 
 		#endregion
 	}

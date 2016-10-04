@@ -144,6 +144,8 @@
     <Compile Include="CommandBuffer\Recording\AmtBlitCopyBufferRecord.cs" />
     <Compile Include="CommandBuffer\Encoding\AmtBlitCopyBufferToImageRecord.cs" />
     <Compile Include="CommandBuffer\Encoding\AmtBlitCopyBufferToImageRegionRecord.cs" />
+    <Compile Include="CommandBuffer\Encoding\AmtBlitCopyImageRecord.cs" />
+    <Compile Include="CommandBuffer\Encoding\AmtBlitCopyImageRegionRecord.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Magnesium\Magnesium.csproj">
