@@ -86,7 +86,20 @@ namespace Magnesium.Metal
 
 		public void GetPhysicalDeviceMemoryProperties(out MgPhysicalDeviceMemoryProperties pMemoryProperties)
 		{
-			throw new NotImplementedException();
+			pMemoryProperties = new MgPhysicalDeviceMemoryProperties();
+
+			const uint allOn = (uint)(
+					   MgMemoryPropertyFlagBits.DEVICE_LOCAL_BIT |
+					   MgMemoryPropertyFlagBits.HOST_CACHED_BIT |
+					   MgMemoryPropertyFlagBits.HOST_COHERENT_BIT |
+					   MgMemoryPropertyFlagBits.LAZILY_ALLOCATED_BIT |
+					   MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT);
+
+			// THE NUMBER OF SLOTS DETERMINE THE DIFFERENT BUFFER TYPES
+			var slots = new MgMemoryType[1];
+			slots[0] = new MgMemoryType { PropertyFlags = allOn };
+
+			pMemoryProperties.MemoryTypes = slots;
 		}
 
 		public void GetPhysicalDeviceProperties(out MgPhysicalDeviceProperties pProperties)

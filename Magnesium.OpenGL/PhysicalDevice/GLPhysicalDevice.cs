@@ -70,6 +70,7 @@ namespace Magnesium.OpenGL
 			                       MgMemoryPropertyFlagBits.LAZILY_ALLOCATED_BIT |
 			                       MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT);
 
+			// THE NUMBER OF SLOTS DETERMINE THE DIFFERENT BUFFER TYPES = no of GLMemoryBufferType enums
 			slots [0] = new MgMemoryType{ PropertyFlags = allOn };
 			slots [1] = new MgMemoryType{ PropertyFlags = allOn };
 			slots [2] = new MgMemoryType{ PropertyFlags = allOn };

@@ -4,6 +4,7 @@
 	{
 		IAmtGraphicsEncoder Graphics { get; }
 		IAmtComputeEncoder Compute { get; }
+		IAmtBlitEncoder Blit { get; }
 
 		void Clear();
 		AmtCommandBufferRecord AsRecord();

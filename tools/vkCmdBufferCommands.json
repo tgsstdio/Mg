@@ -42,7 +42,7 @@
 {"queues": "graphics,compute", "cmdbufferlevel": "primary,secondary", "name": "vkCmdWaitEvents", "renderpass": "both"},
 {"queues": "graphics,compute", "cmdbufferlevel": "primary,secondary", "name": "vkCmdWriteTimestamp", "renderpass": "both"},
 {"queues": "transfer,graphics,compute", "cmdbufferlevel": "primary", "name": "vkCmdExecuteCommands", "renderpass": "both"},
-{"queues": "transfer,graphics,compute", "cmdbufferlevel": "primary,secondary", "name": "vkCmdCopyBuffer", "renderpass": "outside", "blit" :"copy"},
+{"done":"blit", "queues": "transfer,graphics,compute", "cmdbufferlevel": "primary,secondary", "name": "vkCmdCopyBuffer", "renderpass": "outside", "blit" :"copy"},
 {"queues": "transfer,graphics,compute", "cmdbufferlevel": "primary,secondary", "name": "vkCmdCopyBufferToImage", "renderpass": "outside", "blit" :"copy"},
 {"queues": "transfer,graphics,compute", "cmdbufferlevel": "primary,secondary", "name": "vkCmdCopyImage", "renderpass": "outside", "blit":"copy"},
 {"queues": "transfer,graphics,compute", "cmdbufferlevel": "primary,secondary", "name": "vkCmdCopyImageToBuffer", "renderpass": "outside", "blit":"copy"},

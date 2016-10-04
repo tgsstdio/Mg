@@ -45,7 +45,10 @@ namespace Magnesium.Metal
 				var compute = new AmtComputeEncoder(instructions, mDevice, computeBag);
 				var graphicsBag = new AmtGraphicsBag();
 				var graphics = new AmtGraphicsEncoder(instructions, mDevice, graphicsBag);
-				var command = new AmtCommandEncoder(instructions, graphics, compute);
+				var blitBag = new AmtBlitBag();
+				var blit = new AmtBlitEncoder(blitBag, instructions);
+
+				var command = new AmtCommandEncoder(instructions, graphics, compute, blit);
 				pCommandBuffers[i] = new AmtCommandBuffer(commandPool.Queue, commandPool.CanIndividuallyReset, command);
 			}
 

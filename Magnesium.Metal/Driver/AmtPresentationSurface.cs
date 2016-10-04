@@ -3,11 +3,6 @@ namespace Magnesium.Metal
 {
 	public class AmtPresentationSurface : IMgPresentationSurface
 	{
-		//private AmtSurfaceKHR mSurface;
-		public AmtPresentationSurface()
-		{
-		}
-
 		public IMgSurfaceKHR Surface
 		{
 			get
@@ -23,7 +18,7 @@ namespace Magnesium.Metal
 
 		public void Initialize()
 		{
-			//mSurface = new AmtSurfaceKHR();
+			
 		}
 	}
 }

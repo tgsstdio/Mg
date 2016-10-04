@@ -6,10 +6,10 @@ Four words to describe Magnesium:
 
 Quick Links
 
-- [CHANGELOG](#CHANGELOG)
-- [LICENSE](#LICENSE)
-- [WHY?](#WHY?)
-- [PLATFORM SUMMARY](#PLATFORM-SUMMARY)
+- [CHANGELOG](#changelog)
+- [LICENSE](#license)
+- [WHY?](#why?)
+- [PLATFORM SUMMARY](#platform-summary)
 
 
 ----------

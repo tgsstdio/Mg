@@ -84,8 +84,12 @@ namespace MetalSample
 					var deviceQuery = new AmtDeviceQuery { NoOfCommandBufferSlots = 5 };
 					container.Register<Magnesium.MgDriver>();
 					container.RegisterSingleton<Magnesium.Metal.IAmtDeviceQuery>(deviceQuery);
-					container.Register<Magnesium.IMgEntrypoint, Magnesium.Metal.AmtEntrypoint>(Lifestyle.Singleton);
-					container.Register<Magnesium.IMgPresentationSurface, Magnesium.Metal.AmtPresentationSurface>(Lifestyle.Singleton);
+					container.Register<Magnesium.IMgEntrypoint, Magnesium.Metal.AmtEntrypoint>(
+						Lifestyle.Singleton);
+					container.Register<Magnesium.IMgPresentationSurface, Magnesium.Metal.AmtPresentationSurface>(
+						Lifestyle.Singleton);
+					container.Register<Magnesium.IMgSwapchainCollection, Magnesium.Metal.AmtSwapchainCollection>(
+						Lifestyle.Singleton);
 					         
 					using (var scope = new Scope(container))
 					using (var driver = scope.GetInstance<Magnesium.MgDriver>())
@@ -104,12 +108,24 @@ namespace MetalSample
 						using (var presentationSurface = scope.GetInstance<Magnesium.IMgPresentationSurface>())
 						{
 							presentationSurface.Initialize();
-							using (var device = driver.CreateLogicalDevice(
-								presentationSurface.Surface,
+							using (var device = driver.CreateLogicalDevice(presentationSurface.Surface,
 								Magnesium.MgEnableExtensionsOption.ALL))
+							
 							{
-
-
+								var partition = device.Queues[0].CreatePartition(0,
+                                     		new Magnesium.MgDescriptorPoolCreateInfo
+											 {
+												 MaxSets = 100,
+												 PoolSizes = new Magnesium.MgDescriptorPoolSize[]
+												 {
+													new Magnesium.MgDescriptorPoolSize
+													{	
+														DescriptorCount = 10,
+														Type = Magnesium.MgDescriptorType.COMBINED_IMAGE_SAMPLER,
+													}
+												 },
+											 });
+								partition.Dispose();
 							}
 						}
 					}
@@ -203,7 +219,6 @@ namespace MetalSample
 
 			// Setup the render target, choose values based on your app
 			view.SampleCount = 4;
-
 			view.DepthStencilPixelFormat = MTLPixelFormat.Depth32Float_Stencil8;
 		}
 
@@ -216,6 +231,7 @@ namespace MetalSample
 			// Create a new command buffer for each renderpass to the current drawable
 			IMTLCommandBuffer commandBuffer = commandQueue.CommandBuffer();
 			commandBuffer.Label = "MyCommand";
+
 
 			// Call the view's completion handler which is required by the view since it will signal its semaphore and set up the next buffer
 			var drawable = view.CurrentDrawable;
@@ -252,6 +268,7 @@ namespace MetalSample
 
 				// Schedule a present once the framebuffer is complete using the current drawable
 				commandBuffer.PresentDrawable(drawable);
+
 			}
 
 			// The render assumes it can now increment the buffer index and that the previous index won't be touched until we cycle back around to the same index

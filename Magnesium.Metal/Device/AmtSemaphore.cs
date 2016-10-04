@@ -5,21 +5,28 @@ namespace Magnesium.Metal
 {
 	public class AmtSemaphore
 	{
-		public bool IsSignalled { get; private set; } 
+		private volatile bool mIsSignalled;
+		public bool IsSignalled
+		{
+			get
+			{
+				return mIsSignalled;
+			}
+		}
 
 		public AmtSemaphore()
 		{
-			IsSignalled = false;
+			mIsSignalled = false;
 		}
 
 		internal void Reset()
 		{
-			IsSignalled = false;
+			mIsSignalled = false;
 		}
 
 		internal void Signal()
 		{
-			IsSignalled = true;
+			mIsSignalled = true;
 		}
 	}
 }

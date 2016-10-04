@@ -88,7 +88,6 @@
     <Compile Include="Device\AmtDescriptorSetSamplerBinding.cs" />
     <Compile Include="Device\AmtDescriptorSetTextureBinding.cs" />
     <Compile Include="Entrypoint\AmtDeviceQuery.cs" />
-    <Compile Include="Entrypoint\AmtPresentationSurface.cs" />
     <Compile Include="Entrypoint\AmtSurfaceKHR.cs" />
     <Compile Include="CommandBuffer\Recording\AmtBlendColorAttachmentRecord.cs" />
     <Compile Include="CommandBuffer\Recording\AmtCommandBufferRecord.cs" />
@@ -135,6 +134,14 @@
     <Compile Include="Queue\IAmtQueueFence.cs" />
     <Compile Include="Queue\IAmtSemaphoreEntrypoint.cs" />
     <Compile Include="Entrypoint\AmtSemaphoreEntrypoint.cs" />
+    <Compile Include="Driver\AmtSwapchainCollection.cs" />
+    <Compile Include="Driver\AmtPresentationSurface.cs" />
+    <Compile Include="Driver\AmtNullImageView.cs" />
+    <Compile Include="Driver\AmtPresentationLayer.cs" />
+    <Compile Include="CommandBuffer\Encoding\IAmtBlitEncoder.cs" />
+    <Compile Include="CommandBuffer\Encoding\AmtBlitEncoder.cs" />
+    <Compile Include="CommandBuffer\Encoding\AmtBlitBag.cs" />
+    <Compile Include="CommandBuffer\Encoding\AmtBlitCopyBufferRecord.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Magnesium\Magnesium.csproj">
@@ -151,6 +158,7 @@
     <Folder Include="Queue\" />
     <Folder Include="CommandBuffer\Encoding\" />
     <Folder Include="CommandBuffer\Recording\" />
+    <Folder Include="Driver\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
 </Project>
