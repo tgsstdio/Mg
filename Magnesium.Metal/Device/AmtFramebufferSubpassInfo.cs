@@ -3,7 +3,7 @@ namespace Magnesium.Metal
 {
 	public class AmtFramebufferSubpassInfo
 	{
-		public AmtImageView[] ColorAttachments { get; set; }
-		public AmtImageView DepthStencil { get; set;}
+		public IAmtImageView[] ColorAttachments { get; set; }
+		public IAmtImageView DepthStencil { get; set;}
 	}
 }

@@ -2,10 +2,10 @@
 
 namespace Magnesium.Metal
 {
-	public class GLQueueSubmission
+	public class AmtQueueSubmission
 	{
 		public long Key;
-		public GLQueueSubmission (long key, MgSubmitInfo sub)
+		public AmtQueueSubmission (long key, MgSubmitInfo sub)
 		{
 			Key = key;
 			var waits = new List<AmtSemaphore> ();
@@ -57,6 +57,7 @@ namespace Magnesium.Metal
 
 		public AmtSemaphore[] Signals { get; private set; }
 		public AmtSemaphore OrderFence { get; set; }
+		public AmtQueueSwapchainInfo[] Swapchains { get; set; }
 	}
 }
 

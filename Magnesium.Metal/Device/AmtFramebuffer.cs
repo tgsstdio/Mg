@@ -43,16 +43,16 @@ namespace Magnesium.Metal
 
 					var dstSubpass = new AmtFramebufferSubpassInfo
 					{
-						ColorAttachments = new AmtImageView[noOfColorAttachments],
+						ColorAttachments = new IAmtImageView[noOfColorAttachments],
 						DepthStencil = (srcSubpass.DepthStencil != null)
-							? (AmtImageView)createInfo.Attachments[srcSubpass.DepthStencil.Index]
+							? (IAmtImageView)createInfo.Attachments[srcSubpass.DepthStencil.Index]
 							: null,
 					};
 
 					for (var j = 0; j < noOfColorAttachments; ++j)
 					{
 						var imageViewIndex = srcSubpass.ColorAttachments[j].Index;
-						dstSubpass.ColorAttachments[j] = (AmtImageView)createInfo.Attachments[imageViewIndex];
+						dstSubpass.ColorAttachments[j] = (IAmtImageView)createInfo.Attachments[imageViewIndex];
 					}
 
 					Subpasses[i] = dstSubpass;

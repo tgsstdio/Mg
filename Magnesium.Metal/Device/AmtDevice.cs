@@ -9,11 +9,12 @@ namespace Magnesium.Metal
 	{
 		private IMTLDevice mDevice; 
 		private IAmtDeviceQuery mQuery;
-		private GLQueue mQueue;
-		public AmtDevice(IMTLDevice systemDefault, IAmtDeviceQuery mQuery, GLQueue queue)
+		private AmtQueue mQueue;
+		public AmtDevice(IMTLDevice systemDefault, IAmtDeviceQuery mQuery, AmtQueue queue)
 		{
 			this.mDevice = systemDefault;
 			this.mQuery = mQuery;
+			mQueue = queue;
 		}
 
 		public Result AcquireNextImageKHR(IMgSwapchainKHR swapchain, ulong timeout, IMgSemaphore semaphore, IMgFence fence, out uint pImageIndex)
@@ -39,7 +40,6 @@ namespace Magnesium.Metal
 
 			for (var i = 0; i < arraySize; ++i)
 			{
-				var cmdBuf = commandPool.Queue.CommandBuffer();
 				var instructions = new AmtIncrementalChunkifier();
 				var computeBag = new AmtComputeBag();
 				var compute = new AmtComputeEncoder(instructions, mDevice, computeBag);
@@ -49,7 +49,11 @@ namespace Magnesium.Metal
 				var blit = new AmtBlitEncoder(blitBag, instructions);
 
 				var command = new AmtCommandEncoder(instructions, graphics, compute, blit);
-				pCommandBuffers[i] = new AmtCommandBuffer(commandPool.Queue, commandPool.CanIndividuallyReset, command);
+				var cmdBuf = new AmtCommandBuffer(commandPool.CanIndividuallyReset, command);
+
+				commandPool.Add(cmdBuf);
+
+				pCommandBuffers[i] = cmdBuf;
 			}
 
 			return Result.SUCCESS;
@@ -449,10 +453,10 @@ namespace Magnesium.Metal
 									MgDescriptorImageInfo info = desc.ImageInfo[i];
 
 									var localSampler = (AmtSampler)info.Sampler;
-									var localView = (AmtImageView)info.ImageView;
+									var localView = (IAmtImageView)info.ImageView;
 
 									var index = offset + i;
-									map.Textures[index].Texture = localView.Image;
+									map.Textures[index].Texture = localView.GetTexture();
 									map.SamplerStates[index].Sampler = localSampler.Sampler;
 								}
 

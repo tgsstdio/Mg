@@ -125,11 +125,10 @@
     <Compile Include="CommandBuffer\Encoding\IAmtComputeEncoder.cs" />
     <Compile Include="CommandBuffer\Encoding\AmtIncrementalChunkifier.cs" />
     <Compile Include="Device\AmtSemaphore.cs" />
-    <Compile Include="Queue\GLQueue.cs" />
-    <Compile Include="Queue\IAmtSwapchainKHR.cs" />
+    <Compile Include="Queue\AmtQueue.cs" />
     <Compile Include="Queue\IAmtQueueRenderer.cs" />
-    <Compile Include="Queue\GLQueueSubmitOrder.cs" />
-    <Compile Include="Queue\GLQueueSubmission.cs" />
+    <Compile Include="Queue\AmtQueueSubmitOrder.cs" />
+    <Compile Include="Queue\AmtQueueSubmission.cs" />
     <Compile Include="Queue\IAmtQueueFence.cs" />
     <Compile Include="Queue\IAmtSemaphoreEntrypoint.cs" />
     <Compile Include="Entrypoint\AmtSemaphoreEntrypoint.cs" />
@@ -148,6 +147,12 @@
     <Compile Include="Device\AmtFramebuffer.cs" />
     <Compile Include="Device\AmtRenderPassSubpassInfo.cs" />
     <Compile Include="Device\AmtFramebufferSubpassInfo.cs" />
+    <Compile Include="Device\IAmtImageView.cs" />
+    <Compile Include="Entrypoint\AmtSwapchainKHR.cs" />
+    <Compile Include="Entrypoint\IAmtSwapchainImageView.cs" />
+    <Compile Include="Queue\AmtQueueSwapchainInfo.cs" />
+    <Compile Include="Entrypoint\IAmtSwapchainKHR.cs" />
+    <Compile Include="Entrypoint\AmtSwapchainKHRImageInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Magnesium\Magnesium.csproj">

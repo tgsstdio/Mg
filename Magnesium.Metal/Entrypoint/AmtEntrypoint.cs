@@ -18,12 +18,17 @@ namespace Magnesium.Metal
 
 		public Result CreateInstance(MgInstanceCreateInfo createInfo, IMgAllocationCallbacks allocator, out IMgInstance instance)
 		{
-			var renderer = new AmtQueueRenderer();
 			var semaphore = new AmtSemaphoreEntrypoint();
-			var queue = new GLQueue(renderer, semaphore);
-			var device = new AmtDevice(MTLDevice.SystemDefault, mQuery, queue);
+
+			var systemDevice = MTLDevice.SystemDefault;
+			var presentQueue = systemDevice.CreateCommandQueue(mQuery.NoOfCommandBufferSlots);
+
+			var queueRenderer = new AmtQueueRenderer(presentQueue);
+			var queue = new AmtQueue(queueRenderer, semaphore, presentQueue);
+			var device = new AmtDevice(systemDevice, mQuery, queue);
 			var physicalDevice = new AmtPhysicalDevice(device);
 			instance = new AmtInstance(physicalDevice);
+
 			return Result.SUCCESS;
 		}
 

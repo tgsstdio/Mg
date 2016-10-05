@@ -4,9 +4,9 @@ using Foundation;
 
 namespace Magnesium.Metal
 {
-	public class AmtImageView : IMgImageView
+	public class AmtImageView : IAmtImageView
 	{
-		public IMTLTexture Image { get; private set;}
+		private readonly IMTLTexture mImageView;
 		public AmtImageView(MgImageViewCreateInfo pCreateInfo)
 		{
 			if (pCreateInfo == null)
@@ -18,11 +18,11 @@ namespace Magnesium.Metal
 
 			var bImage = (AmtImage)pCreateInfo.Image;
 
-			Image = bImage.OriginalTexture.CreateTextureView(
+			mImageView = bImage.OriginalTexture.CreateTextureView(
 				AmtFormatExtensions.GetPixelFormat(pCreateInfo.Format),
 				TranslateTextureType(pCreateInfo.ViewType),
 				GenerateLevelRange(pCreateInfo.SubresourceRange),
-				GenerateSliceRange(this, pCreateInfo.SubresourceRange));
+				GenerateSliceRange(pCreateInfo.SubresourceRange));
 		}
 
 		MTLTextureType TranslateTextureType(MgImageViewType viewType)
@@ -46,7 +46,7 @@ namespace Magnesium.Metal
 			}
 		}
 
-		static NSRange GenerateSliceRange(AmtImageView instance, MgImageSubresourceRange subresourceRange)
+		static NSRange GenerateSliceRange(MgImageSubresourceRange subresourceRange)
 		{
 			return new NSRange
 			{
@@ -67,6 +67,11 @@ namespace Magnesium.Metal
 		public void DestroyImageView(IMgDevice device, IMgAllocationCallbacks allocator)
 		{
 			
+		}
+
+		public IMTLTexture GetTexture()
+		{
+			return mImageView;
 		}
 	}
 }

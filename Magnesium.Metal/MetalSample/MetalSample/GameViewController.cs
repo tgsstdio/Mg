@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
 
@@ -220,6 +221,9 @@ namespace MetalSample
 			// Setup the render target, choose values based on your app
 			view.SampleCount = 4;
 			view.DepthStencilPixelFormat = MTLPixelFormat.Depth32Float_Stencil8;
+
+
+
 		}
 
 		void Render()

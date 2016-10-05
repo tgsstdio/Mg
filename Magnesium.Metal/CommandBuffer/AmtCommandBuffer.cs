@@ -13,11 +13,8 @@ namespace Magnesium.Metal
 
 		private readonly IAmtCommandEncoder mCommandEncoder;
 
-		public IMTLCommandQueue CommandQueue { get; private set; }
-
-		public AmtCommandBuffer(IMTLCommandQueue cmdQueue, bool canBeManuallyReset, IAmtCommandEncoder encoder)
+		public AmtCommandBuffer(bool canBeManuallyReset, IAmtCommandEncoder encoder)
 		{
-			CommandQueue = cmdQueue;
 			mIsRecording = false;
 			mIsExecutable = false;
 			mManuallyResettable = canBeManuallyReset;
@@ -34,6 +31,12 @@ namespace Magnesium.Metal
 			IsQueueReady = true;
 
 			mIsRecording = true;
+
+			if ((pBeginInfo.Flags & MgCommandBufferUsageFlagBits.RENDER_PASS_CONTINUE_BIT)
+					!= MgCommandBufferUsageFlagBits.RENDER_PASS_CONTINUE_BIT)
+			{
+				ResetAllData();
+			}
 
 			return Result.SUCCESS;
 		}

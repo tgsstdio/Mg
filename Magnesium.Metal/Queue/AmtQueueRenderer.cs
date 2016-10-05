@@ -5,7 +5,13 @@ namespace Magnesium.Metal
 {
 	public class AmtQueueRenderer : IAmtQueueRenderer
 	{
-		public IMTLCommandBuffer[] Render(GLQueueSubmission request)
+		private readonly IMTLCommandQueue mCommandQueue;
+		public AmtQueueRenderer(IMTLCommandQueue queue)
+		{
+			mCommandQueue = queue;
+		}
+
+		public IMTLCommandBuffer[] Render(AmtQueueSubmission request)
 		{
 			var commands = new List<IMTLCommandBuffer>();
 			foreach (var buffer in request.CommandBuffers)
@@ -13,7 +19,7 @@ namespace Magnesium.Metal
 				if (buffer.IsQueueReady)
 				{
 					// GENERATE METAL BUFFER
-					var cb = buffer.CommandQueue.CommandBuffer();
+					var cb = mCommandQueue.CommandBuffer();
 
 					AmtCommandRecording recording = GenerateRecording(cb, buffer);
 

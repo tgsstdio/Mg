@@ -2,7 +2,7 @@
 
 namespace Magnesium.Metal
 {
-	public class GLQueueSubmitOrder
+	public class AmtQueueSubmitOrder
 	{
 		public long Key;
 		public ConcurrentDictionary<long, AmtSemaphore> Submissions { get; set; }

@@ -1,15 +1,22 @@
 ﻿using System;
+using MetalKit;
+
 namespace Magnesium.Metal
 {
 	public class AmtSwapchainCollection : IMgSwapchainCollection
 	{
-		public AmtSwapchainCollection()
+		private AmtSwapchainKHR mSwapchain;
+		public AmtSwapchainCollection(MTKView view)
 		{
+			var depthStencil = new AmtNullImageView();
+			var color = new AmtNullImageView();
+			mSwapchain = new AmtSwapchainKHR(view, color);
+
 			Buffers = new MgSwapchainBuffer[]
 			{
 				new MgSwapchainBuffer
 				{
-					View = new AmtNullImageView(),
+					View = color,
 				},
 			};
 		}
@@ -36,7 +43,7 @@ namespace Magnesium.Metal
 		{
 			get
 			{
-				throw new NotImplementedException();
+				return mSwapchain;
 			}
 		}
 

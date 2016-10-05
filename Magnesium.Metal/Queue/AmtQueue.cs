@@ -6,11 +6,11 @@ using Metal;
 
 namespace Magnesium.Metal
 {
-	public class GLQueue : IMgQueue
+	public class AmtQueue : IMgQueue
 	{
 		private IAmtQueueRenderer mRenderer;
 
-		~GLQueue()
+		~AmtQueue()
 		{
 			Dispose (false);
 		}
@@ -40,16 +40,18 @@ namespace Magnesium.Metal
 		}
 
 		private readonly IAmtSemaphoreEntrypoint mSignalModule;
+		private readonly IMTLCommandQueue mPresentQueue;
 
-		public GLQueue (IAmtQueueRenderer renderer, IAmtSemaphoreEntrypoint entrypoint)
+		public AmtQueue (IAmtQueueRenderer renderer, IAmtSemaphoreEntrypoint entrypoint, IMTLCommandQueue presentQueue)
 		{
 			mRenderer = renderer;
 			mSignalModule = entrypoint;
+			mPresentQueue = presentQueue;
 		}
 
 		#region IMgQueue implementation
-		private ConcurrentDictionary<long, GLQueueSubmission> mSubmissions = new ConcurrentDictionary<long, GLQueueSubmission>();
-		private ConcurrentDictionary<long, GLQueueSubmitOrder> mOrders = new ConcurrentDictionary<long, GLQueueSubmitOrder>();
+		private ConcurrentDictionary<long, AmtQueueSubmission> mSubmissions = new ConcurrentDictionary<long, AmtQueueSubmission>();
+		private ConcurrentDictionary<long, AmtQueueSubmitOrder> mOrders = new ConcurrentDictionary<long, AmtQueueSubmitOrder>();
 
 		Result CompleteAllPreviousSubmissions (IMgFence fence)
 		{
@@ -69,9 +71,9 @@ namespace Magnesium.Metal
 		private long mSubmissionKey = 0;
 		private long mOrderKey = 0;
 
-		GLQueueSubmission EnqueueSubmission (MgSubmitInfo sub)
+		AmtQueueSubmission EnqueueSubmission (MgSubmitInfo sub)
 		{
-			var submit = new GLQueueSubmission (mSubmissionKey, sub);
+			var submit = new AmtQueueSubmission (mSubmissionKey, sub);
 			// JUST LOOP AROUND
 			Interlocked.CompareExchange(ref mSubmissionKey, 0, long.MaxValue);
 			Interlocked.Increment(ref mSubmissionKey);
@@ -91,7 +93,7 @@ namespace Magnesium.Metal
 			} 
 			else
 			{
-				var children = new List<GLQueueSubmission> ();
+				var children = new List<AmtQueueSubmission> ();
 	
 				foreach (var sub in pSubmits)
 				{					
@@ -105,7 +107,7 @@ namespace Magnesium.Metal
 
 				if (fence != null)
 				{
-					var order = new GLQueueSubmitOrder ();
+					var order = new AmtQueueSubmitOrder ();
 					order.Key = mOrderKey;
 					order.Submissions = new ConcurrentDictionary<long, AmtSemaphore> ();
 					order.Fence = fence as IAmtQueueFence;
@@ -126,7 +128,7 @@ namespace Magnesium.Metal
 
 		void PerformRequests (long key)
 		{
-			GLQueueSubmission request;
+			AmtQueueSubmission request;
 			if (mSubmissions.TryGetValue (key, out request))
 			{
 				int requirements = request.Waits.Length;
@@ -143,7 +145,25 @@ namespace Magnesium.Metal
 				{
 					mRenderer.Render(request);
 
-					GLQueueSubmission removedItem;
+					if (request.Swapchains != null)
+					{
+						foreach (var info in request.Swapchains)
+						{
+							IMTLCommandBuffer presentCmd = mPresentQueue.CommandBuffer();
+							var imageInfo = info.Swapchain.Images[info.ImageIndex];
+
+							presentCmd.AddCompletedHandler((buffer) =>
+							{
+								imageInfo.Drawable.Dispose();
+								imageInfo.Inflight.Set();
+							});
+							presentCmd.PresentDrawable(imageInfo.Drawable);
+							presentCmd.Commit();
+
+						}
+					}
+
+					AmtQueueSubmission removedItem;
 					mSubmissions.TryRemove (key, out removedItem);
 				}
 			}
@@ -166,7 +186,7 @@ namespace Magnesium.Metal
 				mOrders.Keys.CopyTo(orderKeys, 0);
 				foreach (var orderKey in orderKeys)
 				{
-					GLQueueSubmitOrder order;
+					AmtQueueSubmitOrder order;
 					if (mOrders.TryGetValue(orderKey, out order))
 					{
 						var submissionKeys = new long[order.Submissions.Keys.Count];
@@ -188,7 +208,7 @@ namespace Magnesium.Metal
 						if (order.Submissions.Count <= 0)
 						{
 							order.Fence.Signal();
-							GLQueueSubmitOrder removedItem;
+							AmtQueueSubmitOrder removedItem;
 							mOrders.TryRemove (orderKey, out removedItem);
 						}
 					}
@@ -211,9 +231,6 @@ namespace Magnesium.Metal
 
 		public Result QueuePresentKHR (MgPresentInfoKHR pPresentInfo)
 		{
-			throw new NotImplementedException();
-
-			// EARLY EXIT
 			if (pPresentInfo == null)
 			{
 				return Result.SUCCESS;
@@ -237,16 +254,19 @@ namespace Magnesium.Metal
 			var sub = new MgSubmitInfo {
 				WaitSemaphores = signalInfos.ToArray(),
 			};
-			EnqueueSubmission (sub);
+			var submission = EnqueueSubmission (sub);
+
+			var swapchains = new List<AmtQueueSwapchainInfo>();
 
 			foreach (var image in pPresentInfo.Images)
 			{
-				var sc = image.Swapchain as IAmtSwapchainKHR;
-				if (sc != null)
+				swapchains.Add(new AmtQueueSwapchainInfo
 				{
-					sc.SwapBuffers ();
-				}
+					ImageIndex = image.ImageIndex,
+					Swapchain = (IAmtSwapchainKHR) image.Swapchain,
+				});
 			}
+			submission.Swapchains = swapchains.ToArray();
 
 			return Result.SUCCESS;
 		}
