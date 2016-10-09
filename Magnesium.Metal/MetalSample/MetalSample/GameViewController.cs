@@ -104,13 +104,13 @@ namespace MetalSample
 								EngineVersion = 1,
 								ApiVersion = Magnesium.MgApplicationInfo.GenerateApiVersion(1, 0, 17),
 							},
-							  Magnesium.MgEnableExtensionsOption.ALL
+							  Magnesium.MgInstanceExtensionOptions.ALL
 						 );
 						using (var presentationSurface = scope.GetInstance<Magnesium.IMgPresentationSurface>())
 						{
 							presentationSurface.Initialize();
 							using (var device = driver.CreateLogicalDevice(presentationSurface.Surface,
-								Magnesium.MgEnableExtensionsOption.ALL))
+							                                               Magnesium.MgDeviceExtensionOptions.ALL))
 							
 							{
 								var partition = device.Queues[0].CreatePartition(0,

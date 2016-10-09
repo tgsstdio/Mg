@@ -1,8 +1,9 @@
 ﻿namespace Magnesium
 {
-    public enum MgEnableExtensionsOption
+    public enum MgInstanceExtensionOptions
     {
         NONE = 0,
+		SWAPCHAIN_ONLY,
         ALL,
     }
 }

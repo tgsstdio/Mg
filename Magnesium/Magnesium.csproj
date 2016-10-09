@@ -36,7 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Driver\IMgPresentationLayer.cs" />
-    <Compile Include="Driver\MgEnableExtensionsOption.cs" />
+    <Compile Include="Driver\MgInstanceExtensionOptions.cs" />
     <Compile Include="Driver\MgPresentationLayer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Enums\Result.cs" />
@@ -290,6 +290,7 @@
     <Compile Include="Instance\IMgSurfaceKHR.cs" />
     <Compile Include="PhysicalDevice\IMgDisplayKHR.cs" />
     <Compile Include="PhysicalDevice\MgDisplayModeCreateInfoKHR.cs" />
+    <Compile Include="Driver\MgDeviceExtensionOptions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup />

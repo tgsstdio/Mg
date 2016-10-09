@@ -45,9 +45,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AmtCommandPool.cs" />
     <Compile Include="IAmtFormatExtensions.cs" />
-    <Compile Include="AmtCmdRenderPassCommand.cs" />
-    <Compile Include="AmtCmdComputeCommand.cs" />
-    <Compile Include="AmtCmdTexImageData.cs" />
     <Compile Include="Entrypoint\AmtEntrypoint.cs" />
     <Compile Include="Entrypoint\IAmtDeviceQuery.cs" />
     <Compile Include="Device\AmtDescriptorSet.cs" />
@@ -153,6 +150,7 @@
     <Compile Include="Queue\AmtQueueSwapchainInfo.cs" />
     <Compile Include="Entrypoint\IAmtSwapchainKHR.cs" />
     <Compile Include="Entrypoint\AmtSwapchainKHRImageInfo.cs" />
+    <Compile Include="Driver\AmtGraphicsDevice.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Magnesium\Magnesium.csproj">

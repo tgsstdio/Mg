@@ -245,5 +245,21 @@ namespace Magnesium.Metal
 					return MTLPixelFormat.Depth32Float_Stencil8;
 			}
 		}
+
+		public static bool IsStencilFormat(MgFormat format)
+		{
+			switch (format)
+			{
+				default:
+					return false;
+				case MgFormat.S8_UINT:
+					//return MTLPixelFormat.Stencil8;
+				case MgFormat.D24_UNORM_S8_UINT:
+					//return MTLPixelFormat.Depth24Unorm_Stencil8;
+				case MgFormat.D32_SFLOAT_S8_UINT:
+					//return MTLPixelFormat.Depth32Float_Stencil8;
+					return true;
+			}
+		}
 	}
 }

@@ -25,27 +25,31 @@ namespace Magnesium
 			Initialize (appInfo, null, null);
 		}
 
-        public void Initialize(MgApplicationInfo appInfo, MgEnableExtensionsOption options)
+        public void Initialize(MgApplicationInfo appInfo, MgInstanceExtensionOptions options)
         {
             string[] extensions = null;
-            if (options == MgEnableExtensionsOption.ALL)
-            {                
+			if (options == MgInstanceExtensionOptions.ALL)
+			{
+				MgExtensionProperties[] extensionProperties;
+				var err = mEntrypoint.EnumerateInstanceExtensionProperties(null, out extensionProperties);
 
-                MgExtensionProperties[] extensionProperties;
-                var err = mEntrypoint.EnumerateInstanceExtensionProperties(null, out extensionProperties);
+				Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
 
-                Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
+				var enabledExtensions = new List<string>();
+				if (extensionProperties != null)
+				{
+					foreach (var ext in extensionProperties)
+					{
+						enabledExtensions.Add(ext.ExtensionName);
+					}
+				}
+				extensions = enabledExtensions.ToArray();
+			}
+			else if (options == MgInstanceExtensionOptions.SWAPCHAIN_ONLY)
+			{
+				extensions = new string[] { "VK_KHR_swapchain" };
+			}
 
-                var enabledExtensions = new List<string>();
-                if (extensionProperties != null)
-                {
-                    foreach (var ext in extensionProperties)
-                    {
-                        enabledExtensions.Add(ext.ExtensionName);
-                    }
-                }
-                extensions = enabledExtensions.ToArray();
-            }
 
             Initialize(appInfo, null, extensions);
         }
@@ -62,7 +66,7 @@ namespace Magnesium
 			Debug.Assert (errorCode == Result.SUCCESS, errorCode + " != Result.SUCCESS");
 		}
 
-		public IMgLogicalDevice CreateLogicalDevice(IMgSurfaceKHR presentationSurface, MgEnableExtensionsOption option)
+		public IMgLogicalDevice CreateLogicalDevice(IMgSurfaceKHR presentationSurface, MgDeviceExtensionOptions option)
 		{
             string[] extensions = null;
 
@@ -71,7 +75,7 @@ namespace Magnesium
             Debug.Assert(errorCode == Result.SUCCESS, errorCode + " != Result.SUCCESS");
             IMgPhysicalDevice firstPhysicalDevice = physicalDevices[0];
 
-            if (option == MgEnableExtensionsOption.ALL)
+            if (option == MgDeviceExtensionOptions.ALL)
             {
 
                 MgExtensionProperties[] extensionProperties;

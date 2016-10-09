@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
-using CoreAnimation;
-using Metal;
 using MetalKit;
 namespace Magnesium.Metal
 {
@@ -43,7 +40,7 @@ namespace Magnesium.Metal
 		{
 			if (mIsDisposed)
 				return;
-			
+
 			foreach (var info in mImages)
 			{
 				if (info.Drawable != null)
@@ -69,7 +66,7 @@ namespace Magnesium.Metal
 			}
 			else
 			{
-				var ticks = (long) timeout / 10000L;
+				var ticks = (long)timeout / 10000L;
 				var timespan = TimeSpan.FromTicks(ticks);
 				mImages[nextIndex].Inflight.WaitOne(timespan);
 			}

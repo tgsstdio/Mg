@@ -14,7 +14,7 @@ namespace Magnesium
 			get;
 		}
 
-		IMgImageView View {
+		IMgImageView DepthStencilImageView {
 			get;
 		}
 

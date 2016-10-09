@@ -3,12 +3,17 @@ using MetalKit;
 
 namespace Magnesium.Metal
 {
+	// initialises connection from MTKView disposable drawables as 
+	// swapchain image buffers
 	public class AmtSwapchainCollection : IMgSwapchainCollection
 	{
 		private AmtSwapchainKHR mSwapchain;
+
+		private MTKView mApplicationView;
+
 		public AmtSwapchainCollection(MTKView view)
 		{
-			var depthStencil = new AmtNullImageView();
+			mApplicationView = view;
 			var color = new AmtNullImageView();
 			mSwapchain = new AmtSwapchainKHR(view, color);
 
@@ -57,6 +62,8 @@ namespace Magnesium.Metal
 		{
 			Width = width;
 			Height = height;
+
+			mApplicationView.DrawableSize = new CoreGraphics.CGSize((nfloat)width, (nfloat)height);
 		}
 
 		public void Dispose()

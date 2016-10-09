@@ -24,11 +24,11 @@ namespace Magnesium
 			mProperties = prop;
 		}
 
-		private IMgImageView mView;
+		private IMgImageView mDepthStencilImageView;
 
-		public IMgImageView View {
+		public IMgImageView DepthStencilImageView {
 			get {
-				return mView;
+				return mDepthStencilImageView;
 			}
 		}
 
@@ -77,10 +77,10 @@ namespace Magnesium
 				mRenderpass.DestroyRenderPass (mPartition.Device, null);
 				mRenderpass = null;
 			}
-			if (mView != null)
+			if (mDepthStencilImageView != null)
 			{
-				mView.DestroyImageView (mPartition.Device, null);
-				mView = null;
+				mDepthStencilImageView.DestroyImageView (mPartition.Device, null);
+				mDepthStencilImageView = null;
 			}
 			if (mImage != null)
 			{
@@ -295,7 +295,7 @@ namespace Magnesium
 				IMgImageView dsView;
 				err = mPartition.Device.CreateImageView (depthStencilView, null, out dsView);
 				Debug.Assert (err == Result.SUCCESS, err + " != Result.SUCCESS");
-				mView = dsView;
+				mDepthStencilImageView = dsView;
 			}
 		}
 
@@ -321,7 +321,7 @@ namespace Magnesium
 					{
                         swapchains.Buffers[i].View,
 						// Depth/Stencil attachment is the same for all frame buffers
-						mView,
+						mDepthStencilImageView,
 					},
 					Width = createInfo.Width,
 					Height = createInfo.Height,

@@ -25,6 +25,11 @@ namespace Magnesium.Metal
 				GenerateSliceRange(pCreateInfo.SubresourceRange));
 		}
 
+		public AmtImageView(IMTLTexture texture)
+		{
+			mImageView = texture;
+		}
+
 		MTLTextureType TranslateTextureType(MgImageViewType viewType)
 		{
 			switch (viewType)
