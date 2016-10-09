@@ -8,7 +8,7 @@ namespace Magnesium.Metal
 	{
 		private readonly MTKView mApplicationView;
 
-		private readonly IMgDevice mDevice;
+		private readonly IMgLogicalDevice mLogicalDevice;
 
 		private IMgRenderPass mRenderpass;
 
@@ -16,10 +16,10 @@ namespace Magnesium.Metal
 
 		private bool mDeviceCreated = false;
 
-		public AmtGraphicsDevice(MTKView view, IMgDevice device)
+		public AmtGraphicsDevice(MTKView view, IMgLogicalDevice device)
 		{
 			mApplicationView = view;
-			mDevice = device;
+			mLogicalDevice = device;
 		}
 
 		public MgViewport CurrentViewport
@@ -183,7 +183,7 @@ namespace Magnesium.Metal
 			Result err;
 
 			IMgRenderPass renderPass;
-			err = mDevice.CreateRenderPass(renderPassInfo, null, out renderPass);
+			err = mLogicalDevice.Device.CreateRenderPass(renderPassInfo, null, out renderPass);
 			Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
 			mRenderpass = renderPass;
 		}
@@ -209,7 +209,7 @@ namespace Magnesium.Metal
 					Layers = 1,
 				};
 
-				var err = mDevice.CreateFramebuffer(frameBufferCreateInfo, null, out frameBuffers[i]);
+				var err = mLogicalDevice.Device.CreateFramebuffer(frameBufferCreateInfo, null, out frameBuffers[i]);
 				Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
 			}
 

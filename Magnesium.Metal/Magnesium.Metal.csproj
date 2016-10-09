@@ -46,7 +46,6 @@
     <Compile Include="AmtCommandPool.cs" />
     <Compile Include="IAmtFormatExtensions.cs" />
     <Compile Include="Entrypoint\AmtEntrypoint.cs" />
-    <Compile Include="Entrypoint\IAmtDeviceQuery.cs" />
     <Compile Include="Device\AmtDescriptorSet.cs" />
     <Compile Include="Device\AmtDevice.cs" />
     <Compile Include="Device\AmtDescriptorSetLayout.cs" />
@@ -145,6 +144,7 @@
     <Compile Include="Device\AmtRenderPassSubpassInfo.cs" />
     <Compile Include="Device\AmtFramebufferSubpassInfo.cs" />
     <Compile Include="Device\IAmtImageView.cs" />
+    <Compile Include="Entrypoint\IAmtDeviceQuery.cs" />
     <Compile Include="Entrypoint\AmtSwapchainKHR.cs" />
     <Compile Include="Entrypoint\IAmtSwapchainImageView.cs" />
     <Compile Include="Queue\AmtQueueSwapchainInfo.cs" />

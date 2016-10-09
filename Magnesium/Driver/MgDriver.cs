@@ -20,12 +20,12 @@ namespace Magnesium
 			}
 		}
 
-		public void Initialize(MgApplicationInfo appInfo)
+		public Result Initialize(MgApplicationInfo appInfo)
 		{
-			Initialize (appInfo, null, null);
+			return Initialize (appInfo, null, null);
 		}
 
-        public void Initialize(MgApplicationInfo appInfo, MgInstanceExtensionOptions options)
+        public Result Initialize(MgApplicationInfo appInfo, MgInstanceExtensionOptions options)
         {
             string[] extensions = null;
 			if (options == MgInstanceExtensionOptions.ALL)
@@ -51,10 +51,10 @@ namespace Magnesium
 			}
 
 
-            Initialize(appInfo, null, extensions);
+            return Initialize(appInfo, null, extensions);
         }
 
-        public void Initialize (MgApplicationInfo appInfo, string[] enabledLayerNames, string[] enabledExtensionNames)
+        public Result Initialize (MgApplicationInfo appInfo, string[] enabledLayerNames, string[] enabledExtensionNames)
 		{
 			var instCreateInfo = new MgInstanceCreateInfo{
 				ApplicationInfo = appInfo,
@@ -62,8 +62,7 @@ namespace Magnesium
 				EnabledExtensionNames = enabledExtensionNames,
 			};
 
-			var errorCode = mEntrypoint.CreateInstance (instCreateInfo, null, out mInstance);
-			Debug.Assert (errorCode == Result.SUCCESS, errorCode + " != Result.SUCCESS");
+			return mEntrypoint.CreateInstance (instCreateInfo, null, out mInstance);
 		}
 
 		public IMgLogicalDevice CreateLogicalDevice(IMgSurfaceKHR presentationSurface, MgDeviceExtensionOptions option)

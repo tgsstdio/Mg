@@ -6,9 +6,13 @@ namespace Magnesium.Metal
 	public class AmtEntrypoint : IMgEntrypoint
 	{
 		private IAmtDeviceQuery mQuery;
-		public AmtEntrypoint(IAmtDeviceQuery query)
+
+		private IMTLDevice mLocalDevice;
+
+		public AmtEntrypoint(IAmtDeviceQuery query, IMTLDevice localDevice)
 		{
 			mQuery = query;
+			mLocalDevice = localDevice;
 		}
 
 		public IMgAllocationCallbacks CreateAllocationCallbacks()
@@ -19,13 +23,11 @@ namespace Magnesium.Metal
 		public Result CreateInstance(MgInstanceCreateInfo createInfo, IMgAllocationCallbacks allocator, out IMgInstance instance)
 		{
 			var semaphore = new AmtSemaphoreEntrypoint();
-
-			var systemDevice = MTLDevice.SystemDefault;
-			var presentQueue = systemDevice.CreateCommandQueue(mQuery.NoOfCommandBufferSlots);
+			var presentQueue = mLocalDevice.CreateCommandQueue(mQuery.NoOfCommandBufferSlots);
 
 			var queueRenderer = new AmtQueueRenderer(presentQueue);
 			var queue = new AmtQueue(queueRenderer, semaphore, presentQueue);
-			var device = new AmtDevice(systemDevice, mQuery, queue);
+			var device = new AmtDevice(mLocalDevice, mQuery, queue);
 			var physicalDevice = new AmtPhysicalDevice(device);
 			instance = new AmtInstance(physicalDevice);
 
