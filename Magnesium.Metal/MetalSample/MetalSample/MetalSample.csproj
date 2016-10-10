@@ -74,7 +74,8 @@
     <Folder Include="Resources\" />
   </ItemGroup>
   <ItemGroup>
-    <Metal Include="Shaders.metal" />
+    <Metal Include="Resources\Fragment.metal" />
+    <Metal Include="Resources\Vertex.metal" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
@@ -88,6 +89,7 @@
     <Compile Include="GameViewController.designer.cs">
       <DependentUpon>GameViewController.cs</DependentUpon>
     </Compile>
+    <Compile Include="MgGraphicsConfiguration.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="MainMenu.xib" />

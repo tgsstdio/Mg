@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Foundation;
 using Metal;
 
 namespace Magnesium.Metal
@@ -99,7 +100,8 @@ namespace Magnesium.Metal
 
 		public Result AllocateMemory(MgMemoryAllocateInfo pAllocateInfo, IMgAllocationCallbacks allocator, out IMgDeviceMemory pMemory)
 		{
-			throw new NotImplementedException();
+			pMemory = new AmtDeviceMemory(mDevice, pAllocateInfo);
+			return Result.SUCCESS;
 		}
 
 		public Result CreateBuffer(MgBufferCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgBuffer pBuffer)
@@ -345,7 +347,37 @@ namespace Magnesium.Metal
 
 		public void GetBufferMemoryRequirements(IMgBuffer buffer, out MgMemoryRequirements pMemoryRequirements)
 		{
-			throw new NotImplementedException();
+			if (buffer == null)
+			{
+				throw new ArgumentNullException(nameof(buffer));
+			}
+
+			var bBuffer = (AmtBuffer)buffer;
+
+			var alignment = 16UL;
+
+			// TODO: constant buffer alignment should be 256
+			//if ((bBuffer.Usage & MgBufferUsageFlagBits.UNIFORM_BUFFER_BIT) == MgBufferUsageFlagBits.UNIFORM_BUFFER_BIT)
+			//{
+			//  https://developer.apple.com/reference/metal/mtlrendercommandencoder/1515829-setvertexbuffer
+			//	For buffers in the device address space, the offset must be aligned to the data type consumed by the 
+			//	vertex shader function (which is always less than or equal to 16 bytes).
+			//  NOTE : VERTEX BUFFER data offset must be <= 16 bytes
+
+			//	For buffers in the constant address space, the offset must be aligned to 256 bytes in macOS. In 
+			//	iOS, the offset must be aligned to the maximum of either the data type consumed by the vertex shader 
+			//	function, or 4 bytes.A 16 - byte alignment is always safe in iOS if you do not need to worry 
+			//	about the data type.
+			// NOTE : constant/uniform (i.e. readonly) buffer on macOS should be in 256 byte increments, constant on iOS
+			// must be >= 16 bytes or max 
+			//}
+
+			pMemoryRequirements = new MgMemoryRequirements
+			{
+				Size = (ulong) bBuffer.Length,
+				MemoryTypeBits = 1 << 0, 
+				Alignment = alignment,
+			};
 		}
 
 		public void GetDeviceMemoryCommitment(IMgDeviceMemory memory, ref ulong pCommittedMemoryInBytes)

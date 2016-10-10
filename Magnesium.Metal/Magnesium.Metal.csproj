@@ -151,6 +151,7 @@
     <Compile Include="Entrypoint\IAmtSwapchainKHR.cs" />
     <Compile Include="Entrypoint\AmtSwapchainKHRImageInfo.cs" />
     <Compile Include="Driver\AmtGraphicsDevice.cs" />
+    <Compile Include="Device\AmtDeviceMemory.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Magnesium\Magnesium.csproj">

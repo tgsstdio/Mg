@@ -55,11 +55,13 @@ namespace MetalSample
 
 		private Container mContainer;
 
-		private Magnesium.MgDriver mDriver;
+		MgGraphicsConfiguration mGraphicsConfiguration;
 
-		private Magnesium.IMgLogicalDevice mLogicalDevice;
+		//private Magnesium.MgDriver mDriver;
 
-		IMgThreadPartition mDefaultPartition;
+		//private Magnesium.IMgLogicalDevice mLogicalDevice;
+
+		//IMgThreadPartition mDefaultPartition;
 		private bool InitialiseMg()
 		{
 			try
@@ -84,7 +86,7 @@ namespace MetalSample
 
 
 				// MAGNESIUM 
-				mContainer.Register<Magnesium.MgDriver>();
+				mContainer.Register<Magnesium.MgDriver>(Lifestyle.Singleton);
 
 				var deviceQuery = new AmtDeviceQuery { NoOfCommandBufferSlots = 5 };
 				mContainer.RegisterSingleton<Magnesium.Metal.IAmtDeviceQuery>(deviceQuery);
@@ -95,43 +97,12 @@ namespace MetalSample
 				mContainer.Register<Magnesium.IMgSwapchainCollection, Magnesium.Metal.AmtSwapchainCollection>(
 					Lifestyle.Singleton);
 
-				mDriver = mContainer.GetInstance<Magnesium.MgDriver>();
-				var errorCode = mDriver.Initialize(
-					new Magnesium.MgApplicationInfo
-					{
-						ApplicationName = "MetalSample",
-						EngineName = "Magnesium",
-						ApplicationVersion = 1,
-						EngineVersion = 1,
-						ApiVersion = Magnesium.MgApplicationInfo.GenerateApiVersion(1, 0, 17),
-					},
-					  Magnesium.MgInstanceExtensionOptions.ALL
-				 );
+				mContainer.Register<MgGraphicsConfiguration>(Lifestyle.Singleton);
 
-				if (errorCode != Result.SUCCESS)
-				{
-					Console.WriteLine("Metal is not supported on this device : " + errorCode);
-					return false;
-				}
+				mGraphicsConfiguration = mContainer.GetInstance<MgGraphicsConfiguration>();
 
-				// WINDOW HOOK 
-				var presentationSurface = mContainer.GetInstance<Magnesium.IMgPresentationSurface>();
-				presentationSurface.Initialize();
-				mLogicalDevice = mDriver.CreateLogicalDevice(presentationSurface.Surface,
-															Magnesium.MgDeviceExtensionOptions.ALL);
-				mDefaultPartition = mLogicalDevice.Queues[0].CreatePartition(
-							MgCommandPoolCreateFlagBits.RESET_COMMAND_BUFFER_BIT,
-							 new Magnesium.MgDescriptorPoolCreateInfo
-							 {
-								MaxSets = 1,
-								PoolSizes = new MgDescriptorPoolSize[] {
-									new MgDescriptorPoolSize
-									{
-										DescriptorCount = 1,
-										Type =  MgDescriptorType.COMBINED_IMAGE_SAMPLER,
-									},
-								},
-							 });
+				LoadAssets();
+
 				return true;
 			}
 			catch (Exception ex)
@@ -153,12 +124,6 @@ namespace MetalSample
 
 			if (mGraphicsDevice != null)
 				mGraphicsDevice.Dispose();
-
-			if (mLogicalDevice != null)
-				mLogicalDevice.Dispose();
-			
-			if (mDefaultPartition != null)
-				mDefaultPartition.Dispose();
 			
 			if (mContainer != null)
 				mContainer.Dispose();
@@ -176,7 +141,7 @@ namespace MetalSample
 			//SetupMagnesium();
 			if (InitialiseMg())
 			{
-				//LoadAssets();
+				//
 				Reshape();
 			}
 			else {
@@ -193,18 +158,18 @@ namespace MetalSample
 		{
 			try
 			{
-				mGraphicsDevice = new AmtGraphicsDevice(mApplicationView, mLogicalDevice);
+				mGraphicsDevice = new AmtGraphicsDevice(mApplicationView, mGraphicsConfiguration.LogicalDevice);
 				mSwapchainCollection = mContainer.GetInstance<Magnesium.IMgSwapchainCollection>();
 							
 				var setupCommands = new Magnesium.IMgCommandBuffer[1];
 				var pAllocateInfo = new Magnesium.MgCommandBufferAllocateInfo
 				{
-					CommandPool = mDefaultPartition.CommandPool,
+					CommandPool = mGraphicsConfiguration.DefaultPartition.CommandPool,
 					CommandBufferCount = 1,
 					Level = Magnesium.MgCommandBufferLevel.PRIMARY,
 				};
 
-				var err = mDefaultPartition.Device.AllocateCommandBuffers(pAllocateInfo, setupCommands);
+				var err = mGraphicsConfiguration.DefaultPartition.Device.AllocateCommandBuffers(pAllocateInfo, setupCommands);
 				Debug.Assert(err == Magnesium.Result.SUCCESS);
 
 				var dsCreateInfo = new Magnesium.MgGraphicsDeviceCreateInfo
@@ -229,10 +194,11 @@ namespace MetalSample
 					}
 				};
 	
-				mDefaultPartition.Queue.QueueSubmit(pSubmits, null);
-				mDefaultPartition.Queue.QueueWaitIdle();
+				mGraphicsConfiguration.DefaultPartition.Queue.QueueSubmit(pSubmits, null);
+				mGraphicsConfiguration.DefaultPartition.Queue.QueueWaitIdle();
 
-				mDefaultPartition.Device.FreeCommandBuffers(mDefaultPartition.CommandPool, setupCommands);
+				mGraphicsConfiguration.DefaultPartition.Device.FreeCommandBuffers(
+					mGraphicsConfiguration.DefaultPartition.CommandPool, setupCommands);
 			}
 			catch (Exception ex)
 			{
@@ -250,55 +216,150 @@ namespace MetalSample
 			//Render();
 		}
 
+		Vector3[] positionVboData = new Vector3[]{
+			new Vector3(-1.0f, -1.0f,  1.0f),
+			new Vector3( 1.0f, -1.0f,  1.0f),
+			new Vector3( 1.0f,  1.0f,  1.0f),
+			new Vector3(-1.0f,  1.0f,  1.0f),
+			new Vector3(-1.0f, -1.0f, -1.0f),
+			new Vector3( 1.0f, -1.0f, -1.0f),
+			new Vector3( 1.0f,  1.0f, -1.0f),
+			new Vector3(-1.0f,  1.0f, -1.0f) };
+
+		uint[] indicesVboData = new uint[]{
+             // front face
+                0, 1, 2, 2, 3, 0,
+                // top face
+                3, 2, 6, 6, 7, 3,
+                // back face
+                7, 6, 5, 5, 4, 7,
+                // left face
+                4, 0, 3, 3, 7, 4,
+                // bottom face
+                0, 1, 5, 5, 4, 0,
+                // right face
+                1, 5, 6, 6, 2, 1, };
+
 		void LoadAssets()
 		{
 			// Generate meshes
-				// Mg : Buffer
-			MDLMesh mdl = MDLMesh.CreateBox(new Vector3(2f, 2f, 2f), new Vector3i(1, 1, 1), MDLGeometryType.Triangles, false, new MTKMeshBufferAllocator(device));
+			// Mg : Buffer
 
-			NSError error;
-			boxMesh = new MTKMesh(mdl, device, out error);
+			var indicesInBytes = (ulong)(sizeof(uint) * indicesVboData.Length);
+			var vertexStride = Marshal.SizeOf(typeof(Vector3));
+			var verticesInBytes = (ulong)(vertexStride * positionVboData.Length);
+			var bufferSize = indicesInBytes + verticesInBytes;
+
+			var bufferCreateInfo = new MgBufferCreateInfo
+			{
+				Usage = MgBufferUsageFlagBits.INDEX_BUFFER_BIT | MgBufferUsageFlagBits.VERTEX_BUFFER_BIT,
+				Size = bufferSize,
+			};
+
+			IMgBuffer buffer;
+
+			var device = mGraphicsConfiguration.Device;
+
+			var result = device.CreateBuffer(bufferCreateInfo, null, out buffer);
+			Debug.Assert(result == Result.SUCCESS);
+
+			MgMemoryRequirements memReqs;
+			device.GetBufferMemoryRequirements(buffer, out memReqs);
+
+			const MgMemoryPropertyFlagBits memoryPropertyFlags = MgMemoryPropertyFlagBits.HOST_COHERENT_BIT;
+
+			uint memoryTypeIndex;
+			mGraphicsConfiguration.DefaultPartition.GetMemoryType(
+				memReqs.MemoryTypeBits, memoryPropertyFlags, out memoryTypeIndex);
+
+			var memAlloc = new MgMemoryAllocateInfo
+			{
+				MemoryTypeIndex = memoryTypeIndex,
+				AllocationSize = memReqs.Size,
+			};
+
+			IMgDeviceMemory deviceMemory;
+			result = device.AllocateMemory(memAlloc, null, out deviceMemory);
+			Debug.Assert(result == Result.SUCCESS);
+
+			buffer.BindBufferMemory(device, deviceMemory, 0);
+
+			// COPY INDEX DATA
+			IntPtr dest;
+			result = deviceMemory.MapMemory(device, 0, bufferSize, 0, out dest);
+			Debug.Assert(result == Result.SUCCESS);
+
+			var tempIndices = new byte[indicesInBytes];
+			Buffer.BlockCopy(indicesVboData, 0, tempIndices, 0, (int)indicesInBytes);
+
+			Marshal.Copy(tempIndices, 0, dest, (int)indicesInBytes);
+
+			// COPY VERTEX DATA
+
+			var vertexOffset = indicesInBytes;
+
+			// Copy the struct to unmanaged memory.	
+			int offset = (int)vertexOffset;
+			for (int i = 0; i < positionVboData.Length; ++i)
+			{
+				IntPtr localDest = IntPtr.Add(dest, offset);
+				Marshal.StructureToPtr(positionVboData[i], localDest, false);
+				offset += vertexStride;
+			}
+
+			deviceMemory.UnmapMemory(device);
+
+			//MDLMesh mdl = MDLMesh.CreateBox(new Vector3(2f, 2f, 2f), new Vector3i(1, 1, 1), MDLGeometryType.Triangles, false, new MTKMeshBufferAllocator(device));
+
+			//NSError error;
+			//boxMesh = new MTKMesh(mdl, device, out error);
 
 			// Allocate one region of memory for the uniform buffer
 			{
 				MgBufferCreateInfo pCreateInfo = new MgBufferCreateInfo
 				{
 					Usage = MgBufferUsageFlagBits.UNIFORM_BUFFER_BIT,
-				 	Size = MaxBytesPerFrame,
+					Size = MaxBytesPerFrame,
 				};
 				IMgBuffer uniforms;
-				var err  = mDefaultPartition.Device.CreateBuffer(pCreateInfo, null, out uniforms);
+				var err = mGraphicsConfiguration.Device.CreateBuffer(pCreateInfo, null, out uniforms);
 
 				//dynamicConstantBuffer = device.CreateBuffer(MaxBytesPerFrame, (MTLResourceOptions)0);
 				//dynamicConstantBuffer.Label = "UniformBuffer";
 			}
 
-			// Load the fragment program into the library
-			IMgShaderModule fragmentProgram = null;
+			using (var shaderSrc = System.IO.File.OpenRead("Shaders.metal"))
+			using (var shaderMemory = new System.IO.MemoryStream())
 			{
-				//IMTLFunction fragmentProgram = defaultLibrary.CreateFunction("lighting_fragment");
-				MgShaderModuleCreateInfo pCreateInfo = new MgShaderModuleCreateInfo
-				{
-					 
-				};
-				IMgShaderModule fragment;
-				var err = mLogicalDevice.Device.CreateShaderModule(pCreateInfo, null, out fragment);
-				fragmentProgram = fragment;
-			}
+				shaderSrc.CopyTo(shaderMemory);
+				var codeSize = (ulong) shaderMemory.Length;
 
-			// Load the vertex program into the library
-			IMgShaderModule vertexProgram = null;
-			{
+				// REWIND
+				shaderMemory.Seek(0, System.IO.SeekOrigin.Begin);
+
+				// Load the fragment program into the library
+				IMgShaderModule fragmentProgram = null;
+
+				//IMTLFunction fragmentProgram = defaultLibrary.CreateFunction("lighting_fragment");
+				MgShaderModuleCreateInfo fragCreateInfo = new MgShaderModuleCreateInfo
+				{
+					Code = shaderMemory,
+					CodeSize = new UIntPtr(codeSize),
+				};
+				var err = mGraphicsConfiguration.Device.CreateShaderModule(fragCreateInfo, null, out fragmentProgram);
+				Debug.Assert(err == Result.SUCCESS);
+				// Load the vertex program into the library
 				//IMTLFunction vertexProgram = defaultLibrary.CreateFunction("lighting_vertex");
 				MgShaderModuleCreateInfo pCreateInfo = new MgShaderModuleCreateInfo
 				{
-
+					Code = shaderMemory,
+					CodeSize = new UIntPtr(codeSize),
 				};
-				IMgShaderModule vertex;
-				mLogicalDevice.Device.CreateShaderModule(pCreateInfo, null, out vertex);
-				vertexProgram = vertex;
-			}
 
+				IMgShaderModule vertexProgram = null;
+				err = mGraphicsConfiguration.LogicalDevice.Device.CreateShaderModule(pCreateInfo, null, out vertexProgram);
+				Debug.Assert(err == Result.SUCCESS);
+				
 			// Create a vertex descriptor from the MTKMesh
 			// TODO  Mg : PipelineLayout, DescriptorSetLayout
 			//MTLVertexDescriptor vertexDescriptor = MTLVertexDescriptor.FromModelIO(boxMesh.VertexDescriptor);
@@ -332,7 +393,7 @@ namespace MetalSample
 
 			//depthState = device.CreateDepthStencilState(depthStateDesc);
 
-			{
+
 				IMgPipeline[] pipelines;
 				var pCreateInfos = new MgGraphicsPipelineCreateInfo[]
 				{
@@ -384,66 +445,72 @@ namespace MetalSample
 						RenderPass = mGraphicsDevice.Renderpass,
 					},
 				};
-				var err = mDefaultPartition.Device.CreateGraphicsPipelines(null, pCreateInfos, null, out pipelines);
-			}
+				err = mGraphicsConfiguration.DefaultPartition.Device.CreateGraphicsPipelines(
+					null, pCreateInfos, null, out pipelines);
+				Debug.Assert(err == Result.SUCCESS);
+
+				fragmentProgram.DestroyShaderModule(mGraphicsConfiguration.Device, null);
+				vertexProgram.DestroyShaderModule(mGraphicsConfiguration.Device, null);
+            }
 		}
 
 		void Render()
 		{
 			inflightSemaphore.WaitOne();
 
+
 			Update();
 
-			// Create a new command buffer for each renderpass to the current drawable
-			IMTLCommandBuffer commandBuffer = commandQueue.CommandBuffer();
-			commandBuffer.Label = "MyCommand";
+			//// Create a new command buffer for each renderpass to the current drawable
+			//IMTLCommandBuffer commandBuffer = commandQueue.CommandBuffer();
+			//commandBuffer.Label = "MyCommand";
 
 
-			// Call the view's completion handler which is required by the view since it will signal its semaphore and set up the next buffer
-			var drawable = mApplicationView.CurrentDrawable;
-			commandBuffer.AddCompletedHandler(buffer =>
-			{
-				drawable.Dispose();
-				inflightSemaphore.Release();
-			});
+			//// Call the view's completion handler which is required by the view since it will signal its semaphore and set up the next buffer
+			//var drawable = mApplicationView.CurrentDrawable;
+			//commandBuffer.AddCompletedHandler(buffer =>
+			//{
+			//	drawable.Dispose();
+			//	inflightSemaphore.Release();
+			//});
 
 
-			// Obtain a renderPassDescriptor generated from the view's drawable textures
-			MTLRenderPassDescriptor renderPassDescriptor = mApplicationView.CurrentRenderPassDescriptor;
+			//// Obtain a renderPassDescriptor generated from the view's drawable textures
+			//MTLRenderPassDescriptor renderPassDescriptor = mApplicationView.CurrentRenderPassDescriptor;
 
 
-			// If we have a valid drawable, begin the commands to render into it
-			if (renderPassDescriptor != null)
-			{
-				// Create a render command encoder so we can render into something
-				IMTLRenderCommandEncoder renderEncoder = commandBuffer.CreateRenderCommandEncoder(renderPassDescriptor);
-				renderEncoder.Label = "MyRenderEncoder";
-				renderEncoder.SetDepthStencilState(depthState);
+			//// If we have a valid drawable, begin the commands to render into it
+			//if (renderPassDescriptor != null)
+			//{
+			//	// Create a render command encoder so we can render into something
+			//	IMTLRenderCommandEncoder renderEncoder = commandBuffer.CreateRenderCommandEncoder(renderPassDescriptor);
+			//	renderEncoder.Label = "MyRenderEncoder";
+			//	renderEncoder.SetDepthStencilState(depthState);
 
-				// Set context state
-				renderEncoder.PushDebugGroup("DrawCube");
-				renderEncoder.SetRenderPipelineState(pipelineState);
-				renderEncoder.SetVertexBuffer(boxMesh.VertexBuffers[0].Buffer, boxMesh.VertexBuffers[0].Offset, 0);
-				renderEncoder.SetVertexBuffer(dynamicConstantBuffer, (nuint)Marshal.SizeOf<Uniforms>(), 1);
+			//	// Set context state
+			//	renderEncoder.PushDebugGroup("DrawCube");
+			//	renderEncoder.SetRenderPipelineState(pipelineState);
+			//	renderEncoder.SetVertexBuffer(boxMesh.VertexBuffers[0].Buffer, boxMesh.VertexBuffers[0].Offset, 0);
+			//	renderEncoder.SetVertexBuffer(dynamicConstantBuffer, (nuint)Marshal.SizeOf<Uniforms>(), 1);
 
-				MTKSubmesh submesh = boxMesh.Submeshes[0];
-				// Tell the render context we want to draw our primitives
-				renderEncoder.DrawIndexedPrimitives(submesh.PrimitiveType, submesh.IndexCount, submesh.IndexType, submesh.IndexBuffer.Buffer, submesh.IndexBuffer.Offset);
-				renderEncoder.PopDebugGroup();
+			//	MTKSubmesh submesh = boxMesh.Submeshes[0];
+			//	// Tell the render context we want to draw our primitives
+			//	renderEncoder.DrawIndexedPrimitives(submesh.PrimitiveType, submesh.IndexCount, submesh.IndexType, submesh.IndexBuffer.Buffer, submesh.IndexBuffer.Offset);
+			//	renderEncoder.PopDebugGroup();
 
-				// We're done encoding commands
-				renderEncoder.EndEncoding();
+			//	// We're done encoding commands
+			//	renderEncoder.EndEncoding();
 
-				// Schedule a present once the framebuffer is complete using the current drawable
-				commandBuffer.PresentDrawable(drawable);
+			//	// Schedule a present once the framebuffer is complete using the current drawable
+			//	commandBuffer.PresentDrawable(drawable);
 
-			}
+			//}
 
-			// The render assumes it can now increment the buffer index and that the previous index won't be touched until we cycle back around to the same index
-			constantDataBufferIndex = (constantDataBufferIndex + 1) % MaxInflightBuffers;
+			//// The render assumes it can now increment the buffer index and that the previous index won't be touched until we cycle back around to the same index
+			//constantDataBufferIndex = (constantDataBufferIndex + 1) % MaxInflightBuffers;
 
-			// Finalize rendering here & push the command buffer to the GPU
-			commandBuffer.Commit();
+			//// Finalize rendering here & push the command buffer to the GPU
+			//commandBuffer.Commit();
 		}
 
 		void Update()

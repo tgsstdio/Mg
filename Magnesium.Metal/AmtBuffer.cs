@@ -20,8 +20,8 @@ namespace Magnesium.Metal
 			}
 
 			Length = (nuint)pCreateInfo.Size;
-			var options = MTLResourceOptions.CpuCacheModeDefault;
-			VertexBuffer = mDevice.CreateBuffer(Length, options);
+			//var options = MTLResourceOptions.CpuCacheModeDefault;
+			//VertexBuffer = mDevice.CreateBuffer(Length, options);
 			Usage = pCreateInfo.Usage;
 			SharingMode = pCreateInfo.SharingMode;
 		}
@@ -31,17 +31,40 @@ namespace Magnesium.Metal
 		public IMTLBuffer VertexBuffer
 		{
 			get;
-			private set;
+			internal set;
 		}
+
+		public ulong BoundMemoryOffset { get; private set; }
 
 		public Result BindBufferMemory(IMgDevice device, IMgDeviceMemory memory, ulong memoryOffset)
 		{
-			throw new NotImplementedException();
+			if (device == null)
+			{
+				throw new ArgumentNullException(nameof(device));
+			}
+
+			if (memory == null)
+			{
+				throw new ArgumentNullException(nameof(memory));
+			}
+
+			var bDeviceMemory = (AmtDeviceMemory)memory;
+			VertexBuffer = bDeviceMemory.InternalBuffer;
+			// TODO : not sure where this comes into play
+			BoundMemoryOffset = memoryOffset;
+
+			return Result.SUCCESS;
 		}
 
+		private bool mIsDisposed = false;
 		public void DestroyBuffer(IMgDevice device, IMgAllocationCallbacks allocator)
 		{
+			if (mIsDisposed)
+				return;
 			
+			VertexBuffer = null;
+
+			mIsDisposed = true;
 		}
 	}
 }
