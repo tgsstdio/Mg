@@ -79,8 +79,6 @@ namespace MetalSample
 				mContainer.RegisterSingleton<IMTLDevice>(localDevice);
 
 				mApplicationView = (MTKView)View;
-				mApplicationView.Delegate = this;
-				mApplicationView.Device = localDevice;
 
 				mContainer.RegisterSingleton<MTKView>(mApplicationView);
 
@@ -100,6 +98,11 @@ namespace MetalSample
 				mContainer.Register<MgGraphicsConfiguration>(Lifestyle.Singleton);
 
 				mGraphicsConfiguration = mContainer.GetInstance<MgGraphicsConfiguration>();
+
+				SetupMagnesium();
+
+				mApplicationView.Delegate = this;
+				mApplicationView.Device = localDevice;
 
 				LoadAssets();
 
@@ -174,9 +177,9 @@ namespace MetalSample
 
 				var dsCreateInfo = new Magnesium.MgGraphicsDeviceCreateInfo
 				{
-					Color = Magnesium.MgFormat.R8G8B8A8_UINT,
-					DepthStencil = Magnesium.MgFormat.D24_UNORM_S8_UINT,
-					Samples = Magnesium.MgSampleCountFlagBits.COUNT_1_BIT,
+					Color = Magnesium.MgFormat.B8G8R8A8_UNORM,
+					DepthStencil = Magnesium.MgFormat.D32_SFLOAT_S8_UINT,
+					Samples = Magnesium.MgSampleCountFlagBits.COUNT_4_BIT,
 					Width = 640,
 					Height = 480,
 				};
@@ -328,11 +331,11 @@ namespace MetalSample
 				//dynamicConstantBuffer.Label = "UniformBuffer";
 			}
 
-			using (var shaderSrc = System.IO.File.OpenRead("Shaders.metal"))
+			using (var shaderSrc = System.IO.File.OpenRead("fragment.metallib"))
 			using (var shaderMemory = new System.IO.MemoryStream())
 			{
 				shaderSrc.CopyTo(shaderMemory);
-				var codeSize = (ulong) shaderMemory.Length;
+				var codeSize = (ulong)shaderMemory.Length;
 
 				// REWIND
 				shaderMemory.Seek(0, System.IO.SeekOrigin.Begin);
@@ -359,40 +362,64 @@ namespace MetalSample
 				IMgShaderModule vertexProgram = null;
 				err = mGraphicsConfiguration.LogicalDevice.Device.CreateShaderModule(pCreateInfo, null, out vertexProgram);
 				Debug.Assert(err == Result.SUCCESS);
-				
-			// Create a vertex descriptor from the MTKMesh
-			// TODO  Mg : PipelineLayout, DescriptorSetLayout
-			//MTLVertexDescriptor vertexDescriptor = MTLVertexDescriptor.FromModelIO(boxMesh.VertexDescriptor);
-			//vertexDescriptor.Layouts[0].StepRate = 1;
-			//vertexDescriptor.Layouts[0].StepFunction = MTLVertexStepFunction.PerVertex;
 
-			//// Create a reusable pipeline state
-			//// TODO  Mg : MgGraphicsPipeline stuff
-			//var pipelineStateDescriptor = new MTLRenderPipelineDescriptor
-			//{
-			//	Label = "MyPipeline",
-			//	SampleCount = mApplicationView.SampleCount,
-			//	VertexFunction = vertexProgram,
-			//	FragmentFunction = fragmentProgram,
-			//	VertexDescriptor = vertexDescriptor,
-			//	DepthAttachmentPixelFormat = mApplicationView.DepthStencilPixelFormat,
-			//	StencilAttachmentPixelFormat = mApplicationView.DepthStencilPixelFormat
-			//};
+				// Create a vertex descriptor from the MTKMesh
+				// TODO  Mg : PipelineLayout, DescriptorSetLayout
+				//MTLVertexDescriptor vertexDescriptor = MTLVertexDescriptor.FromModelIO(boxMesh.VertexDescriptor);
+				//vertexDescriptor.Layouts[0].StepRate = 1;
+				//vertexDescriptor.Layouts[0].StepFunction = MTLVertexStepFunction.PerVertex;
 
-			//pipelineStateDescriptor.ColorAttachments[0].PixelFormat = mApplicationView.ColorPixelFormat;
+				//// Create a reusable pipeline state
+				//// TODO  Mg : MgGraphicsPipeline stuff
+				//var pipelineStateDescriptor = new MTLRenderPipelineDescriptor
+				//{
+				//	Label = "MyPipeline",
+				//	SampleCount = mApplicationView.SampleCount,
+				//	VertexFunction = vertexProgram,
+				//	FragmentFunction = fragmentProgram,
+				//	VertexDescriptor = vertexDescriptor,
+				//	DepthAttachmentPixelFormat = mApplicationView.DepthStencilPixelFormat,
+				//	StencilAttachmentPixelFormat = mApplicationView.DepthStencilPixelFormat
+				//};
 
-			//pipelineState = device.CreateRenderPipelineState(pipelineStateDescriptor, out error);
-			//if (pipelineState == null)
-			//	Console.WriteLine("Failed to created pipeline state, error {0}", error);
+				//pipelineStateDescriptor.ColorAttachments[0].PixelFormat = mApplicationView.ColorPixelFormat;
 
-			//var depthStateDesc = new MTLDepthStencilDescriptor
-			//{
-			//	DepthCompareFunction = MTLCompareFunction.Less,
-			//	DepthWriteEnabled = true
-			//};
+				//pipelineState = device.CreateRenderPipelineState(pipelineStateDescriptor, out error);
+				//if (pipelineState == null)
+				//	Console.WriteLine("Failed to created pipeline state, error {0}", error);
 
-			//depthState = device.CreateDepthStencilState(depthStateDesc);
+				//var depthStateDesc = new MTLDepthStencilDescriptor
+				//{
+				//	DepthCompareFunction = MTLCompareFunction.Less,
+				//	DepthWriteEnabled = true
+				//};
 
+				IMgDescriptorSetLayout pSetLayout;
+				var dslCreateInfo = new MgDescriptorSetLayoutCreateInfo
+				{
+					Bindings = new MgDescriptorSetLayoutBinding[]
+					{
+						new MgDescriptorSetLayoutBinding
+						{
+							Binding = 0,
+							DescriptorCount = 1,
+							DescriptorType = MgDescriptorType.UNIFORM_BUFFER_DYNAMIC,
+							StageFlags = MgShaderStageFlagBits.VERTEX_BIT,
+						},
+					},
+				};
+				err = mGraphicsConfiguration.Device.CreateDescriptorSetLayout(dslCreateInfo, null, out pSetLayout);
+
+				//depthState = device.CreateDepthStencilState(depthStateDesc);
+				IMgPipelineLayout pipelineLayout;
+				MgPipelineLayoutCreateInfo plCreateInfo = new MgPipelineLayoutCreateInfo
+				{
+					SetLayouts = new IMgDescriptorSetLayout[]
+					{
+						pSetLayout,
+					},
+				};
+				err = mGraphicsConfiguration.Device.CreatePipelineLayout(plCreateInfo, null, out pipelineLayout);
 
 				IMgPipeline[] pipelines;
 				var pCreateInfos = new MgGraphicsPipelineCreateInfo[]
@@ -443,9 +470,10 @@ namespace MetalSample
 						//	}
 						//},
 						RenderPass = mGraphicsDevice.Renderpass,
+						Layout = pipelineLayout,
 					},
 				};
-				err = mGraphicsConfiguration.DefaultPartition.Device.CreateGraphicsPipelines(
+				err = mGraphicsConfiguration.Device.CreateGraphicsPipelines(
 					null, pCreateInfos, null, out pipelines);
 				Debug.Assert(err == Result.SUCCESS);
 

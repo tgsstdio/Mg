@@ -159,7 +159,8 @@ namespace Magnesium.Metal
 
 		public Result CreateFramebuffer(MgFramebufferCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgFramebuffer pFramebuffer)
 		{
-			throw new NotImplementedException();
+			pFramebuffer = new AmtFramebuffer(pCreateInfo);
+			return Result.SUCCESS;
 		}
 
 		public Result CreateGraphicsPipelines(IMgPipelineCache pipelineCache, MgGraphicsPipelineCreateInfo[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgPipeline[] pPipelines)

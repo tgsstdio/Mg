@@ -76,9 +76,11 @@ namespace Magnesium.Metal
 			var depthFormat = AmtFormatExtensions.GetPixelFormat(dsCreateInfo.DepthStencil);
 			var sampleCount = AmtSampleCountFlagBitExtensions.TranslateSampleCount(dsCreateInfo.Samples);
 
-			mApplicationView.ColorPixelFormat = colorFormat;
-			mApplicationView.DepthStencilPixelFormat = depthFormat;
+
 			mApplicationView.SampleCount = sampleCount;
+			// FIXME : RUNTIME ISSUE WITH SETTING COLOR FORMAT; SHOULD "FIGURE" OUT APPROPRIATE COLOR FORMAT SOMEHOW
+			// mApplicationView.ColorPixelFormat = colorFormat;
+			mApplicationView.DepthStencilPixelFormat = depthFormat;
 
 			mFramebuffers = null;
 			mRenderpass = null;
