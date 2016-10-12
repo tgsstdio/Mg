@@ -9,9 +9,9 @@ namespace Magnesium.Metal
 
 		private IMTLDevice mLocalDevice;
 
-		private IAmtMetalFunctionGenerator mGenerator;
+		private IAmtGraphicsFunctionGenerator mGenerator;
 
-		public AmtEntrypoint(IAmtDeviceQuery query, IAmtMetalFunctionGenerator generator, IMTLDevice localDevice)
+		public AmtEntrypoint(IAmtDeviceQuery query, IAmtGraphicsFunctionGenerator generator, IMTLDevice localDevice)
 		{
 			mQuery = query;
 			mLocalDevice = localDevice;

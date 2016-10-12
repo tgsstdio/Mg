@@ -42,17 +42,20 @@ namespace Magnesium.Metal
 			{
 				if (groupSize.X < 0 || groupSize.X > nint.MaxValue)
 				{
-					throw new ArgumentOutOfRangeException(nameof(createInfo.ThreadsPerWorkgroup.X) + " must be between 0 and nint.MaxValue");
+					throw new ArgumentOutOfRangeException(nameof(createInfo.ThreadsPerWorkgroup.X) 
+					                                      + " must be between 0 and " + nint.MaxValue);
 				}
 
 				if (groupSize.Y < 0 || groupSize.Y > nint.MaxValue)
 				{
-					throw new ArgumentOutOfRangeException(nameof(createInfo.ThreadsPerWorkgroup.Y) + " must be between 0 and nint.MaxValue");
+					throw new ArgumentOutOfRangeException(nameof(createInfo.ThreadsPerWorkgroup.Y)
+					                                      + " must be between 0 and " + nint.MaxValue);
 				}
 
 				if (groupSize.Z < 0 || groupSize.Z > nint.MaxValue)
 				{
-					throw new ArgumentOutOfRangeException(nameof(createInfo.ThreadsPerWorkgroup.Z) + " must be between 0 and nint.MaxValue");
+					throw new ArgumentOutOfRangeException(nameof(createInfo.ThreadsPerWorkgroup.Z) 
+					                                      + " must be between 0 and " + nint.MaxValue);
 				}
 			}
 

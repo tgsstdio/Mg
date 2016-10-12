@@ -57,6 +57,8 @@ namespace MetalSample
 
 		MgGraphicsConfiguration mGraphicsConfiguration;
 
+		IMgPresentationLayer mPresentationLayer;
+
 		//private Magnesium.MgDriver mDriver;
 
 		//private Magnesium.IMgLogicalDevice mLogicalDevice;
@@ -88,8 +90,8 @@ namespace MetalSample
 
 				var deviceQuery = new AmtDeviceQuery { NoOfCommandBufferSlots = 5 };
 				mContainer.RegisterSingleton<Magnesium.Metal.IAmtDeviceQuery>(deviceQuery);
-				mContainer.Register<Magnesium.Metal.IAmtMetalFunctionGenerator,
-						Magnesium.Metal.AmtStringSourceFunctionGenerator>(Lifestyle.Singleton);
+				mContainer.Register<Magnesium.Metal.IAmtGraphicsFunctionGenerator,
+						Magnesium.Metal.AmtGraphicsTextSourceFunctionGenerator>(Lifestyle.Singleton);
 
 				mContainer.Register<Magnesium.IMgEntrypoint, Magnesium.Metal.AmtEntrypoint>(
 					Lifestyle.Singleton);
@@ -97,12 +99,13 @@ namespace MetalSample
 					Lifestyle.Singleton);
 				mContainer.Register<Magnesium.IMgSwapchainCollection, Magnesium.Metal.AmtSwapchainCollection>(
 					Lifestyle.Singleton);
-
-
+				mContainer.Register<Magnesium.IMgPresentationLayer, Magnesium.Metal.AmtPresentationLayer>(
+					Lifestyle.Singleton);
 
 				mContainer.Register<MgGraphicsConfiguration>(Lifestyle.Singleton);
 
 				mGraphicsConfiguration = mContainer.GetInstance<MgGraphicsConfiguration>();
+				mPresentationLayer = mContainer.GetInstance<IMgPresentationLayer>();
 
 				SetupMagnesium();
 
@@ -125,8 +128,18 @@ namespace MetalSample
 			
 		}
 
+		IMgCommandBuffer mPrePresent;
+		IMgCommandBuffer mPostPresent;
+		IMgCommandBuffer[] mPresentCmdBuffers;
+
 		~GameViewController()
 		{
+			if (mPresentCmdBuffers != null)
+			{
+				mGraphicsConfiguration.Device.FreeCommandBuffers(
+					mGraphicsConfiguration.Partition.CommandPool, mPresentCmdBuffers);
+			}
+
 			if (mSwapchainCollection != null)
 				mSwapchainCollection.Dispose();
 
@@ -172,12 +185,12 @@ namespace MetalSample
 				var setupCommands = new Magnesium.IMgCommandBuffer[1];
 				var pAllocateInfo = new Magnesium.MgCommandBufferAllocateInfo
 				{
-					CommandPool = mGraphicsConfiguration.DefaultPartition.CommandPool,
+					CommandPool = mGraphicsConfiguration.Partition.CommandPool,
 					CommandBufferCount = 1,
 					Level = Magnesium.MgCommandBufferLevel.PRIMARY,
 				};
 
-				var err = mGraphicsConfiguration.DefaultPartition.Device.AllocateCommandBuffers(pAllocateInfo, setupCommands);
+				var err = mGraphicsConfiguration.Device.AllocateCommandBuffers(pAllocateInfo, setupCommands);
 				Debug.Assert(err == Magnesium.Result.SUCCESS);
 
 				var dsCreateInfo = new Magnesium.MgGraphicsDeviceCreateInfo
@@ -202,11 +215,11 @@ namespace MetalSample
 					}
 				};
 	
-				mGraphicsConfiguration.DefaultPartition.Queue.QueueSubmit(pSubmits, null);
-				mGraphicsConfiguration.DefaultPartition.Queue.QueueWaitIdle();
+				mGraphicsConfiguration.Partition.Queue.QueueSubmit(pSubmits, null);
+				mGraphicsConfiguration.Partition.Queue.QueueWaitIdle();
 
-				mGraphicsConfiguration.DefaultPartition.Device.FreeCommandBuffers(
-					mGraphicsConfiguration.DefaultPartition.CommandPool, setupCommands);
+				mGraphicsConfiguration.Partition.Device.FreeCommandBuffers(
+					mGraphicsConfiguration.Partition.CommandPool, setupCommands);
 			}
 			catch (Exception ex)
 			{
@@ -286,7 +299,7 @@ namespace MetalSample
 			const MgMemoryPropertyFlagBits memoryPropertyFlags = MgMemoryPropertyFlagBits.HOST_COHERENT_BIT;
 
 			uint memoryTypeIndex;
-			mGraphicsConfiguration.DefaultPartition.GetMemoryType(
+			mGraphicsConfiguration.Partition.GetMemoryType(
 				memReqs.MemoryTypeBits, memoryPropertyFlags, out memoryTypeIndex);
 
 			var memAlloc = new MgMemoryAllocateInfo
@@ -344,6 +357,23 @@ namespace MetalSample
 				//dynamicConstantBuffer = device.CreateBuffer(MaxBytesPerFrame, (MTLResourceOptions)0);
 				//dynamicConstantBuffer.Label = "UniformBuffer";
 			}
+
+			{	
+				mPres
+				entCmdBuffers = new Magnesium.IMgCommandBuffer[1];
+				var pAllocateInfo = new Magnesium.MgCommandBufferAllocateInfo
+				{
+					CommandPool = mGraphicsConfiguration.Partition.CommandPool,
+					CommandBufferCount = 2,
+					Level = Magnesium.MgCommandBufferLevel.PRIMARY,
+				};
+
+				var err = mGraphicsConfiguration.Device.AllocateCommandBuffers(pAllocateInfo, mPresentCmdBuffers);
+				Debug.Assert(err == Result.SUCCESS);
+				mPrePresent = mPresentCmdBuffers[0];
+				mPostPresent = mPresentCmdBuffers[1];
+			}
+
 
 			using (var shaderSrc = System.IO.File.OpenRead("Fragment.metal"))
 			using (var fragMemory = new System.IO.MemoryStream())
@@ -545,7 +575,9 @@ namespace MetalSample
 
 		void Render()
 		{
-			inflightSemaphore.WaitOne();
+			//inflightSemaphore.WaitOne();
+
+			uint layerNo = mPresentationLayer.BeginDraw(mPostPresent, null);
 
 
 			Update();
@@ -600,6 +632,8 @@ namespace MetalSample
 
 			//// Finalize rendering here & push the command buffer to the GPU
 			//commandBuffer.Commit();
+
+			mPresentationLayer.EndDraw(new[] { layerNo }, mPrePresent, null);
 		}
 
 		void Update()

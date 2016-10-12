@@ -13,7 +13,7 @@ namespace Magnesium.Metal
 		public IMTLFunction FragmentFunction { get; private set; }
 		public AmtPipelineLayout Layout { get; private set; }
 
-		public AmtGraphicsPipeline(IAmtMetalFunctionGenerator generator, IMTLDevice device, MgGraphicsPipelineCreateInfo info)
+		public AmtGraphicsPipeline(IAmtGraphicsFunctionGenerator generator, IMTLDevice device, MgGraphicsPipelineCreateInfo info)
 		{
 			var layout = (AmtPipelineLayout)info.Layout;
 			if (layout == null)
@@ -648,7 +648,7 @@ namespace Magnesium.Metal
 			}
 		}
 
-		private void InitializeShaderFunctions(IAmtMetalFunctionGenerator generator, IMTLDevice device, MgPipelineShaderStageCreateInfo[] stages)
+		private void InitializeShaderFunctions(IAmtGraphicsFunctionGenerator generator, IMTLDevice device, MgPipelineShaderStageCreateInfo[] stages)
 		{
 			IMTLFunction frag = null;
 			IMTLFunction vert = null;

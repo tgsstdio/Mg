@@ -10,9 +10,9 @@ namespace Magnesium.Metal
 	{
 		private IMTLDevice mDevice; 
 		private IAmtDeviceQuery mQuery;
-		private IAmtMetalFunctionGenerator mGenerator;
+		private IAmtGraphicsFunctionGenerator mGenerator;
 		private AmtQueue mQueue;
-		public AmtDevice(IMTLDevice systemDefault, IAmtDeviceQuery mQuery, IAmtMetalFunctionGenerator generator, AmtQueue queue)
+		public AmtDevice(IMTLDevice systemDefault, IAmtDeviceQuery mQuery, IAmtGraphicsFunctionGenerator generator, AmtQueue queue)
 		{
 			this.mDevice = systemDefault;
 			this.mQuery = mQuery;

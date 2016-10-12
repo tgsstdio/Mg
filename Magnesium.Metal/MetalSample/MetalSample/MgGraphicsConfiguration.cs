@@ -13,7 +13,16 @@ namespace MetalSample
 				return LogicalDevice.Device;
 			}
 		}
-		public Magnesium.IMgThreadPartition DefaultPartition { get; private set;}
+
+		public Magnesium.IMgQueue Queue
+		{
+			get
+			{
+				return Partition.Queue;
+			}
+		}
+
+		public Magnesium.IMgThreadPartition Partition { get; private set;}
 
 		public IMgLogicalDevice LogicalDevice { get; private set;}
 
@@ -43,7 +52,7 @@ namespace MetalSample
 			presentationSurface.Initialize();
 			LogicalDevice = mDriver.CreateLogicalDevice(presentationSurface.Surface,
 														Magnesium.MgDeviceExtensionOptions.ALL);
-			DefaultPartition = LogicalDevice.Queues[0].CreatePartition(
+			Partition = LogicalDevice.Queues[0].CreatePartition(
 						MgCommandPoolCreateFlagBits.RESET_COMMAND_BUFFER_BIT,
 						 new Magnesium.MgDescriptorPoolCreateInfo
 						 {
@@ -70,8 +79,8 @@ namespace MetalSample
 			if (mIsDisposed)
 				return;
 
-			if (DefaultPartition != null)
-				DefaultPartition.Dispose();
+			if (Partition != null)
+				Partition.Dispose();
 
 			if (LogicalDevice != null)
 				LogicalDevice.Dispose();

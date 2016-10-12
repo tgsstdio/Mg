@@ -5,18 +5,20 @@ using Metal;
 
 namespace Magnesium.Metal
 {
-	// FIXME: does not work ATM
-	public class AmtByteCodeFunctionGenerator : IAmtMetalFunctionGenerator 
+	public class AmtGraphicsTextSourceFunctionGenerator : IAmtGraphicsFunctionGenerator
 	{
 		public IMTLFunction UsingSource(IMTLDevice device, MgPipelineShaderStageCreateInfo stage, MemoryStream ms)
 		{
-			// UPDATE SHADERMODULE wIth FUNCTION FOR REUSE
-			var byteArray = ms.ToArray();
-
-			using (NSData data = NSData.FromArray(byteArray))
+			using (var tr = new StreamReader(ms))
 			{
+				string source = tr.ReadToEnd();
+				var options = new MTLCompileOptions
+				{
+					LanguageVersion = MTLLanguageVersion.v1_1,
+					FastMathEnabled = false,
+				};
 				NSError err;
-				IMTLLibrary library = device.CreateLibrary(data, out err);
+				IMTLLibrary library = device.CreateLibrary(source, options, out err);
 				if (library == null)
 				{
 					// TODO: better error handling
