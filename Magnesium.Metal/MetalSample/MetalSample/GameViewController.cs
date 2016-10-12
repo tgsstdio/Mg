@@ -88,12 +88,17 @@ namespace MetalSample
 
 				var deviceQuery = new AmtDeviceQuery { NoOfCommandBufferSlots = 5 };
 				mContainer.RegisterSingleton<Magnesium.Metal.IAmtDeviceQuery>(deviceQuery);
+				mContainer.Register<Magnesium.Metal.IAmtMetalFunctionGenerator,
+						Magnesium.Metal.AmtStringSourceFunctionGenerator>(Lifestyle.Singleton);
+
 				mContainer.Register<Magnesium.IMgEntrypoint, Magnesium.Metal.AmtEntrypoint>(
 					Lifestyle.Singleton);
 				mContainer.Register<Magnesium.IMgPresentationSurface, Magnesium.Metal.AmtPresentationSurface>(
 					Lifestyle.Singleton);
 				mContainer.Register<Magnesium.IMgSwapchainCollection, Magnesium.Metal.AmtSwapchainCollection>(
 					Lifestyle.Singleton);
+
+
 
 				mContainer.Register<MgGraphicsConfiguration>(Lifestyle.Singleton);
 
@@ -221,13 +226,22 @@ namespace MetalSample
 
 		Vector3[] positionVboData = new Vector3[]{
 			new Vector3(-1.0f, -1.0f,  1.0f),
+			new Vector3(-0.333333f, -0.333333f, 0.333333f), // normal
 			new Vector3( 1.0f, -1.0f,  1.0f),
+			new Vector3(0.333333f, -0.333333f, 0.333333f), // normal
 			new Vector3( 1.0f,  1.0f,  1.0f),
+			new Vector3(0.333333f, 0.333333f, 0.333333f), // normal
 			new Vector3(-1.0f,  1.0f,  1.0f),
+			new Vector3(-0.333333f, 0.333333f, 0.333333f), // normal
 			new Vector3(-1.0f, -1.0f, -1.0f),
+			new Vector3(-0.333333f, -0.333333f, -0.333333f), // normal
 			new Vector3( 1.0f, -1.0f, -1.0f),
+			new Vector3(0.333333f, -0.333333f, -0.333333f), // normal
 			new Vector3( 1.0f,  1.0f, -1.0f),
-			new Vector3(-1.0f,  1.0f, -1.0f) };
+			new Vector3(0.333333f, 0.333333f, -0.333333f), // normal
+			new Vector3(-1.0f,  1.0f, -1.0f),
+			new Vector3(-0.333333f, 0.333333f, -0.333333f), // normal
+		};
 
 		uint[] indicesVboData = new uint[]{
              // front face
@@ -326,19 +340,18 @@ namespace MetalSample
 				};
 				IMgBuffer uniforms;
 				var err = mGraphicsConfiguration.Device.CreateBuffer(pCreateInfo, null, out uniforms);
-
+				Debug.Assert(err == Result.SUCCESS);
 				//dynamicConstantBuffer = device.CreateBuffer(MaxBytesPerFrame, (MTLResourceOptions)0);
 				//dynamicConstantBuffer.Label = "UniformBuffer";
 			}
 
-			using (var shaderSrc = System.IO.File.OpenRead("fragment.metallib"))
-			using (var shaderMemory = new System.IO.MemoryStream())
+			using (var shaderSrc = System.IO.File.OpenRead("Fragment.metal"))
+			using (var fragMemory = new System.IO.MemoryStream())
+			using (var vertMemory = new System.IO.MemoryStream())
 			{
-				shaderSrc.CopyTo(shaderMemory);
-				var codeSize = (ulong)shaderMemory.Length;
-
-				// REWIND
-				shaderMemory.Seek(0, System.IO.SeekOrigin.Begin);
+				shaderSrc.CopyTo(fragMemory);
+				// Magnesium uses like open files i.e. open the stream and let it process the data
+				fragMemory.Seek(0, System.IO.SeekOrigin.Begin);
 
 				// Load the fragment program into the library
 				IMgShaderModule fragmentProgram = null;
@@ -346,21 +359,28 @@ namespace MetalSample
 				//IMTLFunction fragmentProgram = defaultLibrary.CreateFunction("lighting_fragment");
 				MgShaderModuleCreateInfo fragCreateInfo = new MgShaderModuleCreateInfo
 				{
-					Code = shaderMemory,
-					CodeSize = new UIntPtr(codeSize),
+					Code = fragMemory,
+					CodeSize = new UIntPtr((ulong)fragMemory.Length),
 				};
 				var err = mGraphicsConfiguration.Device.CreateShaderModule(fragCreateInfo, null, out fragmentProgram);
 				Debug.Assert(err == Result.SUCCESS);
+
+				// REWIND AFTER USE
+				shaderSrc.Seek(0, System.IO.SeekOrigin.Begin);
+				shaderSrc.CopyTo(vertMemory);
+
+				vertMemory.Seek(0, System.IO.SeekOrigin.Begin);
+
 				// Load the vertex program into the library
 				//IMTLFunction vertexProgram = defaultLibrary.CreateFunction("lighting_vertex");
-				MgShaderModuleCreateInfo pCreateInfo = new MgShaderModuleCreateInfo
+				MgShaderModuleCreateInfo vertCreateInfo = new MgShaderModuleCreateInfo
 				{
-					Code = shaderMemory,
-					CodeSize = new UIntPtr(codeSize),
+					Code = vertMemory,
+					CodeSize = new UIntPtr((ulong) vertMemory.Length),
 				};
 
 				IMgShaderModule vertexProgram = null;
-				err = mGraphicsConfiguration.LogicalDevice.Device.CreateShaderModule(pCreateInfo, null, out vertexProgram);
+				err = mGraphicsConfiguration.Device.CreateShaderModule(vertCreateInfo, null, out vertexProgram);
 				Debug.Assert(err == Result.SUCCESS);
 
 				// Create a vertex descriptor from the MTKMesh
@@ -460,6 +480,47 @@ namespace MetalSample
 						{
 							FrontFace = MgFrontFace.COUNTER_CLOCKWISE,
 							PolygonMode = MgPolygonMode.FILL,
+						},
+						VertexInputState = new MgPipelineVertexInputStateCreateInfo
+						{
+							VertexBindingDescriptions = new MgVertexInputBindingDescription[]
+							{
+								new MgVertexInputBindingDescription
+								{
+									Binding = 0,
+									InputRate = MgVertexInputRate.VERTEX,
+									Stride = (uint) (2 * vertexStride),
+								},
+							},
+							VertexAttributeDescriptions = new MgVertexInputAttributeDescription[]
+							{
+								new MgVertexInputAttributeDescription
+								{
+									Binding = 0,
+									Location = 0,
+									Format = MgFormat.R32G32B32_SFLOAT,
+									Offset = 0,
+								},
+								new MgVertexInputAttributeDescription
+								{
+									Binding = 0,
+									Location = 1,
+									Format = MgFormat.R32G32B32_SFLOAT,
+									Offset = (uint) vertexStride,
+								},
+							},
+								
+						},
+						ViewportState = new MgPipelineViewportStateCreateInfo
+						{
+							Viewports = new MgViewport[]
+							{
+								mGraphicsDevice.CurrentViewport,
+							},
+							Scissors = new MgRect2D[]
+							{
+								mGraphicsDevice.Scissor,
+							}
 						},
 						//DynamicState = new MgPipelineDynamicStateCreateInfo
 						//{

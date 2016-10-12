@@ -10,11 +10,13 @@ namespace Magnesium.Metal
 	{
 		private IMTLDevice mDevice; 
 		private IAmtDeviceQuery mQuery;
+		private IAmtMetalFunctionGenerator mGenerator;
 		private AmtQueue mQueue;
-		public AmtDevice(IMTLDevice systemDefault, IAmtDeviceQuery mQuery, AmtQueue queue)
+		public AmtDevice(IMTLDevice systemDefault, IAmtDeviceQuery mQuery, IAmtMetalFunctionGenerator generator, AmtQueue queue)
 		{
 			this.mDevice = systemDefault;
 			this.mQuery = mQuery;
+			this.mGenerator = generator;
 			mQueue = queue;
 		}
 
@@ -172,7 +174,7 @@ namespace Magnesium.Metal
 
 			foreach (var info in pCreateInfos)
 			{
-				var pipeline = new AmtGraphicsPipeline(mDevice, info);
+				var pipeline = new AmtGraphicsPipeline(mGenerator, mDevice, info);
 				output.Add(pipeline);
 
 			}

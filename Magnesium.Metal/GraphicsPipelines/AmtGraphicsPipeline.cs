@@ -13,7 +13,7 @@ namespace Magnesium.Metal
 		public IMTLFunction FragmentFunction { get; private set; }
 		public AmtPipelineLayout Layout { get; private set; }
 
-		public AmtGraphicsPipeline(IMTLDevice device, MgGraphicsPipelineCreateInfo info)
+		public AmtGraphicsPipeline(IAmtMetalFunctionGenerator generator, IMTLDevice device, MgGraphicsPipelineCreateInfo info)
 		{
 			var layout = (AmtPipelineLayout)info.Layout;
 			if (layout == null)
@@ -45,7 +45,7 @@ namespace Magnesium.Metal
 
 			RenderPass = (AmtRenderPass)info.RenderPass;
 
-			InitializeShaderFunctions(device, info.Stages);
+			InitializeShaderFunctions(generator, device, info.Stages);
 			InitializeVertexDescriptor(info.VertexInputState);
 			InitiailizeDepthStateDescriptor(info.DepthStencilState);
 			InitializeRasterization(info.RasterizationState);
@@ -87,7 +87,8 @@ namespace Magnesium.Metal
 
 			bool isViewportUserSupplied = (DynamicStates & AmtGraphicsPipelineDynamicStateFlagBits.VIEWPORT) 
 												== AmtGraphicsPipelineDynamicStateFlagBits.VIEWPORT;
-			if (viewportState.Viewports == null)
+
+			if (viewportState == null || viewportState.Viewports == null)
 			{
 				if (!isViewportUserSupplied)
 				{
@@ -113,7 +114,7 @@ namespace Magnesium.Metal
 			bool isScissorUserSupplied = (DynamicStates & AmtGraphicsPipelineDynamicStateFlagBits.SCISSOR)
 												== AmtGraphicsPipelineDynamicStateFlagBits.SCISSOR;
 			// if dynamic state has not been supplied, then default viewport is mandatory
-			if (viewportState.Scissors == null)
+			if (viewportState == null || viewportState.Scissors == null)
 			{
 				if (!isScissorUserSupplied)
 				{
@@ -647,7 +648,7 @@ namespace Magnesium.Metal
 			}
 		}
 
-		public void InitializeShaderFunctions(IMTLDevice device, MgPipelineShaderStageCreateInfo[] stages)
+		private void InitializeShaderFunctions(IAmtMetalFunctionGenerator generator, IMTLDevice device, MgPipelineShaderStageCreateInfo[] stages)
 		{
 			IMTLFunction frag = null;
 			IMTLFunction vert = null;
@@ -666,20 +667,9 @@ namespace Magnesium.Metal
 					using (var ms = new MemoryStream())
 					{
 						module.Info.Code.CopyTo(ms, (int)module.Info.CodeSize.ToUInt32());
-
-						// UPDATE SHADERMODULE wIth FUNCTION FOR REUSE
-						using (NSData data = NSData.FromArray(ms.ToArray()))
-						{
-							NSError err;
-							IMTLLibrary library = device.CreateLibrary(data, out err);
-							if (library == null)
-							{
-								// TODO: better error handling
-								throw new Exception(err.ToString());
-							}
-							module.Function = library.CreateFunction(stage.Name);
-							shaderFunc = module.Function;
-						}
+						ms.Seek(0, SeekOrigin.Begin);
+						shaderFunc = generator.UsingSource(device, stage, ms);
+						module.Function = shaderFunc;
 					}
 				}
 				Debug.Assert(shaderFunc != null);
@@ -702,7 +692,5 @@ namespace Magnesium.Metal
 		{
 	
 		}
-
-
 	}
 }
