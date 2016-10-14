@@ -5,9 +5,9 @@ using Metal;
 
 namespace Magnesium.Metal
 {
-	public class AmtGraphicsTextSourceFunctionGenerator : IAmtGraphicsFunctionGenerator
+	public class AmtMetalTextSourceLibraryLoader : IAmtMetalLibraryLoader
 	{
-		public IMTLFunction UsingSource(IMTLDevice device, MgPipelineShaderStageCreateInfo stage, MemoryStream ms)
+		public IMTLLibrary LoadLibrary(IMTLDevice device, MemoryStream ms)
 		{
 			using (var tr = new StreamReader(ms))
 			{
@@ -24,8 +24,7 @@ namespace Magnesium.Metal
 					// TODO: better error handling
 					throw new Exception(err.ToString());
 				}
-				IMTLFunction shaderFunc = library.CreateFunction(stage.Name);
-				return shaderFunc;
+				return library;
 			}
 		}
 	}

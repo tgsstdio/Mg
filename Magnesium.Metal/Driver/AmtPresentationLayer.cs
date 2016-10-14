@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using CoreAnimation;
 using Metal;
@@ -9,8 +10,9 @@ namespace Magnesium.Metal
 	public class AmtPresentationLayer : IMgPresentationLayer
 	{
 		private readonly MTKView mView;
+		private IMgSwapchainCollection mCollection;
 
-		public AmtPresentationLayer(MTKView view)
+		public AmtPresentationLayer(MTKView view, IMgSwapchainCollection swapchainCollection)
 		{
 			mView = view;
 
@@ -19,6 +21,7 @@ namespace Magnesium.Metal
 			{
 				Inflight = new Semaphore(1, 1),
 			};
+			mCollection = swapchainCollection; 
 		}
 
 		private class AmtLayerInfo
@@ -27,15 +30,18 @@ namespace Magnesium.Metal
 			public Semaphore Inflight { get; set;}
 		}
 
-		private AmtLayerInfo[] mLayers;
+		private readonly AmtLayerInfo[] mLayers;
 
-		private ICAMetalDrawable mDrawable;
-		private IMTLCommandBuffer mPresentation;
 		public uint BeginDraw(IMgCommandBuffer postPresent, IMgSemaphore presentComplete)
 		{
 			var currentIndex = 0U;
 
 			mLayers[currentIndex].Inflight.WaitOne();
+			if (mLayers[currentIndex].Drawable != null)
+			{
+				mLayers[currentIndex].Drawable.Dispose();
+			}
+
 			mLayers[currentIndex].Drawable = mView.CurrentDrawable;
 			return currentIndex;
 		}
@@ -45,14 +51,42 @@ namespace Magnesium.Metal
 			var currentIndex = 0U;
 
 			mLayers[currentIndex].Inflight.WaitOne();
-
+			if (mLayers[currentIndex].Drawable != null)
+			{
+				mLayers[currentIndex].Drawable.Dispose();
+			}
 			mLayers[currentIndex].Drawable = mView.CurrentDrawable;
 			return currentIndex;
 		}
 
 		public void EndDraw(uint[] nextImage, IMgCommandBuffer prePresent, IMgSemaphore[] renderComplete)
 		{
+			Result err;
 
+			var presentImages = new List<MgPresentInfoKHRImage>();
+			foreach (var image in nextImage)
+			{
+				var currentBuffer = mLayers[image];
+				//submitPrePresentBarrier(prePresent, currentBuffer.Image);
+
+				presentImages.Add(new MgPresentInfoKHRImage
+				{
+					ImageIndex = image,
+					Swapchain = mCollection.Swapchain,
+				});
+			}
+
+			var presentInfo = new MgPresentInfoKHR
+			{
+				WaitSemaphores = renderComplete,
+				Images = presentImages.ToArray(),
+			};
+
+			//err = swapChain.queuePresent(queue, currentBuffer, semaphores.renderComplete);
+			err = mPartition.Queue.QueuePresentKHR(presentInfo);
+			Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
+			err = mPartition.Queue.QueueWaitIdle();
+			Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
 		}
 	}
 }

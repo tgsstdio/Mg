@@ -300,8 +300,9 @@ namespace Magnesium.Metal
 			}
 
 			var dsDescriptor = new MTLDepthStencilDescriptor
-			{
-				DepthCompareFunction = mCurrentPipeline.DepthCompareFunction,
+			{ 
+				// TODO : add this back in later
+				//DepthCompareFunction = mCurrentPipeline.DepthCompareFunction,
 				DepthWriteEnabled = mCurrentPipeline.DepthWriteEnabled,
 				BackFaceStencil = mCurrentPipeline.BackStencil.GetDescriptor(),
 				FrontFaceStencil = mCurrentPipeline.FrontStencil.GetDescriptor(),
@@ -313,8 +314,8 @@ namespace Magnesium.Metal
 
 			var depthStencil = mDevice.CreateDepthStencilState(dsDescriptor);
 
-			var frontReference = mCurrentPipeline.FrontStencil.StencilReference;
-			var backReference = mCurrentPipeline.BackStencil.StencilReference;
+			var frontReference = mCurrentPipeline.FrontStencilReference;
+			var backReference = mCurrentPipeline.BackStencilReference;
 
 			// ONLY if pipeline ATTACHED and dynamic state has been set
 			if (

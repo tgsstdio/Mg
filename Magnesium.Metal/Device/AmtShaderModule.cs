@@ -6,7 +6,7 @@ namespace Magnesium.Metal
 {
 	internal class AmtShaderModule : IMgShaderModule
 	{
-		public IMTLFunction Function { get; internal set; }
+		public IMTLLibrary Library { get; internal set; }
 		public AmtShaderModule(MgShaderModuleCreateInfo pCreateInfo)
 		{
 			if (pCreateInfo == null)

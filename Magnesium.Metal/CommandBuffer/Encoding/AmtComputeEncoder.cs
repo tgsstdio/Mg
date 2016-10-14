@@ -9,12 +9,9 @@ namespace Magnesium.Metal
 		private IAmtEncoderContextSorter mInstructions;
 		private AmtComputeBag mBag;
 
-		IMTLDevice mDevice;
-
-		public AmtComputeEncoder(IAmtEncoderContextSorter instructions, IMTLDevice device, AmtComputeBag bag)
+		public AmtComputeEncoder(IAmtEncoderContextSorter instructions, AmtComputeBag bag)
 		{
 			mInstructions = instructions;
-			mDevice = device;
 			mBag = bag;
 		}
 

@@ -292,6 +292,8 @@
     <Compile Include="PhysicalDevice\MgDisplayModeCreateInfoKHR.cs" />
     <Compile Include="Driver\MgDeviceExtensionOptions.cs" />
     <Compile Include="Driver\MgRenderPassProfile.cs" />
+    <Compile Include="Driver\IMgPresentationBarrierEntrypoint.cs" />
+    <Compile Include="Entrypoint\MgPresentationBarrierEntrypoint.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup />

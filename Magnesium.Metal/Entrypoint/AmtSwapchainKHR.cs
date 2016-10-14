@@ -4,7 +4,7 @@ using System.Threading;
 using MetalKit;
 namespace Magnesium.Metal
 {
-	public class AmtSwapchainKHR : IAmtSwapchainKHR
+	public class AmtSwapchainKHR : IMgSwapchainKHR
 	{
 		private readonly AmtSwapchainKHRImageInfo[] mImages;
 		public AmtSwapchainKHRImageInfo[] Images
@@ -48,40 +48,34 @@ namespace Magnesium.Metal
 					info.Drawable.Dispose();
 					info.Drawable = null;
 				}
+				if (info.Inflight != null)
+				{
+					info.Inflight.Dispose();
+					info.Inflight = null;
+				}
 			}
 
 			mIsDisposed = true;
 		}
 
-		public bool AcquireNextImage(ulong timeout, out uint index)
+		internal uint GetAvailableImageIndex()
+		{
+			return 0;
+		}
+
+		public void RefreshImageView(uint index)
 		{
 			Debug.Assert(!mIsDisposed);
-
-			// TODO : make it variable
-			var nextIndex = 0U;
-
-			if (timeout == ulong.MaxValue)
-			{
-				mImages[nextIndex].Inflight.WaitOne();
-			}
-			else
-			{
-				var ticks = (long)timeout / 10000L;
-				var timespan = TimeSpan.FromTicks(ticks);
-				mImages[nextIndex].Inflight.WaitOne(timespan);
-			}
 
 			var drawable = mView.CurrentDrawable;
 			if (drawable == null)
 			{
-				throw new InvalidOperationException("Swapchain failed");
+				throw new InvalidOperationException("METAL : Swapchain failed");
 			}
 
-			mImages[nextIndex].Drawable = drawable;
-			mImages[nextIndex].Inflight.Reset();
-			index = nextIndex;
+			mImages[index].Drawable = drawable;
+			mImages[index].Inflight.Reset();
 			mColorView.SetTexture(drawable.Texture);
-			return true;
 		}
 	}
 }

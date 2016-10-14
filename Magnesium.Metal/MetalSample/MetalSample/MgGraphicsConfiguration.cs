@@ -65,7 +65,6 @@ namespace MetalSample
 									},
 							},
 						 });
-
 		}
 
 		~MgGraphicsConfiguration()

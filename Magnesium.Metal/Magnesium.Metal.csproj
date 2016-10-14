@@ -131,7 +131,6 @@
     <Compile Include="Driver\AmtSwapchainCollection.cs" />
     <Compile Include="Driver\AmtPresentationSurface.cs" />
     <Compile Include="Driver\AmtNullImageView.cs" />
-    <Compile Include="Driver\AmtPresentationLayer.cs" />
     <Compile Include="CommandBuffer\Encoding\IAmtBlitEncoder.cs" />
     <Compile Include="CommandBuffer\Encoding\AmtBlitEncoder.cs" />
     <Compile Include="CommandBuffer\Encoding\AmtBlitBag.cs" />
@@ -152,9 +151,10 @@
     <Compile Include="Entrypoint\AmtSwapchainKHRImageInfo.cs" />
     <Compile Include="Driver\AmtGraphicsDevice.cs" />
     <Compile Include="Device\AmtDeviceMemory.cs" />
-    <Compile Include="Entrypoint\IAmtGraphicsFunctionGenerator.cs" />
-    <Compile Include="Entrypoint\AmtGraphicsByteCodeFunctionGenerator.cs" />
-    <Compile Include="Entrypoint\AmtGraphicsTextSourceFunctionGenerator.cs" />
+    <Compile Include="Entrypoint\IAmtMetalLibraryLoader.cs" />
+    <Compile Include="Entrypoint\AmtMetalByteCodeLibraryLoader.cs" />
+    <Compile Include="Entrypoint\AmtMetalTextSourceLibraryLoader.cs" />
+    <Compile Include="Entrypoint\AmtPresentationBarrierEntrypoint.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Magnesium\Magnesium.csproj">

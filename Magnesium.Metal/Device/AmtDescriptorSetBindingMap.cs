@@ -12,19 +12,28 @@ namespace Magnesium.Metal
 			Buffers = new AmtDescriptorSetBufferBinding[resources.VertexBuffers.Length];
 			for (var i = 0; i < Buffers.Length; ++i)
 			{
-				Buffers[i].PositionOffset = (nuint)i;
+				Buffers[i] = new AmtDescriptorSetBufferBinding
+				{
+					PositionOffset = (nuint)i,
+				};
 			}
 
 			SamplerStates = new AmtDescriptorSetSamplerBinding[resources.Samplers.Length];
 			for (var i = 0; i < SamplerStates.Length; ++i)
 			{
-				SamplerStates[i].PositionOffset = (nuint)i;
+				SamplerStates[i] = new AmtDescriptorSetSamplerBinding
+				{
+					PositionOffset = (nuint)i,
+				};
 			}
 
 			Textures = new AmtDescriptorSetTextureBinding[resources.Textures.Length];
 			for (var i = 0; i < Textures.Length; ++i)
 			{
-				Textures[i].PositionOffset = (nuint)i;
+				Textures[i] = new AmtDescriptorSetTextureBinding
+				{
+					PositionOffset = (nuint)i,
+				};
 			}
 		}
 

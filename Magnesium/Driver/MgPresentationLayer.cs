@@ -6,13 +6,20 @@ namespace Magnesium
 {
     public class MgPresentationLayer : IMgPresentationLayer
 	{
-		public MgPresentationLayer (IMgThreadPartition partition, IMgSwapchainCollection collection)
+		public MgPresentationLayer 
+		(
+			IMgThreadPartition partition, 
+			IMgSwapchainCollection collection,
+			IMgPresentationBarrierEntrypoint barrier
+		)
 		{
 			mPartition = partition;
 			mCollection = collection;
+			mBarrier = barrier;
 		}
 
-		private readonly IMgThreadPartition mPartition;			
+		private readonly IMgThreadPartition mPartition;
+		private readonly IMgPresentationBarrierEntrypoint mBarrier;
 		private readonly IMgSwapchainCollection mCollection;
 
 		//public IMgCommandBuffer PostPresent { get; set; }
@@ -35,7 +42,18 @@ namespace Magnesium
 			foreach (var image in nextImage)
 			{
 				var currentBuffer = mCollection.Buffers[image];
-				submitPrePresentBarrier(prePresent, currentBuffer.Image);
+				mBarrier.SubmitPrePresentBarrier(prePresent, currentBuffer.Image);
+
+				var submitInfo = new[]
+				{
+					new MgSubmitInfo
+					{
+						CommandBuffers = new []{prePresent}
+					}
+				};
+
+				var result = mPartition.Queue.QueueSubmit(submitInfo, null);
+				Debug.Assert(result == Result.SUCCESS, result + " != Result.SUCCESS");
 
 				presentImages.Add(new MgPresentInfoKHRImage
 				{
@@ -62,60 +80,9 @@ namespace Magnesium
 			//err = swapChain.acquireNextImage(semaphores.presentComplete, &currentBuffer);
 			var nextImage = AcquireNextImage (presentComplete, timeout);
 			var currentBuffer = mCollection.Buffers [nextImage];
-			submitPostPresentBarrier (postPresent, currentBuffer.Image);
-			return nextImage;
-		}
 
-		public uint BeginDraw (IMgCommandBuffer postPresent, IMgSemaphore presentComplete)
-		{
-			return BeginDraw (postPresent, presentComplete, ulong.MaxValue);
-		}
-
-		void submitPostPresentBarrier(IMgCommandBuffer postPresent, IMgImage image)
-		{
-			if (postPresent == null)
-				throw new InvalidOperationException ();
-
-			MgCommandBufferBeginInfo cmdBufInfo = new MgCommandBufferBeginInfo {
-
-			};
-
-			var vkRes = postPresent.BeginCommandBuffer(cmdBufInfo);
-			Debug.Assert(vkRes == Result.SUCCESS, vkRes + " != Result.SUCCESS");
-
-            const uint VK_QUEUE_FAMILY_IGNORED = ~0U;
-
-			var postPresentBarrier = new MgImageMemoryBarrier
-			{
-				Image = image,
-				SrcAccessMask = 0,
-				DstAccessMask = MgAccessFlagBits.COLOR_ATTACHMENT_WRITE_BIT,
-				OldLayout = MgImageLayout.PRESENT_SRC_KHR,
-				NewLayout = MgImageLayout.COLOR_ATTACHMENT_OPTIMAL,
-				SrcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-				DstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-				SubresourceRange = new MgImageSubresourceRange
-				{
-					AspectMask = MgImageAspectFlagBits.COLOR_BIT,
-					BaseArrayLayer = 0,
-					LayerCount = 1,
-					BaseMipLevel = 0,
-					LevelCount = 1,
-				},
-			};
-
-			postPresent.CmdPipelineBarrier(
-				MgPipelineStageFlagBits.ALL_COMMANDS_BIT,
-				MgPipelineStageFlagBits.TOP_OF_PIPE_BIT,
-				0,
-				null, // No memory barriers,
-				null, // No buffer barriers,
-				new [] {postPresentBarrier});
-
-			vkRes = postPresent.EndCommandBuffer();
-			Debug.Assert(vkRes == Result.SUCCESS, vkRes + " != Result.SUCCESS");
-
-            var submitInfo = new [] {
+			mBarrier.SubmitPostPresentBarrier (postPresent, currentBuffer.Image);
+			var submitInfo = new[] {
 				new MgSubmitInfo
 				{
 					CommandBuffers = new []
@@ -125,65 +92,17 @@ namespace Magnesium
 				}
 			};
 
-			vkRes = mPartition.Queue.QueueSubmit(submitInfo, null);
-			Debug.Assert(vkRes == Result.SUCCESS, vkRes + " != Result.SUCCESS");
-        }
+			var result = mPartition.Queue.QueueSubmit(submitInfo, null);
+			Debug.Assert(result == Result.SUCCESS, result + " != Result.SUCCESS");
 
-		void submitPrePresentBarrier(IMgCommandBuffer prePresent, IMgImage image)
+			return nextImage;
+		}
+
+		public uint BeginDraw (IMgCommandBuffer postPresent, IMgSemaphore presentComplete)
 		{
-			if (prePresent == null)
-				throw new InvalidOperationException ();
+			return BeginDraw (postPresent, presentComplete, ulong.MaxValue);
+		}
 
-			MgCommandBufferBeginInfo cmdBufInfo = new MgCommandBufferBeginInfo {
-
-			};
-
-			var vkRes = prePresent.BeginCommandBuffer(cmdBufInfo);
-			Debug.Assert(vkRes == Result.SUCCESS, vkRes + " != Result.SUCCESS");
-
-            const uint VK_QUEUE_FAMILY_IGNORED = ~0U;
-
-			var prePresentBarrier = new MgImageMemoryBarrier {
-				Image = image,
-				SrcAccessMask = MgAccessFlagBits.COLOR_ATTACHMENT_WRITE_BIT,
-				DstAccessMask = 0,
-				OldLayout = MgImageLayout.COLOR_ATTACHMENT_OPTIMAL,
-				NewLayout = MgImageLayout.PRESENT_SRC_KHR,
-				SrcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-				DstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-				SubresourceRange = new MgImageSubresourceRange
-				{
-					AspectMask = MgImageAspectFlagBits.COLOR_BIT,
-					BaseArrayLayer = 0,
-					LayerCount = 1,
-					BaseMipLevel = 0,
-					LevelCount = 1,
-				},
-			};
-
-			const int VK_FLAGS_NONE = 0;
-			prePresent.CmdPipelineBarrier(				
-				MgPipelineStageFlagBits.ALL_COMMANDS_BIT,
-				MgPipelineStageFlagBits.TOP_OF_PIPE_BIT,
-				VK_FLAGS_NONE,
-				null, // No memory barriers,
-				null, // No buffer barriers,
-				new []{ prePresentBarrier} );
-
-			vkRes = prePresent.EndCommandBuffer();
-			Debug.Assert(vkRes == Result.SUCCESS, vkRes + " != Result.SUCCESS");
-
-            var submitInfo = new []
-			{
-				new MgSubmitInfo
-				{
-					CommandBuffers = new []{prePresent}
-				}
-			};
-
-			vkRes = mPartition.Queue.QueueSubmit(submitInfo, null);
-			Debug.Assert(vkRes == Result.SUCCESS, vkRes + " != Result.SUCCESS");
-        }
 	}
 }
 

@@ -6,9 +6,9 @@ using Metal;
 namespace Magnesium.Metal
 {
 	// FIXME: does not work ATM
-	public class AmtGraphicsByteCodeFunctionGenerator : IAmtGraphicsFunctionGenerator 
+	public class AmtMetalByteCodeLibraryLoader : IAmtMetalLibraryLoader 
 	{
-		public IMTLFunction UsingSource(IMTLDevice device, MgPipelineShaderStageCreateInfo stage, MemoryStream ms)
+		public IMTLLibrary LoadLibrary(IMTLDevice device, MemoryStream ms)
 		{
 			// UPDATE SHADERMODULE wIth FUNCTION FOR REUSE
 			var byteArray = ms.ToArray();
@@ -22,8 +22,7 @@ namespace Magnesium.Metal
 					// TODO: better error handling
 					throw new Exception(err.ToString());
 				}
-				IMTLFunction shaderFunc = library.CreateFunction(stage.Name);
-				return shaderFunc;
+				return library;
 			}
 		}
 	}

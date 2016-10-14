@@ -10,9 +10,9 @@ namespace Magnesium.Metal
 	{
 		private IMTLDevice mDevice; 
 		private IAmtDeviceQuery mQuery;
-		private IAmtGraphicsFunctionGenerator mGenerator;
+		private IAmtMetalLibraryLoader mGenerator;
 		private AmtQueue mQueue;
-		public AmtDevice(IMTLDevice systemDefault, IAmtDeviceQuery mQuery, IAmtGraphicsFunctionGenerator generator, AmtQueue queue)
+		public AmtDevice(IMTLDevice systemDefault, IAmtDeviceQuery mQuery, IAmtMetalLibraryLoader generator, AmtQueue queue)
 		{
 			this.mDevice = systemDefault;
 			this.mQuery = mQuery;
@@ -22,7 +22,27 @@ namespace Magnesium.Metal
 
 		public Result AcquireNextImageKHR(IMgSwapchainKHR swapchain, ulong timeout, IMgSemaphore semaphore, IMgFence fence, out uint pImageIndex)
 		{
-			throw new NotImplementedException();
+			if (swapchain == null)
+				throw new ArgumentNullException(nameof(swapchain));
+
+			// TODO : make it variable
+			var bSwapchain = (AmtSwapchainKHR)swapchain;
+			var nextIndex = bSwapchain.GetAvailableImageIndex();
+
+			if (timeout == ulong.MaxValue)
+			{
+				bSwapchain.Images[nextIndex].Inflight.WaitOne();
+			}
+			else
+			{
+				var ticks = (long)timeout / 10000L;
+				var timespan = TimeSpan.FromTicks(ticks);
+				bSwapchain.Images[nextIndex].Inflight.WaitOne(timespan);
+			}
+
+			bSwapchain.RefreshImageView(nextIndex);
+			pImageIndex = nextIndex;
+			return Result.SUCCESS;
 		}
 
 		public Result AllocateCommandBuffers(MgCommandBufferAllocateInfo pAllocateInfo, IMgCommandBuffer[] pCommandBuffers)
@@ -45,7 +65,7 @@ namespace Magnesium.Metal
 			{
 				var instructions = new AmtIncrementalChunkifier();
 				var computeBag = new AmtComputeBag();
-				var compute = new AmtComputeEncoder(instructions, mDevice, computeBag);
+				var compute = new AmtComputeEncoder(instructions, computeBag);
 				var graphicsBag = new AmtGraphicsBag();
 				var graphics = new AmtGraphicsEncoder(instructions, mDevice, graphicsBag);
 				var blitBag = new AmtBlitBag();

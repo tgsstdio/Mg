@@ -30,7 +30,7 @@ namespace Magnesium.Metal
 			MTLComputePipelineReflection reflection;
 			Foundation.NSError err;
 			var options = MTLPipelineOption.ArgumentInfo | MTLPipelineOption.BufferTypeInfo;
-			var pipelineState = device.CreateComputePipelineState(mShaderModule, options, out reflection, out err);
+			var pipelineState = device.CreateComputePipelineState(mFunction, options, out reflection, out err);
 			Debug.Assert(pipelineState != null);
 
 		}
@@ -70,11 +70,7 @@ namespace Magnesium.Metal
 			var stage = createInfo.Stage;
 			var module = (AmtShaderModule)stage.Module;
 			Debug.Assert(module != null);
-			if (module.Function != null)
-			{
-				mShaderModule = module.Function;
-			}
-			else
+			if (module.Library == null)
 			{
 				using (var ms = new MemoryStream())
 				{
@@ -84,23 +80,22 @@ namespace Magnesium.Metal
 					using (NSData data = NSData.FromArray(ms.ToArray()))
 					{
 						NSError err;
-						IMTLLibrary library = device.CreateLibrary(data, out err);
-						if (library == null)
+						module.Library = device.CreateLibrary(data, out err);
+						if (module.Library == null)
 						{
 							// TODO: better error handling
 							throw new Exception(err.ToString());
 						}
-						module.Function = library.CreateFunction(stage.Name);
-						mShaderModule = module.Function;
 					}
 				}
 			}
-			Debug.Assert(mShaderModule != null);
+			mFunction = module.Library.CreateFunction(stage.Name);
+			Debug.Assert(mFunction != null);
 		}
 
 		public IMTLComputePipelineState Compute { get; set;}
 		public MTLSize ThreadsPerGroupSize { get; internal set; }
-		private IMTLFunction mShaderModule;
+		private IMTLFunction mFunction;
 
 		public void DestroyPipeline(IMgDevice device, IMgAllocationCallbacks allocator)
 		{

@@ -35,7 +35,7 @@ namespace Magnesium.Metal
 		public MgFormat Format
 		{
 			get;
-			private set;
+			internal set;
 		}
 
 		public uint Height

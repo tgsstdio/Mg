@@ -79,7 +79,7 @@ namespace Magnesium.Metal
 
 			mApplicationView.SampleCount = sampleCount;
 			// FIXME : RUNTIME ISSUE WITH SETTING COLOR FORMAT; SHOULD "FIGURE" OUT APPROPRIATE COLOR FORMAT SOMEHOW
-			// mApplicationView.ColorPixelFormat = colorFormat;
+			mApplicationView.ColorPixelFormat = colorFormat;
 			mApplicationView.DepthStencilPixelFormat = depthFormat;
 
 			mFramebuffers = null;
@@ -88,7 +88,11 @@ namespace Magnesium.Metal
 
 			CreateDepthStencilImageView();
 			CreateRenderpass(dsCreateInfo);
-			swapchainCollection.Create(setupCmdBuffer, dsCreateInfo.Width, dsCreateInfo.Height);
+
+			var bSwapchainCollection = (AmtSwapchainCollection)swapchainCollection;
+			bSwapchainCollection.Format = dsCreateInfo.Color;
+			bSwapchainCollection.Create(setupCmdBuffer, dsCreateInfo.Width, dsCreateInfo.Height);
+
 			CreateFramebuffers(swapchainCollection, dsCreateInfo);
 
 			Scissor = new MgRect2D
