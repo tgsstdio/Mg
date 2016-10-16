@@ -73,6 +73,9 @@ namespace Magnesium.Metal
 
 		public void CmdBindPipeline(MgPipelineBindPoint pipelineBindPoint, IMgPipeline pipeline)
 		{
+			if (pipeline == null)
+				throw new ArgumentNullException(nameof(pipeline));
+
 			if (pipelineBindPoint == MgPipelineBindPoint.COMPUTE)
 			{
 				mCommandEncoder.Compute.BindPipeline(pipeline);

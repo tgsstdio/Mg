@@ -67,7 +67,7 @@ namespace Magnesium.Metal
 				var computeBag = new AmtComputeBag();
 				var compute = new AmtComputeEncoder(instructions, computeBag);
 				var graphicsBag = new AmtGraphicsBag();
-				var graphics = new AmtGraphicsEncoder(instructions, mDevice, graphicsBag);
+				var graphics = new AmtGraphicsEncoder(instructions, mDevice, graphicsBag, commandPool.DepthCache);
 				var blitBag = new AmtBlitBag();
 				var blit = new AmtBlitEncoder(blitBag, instructions);
 
@@ -128,7 +128,7 @@ namespace Magnesium.Metal
 
 		public Result CreateBuffer(MgBufferCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgBuffer pBuffer)
 		{
-			pBuffer = new AmtBuffer(mDevice, pCreateInfo);
+			pBuffer = new AmtBuffer(pCreateInfo);
 			return Result.SUCCESS;
 		}
 
@@ -140,7 +140,8 @@ namespace Magnesium.Metal
 		public Result CreateCommandPool(MgCommandPoolCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgCommandPool pCommandPool)
 		{
 			var queue = mDevice.CreateCommandQueue(mQuery.NoOfCommandBufferSlots);
-			pCommandPool = new AmtCommandPool(queue, pCreateInfo);
+			var depthCache = new AmtCmdDepthStencilCache();
+			pCommandPool = new AmtCommandPool(queue, pCreateInfo, depthCache);
 			return Result.SUCCESS;
 		}
 

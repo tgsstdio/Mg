@@ -66,15 +66,50 @@ namespace Magnesium.Metal
 				// Suitable nullity checks etc, of course :)
 				hash = hash * 23 + DepthCompareFunction.GetHashCode();
 				hash = hash * 23 + DepthWriteEnabled.GetHashCode();
+				hash = hash * 23 + Front.GetHashCode();
+				hash = hash * 23 + Back.GetHashCode();
 				return hash;
 			}
 		}
-	}
 
-	public class AmtDepthStencilStateRecord
-	{
-		public uint BackReference { get; internal set; }
-		public IMTLDepthStencilState DepthStencilState { get; internal set; }
-		public uint FrontReference { get; internal set; }
+		private static MTLCompareFunction GetDepthCompareFunction(MgCompareOp depthCompareOp)
+		{
+			switch (depthCompareOp)
+			{
+				default:
+					throw new NotSupportedException();
+				case MgCompareOp.LESS:
+					return MTLCompareFunction.Less;
+				case MgCompareOp.LESS_OR_EQUAL:
+					return MTLCompareFunction.LessEqual;
+				case MgCompareOp.GREATER:
+					return MTLCompareFunction.Greater;
+				case MgCompareOp.GREATER_OR_EQUAL:
+					return MTLCompareFunction.GreaterEqual;
+				case MgCompareOp.NEVER:
+					return MTLCompareFunction.Never;
+				case MgCompareOp.NOT_EQUAL:
+					return MTLCompareFunction.NotEqual;
+				case MgCompareOp.EQUAL:
+					return MTLCompareFunction.Equal;
+			}
+		}
+
+		public MTLDepthStencilDescriptor GenerateDescriptor()
+		{
+			return new MTLDepthStencilDescriptor
+			{
+				// TODO : add this back in later
+				DepthCompareFunction = GetDepthCompareFunction(DepthCompareFunction),
+				DepthWriteEnabled = DepthWriteEnabled,
+				BackFaceStencil = Back.GetDescriptor(),
+				FrontFaceStencil = Front.GetDescriptor(),
+			};
+
+			//dsDescriptor.FrontFaceStencil.ReadMask = frontCompareMask;
+			//dsDescriptor.FrontFaceStencil.WriteMask = frontWriteMask;
+			//dsDescriptor.BackFaceStencil.ReadMask = backCompareMask;
+			//dsDescriptor.BackFaceStencil.WriteMask = backWriteMask;
+		}
 	}
 }

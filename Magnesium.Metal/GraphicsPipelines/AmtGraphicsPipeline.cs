@@ -13,6 +13,8 @@ namespace Magnesium.Metal
 		public IMTLFunction FragmentFunction { get; private set; }
 		public AmtPipelineLayout Layout { get; private set; }
 
+		public MgRenderPassProfile CompatibilityProfile { get; private set; }
+
 		public AmtGraphicsPipeline(IAmtMetalLibraryLoader generator, IMTLDevice device, MgGraphicsPipelineCreateInfo info)
 		{
 			var layout = (AmtPipelineLayout)info.Layout;
@@ -44,6 +46,7 @@ namespace Magnesium.Metal
 			}
 
 			RenderPass = (AmtRenderPass)info.RenderPass;
+			CompatibilityProfile = RenderPass.Profile;
 
 			InitializeShaderFunctions(generator, device, info.Stages);
 			InitializeVertexDescriptor(info.VertexInputState);
@@ -55,6 +58,52 @@ namespace Magnesium.Metal
 			InitializeResources(info.VertexInputState);
 			InitializeViewportAndScissor(info.ViewportState);
 			InitializeMultisampleInfo(info.MultisampleState);
+
+			GeneratePipelineStates(device);
+		}
+
+		public IMTLRenderPipelineState[] PipelineStates { get; private set; }
+
+		void GeneratePipelineStates(IMTLDevice device)
+		{
+			var states = new List<IMTLRenderPipelineState>();
+			foreach (var subpass in RenderPass.Subpasses)
+			{
+				var pipelineDescriptor = new MTLRenderPipelineDescriptor
+				{
+					VertexFunction = VertexFunction,
+					FragmentFunction = FragmentFunction,
+					VertexDescriptor = GetVertexDescriptor(),
+					AlphaToCoverageEnabled = AlphaToCoverageEnabled,
+					RasterizationEnabled = !RasterizationDiscardEnabled,
+					AlphaToOneEnabled = AlphaToOneEnabled,
+				};
+
+				subpass.InitializeFormat(pipelineDescriptor);
+
+				for (var i = 0; i < Attachments.Length; ++i)
+				{
+					var attachment = Attachments[i];
+					pipelineDescriptor.ColorAttachments[i].BlendingEnabled = attachment.IsBlendingEnabled;
+					pipelineDescriptor.ColorAttachments[i].RgbBlendOperation = attachment.RgbBlendOperation;
+					pipelineDescriptor.ColorAttachments[i].AlphaBlendOperation = attachment.AlphaBlendOperation;
+					pipelineDescriptor.ColorAttachments[i].SourceRgbBlendFactor = attachment.SourceRgbBlendFactor;
+					pipelineDescriptor.ColorAttachments[i].SourceAlphaBlendFactor = attachment.SourceAlphaBlendFactor;
+					pipelineDescriptor.ColorAttachments[i].DestinationRgbBlendFactor = attachment.DestinationRgbBlendFactor;
+					pipelineDescriptor.ColorAttachments[i].DestinationAlphaBlendFactor = attachment.DestinationAlphaBlendFactor;
+					pipelineDescriptor.ColorAttachments[i].WriteMask = attachment.ColorWriteMask;
+				}
+
+				Foundation.NSError err;
+				var pipelineState = device.CreateRenderPipelineState(pipelineDescriptor, out err);
+				if (pipelineState == null)
+				{
+					throw new InvalidOperationException("METAL : error " + err.ToString());
+				}
+
+				states.Add(pipelineState);
+			}
+			PipelineStates = states.ToArray();
 		}
 
 		public bool AlphaToCoverageEnabled { get; private set; }

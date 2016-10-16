@@ -18,7 +18,12 @@ namespace Magnesium.Metal
 
 		public bool CanIndividuallyReset { get; private set; }
 
-		public AmtCommandPool(IMTLCommandQueue queue, MgCommandPoolCreateInfo pCreateInfo)
+		public IAmtCmdDepthStencilCache DepthCache { get; private set; }
+
+		public AmtCommandPool(
+			IMTLCommandQueue queue,
+			MgCommandPoolCreateInfo pCreateInfo,
+			IAmtCmdDepthStencilCache depthCache)
 		{
 			mQueue = queue;
 
@@ -26,6 +31,7 @@ namespace Magnesium.Metal
 				== MgCommandPoolCreateFlagBits.RESET_COMMAND_BUFFER_BIT;
 
 			mBuffers = new List<AmtCommandBuffer>();
+			DepthCache = depthCache;
 		}
 
 		private bool mIsDisposed = false;

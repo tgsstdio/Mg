@@ -90,7 +90,7 @@
     <Compile Include="CommandBuffer\Recording\AmtPipelineStateRecord.cs" />
     <Compile Include="CommandBuffer\Recording\AmtDispatchIndirectRecord.cs" />
     <Compile Include="CommandBuffer\Recording\AmtDescriptorSetRecord.cs" />
-    <Compile Include="CommandBuffer\Recording\AmtDepthStencilStateRecord.cs" />
+    <Compile Include="CommandBuffer\Recording\AmtDepthStencilStateKey.cs" />
     <Compile Include="CommandBuffer\Recording\AmtDispatchRecord.cs" />
     <Compile Include="CommandBuffer\Recording\AmtDrawIndexedRecord.cs" />
     <Compile Include="CommandBuffer\Recording\AmtDrawIndexedIndirectRecord.cs" />
@@ -155,6 +155,8 @@
     <Compile Include="Entrypoint\AmtMetalByteCodeLibraryLoader.cs" />
     <Compile Include="Entrypoint\AmtMetalTextSourceLibraryLoader.cs" />
     <Compile Include="Entrypoint\AmtPresentationBarrierEntrypoint.cs" />
+    <Compile Include="IAmtCmdDepthStencilCache.cs" />
+    <Compile Include="Device\AmtCmdDepthStencilCache.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Magnesium\Magnesium.csproj">

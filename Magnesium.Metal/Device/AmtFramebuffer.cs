@@ -11,6 +11,8 @@ namespace Magnesium.Metal
 
 		public uint Layers { get; private set; }
 
+		public MgRenderPassProfile CompatibilityProfile { get; private set; }
+
 		public AmtFramebuffer(MgFramebufferCreateInfo createInfo)
 		{
 			if (createInfo == null)
@@ -27,9 +29,13 @@ namespace Magnesium.Metal
 			Height = createInfo.Height;
 			Layers = createInfo.Layers;
 
+			var bRenderpass = (AmtRenderPass)createInfo.RenderPass;
+
+			CompatibilityProfile = bRenderpass.Profile;
+
 			if (createInfo.Attachments != null)
 			{
-				var bRenderpass = (AmtRenderPass)createInfo.RenderPass;
+				
 
 				var noOfSubpasses = bRenderpass.Subpasses.Length;
 				Subpasses = new AmtFramebufferSubpassInfo[noOfSubpasses];

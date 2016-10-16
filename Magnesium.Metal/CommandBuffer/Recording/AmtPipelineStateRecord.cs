@@ -15,5 +15,7 @@ namespace Magnesium.Metal
 		public float DepthBiasConstantFactor { get; internal set;}
 		public float DepthBiasSlopeScale { get; internal set;}
 		public float DepthBiasClamp { get; internal set;}
+		public uint FrontReference { get; internal set; }
+		public uint BackReference { get; internal set; }
 	}
 }

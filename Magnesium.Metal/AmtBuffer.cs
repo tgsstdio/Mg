@@ -9,7 +9,7 @@ namespace Magnesium.Metal
 
 		public MgSharingMode SharingMode { get; private set; }
 
-		public AmtBuffer(IMTLDevice mDevice, MgBufferCreateInfo pCreateInfo)
+		public AmtBuffer(MgBufferCreateInfo pCreateInfo)
 		{
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));

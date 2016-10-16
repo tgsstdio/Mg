@@ -7,7 +7,7 @@ namespace Magnesium.Metal
 		public MTLRenderPassDescriptor[] RenderPasses { get; internal set;}
 		public MgColor4f[] BlendConstants { get; internal set; }
 		public AmtPipelineStateRecord[] Pipelines { get; internal set; }
-		public AmtDepthStencilStateRecord[] DepthStencilStates { get; internal set; }
+		public IMTLDepthStencilState[] DepthStencilStates { get; internal set; }
 		public AmtDepthBiasRecord[] DepthBias { get; internal set; }
 		public AmtStencilReferenceRecord[] StencilReferences { get; internal set; }
 		public MTLScissorRect[] Scissors { get; internal set;}

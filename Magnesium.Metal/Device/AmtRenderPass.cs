@@ -9,6 +9,8 @@ namespace Magnesium.Metal
 	{
 		//public AmtRenderPassClearAttachment[] ClearAttachments { get; private set; }
 
+		public MgRenderPassProfile Profile { get; private set;}
+
 		public AmtRenderPass(MgRenderPassCreateInfo createInfo)
 		{
 			Debug.Assert(createInfo != null, nameof(createInfo) + " is null");
@@ -25,6 +27,7 @@ namespace Magnesium.Metal
 				Subpasses[i] = new AmtRenderPassSubpassInfo(createInfo, i);
 			}
 
+			Profile = new MgRenderPassProfile(createInfo);
 		}
 
 		public AmtRenderPassSubpassInfo[] Subpasses { get; private set; }

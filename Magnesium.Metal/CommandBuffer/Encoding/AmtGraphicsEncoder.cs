@@ -11,12 +11,17 @@ namespace Magnesium.Metal
 		private IMTLDevice mDevice;
 
 		private readonly IAmtEncoderContextSorter mInstructions;
+		private readonly IAmtCmdDepthStencilCache mDepthCache;
 
-		public AmtGraphicsEncoder(IAmtEncoderContextSorter instructions, IMTLDevice device, AmtGraphicsBag bag)
+		public AmtGraphicsEncoder(IAmtEncoderContextSorter instructions,
+		                          IMTLDevice device,
+		                          AmtGraphicsBag bag, 
+		                          IAmtCmdDepthStencilCache depthCache)
 		{
 			mInstructions = instructions;
 			mBag = bag;
 			mDevice = device;
+			mDepthCache = depthCache;
 		}
 
 		#region NextSubpass methods
@@ -57,6 +62,16 @@ namespace Magnesium.Metal
 			if (mBoundVertexBuffer != null)
 			{
 				mInstructions.Add(mBoundVertexBuffer);
+			}
+
+			if (mBoundPipeline != null)
+			{
+				mInstructions.Add(mBoundPipeline);
+			}
+
+			if (mBoundDepthStencil != null)
+			{
+				mInstructions.Add(mBoundDepthStencil);
 			}
 		}
 
@@ -139,49 +154,31 @@ namespace Magnesium.Metal
 			Debug.Assert(pipeline != null);
 
 			var bPipeline = (AmtGraphicsPipeline)pipeline;
+
+			if (mCurrentRenderPass != null && !bPipeline.CompatibilityProfile.IsCompatible(mCurrentRenderPass.Profile))
+			{
+				mCurrentPipeline = null;
+				return;
+			}
+
 			mCurrentPipeline = bPipeline;
 
-			// FIXME : SHOULD BE DELAYED PIPELINE CREATION TO EVERY DRAW CALLS TO CORRECTLY SIMULATE DYNAMIC STATES
-			var pipelineDescriptor = new MTLRenderPipelineDescriptor
-			{
-				VertexFunction = bPipeline.VertexFunction,
-				FragmentFunction = bPipeline.FragmentFunction,
-				VertexDescriptor = bPipeline.GetVertexDescriptor(),
-				AlphaToCoverageEnabled = bPipeline.AlphaToCoverageEnabled,
-				RasterizationEnabled = !bPipeline.RasterizationDiscardEnabled,
-				AlphaToOneEnabled = bPipeline.AlphaToOneEnabled
-
-			};
-
-			var currentSubpass = 0;
-			if (mCurrentRenderPass != null)
-			{
-				mCurrentRenderPass.Subpasses[currentSubpass].InitializeFormat(pipelineDescriptor);
-			}
-			else
-			{
-				mCurrentPipeline.RenderPass.Subpasses[currentSubpass].InitializeFormat(pipelineDescriptor);
-			}
-
-			Debug.Assert(bPipeline.Attachments != null);
-			for (var i = 0; i < bPipeline.Attachments.Length; ++i)
-			{
-				var attachment = bPipeline.Attachments[i];
-				pipelineDescriptor.ColorAttachments[i].BlendingEnabled = attachment.IsBlendingEnabled;
-				pipelineDescriptor.ColorAttachments[i].RgbBlendOperation = attachment.RgbBlendOperation;
-				pipelineDescriptor.ColorAttachments[i].AlphaBlendOperation = attachment.AlphaBlendOperation;
-				pipelineDescriptor.ColorAttachments[i].SourceRgbBlendFactor = attachment.SourceRgbBlendFactor;
-				pipelineDescriptor.ColorAttachments[i].SourceAlphaBlendFactor = attachment.SourceAlphaBlendFactor;
-				pipelineDescriptor.ColorAttachments[i].DestinationRgbBlendFactor = attachment.DestinationRgbBlendFactor;
-				pipelineDescriptor.ColorAttachments[i].DestinationAlphaBlendFactor = attachment.DestinationAlphaBlendFactor;
-				pipelineDescriptor.ColorAttachments[i].WriteMask = attachment.ColorWriteMask;
-			}
-
-			Foundation.NSError err;
-			var pipelineState = mDevice.CreateRenderPipelineState(pipelineDescriptor, out err);
-			// TODO : CHECK ERROR HERE
+			var pipelineState = mCurrentPipeline.PipelineStates[0];
 
 			SetupDepthStencil();
+
+			var frontReference = mCurrentPipeline.FrontStencilReference;
+			var backReference = mCurrentPipeline.BackStencilReference;
+
+			// ONLY if pipeline ATTACHED and dynamic state has been set
+			if (
+				(mCurrentPipeline.DynamicStates & AmtGraphicsPipelineDynamicStateFlagBits.STENCIL_REFERENCE)
+					== AmtGraphicsPipelineDynamicStateFlagBits.STENCIL_REFERENCE
+			   )
+			{
+				frontReference = mFrontReference;
+				backReference = mBackReference;
+			}
 
 			float depthBiasConstantFactor = mCurrentPipeline.DepthBiasConstantFactor;
 			float depthBiasSlopeFactor = mCurrentPipeline.SlopeScale;
@@ -228,17 +225,26 @@ namespace Magnesium.Metal
 				DepthBiasClamp = depthBiasClamp,
 				DepthBiasSlopeScale = depthBiasSlopeFactor,
 				DepthBiasConstantFactor = depthBiasConstantFactor,
+				FrontReference = frontReference,
+				BackReference = backReference,
 			};
 			var nextIndex = mBag.PipelineStates.Push(pipeDetail);
 
-			mInstructions.Add(new AmtEncodingInstruction
+			mBoundPipeline = new AmtEncodingInstruction
 			{
 				Category = AmtEncoderCategory.Graphics,
 				Index = (uint)nextIndex,
 				Operation = CmdSetPipeline,
-			});
+			};
+
+			if (mCurrentRenderPass != null)
+			{
+				mInstructions.Add(mBoundPipeline);
+			}
 
 		}
+		private AmtEncodingInstruction mBoundPipeline;
+
 
 		private static void CmdSetPipeline(AmtCommandRecording recording, uint index)
 		{
@@ -260,7 +266,7 @@ namespace Magnesium.Metal
 			var color = item.BlendConstants;
 			arg1.SetBlendColor(color.R, color.G, color.B, color.A);
 			arg1.SetDepthBias(item.DepthBiasConstantFactor, item.DepthBiasSlopeScale, item.DepthBiasClamp);
-
+			arg1.SetStencilFrontReferenceValue(item.FrontReference, item.BackReference);
 		}
 
 
@@ -299,49 +305,58 @@ namespace Magnesium.Metal
 				backCompareMask = mBackWrite;
 			}
 
-			var dsDescriptor = new MTLDepthStencilDescriptor
-			{ 
-				// TODO : add this back in later
-				//DepthCompareFunction = mCurrentPipeline.DepthCompareFunction,
-				DepthWriteEnabled = mCurrentPipeline.DepthWriteEnabled,
-				BackFaceStencil = mCurrentPipeline.BackStencil.GetDescriptor(),
-				FrontFaceStencil = mCurrentPipeline.FrontStencil.GetDescriptor(),
-			};
-			dsDescriptor.FrontFaceStencil.ReadMask = frontCompareMask;
-			dsDescriptor.FrontFaceStencil.WriteMask = frontWriteMask;
-			dsDescriptor.BackFaceStencil.ReadMask = backCompareMask;
-			dsDescriptor.BackFaceStencil.WriteMask = backWriteMask;
-
-			var depthStencil = mDevice.CreateDepthStencilState(dsDescriptor);
-
-			var frontReference = mCurrentPipeline.FrontStencilReference;
-			var backReference = mCurrentPipeline.BackStencilReference;
-
-			// ONLY if pipeline ATTACHED and dynamic state has been set
-			if (
-				(mCurrentPipeline.DynamicStates & AmtGraphicsPipelineDynamicStateFlagBits.STENCIL_REFERENCE)
-					== AmtGraphicsPipelineDynamicStateFlagBits.STENCIL_REFERENCE
-			   )
+			var key = new AmtDepthStencilStateKey
 			{
-				frontReference = mFrontReference;
-				backReference = mBackReference;
+				DepthCompareFunction = mCurrentPipeline.DepthCompareFunction,
+				DepthWriteEnabled = mCurrentPipeline.DepthWriteEnabled,
+				Back = new AmtGraphicsPipelineStencilInfo
+				{
+					DepthFailure = mCurrentPipeline.BackStencil.DepthFailure,
+					DepthStencilPass = mCurrentPipeline.BackStencil.DepthStencilPass,
+					ReadMask = backCompareMask,
+					WriteMask = backWriteMask,
+					StencilCompareFunction = mCurrentPipeline.BackStencil.StencilCompareFunction,
+					StencilFailure = mCurrentPipeline.BackStencil.StencilFailure,
+				},
+				Front = new AmtGraphicsPipelineStencilInfo
+				{
+					DepthFailure = mCurrentPipeline.FrontStencil.DepthFailure,
+					DepthStencilPass = mCurrentPipeline.FrontStencil.DepthStencilPass,
+					ReadMask = frontCompareMask,
+					WriteMask = frontWriteMask,
+					StencilCompareFunction = mCurrentPipeline.FrontStencil.StencilCompareFunction,
+					StencilFailure = mCurrentPipeline.FrontStencil.StencilFailure,
+				},
+			};
+
+			IMTLDepthStencilState record;
+			if (!mDepthCache.TryGetValue(key, out record))
+			{
+				// create new depth stencil state if missing
+				var dsDescriptor = key.GenerateDescriptor();
+
+				record = mDevice.CreateDepthStencilState(dsDescriptor);
+
+				// then add to cache for later reuse
+				mDepthCache.Add(key, record);
 			}
 
-			var item = new AmtDepthStencilStateRecord
-			{
-				DepthStencilState = depthStencil,
-				FrontReference = frontReference,
-				BackReference = backReference,
-			};
+			var nextIndex = mBag.DepthStencilStates.Push(record);
 
-			var nextIndex = mBag.DepthStencilStates.Push(item);
-			mInstructions.Add(new AmtEncodingInstruction
+			mBoundDepthStencil = new AmtEncodingInstruction
 			{
 				Category = AmtEncoderCategory.Graphics,
 				Index = nextIndex,
 				Operation = CmdSetDepthStencilState,
-			});
+			};
+
+			if (mCurrentRenderPass != null)
+			{
+				mInstructions.Add(mBoundDepthStencil);
+			}
 		}
+
+		private AmtEncodingInstruction mBoundDepthStencil;
 
 		private static void CmdSetDepthStencilState(AmtCommandRecording recording, uint index)
 		{
@@ -351,8 +366,8 @@ namespace Magnesium.Metal
 			Debug.Assert(stage.Encoder != null, nameof(stage.Encoder) + " is null");
 			Debug.Assert(stage.Grid != null, nameof(stage.Grid) + " is null");
 			var item = stage.Grid.DepthStencilStates[index];
-			stage.Encoder.SetDepthStencilState(item.DepthStencilState);
-			stage.Encoder.SetStencilFrontReferenceValue(item.FrontReference, item.BackReference);
+			Debug.Assert(item != null, nameof(item) + " is null");
+			stage.Encoder.SetDepthStencilState(item);
 		}
 
 		#endregion
@@ -613,6 +628,8 @@ namespace Magnesium.Metal
 			mDepthBiasSlopeFactor = 0f;
 			mDepthBiasConstantFactor = 0f;
 			mBoundVertexBuffer = null;
+			mBoundPipeline = null;
+			mBoundDepthStencil = null;
 		}
 
 		#region SetScissor methods
