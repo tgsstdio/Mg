@@ -4,6 +4,8 @@ namespace Magnesium.Metal
 {
 	public class AmtGraphicsBag
 	{
+		public AmtEncoderItemCollection<AmtCmdBindDescriptorSetsRecord> DescriptorSets { get; private set; }
+
 		public AmtGraphicsBag()
 		{
 			mBlendConstants = new AmtEncoderItemCollection<MgColor4f>();
@@ -19,6 +21,7 @@ namespace Magnesium.Metal
 			mDrawIndexeds = new AmtEncoderItemCollection<AmtDrawIndexedRecord>();
 			mDrawIndexedIndirects = new AmtEncoderItemCollection<AmtDrawIndexedIndirectRecord>();
 			mVertexBuffers = new AmtEncoderItemCollection<AmtVertexBufferRecord>();
+			DescriptorSets = new AmtEncoderItemCollection<AmtCmdBindDescriptorSetsRecord>();
 		}
 
 		public void Clear()
@@ -36,6 +39,7 @@ namespace Magnesium.Metal
 			mDrawIndexeds.Clear();
 			mDrawIndexedIndirects.Clear();
 			mVertexBuffers.Clear();
+			DescriptorSets.Clear();
 		}
 
 		private AmtEncoderItemCollection<AmtVertexBufferRecord> mVertexBuffers;

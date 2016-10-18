@@ -23,5 +23,6 @@
 		void Draw(uint vertexCount, uint instanceCount, uint firstVertex, uint firstInstance);
 		void DrawIndirect(IMgBuffer buffer, ulong offset, uint drawCount, uint stride);
 		void BindVertexBuffers(uint firstBinding, IMgBuffer[] pBuffers, ulong[] pOffsets);
+		void BindDescriptorSets(IMgPipelineLayout layout, uint firstSet, uint descriptorSetCount, IMgDescriptorSet[] pDescriptorSets, uint[] pDynamicOffsets);
 	}
 }

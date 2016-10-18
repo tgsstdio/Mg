@@ -157,6 +157,9 @@
     <Compile Include="Entrypoint\AmtPresentationBarrierEntrypoint.cs" />
     <Compile Include="IAmtCmdDepthStencilCache.cs" />
     <Compile Include="Device\AmtCmdDepthStencilCache.cs" />
+    <Compile Include="CommandBuffer\Recording\AmtCmdBindDescriptorSetsRecord.cs" />
+    <Compile Include="CommandBuffer\Recording\AmtCmdBindDescriptorSetsStageRecord.cs" />
+    <Compile Include="CommandBuffer\Recording\AmtCmdBindDescriptorSetBufferRecord.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Magnesium\Magnesium.csproj">

@@ -6,6 +6,5 @@ namespace Magnesium.Metal
 	public class AmtDescriptorSetSamplerBinding
 	{
 		public IMTLSamplerState Sampler { get; set;}
-		public nuint PositionOffset { get; internal set; }
 	}
 }

@@ -614,7 +614,7 @@ namespace Magnesium.Metal
 		{
 			var output = new MTLVertexDescriptor
 			{
-
+				 
 			};
 
 			for (var i = 0; i < Layouts.Length; ++i)

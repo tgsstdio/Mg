@@ -528,8 +528,14 @@ namespace Magnesium.Metal
 
 									var buf = (AmtBuffer)info.Buffer;
 
+									ulong totalOffset = buf.BoundMemoryOffset + info.Offset;
+
+									Debug.Assert(totalOffset <= nuint.MaxValue);
+
 									var index = offset + i;
 									map.Buffers[index].Buffer = buf.VertexBuffer;
+									map.Buffers[index].BoundMemoryOffset = (nuint) totalOffset;
+
 								}
 								break;
 							default:

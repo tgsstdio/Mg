@@ -5,7 +5,7 @@ using Metal;
 
 namespace Magnesium.Metal
 {
-	public class AmtGraphicsEncoder : IAmtGraphicsEncoder
+	internal class AmtGraphicsEncoder : IAmtGraphicsEncoder
 	{
 		private AmtGraphicsBag mBag;
 		private IMTLDevice mDevice;
@@ -38,7 +38,7 @@ namespace Magnesium.Metal
 		private AmtRenderPass mCurrentRenderPass;
 		public void BeginRenderPass(MgRenderPassBeginInfo pRenderPassBegin, MgSubpassContents contents)
 		{
-			if (pRenderPassBegin != null)
+			if (pRenderPassBegin == null)
 				throw new ArgumentNullException(nameof(pRenderPassBegin));
 
 			var bRenderPass = (AmtRenderPass)pRenderPassBegin.RenderPass;
@@ -1156,5 +1156,151 @@ namespace Magnesium.Metal
 				VertexBuffers = mBag.VertexBuffers.ToArray(),
 			};
 		}
+
+		#region BindDescriptorSets methods
+
+		//private AmtPipelineLayout mLayout;
+		private AmtDescriptorSet[] mDescriptorSets;
+		private uint[] mDynamicOffsets;
+		public void BindDescriptorSets(IMgPipelineLayout layout,
+		                               uint firstSet, 
+		                               uint descriptorSetCount,
+		                               IMgDescriptorSet[] pDescriptorSets,
+		                               uint[] pDynamicOffsets)
+		{
+			if (layout == null)
+				throw new ArgumentNullException(nameof(layout));
+
+			var bLayout = (AmtPipelineLayout)layout;
+
+			if (mCurrentPipeline == null)
+			{
+				// LATE BINDING
+				//mLayout = bLayout;
+				mDescriptorSets = new AmtDescriptorSet[descriptorSetCount];
+
+				for (var i = 0; i < descriptorSetCount; ++i)
+				{
+					var offset = i + firstSet;
+					mDescriptorSets[offset] = (AmtDescriptorSet)pDescriptorSets[offset];
+				}
+				mDynamicOffsets = pDynamicOffsets;
+			}
+			else
+			{
+				RecordBindDescriptorSets();	
+			}
+		}
+
+		void RecordBindDescriptorSets()
+		{
+			// CANNOT WORK OUT VERTEX OFFSET UNLESS PIPELINE IS BOUND
+			var vertexOffset = mCurrentPipeline.Layouts.Length;
+
+			// ASSUME IT IS ALWAYS ONE DESCRIPTOR SET ALLOWED
+			//for (var i = 0; i < descriptorSetCount; ++i)
+			//{
+			const int FIRST_SET = 0;
+			var currentSet = mDescriptorSets[FIRST_SET];
+			var item = new AmtCmdBindDescriptorSetsRecord
+			{
+				VertexIndexOffset = (nuint)mCurrentPipeline.Layouts.Length,
+				VertexStage = ExtractStageBinding(currentSet.Vertex),
+				FragmentStage = ExtractStageBinding(currentSet.Fragment),
+			};
+
+			var nextIndex = mBag.DescriptorSets.Push(item);
+
+			var instruction = new AmtEncodingInstruction
+			{
+				Category = AmtEncoderCategory.Graphics,
+				Index = nextIndex,
+				Operation = CmdBindDescriptorSets,
+			};
+
+			//}
+			// TODO : dynamic offsets
+			// TODO : late binding i.e. 
+			// CmdBindDescriptorSet
+			// CmdBindPipeline
+			mInstructions.Add(instruction);
+		}
+
+		private AmtCmdBindDescriptorSetsStageRecord ExtractStageBinding(AmtDescriptorSetBindingMap stage)
+		{
+			var vertexBuffers = new List<AmtCmdBindDescriptorSetBufferRecord>();
+			var textures = new List<IMTLTexture>();
+			var samplerStates = new List<IMTLSamplerState>();
+
+			foreach (var buffer in stage.Buffers)
+			{
+				vertexBuffers.Add(new AmtCmdBindDescriptorSetBufferRecord
+				{
+					Buffer = buffer.Buffer,
+					Offset = buffer.BoundMemoryOffset,
+				});
+			}
+
+			foreach (var texture in stage.Textures)
+			{
+				textures.Add(texture.Texture);
+			}
+
+			return new AmtCmdBindDescriptorSetsStageRecord
+			{
+				Buffers = vertexBuffers.ToArray(),
+				Textures = textures.ToArray(),
+				TexturesRange = new Foundation.NSRange(0, textures.Count),
+				Samplers = samplerStates.ToArray(),
+				SamplersRange = new Foundation.NSRange(0, samplerStates.Count),
+			};
+		}
+
+
+		private static void CmdBindDescriptorSets(AmtCommandRecording recording, uint index)
+		{
+			var stage = recording.Graphics;
+			Debug.Assert(stage.Encoder != null, nameof(stage.Encoder) + " is null");
+			Debug.Assert(stage.Grid != null, nameof(stage.Grid) + " is null");
+			AmtCmdBindDescriptorSetsRecord item = stage.Grid.DescriptorSetBindings[index];
+
+			Debug.Assert(item.VertexStage != null, nameof(item.VertexStage) + " is null");
+
+			{
+				var vertexBufferIndex = item.VertexIndexOffset;
+				foreach (var buffer in item.VertexStage.Buffers)
+				{
+					stage.Encoder.SetVertexBuffer(buffer.Buffer, buffer.Offset, vertexBufferIndex);
+					++vertexBufferIndex;
+				}
+			}
+
+			if (item.VertexStage.Textures.Length > 0)
+				stage.Encoder.SetVertexTextures(item.VertexStage.Textures, item.VertexStage.TexturesRange);
+
+			if (item.VertexStage.Samplers.Length > 0)
+				stage.Encoder.SetVertexSamplerStates(item.VertexStage.Samplers, item.VertexStage.SamplersRange);
+
+			Debug.Assert(item.FragmentStage != null, nameof(item.FragmentStage) + " is null");
+
+			{
+				nuint fragmentBufferIndex = 0;
+				foreach (var buffer in item.VertexStage.Buffers)
+				{
+					stage.Encoder.SetFragmentBuffer(buffer.Buffer, buffer.Offset, fragmentBufferIndex);
+					++fragmentBufferIndex;
+				}
+			}
+
+			Debug.Assert(item.FragmentStage.Textures != null, nameof(item.FragmentStage.Textures) + " is null");
+			if (item.FragmentStage.Textures.Length > 0)
+				stage.Encoder.SetFragmentTextures(item.VertexStage.Textures, item.VertexStage.TexturesRange);
+
+			Debug.Assert(item.FragmentStage.Samplers != null, nameof(item.FragmentStage.Samplers) + " is null");
+			if (item.FragmentStage.Samplers.Length > 0)
+				stage.Encoder.SetFragmentSamplerStates(item.VertexStage.Samplers, item.VertexStage.SamplersRange);
+		}
+
+		#endregion 
 	}
 }

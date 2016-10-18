@@ -14,7 +14,6 @@ namespace Magnesium.Metal
 			{
 				Buffers[i] = new AmtDescriptorSetBufferBinding
 				{
-					PositionOffset = (nuint)i,
 				};
 			}
 
@@ -23,7 +22,6 @@ namespace Magnesium.Metal
 			{
 				SamplerStates[i] = new AmtDescriptorSetSamplerBinding
 				{
-					PositionOffset = (nuint)i,
 				};
 			}
 
@@ -32,7 +30,6 @@ namespace Magnesium.Metal
 			{
 				Textures[i] = new AmtDescriptorSetTextureBinding
 				{
-					PositionOffset = (nuint)i,
 				};
 			}
 		}

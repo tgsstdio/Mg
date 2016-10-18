@@ -17,5 +17,6 @@ namespace Magnesium.Metal
 		public AmtDrawIndexedRecord[] DrawIndexed { get; internal set; }
 		public AmtDrawIndexedIndirectRecord[] DrawIndexedIndirects { get; internal set;}
 		public AmtVertexBufferRecord[] VertexBuffers { get; internal set;}
+		public AmtCmdBindDescriptorSetsRecord[] DescriptorSetBindings { get; internal set; }
 	}
 }

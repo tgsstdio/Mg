@@ -28,7 +28,7 @@ namespace Magnesium.Metal
 				{
 					Drawable = null,
 				};
-				mImages[i].Inflight = new ManualResetEvent(false);
+				mImages[i].Inflight = new ManualResetEvent(true);
 			}
 
 			mView = view;

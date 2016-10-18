@@ -154,6 +154,14 @@ namespace Magnesium.Metal
 			//parameter.DynamicOffsets = pDynamicOffsets;
 			//parameter.DescriptorSets = pDescriptorSets;
 			//mRepository.DescriptorSets.Add(parameter);
+			if (pipelineBindPoint == MgPipelineBindPoint.GRAPHICS)
+			{
+				mCommandEncoder.Graphics.BindDescriptorSets(layout,
+															firstSet,
+															descriptorSetCount,
+															pDescriptorSets,
+															pDynamicOffsets);
+			}
 		}
 
 		public void CmdBindIndexBuffer(IMgBuffer buffer, ulong offset, MgIndexType indexType)

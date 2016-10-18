@@ -243,7 +243,7 @@ namespace MetalSample
 
 		public void Draw(MTKView view)
 		{
-			//Render();
+			Render();
 		}
 
 		Vector3[] positionVboData = new Vector3[]{
@@ -784,7 +784,7 @@ namespace MetalSample
 				new[]
 				{
 					new MgSubmitInfo
-					{
+					{ 
 						CommandBuffers = new []
 						{
 							mRenderCmdBuffer,
@@ -821,6 +821,7 @@ namespace MetalSample
                  							(ulong) rawsize, 0, 
                 							out ptr);
 			Marshal.StructureToPtr(uniforms, ptr, false);
+			mUniforms.DeviceMemory.UnmapMemory(mGraphicsConfiguration.Device);
 			rotation += .01f;
 		}
 
