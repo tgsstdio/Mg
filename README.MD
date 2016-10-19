@@ -7,8 +7,10 @@ Four words to describe Magnesium:
 Quick Links
 
 - [CHANGELOG](#changelog)
+- [BUILD](#build)
 - [LICENSE](#license)
 - [WHY?](#why?)
+- [CROSS PLATFORM DEV GUIDE](#cross-platform-dev-guide)
 - [PLATFORM SUMMARY](#platform-summary)
 
 
@@ -46,13 +48,26 @@ Magnesium and its implementations uses [Semantic Versioning v2.0.0](http://semve
 
 ----------
 
-##LICENSE
+
+## BUILD
+
+ 1. Change directory to the Build folder in the repository 
+ 2. Open ```Mg ALL BUILD.sln``` in Visual Studio or Xamarin Studio
+ 3. Build all projects attached to this solution. The assemblies can be found in the bin/ 
+ 	- Magnesium
+	- Magnesium.OpenGL
+	- Magnesium.Vulkan
+
+
+----------
+
+## LICENSE
 
 Licensed under MIT license
 
 ----------
 
-##WHY?
+## WHY?
 
 Scenario 1: 
 You want to implement a cross-platform C#/.net 2D/3D application with  graphics API/library that uses modern high-performance features such as 
@@ -97,11 +112,76 @@ To reduce recompilation, Magnesium libraries are compiled with minimal preproces
 
 A exception is Magnesium.Metal which uses UNIFIED for both debug and release assemblies as Xamarin assemblies that are compiled with UNIFIED can be both for iOS and MacOS applications.
 
+----------
+
+## CROSS PLATFORM DEV GUIDE
+
+### IMgShaderModule 
+
+Magnesium does not SPECIFIC a shader language of choice, rather relying on the shader language available to the platform itself.
+ 
+By passing a System.IO.Stream handle contain some data and its length in bytes into IMgDevice.CreateShaderModule, Magnesium and its implementation can cater to any shader file type.  
+
+```C#
+public class MgShaderModuleCreateInfo
+{
+	public Stream Code { get; set; }
+	public UIntPtr CodeSize { get; set; }
+}
+```
+
+| Platform | Description | File extension |
+|----------|-------------|----------------|
+| Magnesium.Vulkan | SPIRV bytecode code | |
+| Magnesium.OpenGL | GLSL source code | .glsl, .frag, .vert |
+| Magnesium.Metal  | Metal source code | .metal |
+
+OPENGL: Since METAL does not allow "main" as a function entrypoint in MgPipelineStageCreateInfo.Name,  
+OpenGL GLSL shaders should not include ```void main()``` function section in the source code. To work around GLSL inability to specify a shader name,
+the Magnesium.OpenGL implementation will append the ```void main() { <shader_name>() }``` dynamically.   
+
+```C#
+public class MgPipelineStageCreateInfo
+{
+	public MgPipelineStageFlagBits Stage { get; set; }
+	public string Name { get; set; }	
+}
+
+```
+
+OPENGL: gl_Position.y should be flipped in the vertex shader 	
+
+```GLSL
+	gl_Position = vec4(in_position.x, -in_position.y, 0, 1);
+```
+
+### Compute
+
+METAL: compute pipelines need to specify the dimensions of the workgroup therefore you must specify ThreadsPerWorkgroup when calling IMgDevice.CreateComputePipelines.
+
+```C#
+public class MgComputePipelineCreateInfo
+{
+	public MgPipelineCreateFlagBits Flags { get; set; }
+	public MgPipelineShaderStageCreateInfo Stage { get; set; }
+	public IMgPipelineLayout Layout { get; set; }
+	// REQUIRED FOR METAL
+	public MgVec3Ui ThreadsPerWorkgroup { get; set;}
+	public IMgPipeline BasePipelineHandle { get; set; }
+	public Int32 BasePipelineIndex { get; set; }
+}
+``` 
+
+
+### Descriptor Sets
+
+OPENGL: Only one of the descriptor sets can be bound.  
+METAL: Only one of the descriptor sets can be bound. Internally, descriptor sets, vertex buffers, samplers and textures are combined together within the shaders.       
 
 ----------
 
 
-##PLATFORM SUMMARY
+## PLATFORM SUMMARY
 
 
 | Platform | API     | Availability | Caveats |
