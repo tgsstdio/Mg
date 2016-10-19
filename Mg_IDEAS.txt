@@ -1,0 +1,51 @@
+Viewport arrays 
+OpenGL ES 3.2
+GL_ARB_viewport_array
+#extension GL_ARB_viewport_array : <behavior>
+
+OpenGL ES 3.1
+NV_viewport_array
+https://www.khronos.org/registry/gles/extensions/NV/NV_viewport_array.txt
+
+#extension GL_NV_viewport_array : <behaviour>
+
+OpenGL 4.3
+OpenGL ES 3.1
+GL_NV_viewport_array2
+https://www.opengl.org/registry/specs/NV/viewport_array2.txt
+
+#extension GL_NV_viewport_array2 : <behavior>
+
+Explicit locations
+OpenGL ES 2.0
+GL_NV_explicit_attrib_location
+https://www.khronos.org/registry/gles/extensions/NV/NV_explicit_attrib_location.txt
+
+#extension GL_NV_explicit_attrib_location : <behavior>
+
+OpenGL 3.3
+ARB_explicit_attrib_location
+https://www.opengl.org/registry/specs/ARB/explicit_uniform_location.txt
+
+#extension GL_ARB_explicit_uniform_location : <behavior>
+
+Bindless textures
+OpenGL 4.0
+https://www.opengl.org/registry/specs/ARB/bindless_texture.txt
+
+OpenGL ES 3.1/3.2
+https://www.khronos.org/registry/gles/extensions/IMG/IMG_bindless_texture.txt
+
+OpenGL GLSL workaround for Metal.
+
+GLSL entrypoint can't be named main HOWEVER we could append a main method body to source code 
+which calls custom function for every stage before compiling the code
+
+e.g. 
+
+void main()
+{
+	custom_func();
+}
+
+TODO : Remove all finalize classes from code

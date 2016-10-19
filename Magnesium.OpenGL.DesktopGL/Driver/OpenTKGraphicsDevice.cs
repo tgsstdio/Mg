@@ -56,7 +56,7 @@ namespace Magnesium.OpenGL.DesktopGL
 
         }
 
-		public IMgImageView View {
+		public IMgImageView DepthStencilImageView {
 			get {
 				return mView;
 			}
