@@ -44,7 +44,14 @@ namespace Magnesium.OpenGL
 		#region IMgPhysicalDevice implementation
 		public void GetPhysicalDeviceProperties (out MgPhysicalDeviceProperties pProperties)
 		{
-			pProperties = new MgPhysicalDeviceProperties ();
+			pProperties = new MgPhysicalDeviceProperties
+            {
+                Limits = new MgPhysicalDeviceLimits
+                {
+                    // OPENGL : only one descriptor sets can be bound
+                    MaxBoundDescriptorSets = 1,
+                },
+            };
 		}
 		public void GetPhysicalDeviceQueueFamilyProperties (out MgQueueFamilyProperties[] pQueueFamilyProperties)
 		{

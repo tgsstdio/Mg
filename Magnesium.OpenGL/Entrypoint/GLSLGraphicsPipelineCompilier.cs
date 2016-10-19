@@ -61,7 +61,7 @@ namespace Magnesium.OpenGL
 						using (var sr = new StreamReader(ms))
 						{
 							string fileContents = sr.ReadToEnd();
-							module.ShaderId = CompileShader(mShaderModuleEntrypoint, stage.Stage, fileContents, string.Empty);
+							module.ShaderId = CompileShader(mShaderModuleEntrypoint, stage.Stage, fileContents, string.Empty, stage.Name);
 							modules.Add(module.ShaderId.Value);
 						}
 					}
@@ -119,7 +119,7 @@ namespace Magnesium.OpenGL
 			return retVal;
 		}
 
-		internal static int CompileShader(IGLShaderModuleEntrypoint entrypoint, MgShaderStageFlagBits stage, string fileContents, string shaderPrefix)
+		internal static int CompileShader(IGLShaderModuleEntrypoint entrypoint, MgShaderStageFlagBits stage, string fileContents, string shaderPrefix, string functionName)
 		{
 			int retVal = entrypoint.CreateShaderModule(stage);
 			// GL.CreateShader(type);
@@ -137,8 +137,13 @@ namespace Magnesium.OpenGL
 			builder.AppendLine(versionStr);
 			builder.AppendLine(shaderPrefix);
 			builder.Append(shaderContents);
+            
+            // APPEND custom function name to replicate custom function name
+            builder.Append("void main() { ");
+            builder.Append(functionName);
+            builder.Append("(); }");
 
-			entrypoint.CompileShaderModule(retVal, builder.ToString());
+            entrypoint.CompileShaderModule(retVal, builder.ToString());
 
 			//GL.ShaderSource(retVal, builder.ToString());
 			//GL.CompileShader(retVal);
