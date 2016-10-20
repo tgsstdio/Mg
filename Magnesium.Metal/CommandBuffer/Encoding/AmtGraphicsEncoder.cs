@@ -1173,20 +1173,19 @@ namespace Magnesium.Metal
 
 			var bLayout = (AmtPipelineLayout)layout;
 
-			if (mCurrentPipeline == null)
-			{
-				// LATE BINDING
-				//mLayout = bLayout;
-				mDescriptorSets = new AmtDescriptorSet[descriptorSetCount];
+			// LATE BINDING
+			//mLayout = bLayout;
+			mDescriptorSets = new AmtDescriptorSet[descriptorSetCount];
 
-				for (var i = 0; i < descriptorSetCount; ++i)
-				{
-					var offset = i + firstSet;
-					mDescriptorSets[offset] = (AmtDescriptorSet)pDescriptorSets[offset];
-				}
-				mDynamicOffsets = pDynamicOffsets;
+			for (var i = 0; i < descriptorSetCount; ++i)
+			{
+				var offset = i + firstSet;
+				mDescriptorSets[offset] = (AmtDescriptorSet)pDescriptorSets[offset];
 			}
-			else
+			mDynamicOffsets = pDynamicOffsets;
+
+			if (mCurrentPipeline != null)
+				
 			{
 				RecordBindDescriptorSets();	
 			}
@@ -1194,8 +1193,7 @@ namespace Magnesium.Metal
 
 		void RecordBindDescriptorSets()
 		{
-			// CANNOT WORK OUT VERTEX OFFSET UNLESS PIPELINE IS BOUND
-			var vertexOffset = mCurrentPipeline.Layouts.Length;
+
 
 			// ASSUME IT IS ALWAYS ONE DESCRIPTOR SET ALLOWED
 			//for (var i = 0; i < descriptorSetCount; ++i)
@@ -1204,6 +1202,7 @@ namespace Magnesium.Metal
 			var currentSet = mDescriptorSets[FIRST_SET];
 			var item = new AmtCmdBindDescriptorSetsRecord
 			{
+				// CANNOT WORK OUT VERTEX OFFSET UNLESS A PIPELINE IS BOUND
 				VertexIndexOffset = (nuint)mCurrentPipeline.Layouts.Length,
 				VertexStage = ExtractStageBinding(currentSet.Vertex),
 				FragmentStage = ExtractStageBinding(currentSet.Fragment),
@@ -1246,6 +1245,11 @@ namespace Magnesium.Metal
 				textures.Add(texture.Texture);
 			}
 
+			foreach (var sampler in stage.SamplerStates)
+			{
+				samplerStates.Add(sampler.Sampler);
+			}
+
 			return new AmtCmdBindDescriptorSetsStageRecord
 			{
 				Buffers = vertexBuffers.ToArray(),
@@ -1264,41 +1268,46 @@ namespace Magnesium.Metal
 			Debug.Assert(stage.Grid != null, nameof(stage.Grid) + " is null");
 			AmtCmdBindDescriptorSetsRecord item = stage.Grid.DescriptorSetBindings[index];
 
-			Debug.Assert(item.VertexStage != null, nameof(item.VertexStage) + " is null");
-
 			{
+				var shaderModule = item.VertexStage;
+				Debug.Assert(shaderModule != null, nameof(shaderModule) + " is null");
+			
 				var vertexBufferIndex = item.VertexIndexOffset;
-				foreach (var buffer in item.VertexStage.Buffers)
+				foreach (var buffer in shaderModule.Buffers)
 				{
 					stage.Encoder.SetVertexBuffer(buffer.Buffer, buffer.Offset, vertexBufferIndex);
 					++vertexBufferIndex;
-				}
+				}			
+
+				Debug.Assert(shaderModule.Textures != null, nameof(item.VertexStage.Textures) + " is null");
+				if (shaderModule.Textures.Length > 0)
+					stage.Encoder.SetFragmentTextures(shaderModule.Textures, shaderModule.TexturesRange);
+
+				Debug.Assert(shaderModule.Samplers != null, nameof(item.VertexStage.Samplers) + " is null");
+				if (item.FragmentStage.Samplers.Length > 0)
+					stage.Encoder.SetFragmentSamplerStates(shaderModule.Samplers, shaderModule.SamplersRange);
+
 			}
 
-			if (item.VertexStage.Textures.Length > 0)
-				stage.Encoder.SetVertexTextures(item.VertexStage.Textures, item.VertexStage.TexturesRange);
-
-			if (item.VertexStage.Samplers.Length > 0)
-				stage.Encoder.SetVertexSamplerStates(item.VertexStage.Samplers, item.VertexStage.SamplersRange);
-
-			Debug.Assert(item.FragmentStage != null, nameof(item.FragmentStage) + " is null");
-
 			{
+				var shaderModule = item.FragmentStage;
+				Debug.Assert(shaderModule != null, nameof(shaderModule) + " is null");
+			
 				nuint fragmentBufferIndex = 0;
-				foreach (var buffer in item.VertexStage.Buffers)
+				foreach (var buffer in shaderModule.Buffers)
 				{
 					stage.Encoder.SetFragmentBuffer(buffer.Buffer, buffer.Offset, fragmentBufferIndex);
 					++fragmentBufferIndex;
 				}
+
+				Debug.Assert(shaderModule.Textures != null, nameof(item.FragmentStage.Textures) + " is null");
+				if (shaderModule.Textures.Length > 0)
+					stage.Encoder.SetFragmentTextures(shaderModule.Textures, shaderModule.TexturesRange);
+
+				Debug.Assert(shaderModule.Samplers != null, nameof(item.FragmentStage.Samplers) + " is null");
+				if (item.FragmentStage.Samplers.Length > 0)
+					stage.Encoder.SetFragmentSamplerStates(shaderModule.Samplers, shaderModule.SamplersRange);
 			}
-
-			Debug.Assert(item.FragmentStage.Textures != null, nameof(item.FragmentStage.Textures) + " is null");
-			if (item.FragmentStage.Textures.Length > 0)
-				stage.Encoder.SetFragmentTextures(item.VertexStage.Textures, item.VertexStage.TexturesRange);
-
-			Debug.Assert(item.FragmentStage.Samplers != null, nameof(item.FragmentStage.Samplers) + " is null");
-			if (item.FragmentStage.Samplers.Length > 0)
-				stage.Encoder.SetFragmentSamplerStates(item.VertexStage.Samplers, item.VertexStage.SamplersRange);
 		}
 
 		#endregion 
