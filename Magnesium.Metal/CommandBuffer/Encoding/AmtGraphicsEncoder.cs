@@ -49,7 +49,7 @@ namespace Magnesium.Metal
 			Debug.Assert(bFramebuffer != null, nameof(pRenderPassBegin.Framebuffer) + " is null");
 
 			const uint FIRST_SUBPASS = 0;
-			var descriptor = InitializeDescriptor(FIRST_SUBPASS, bRenderPass, pRenderPassBegin.ClearValues);
+			var descriptor = InitializeDescriptor(FIRST_SUBPASS, bRenderPass, pRenderPassBegin.ClearValues, bFramebuffer);
 
 			var nextIndex = mBag.RenderPasses.Push(descriptor);
 			mInstructions.Add(new AmtEncodingInstruction
@@ -87,11 +87,17 @@ namespace Magnesium.Metal
 			stage.Encoder = cmdBuf.CreateRenderCommandEncoder(item);
 		}
 
-		static MTLRenderPassDescriptor InitializeDescriptor(uint subpassIndex, AmtRenderPass renderPass, MgClearValue[] clearValues)
+		static MTLRenderPassDescriptor InitializeDescriptor(
+			uint subpassIndex,
+			AmtRenderPass renderPass,
+			MgClearValue[] clearValues, 
+			AmtFramebuffer fb
+		)
 		{
-			var dest = new MTLRenderPassDescriptor { };
+			var dest = new MTLRenderPassDescriptor {  };
 
 			var subpass = renderPass.Subpasses[subpassIndex];
+			var fbSubPass = fb.Subpasses[subpassIndex];
 
 			foreach (var attachment in subpass.ColorAttachments)
 			{
@@ -127,15 +133,35 @@ namespace Magnesium.Metal
 					b = initialValue.B;
 					a = initialValue.A;
 				}
+				var destIndex = (nint)attachment.Index;
 
-				dest.ColorAttachments[(nint)attachment.Index].ClearColor = new MTLClearColor(r, g, b, a);
+				dest.ColorAttachments[destIndex].ClearColor = new MTLClearColor(r, g, b, a);
+				dest.ColorAttachments[destIndex].LoadAction = attachment.LoadAction;
+				dest.ColorAttachments[destIndex].StoreAction = attachment.StoreAction;
+
+				// ATTACHING FRAMEBUFFER HERE
+				dest.ColorAttachments[destIndex].Texture = 
+					fbSubPass.ColorAttachments[attachment.Index].GetTexture();
+				// TODO: RESOLVE MULTISAMPLING
+
 			}
+
+
 
 			if (subpass.DepthStencil != null)
 			{
 				var depthValue = clearValues[subpass.DepthStencil.Index];
 				dest.DepthAttachment.ClearDepth = depthValue.DepthStencil.Depth;
+				dest.DepthAttachment.LoadAction = subpass.DepthStencil.LoadAction;
+				dest.DepthAttachment.StoreAction = subpass.DepthStencil.StoreAction;
+
 				dest.StencilAttachment.ClearStencil = depthValue.DepthStencil.Stencil;
+				dest.StencilAttachment.LoadAction = subpass.DepthStencil.StencilLoadAction;
+				dest.StencilAttachment.StoreAction = subpass.DepthStencil.StencilStoreAction;
+
+				// TODO: RESOLVE MULTISAMPLING
+				dest.DepthAttachment.Texture = fbSubPass.DepthStencil.GetTexture();
+				dest.StencilAttachment.Texture = fbSubPass.DepthStencil.GetTexture();
 			}
 
 			return dest;
@@ -1154,6 +1180,7 @@ namespace Magnesium.Metal
 				Scissors = mBag.Scissors.ToArray(),
 				StencilReferences = mBag.StencilReferences.ToArray(),
 				VertexBuffers = mBag.VertexBuffers.ToArray(),
+				DescriptorSetBindings = mBag.DescriptorSets.ToArray(),
 			};
 		}
 
@@ -1233,6 +1260,7 @@ namespace Magnesium.Metal
 
 			foreach (var buffer in stage.Buffers)
 			{
+				Debug.Assert(buffer.Buffer != null);
 				vertexBuffers.Add(new AmtCmdBindDescriptorSetBufferRecord
 				{
 					Buffer = buffer.Buffer,

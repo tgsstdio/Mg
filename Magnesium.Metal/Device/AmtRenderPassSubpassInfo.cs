@@ -136,6 +136,7 @@ namespace Magnesium.Metal
 			{
 				var color = subpass.ColorAttachments[j];
 				var attachment = createInfo.Attachments[color.Attachment];
+
 				ColorAttachments[j] = new AmtRenderPassClearAttachment
 				{
 					Index = color.Attachment,
@@ -145,6 +146,8 @@ namespace Magnesium.Metal
 					Destination = AmtRenderPassAttachmentDestination.COLOR,
 					StoreAction = TranslateStoreOp(attachment.StoreOp),
 					LoadAction = TranslateLoadOp(attachment.LoadOp),
+					StencilLoadAction = TranslateLoadOp(attachment.StencilLoadOp),
+					StencilStoreAction = TranslateStoreOp(attachment.StencilStoreOp),
 				};
 			}
 
@@ -161,6 +164,8 @@ namespace Magnesium.Metal
 					Destination = AmtRenderPassAttachmentDestination.DEPTH_AND_STENCIL,
 					StoreAction = TranslateStoreOp(attachment.StoreOp),
 					LoadAction = TranslateLoadOp(attachment.LoadOp),
+					StencilLoadAction = TranslateLoadOp(attachment.StencilLoadOp),
+					StencilStoreAction = TranslateStoreOp(attachment.StencilStoreOp),
 				};
 			}
 		}

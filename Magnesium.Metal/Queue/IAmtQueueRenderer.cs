@@ -4,6 +4,6 @@ namespace Magnesium.Metal
 {
 	public interface IAmtQueueRenderer
 	{
-		IMTLCommandBuffer[] Render(AmtQueueSubmission request);
+		void Render(AmtQueueSubmission request);
 	}
 }

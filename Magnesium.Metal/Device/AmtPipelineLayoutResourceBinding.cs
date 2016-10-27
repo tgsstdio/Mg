@@ -1,6 +1,6 @@
 ﻿namespace Magnesium.Metal
 {
-	internal class AmtPipelineResourceBinding
+	public class AmtPipelineResourceBinding
 	{
 		public uint Binding { get; internal set; }
 		public uint DescriptorCount { get; internal set; }

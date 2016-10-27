@@ -5,7 +5,9 @@ namespace Magnesium.Metal
 {
 	public class AmtPipelineLayoutStageResource
 	{
-		public AmtPipelineLayoutStageResource(MgShaderStageFlagBits mask, MgPipelineLayoutCreateInfo createInfo)
+		public AmtPipelineLayoutStageResource(
+			MgShaderStageFlagBits mask, 
+          	MgPipelineLayoutCreateInfo createInfo)
 		{
 			var vertBuffers = new SortedList<uint, AmtPipelineLayoutBufferBinding>();
 			var textures = new SortedList<uint, AmtPipelineLayoutTextureBinding>();
@@ -15,19 +17,22 @@ namespace Magnesium.Metal
 			foreach (var setLayout in createInfo.SetLayouts)
 			{
 				var bSetLayout = (AmtDescriptorSetLayout)setLayout;
-				Initialise(mask, bSetLayout, vertBuffers, textures, samplers);
+				Initialise(mask, bSetLayout, null, vertBuffers, textures, samplers);
 			}
 			ConvertToArrays(vertBuffers, textures, samplers);
 		}
 
-		public AmtPipelineLayoutStageResource(MgShaderStageFlagBits mask, AmtDescriptorSetLayout setLayout)
+		public AmtPipelineLayoutStageResource(
+			MgShaderStageFlagBits mask,
+			AmtDescriptorSetLayout setLayout,
+			IAmtDescriptorSetBindingLocator locator)
 		{
 			var vertBuffers = new SortedList<uint, AmtPipelineLayoutBufferBinding>();
 			var textures = new SortedList<uint, AmtPipelineLayoutTextureBinding>();
 			var samplers = new SortedList<uint, AmtPipelineLayoutSamplerBinding>();
 
 			Stage = mask;
-			Initialise(mask, setLayout, vertBuffers, textures, samplers);
+			Initialise(mask, setLayout, locator, vertBuffers, textures, samplers);
 			ConvertToArrays(vertBuffers, textures, samplers);
 		}
 
@@ -52,13 +57,25 @@ namespace Magnesium.Metal
 		void Initialise(
 			MgShaderStageFlagBits mask,
 			AmtDescriptorSetLayout setLayout,
+			IAmtDescriptorSetBindingLocator locator,
 			SortedList<uint, AmtPipelineLayoutBufferBinding> vertBuffers,
 			SortedList<uint, AmtPipelineLayoutTextureBinding> textures, 
 			SortedList<uint, AmtPipelineLayoutSamplerBinding> samplers
 		)
 		{
-			foreach (var resource in setLayout.PipelineResources)
+			for (var i = 0; i < setLayout.PipelineResources.Length; ++i)
 			{
+				var resource = setLayout.PipelineResources[i];
+
+				AmtDescriptorSetUpdateKey item = null;
+				if (locator != null)
+				{
+					if (!locator.TryGetValue(resource.Binding, out item))
+					{
+						item = locator.Add(resource.Binding);
+					}
+				}
+
 				if ((resource.Stage & mask) == mask)
 				{
 					switch (resource.DescriptorType)
@@ -78,8 +95,16 @@ namespace Magnesium.Metal
 								DescriptorType = resource.DescriptorType,
 							};
 
+							if (locator != null)
+							{
+								var nextTextureIndex = (uint)textures.Count;
+								var nextSamplerIndex = (uint)samplers.Count;
+								item.SetCombinedSampler(mask, nextTextureIndex, nextSamplerIndex);
+							}
+
 							textures.Add(texture.Binding, texture);
 							samplers.Add(sampler.Binding, sampler);
+
 							break;
 						case MgDescriptorType.STORAGE_BUFFER:
 						case MgDescriptorType.STORAGE_BUFFER_DYNAMIC:
@@ -90,6 +115,12 @@ namespace Magnesium.Metal
 									Category = AmtPipelineLayoutBufferBindingCategory.StorageBuffer,
 									DescriptorCount = resource.DescriptorCount,
 								};
+
+								if (locator != null)
+								{
+									var nextOffset = (uint)vertBuffers.Count;
+									item.SetBuffer(mask, nextOffset);
+								}
 
 								vertBuffers.Add(sBuffer.Binding, sBuffer);
 							}
@@ -104,6 +135,12 @@ namespace Magnesium.Metal
 									Category = AmtPipelineLayoutBufferBindingCategory.UniformBuffer,
 									DescriptorCount = resource.DescriptorCount,
 								};
+
+								if (locator != null)
+								{
+									var nextOffset = (uint)vertBuffers.Count;
+									item.SetBuffer(mask, nextOffset);
+								}
 
 								vertBuffers.Add(vBuffer.Binding, vBuffer);
 							}

@@ -4,7 +4,7 @@ using System.Threading;
 using MetalKit;
 namespace Magnesium.Metal
 {
-	public class AmtSwapchainKHR : IMgSwapchainKHR
+	public class AmtSwapchainKHR : IAmtSwapchainKHR
 	{
 		private readonly AmtSwapchainKHRImageInfo[] mImages;
 		public AmtSwapchainKHRImageInfo[] Images
@@ -72,6 +72,7 @@ namespace Magnesium.Metal
 			{
 				throw new InvalidOperationException("METAL : Swapchain failed");
 			}
+			///var descriptor = mView.CurrentRenderPassDescriptor;
 
 			mImages[index].Drawable = drawable;
 			mImages[index].Inflight.Reset();

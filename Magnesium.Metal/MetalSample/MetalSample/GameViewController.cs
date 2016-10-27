@@ -130,16 +130,20 @@ namespace MetalSample
 
 		IMgCommandBuffer mPrePresentBarrierCmd;
 		IMgCommandBuffer mPostPresentBarrierCmd;
-		IMgCommandBuffer[] mRenderingCmdBuffers;
-
-		IMgCommandBuffer mRenderCmdBuffer;
+		IMgCommandBuffer[] mPresentingCmdBuffers;
 
 		~GameViewController()
 		{
-			if (mRenderingCmdBuffers != null)
+			if (mRenderCmdBuffers != null)
 			{
 				mGraphicsConfiguration.Device.FreeCommandBuffers(
-					mGraphicsConfiguration.Partition.CommandPool, mRenderingCmdBuffers);
+					mGraphicsConfiguration.Partition.CommandPool, mRenderCmdBuffers);
+			}
+
+			if (mPresentingCmdBuffers != null)
+			{
+				mGraphicsConfiguration.Device.FreeCommandBuffers(
+					mGraphicsConfiguration.Partition.CommandPool, mPresentingCmdBuffers);
 			}
 
 			if (mSwapchainCollection != null)
@@ -383,7 +387,7 @@ namespace MetalSample
 		}
 
 		IMgDescriptorSetLayout mSetLayout;
-			
+
 		// Allocate one region of memory for the uniform buffer
 		private void InitializeUniforms()
 		{
@@ -432,13 +436,13 @@ namespace MetalSample
 			{
 				Bindings = new MgDescriptorSetLayoutBinding[]
 				{
-						new MgDescriptorSetLayoutBinding
-						{
-							Binding = 0,
-							DescriptorCount = 1,
-							DescriptorType = MgDescriptorType.UNIFORM_BUFFER_DYNAMIC,
-							StageFlags = MgShaderStageFlagBits.VERTEX_BIT,
-						},
+					new MgDescriptorSetLayoutBinding
+					{
+						Binding = 0,
+						DescriptorCount = 1,
+						DescriptorType = MgDescriptorType.UNIFORM_BUFFER_DYNAMIC,
+						StageFlags = MgShaderStageFlagBits.VERTEX_BIT,
+					},
 				},
 			};
 			err = mGraphicsConfiguration.Device.CreateDescriptorSetLayout(dslCreateInfo, null, out pSetLayout);
@@ -455,24 +459,47 @@ namespace MetalSample
 			};
 			mGraphicsConfiguration.Device.AllocateDescriptorSets(pAllocateInfo, out dSets);
 			mUniformDescriptorSet = dSets[0];
+
+			MgWriteDescriptorSet[] writes = new MgWriteDescriptorSet[]
+			{
+				new MgWriteDescriptorSet
+				{
+					DescriptorCount = 1,
+					DescriptorType = MgDescriptorType.UNIFORM_BUFFER_DYNAMIC,
+					DstSet = mUniformDescriptorSet,
+					BufferInfo = new MgDescriptorBufferInfo[]
+					{
+						new MgDescriptorBufferInfo
+						{
+							Buffer = mUniforms.Buffer,
+							Offset = mUniforms.Offset,
+							Range = mUniforms.Length,
+						},
+					},
+					DstBinding = 0,
+				}
+			};
+			mGraphicsConfiguration.Device.UpdateDescriptorSets(writes, null);
+		
+
 			mSetLayout = pSetLayout;
 		}
 
 		private void InitializeRenderCommandBuffers()
-		{	
-			mRenderingCmdBuffers = new Magnesium.IMgCommandBuffer[3];
+		{
+			const uint MAX_NO_OF_PRESENT_BUFFERS = 2;
+			mPresentingCmdBuffers = new Magnesium.IMgCommandBuffer[MAX_NO_OF_PRESENT_BUFFERS];
 			var pAllocateInfo = new Magnesium.MgCommandBufferAllocateInfo
 			{
 				CommandPool = mGraphicsConfiguration.Partition.CommandPool,
-				CommandBufferCount = 3,
+				CommandBufferCount = MAX_NO_OF_PRESENT_BUFFERS,
 				Level = Magnesium.MgCommandBufferLevel.PRIMARY,
 			};
 
-			var err = mGraphicsConfiguration.Device.AllocateCommandBuffers(pAllocateInfo, mRenderingCmdBuffers);
+			var err = mGraphicsConfiguration.Device.AllocateCommandBuffers(pAllocateInfo, mPresentingCmdBuffers);
 			Debug.Assert(err == Result.SUCCESS);
-			mPrePresentBarrierCmd = mRenderingCmdBuffers[0];
-			mPostPresentBarrierCmd = mRenderingCmdBuffers[1];
-			mRenderCmdBuffer = mRenderingCmdBuffers[2];
+			mPrePresentBarrierCmd = mPresentingCmdBuffers[0];
+			mPostPresentBarrierCmd = mPresentingCmdBuffers[1];
 		}
 
 		IMgPipelineLayout mPipelineLayout;
@@ -517,38 +544,6 @@ namespace MetalSample
 				err = mGraphicsConfiguration.Device.CreateShaderModule(vertCreateInfo, null, out vertexProgram);
 				Debug.Assert(err == Result.SUCCESS);
 
-				// Create a vertex descriptor from the MTKMesh
-				// TODO  Mg : PipelineLayout, DescriptorSetLayout
-				//MTLVertexDescriptor vertexDescriptor = MTLVertexDescriptor.FromModelIO(boxMesh.VertexDescriptor);
-				//vertexDescriptor.Layouts[0].StepRate = 1;
-				//vertexDescriptor.Layouts[0].StepFunction = MTLVertexStepFunction.PerVertex;
-
-				//// Create a reusable pipeline state
-				//// TODO  Mg : MgGraphicsPipeline stuff
-				//var pipelineStateDescriptor = new MTLRenderPipelineDescriptor
-				//{
-				//	Label = "MyPipeline",
-				//	SampleCount = mApplicationView.SampleCount,
-				//	VertexFunction = vertexProgram,
-				//	FragmentFunction = fragmentProgram,
-				//	VertexDescriptor = vertexDescriptor,
-				//	DepthAttachmentPixelFormat = mApplicationView.DepthStencilPixelFormat,
-				//	StencilAttachmentPixelFormat = mApplicationView.DepthStencilPixelFormat
-				//};
-
-				//pipelineStateDescriptor.ColorAttachments[0].PixelFormat = mApplicationView.ColorPixelFormat;
-
-				//pipelineState = device.CreateRenderPipelineState(pipelineStateDescriptor, out error);
-				//if (pipelineState == null)
-				//	Console.WriteLine("Failed to created pipeline state, error {0}", error);
-
-				//var depthStateDesc = new MTLDepthStencilDescriptor
-				//{
-				//	DepthCompareFunction = MTLCompareFunction.Less,
-				//	DepthWriteEnabled = true
-				//};
-
-				//depthState = device.CreateDepthStencilState(depthStateDesc);
 				IMgPipelineLayout pipelineLayout;
 				MgPipelineLayoutCreateInfo plCreateInfo = new MgPipelineLayoutCreateInfo
 				{
@@ -665,6 +660,8 @@ namespace MetalSample
 
 				mPipelineState = pipelines[0];
             }
+
+			GenerateRenderingCommandBuffers();
 		}
 
 		private IMgPipeline mPipelineState;
@@ -674,134 +671,122 @@ namespace MetalSample
 		void Render()
 		{
 			//inflightSemaphore.WaitOne();
-
-			uint layerNo = mPresentationLayer.BeginDraw(mPostPresentBarrierCmd, null);
-
-			Update();
-
-
-			MgCommandBufferBeginInfo pBeginInfo = new MgCommandBufferBeginInfo
+			try
 			{
+				uint layerNo = mPresentationLayer.BeginDraw(mPostPresentBarrierCmd, null);
 
-			};
-			// Create a new command buffer for each renderpass to the current drawable
-			mRenderCmdBuffer.BeginCommandBuffer(pBeginInfo);
+				Update();
 
-			var pRenderPassBegin = new MgRenderPassBeginInfo
-			{
-				RenderPass = mGraphicsDevice.Renderpass,
-				Framebuffer = mGraphicsDevice.Framebuffers[layerNo],
-				RenderArea = mGraphicsDevice.Scissor,
-				ClearValues = new MgClearValue[]
-				{
-					MgClearValue.FromColorAndFormat(mSwapchainCollection.Format, new MgColor4f(0,0,0,0)),
-					new MgClearValue{ DepthStencil = new MgClearDepthStencilValue{ Depth = 1f} },
-				},
-			};
-			mRenderCmdBuffer.CmdBeginRenderPass(pRenderPassBegin, MgSubpassContents.INLINE);
-			//// Create a new command buffer for each renderpass to the current drawable
-			//IMTLCommandBuffer commandBuffer = commandQueue.CommandBuffer();
-			//commandBuffer.Label = "MyCommand";
-
-
-			//// Call the view's completion handler which is required by the view since it will signal its semaphore and set up the next buffer
-			//var drawable = mApplicationView.CurrentDrawable;
-			//commandBuffer.AddCompletedHandler(buffer =>
-			//{
-			//	drawable.Dispose();
-			//	inflightSemaphore.Release();
-			//});
-
-
-			//// Obtain a renderPassDescriptor generated from the view's drawable textures
-			//MTLRenderPassDescriptor renderPassDescriptor = mApplicationView.CurrentRenderPassDescriptor;
-
-
-			//// If we have a valid drawable, begin the commands to render into it
-			//if (renderPassDescriptor != null)
-			//{
-			//	// Create a render command encoder so we can render into something
-			//	IMTLRenderCommandEncoder renderEncoder = commandBuffer.CreateRenderCommandEncoder(renderPassDescriptor);
-			//	renderEncoder.Label = "MyRenderEncoder";
-			//	renderEncoder.SetDepthStencilState(depthState);
-
-			//	// Set context state
-			//	renderEncoder.PushDebugGroup("DrawCube");
-			//	renderEncoder.SetRenderPipelineState(pipelineState);
-			//	renderEncoder.SetVertexBuffer(boxMesh.VertexBuffers[0].Buffer, boxMesh.VertexBuffers[0].Offset, 0);
-			//	renderEncoder.SetVertexBuffer(dynamicConstantBuffer, (nuint)Marshal.SizeOf<Uniforms>(), 1);
-			mRenderCmdBuffer.CmdBindPipeline(MgPipelineBindPoint.GRAPHICS, mPipelineState);
-			mRenderCmdBuffer.CmdBindVertexBuffers(
-				0,
-				new IMgBuffer[]
-				{
-					mVertices.Buffer,
-				},
-				new[]
-				{
-					mVertices.Offset,
-				}
-			);
-			mRenderCmdBuffer.CmdBindDescriptorSets(
-				MgPipelineBindPoint.GRAPHICS,
-				mPipelineLayout,
-				0,
-				1,
-				new[]
-				{
-				mUniformDescriptorSet,
-				},
-				new[]
-				{
-					(uint) constantDataBufferIndex,
-				}
-			);
-			mRenderCmdBuffer.CmdBindIndexBuffer(
-				mIndices.Buffer,
-				mIndices.Offset,
-				MgIndexType.UINT32);
-
-
-			//	MTKSubmesh submesh = boxMesh.Submeshes[0];
-			//	// Tell the render context we want to draw our primitives
-			//	renderEncoder.DrawIndexedPrimitives(submesh.PrimitiveType, submesh.IndexCount, submesh.IndexType, submesh.IndexBuffer.Buffer, submesh.IndexBuffer.Offset);
-			//	renderEncoder.PopDebugGroup();
-			mRenderCmdBuffer.CmdDrawIndexed((uint)indicesVboData.Length, 1, 0, 0, 0);
-
-
-			//	// We're done encoding commands
-			//	renderEncoder.EndEncoding();
-
-			//	// Schedule a present once the framebuffer is complete using the current drawable
-			//	commandBuffer.PresentDrawable(drawable);
-
-			//}
-			mRenderCmdBuffer.CmdEndRenderPass();
-
-			mRenderCmdBuffer.EndCommandBuffer();
-
-			mGraphicsConfiguration.Queue.QueueSubmit(
-				new[]
-				{
+				mGraphicsConfiguration.Queue.QueueSubmit(
+					new[]
+					{
 					new MgSubmitInfo
-					{ 
+					{
 						CommandBuffers = new []
 						{
-							mRenderCmdBuffer,
+							mRenderCmdBuffers[layerNo],
 						}
 					}
-				},
-             	null);
-			mGraphicsConfiguration.Queue.QueueWaitIdle();
+					},
+					 null);
 
-			//// The render assumes it can now increment the buffer index and that the previous index won't be touched
-			///  until we cycle back around to the same index
-			constantDataBufferIndex = (constantDataBufferIndex + 1) % MaxInflightBuffers;
+				mGraphicsConfiguration.Queue.QueueWaitIdle();
 
-			//// Finalize rendering here & push the command buffer to the GPU
-			//commandBuffer.Commit();
+				//// The render assumes it can now increment the buffer index and that the previous index won't be touched
+				///  until we cycle back around to the same index
+				constantDataBufferIndex = (constantDataBufferIndex + 1) % MaxInflightBuffers;
 
-			mPresentationLayer.EndDraw(new[] { layerNo }, mPrePresentBarrierCmd, null);
+				//// Finalize rendering here & push the command buffer to the GPU
+				//commandBuffer.Commit();
+
+				mPresentationLayer.EndDraw(new[] { layerNo }, mPrePresentBarrierCmd, null);
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.Message);
+			}
+		}
+
+
+		IMgCommandBuffer[] mRenderCmdBuffers;
+		void GenerateRenderingCommandBuffers()
+		{
+			var noOfFramebuffers = (uint) mGraphicsDevice.Framebuffers.Length;
+			var uniformStride = Marshal.SizeOf(typeof(Uniforms));
+
+			mRenderCmdBuffers = new Magnesium.IMgCommandBuffer[noOfFramebuffers];
+			var pAllocateInfo = new Magnesium.MgCommandBufferAllocateInfo
+			{
+				CommandPool = mGraphicsConfiguration.Partition.CommandPool,
+				CommandBufferCount = noOfFramebuffers,
+				Level = Magnesium.MgCommandBufferLevel.PRIMARY,
+			};
+
+			var err = mGraphicsConfiguration.Device.AllocateCommandBuffers(pAllocateInfo, mRenderCmdBuffers);
+			Debug.Assert(err == Result.SUCCESS);
+
+			for (var i = 0; i < noOfFramebuffers; ++i)
+			{
+				var cmdBuf = mRenderCmdBuffers[i];
+				var fb = mGraphicsDevice.Framebuffers[i];
+
+				MgCommandBufferBeginInfo pBeginInfo = new MgCommandBufferBeginInfo
+				{
+
+				};
+				// Create a new command buffer for each renderpass to the current drawable
+				cmdBuf.BeginCommandBuffer(pBeginInfo);
+
+				var pRenderPassBegin = new MgRenderPassBeginInfo
+				{
+					RenderPass = mGraphicsDevice.Renderpass,
+					Framebuffer = fb,
+					RenderArea = mGraphicsDevice.Scissor,
+					ClearValues = new MgClearValue[]
+					{
+					MgClearValue.FromColorAndFormat(mSwapchainCollection.Format, new MgColor4f(0,0,0,0)),
+					new MgClearValue{ DepthStencil = new MgClearDepthStencilValue{ Depth = 1f} },
+					},
+				};
+				cmdBuf.CmdBeginRenderPass(pRenderPassBegin, MgSubpassContents.INLINE);
+
+				cmdBuf.CmdBindPipeline(MgPipelineBindPoint.GRAPHICS, mPipelineState);
+				cmdBuf.CmdBindVertexBuffers(
+					0,
+					new IMgBuffer[]
+					{
+					mVertices.Buffer,
+					},
+					new[]
+					{
+					mVertices.Offset,
+					}
+				);
+				cmdBuf.CmdBindDescriptorSets(
+					MgPipelineBindPoint.GRAPHICS,
+					mPipelineLayout,
+					0,
+					1,
+					new[]
+					{
+				mUniformDescriptorSet,
+					},
+					new[]
+					{
+					(uint) (constantDataBufferIndex * uniformStride),
+					}
+				);
+				cmdBuf.CmdBindIndexBuffer(
+					mIndices.Buffer,
+					mIndices.Offset,
+					MgIndexType.UINT32);
+
+				cmdBuf.CmdDrawIndexed((uint)indicesVboData.Length, 1, 0, 0, 0);
+
+				cmdBuf.CmdEndRenderPass();
+
+				cmdBuf.EndCommandBuffer();
+			}
 		}
 
 		void Update()

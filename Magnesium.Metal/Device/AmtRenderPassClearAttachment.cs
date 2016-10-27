@@ -12,5 +12,7 @@ namespace Magnesium.Metal
 		public MTLLoadAction LoadAction { get; internal set; }
 		public MgFormat Format { get; internal set; }
 		public AmtRenderPassClearValueType ClearValueType { get; internal set; }
+		public MTLLoadAction StencilLoadAction { get; internal set; }
+		public MTLStoreAction StencilStoreAction { get; internal set; }
 	}
 }

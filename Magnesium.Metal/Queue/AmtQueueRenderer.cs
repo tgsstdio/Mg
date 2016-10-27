@@ -11,15 +11,15 @@ namespace Magnesium.Metal
 			mCommandQueue = queue;
 		}
 
-		public IMTLCommandBuffer[] Render(AmtQueueSubmission request)
+		public void Render(AmtQueueSubmission request)
 		{
-			var commands = new List<IMTLCommandBuffer>();
 			foreach (var buffer in request.CommandBuffers)
 			{
 				if (buffer.IsQueueReady)
 				{
 					// GENERATE METAL BUFFER
 					var cb = mCommandQueue.CommandBuffer();
+					cb.Label = "MyCommand";
 
 					AmtCommandRecording recording = GenerateRecording(cb, buffer);
 
@@ -55,10 +55,8 @@ namespace Magnesium.Metal
 					SignalFenceWhenCompleted(request.OrderFence, cb);
 
 					cb.Commit();
-					commands.Add(cb);
 				}
 			}
-			return commands.ToArray();
 		}
 
 		static void SignalFenceWhenCompleted(AmtSemaphore fence, IMTLCommandBuffer cb)

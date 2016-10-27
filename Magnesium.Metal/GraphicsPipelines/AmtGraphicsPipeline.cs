@@ -71,6 +71,7 @@ namespace Magnesium.Metal
 			{
 				var pipelineDescriptor = new MTLRenderPipelineDescriptor
 				{
+					Label = "Magnesium",
 					VertexFunction = VertexFunction,
 					FragmentFunction = FragmentFunction,
 					VertexDescriptor = GetVertexDescriptor(),

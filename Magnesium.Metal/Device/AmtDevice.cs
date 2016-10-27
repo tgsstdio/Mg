@@ -182,6 +182,7 @@ namespace Magnesium.Metal
 
 		public Result CreateFramebuffer(MgFramebufferCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgFramebuffer pFramebuffer)
 		{
+			// TODO : make sure everything is attached properly
 			pFramebuffer = new AmtFramebuffer(pCreateInfo);
 			return Result.SUCCESS;
 		}
@@ -487,59 +488,90 @@ namespace Magnesium.Metal
 					}
 
 					var x = desc.DstBinding; // SHOULD ALWAYS BE ZERO
-					if (x != 0)
-					{
-						throw new ArgumentException(nameof(desc.DstBinding));
-					}
 
-					int offset = (int)desc.DstArrayElement;
-					int count = (int)desc.DescriptorCount;
+					int arrayElement = (int)desc.DstArrayElement;
 
-					// HOPEFULLY DESCRIPTOR SETS ARE GROUPED BY COMMON TYPES
-					foreach (var map in new[] { localSet.Compute, localSet.Fragment, localSet.Vertex })
+					// TODO: what do we do about multiple descriptors
+					var count = (int)desc.DescriptorCount;
+
+					AmtDescriptorSetUpdateKey result;
+					if (localSet.Locator.TryGetValue(desc.DstBinding, out result))
 					{
-						switch (desc.DescriptorType)
+						foreach (var mask in new[] {
+							MgShaderStageFlagBits.COMPUTE_BIT,
+							MgShaderStageFlagBits.VERTEX_BIT,
+							MgShaderStageFlagBits.FRAGMENT_BIT })
 						{
-							//case MgDescriptorType.SAMPLER:
-							case MgDescriptorType.COMBINED_IMAGE_SAMPLER:
-							case MgDescriptorType.SAMPLED_IMAGE:
-								
-								for (int i = 0; i < count; ++i)
+							AmtDescriptorSetBindingMap map = null;
+							uint bindingOffset = 0;
+							uint samplerOffset = 0;
+							if ((result.Stage & mask) == MgShaderStageFlagBits.COMPUTE_BIT)
+							{
+								map = localSet.Compute;
+								bindingOffset = result.ComputeOffset;
+								samplerOffset = result.ComputeSamplerIndex;
+							}
+							else if ((result.Stage & mask) == MgShaderStageFlagBits.VERTEX_BIT)
+							{
+								map = localSet.Vertex;
+								bindingOffset = result.VertexOffset;
+								samplerOffset = result.VertexSamplerIndex;
+							}
+							else if ((result.Stage & mask) == MgShaderStageFlagBits.FRAGMENT_BIT)
+							{
+								map = localSet.Fragment;
+								bindingOffset = result.FragmentOffset;
+								samplerOffset = result.FragmentSamplerIndex;
+							}
+
+							if (map != null)
+							{
+								switch (desc.DescriptorType)
 								{
-									MgDescriptorImageInfo info = desc.ImageInfo[i];
+									//case MgDescriptorType.SAMPLER:
+									case MgDescriptorType.COMBINED_IMAGE_SAMPLER:
+									case MgDescriptorType.SAMPLED_IMAGE:
 
-									var localSampler = (AmtSampler)info.Sampler;
-									var localView = (IAmtImageView)info.ImageView;
+										for (int i = 0; i < count; ++i)
+										{
+											MgDescriptorImageInfo info = desc.ImageInfo[i];
 
-									var index = offset + i;
-									map.Textures[index].Texture = localView.GetTexture();
-									map.SamplerStates[index].Sampler = localSampler.Sampler;
+											var localSampler = (AmtSampler)info.Sampler;
+											var localView = (IAmtImageView)info.ImageView;
+
+											var imageIndex = bindingOffset + i;
+											map.Textures[imageIndex].Texture = localView.GetTexture();
+
+											var samplerIndex = samplerOffset + i;
+											map.SamplerStates[samplerIndex].Sampler = localSampler.Sampler;
+										}
+
+										break;
+									case MgDescriptorType.UNIFORM_BUFFER:
+									case MgDescriptorType.UNIFORM_BUFFER_DYNAMIC:
+									case MgDescriptorType.STORAGE_BUFFER:
+									case MgDescriptorType.STORAGE_BUFFER_DYNAMIC:
+										// HOPEFULLY DESCRIPTOR SETS ARE GROUPED BY COMMON TYPES
+										for (int i = 0; i < count; ++i)
+										{
+											var info = desc.BufferInfo[i];
+
+											var buf = (AmtBuffer)info.Buffer;
+
+											ulong totalOffset = buf.BoundMemoryOffset + info.Offset;
+
+											Debug.Assert(totalOffset <= nuint.MaxValue);
+
+											var index = bindingOffset + i;
+											map.Buffers[index].Buffer = buf.VertexBuffer;
+											map.Buffers[index].BoundMemoryOffset = (nuint)totalOffset;
+
+										}
+										break;
+									default:
+										throw new NotSupportedException();
 								}
-
-								break;
-							case MgDescriptorType.UNIFORM_BUFFER:
-							case MgDescriptorType.UNIFORM_BUFFER_DYNAMIC:
-							case MgDescriptorType.STORAGE_BUFFER:
-							case MgDescriptorType.STORAGE_BUFFER_DYNAMIC:
-								// HOPEFULLY DESCRIPTOR SETS ARE GROUPED BY COMMON TYPES
-								for (int i = 0; i < count; ++i)
-								{
-									var info = desc.BufferInfo[i];
-
-									var buf = (AmtBuffer)info.Buffer;
-
-									ulong totalOffset = buf.BoundMemoryOffset + info.Offset;
-
-									Debug.Assert(totalOffset <= nuint.MaxValue);
-
-									var index = offset + i;
-									map.Buffers[index].Buffer = buf.VertexBuffer;
-									map.Buffers[index].BoundMemoryOffset = (nuint) totalOffset;
-
-								}
-								break;
-							default:
-								throw new NotSupportedException();
+							}
 						}
 					}
 
