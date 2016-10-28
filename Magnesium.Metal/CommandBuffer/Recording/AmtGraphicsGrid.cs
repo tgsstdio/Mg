@@ -4,7 +4,7 @@ namespace Magnesium.Metal
 {
 	public class AmtGraphicsGrid
 	{
-		public MTLRenderPassDescriptor[] RenderPasses { get; internal set;}
+		public AmtCmdBindRenderPassRecord[] RenderPasses { get; internal set;}
 		public MgColor4f[] BlendConstants { get; internal set; }
 		public AmtPipelineStateRecord[] Pipelines { get; internal set; }
 		public IMTLDepthStencilState[] DepthStencilStates { get; internal set; }

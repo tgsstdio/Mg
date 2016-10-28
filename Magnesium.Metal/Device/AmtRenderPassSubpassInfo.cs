@@ -20,24 +20,57 @@ namespace Magnesium.Metal
 				case MgFormat.R8G8_SINT:
 				case MgFormat.R8G8B8_SINT:
 				case MgFormat.R8G8B8A8_SINT:
+
+				case MgFormat.R8_SNORM:
+				case MgFormat.R8G8_SNORM:
+				case MgFormat.R8G8B8_SNORM:
+				case MgFormat.R8G8B8A8_SNORM:
+
+				case MgFormat.B8G8R8A8_SINT:
+				case MgFormat.B8G8R8_SINT:
+
+				case MgFormat.B8G8R8A8_SNORM:
+				case MgFormat.B8G8R8_SNORM:
+					
 					return sbyte.MaxValue;
 
 				case MgFormat.R8_UINT:
 				case MgFormat.R8G8_UINT:
 				case MgFormat.R8G8B8_UINT:
 				case MgFormat.R8G8B8A8_UINT:
+
+				case MgFormat.R8_UNORM:
+				case MgFormat.R8G8_UNORM:
+				case MgFormat.R8G8B8_UNORM:
+				case MgFormat.R8G8B8A8_UNORM:
+
+				case MgFormat.B8G8R8A8_UINT:
+				case MgFormat.B8G8R8_UINT:
+
+				case MgFormat.B8G8R8A8_UNORM:
+				case MgFormat.B8G8R8_UNORM:
 					return byte.MaxValue;
 
 				case MgFormat.R16_UINT:
 				case MgFormat.R16G16_UINT:
 				case MgFormat.R16G16B16_UINT:
 				case MgFormat.R16G16B16A16_UINT:
+
+				case MgFormat.R16_UNORM:
+				case MgFormat.R16G16_UNORM:
+				case MgFormat.R16G16B16_UNORM:
+				case MgFormat.R16G16B16A16_UNORM:
 					return ushort.MaxValue;
 
 				case MgFormat.R16_SINT:
 				case MgFormat.R16G16_SINT:
 				case MgFormat.R16G16B16_SINT:
 				case MgFormat.R16G16B16A16_SINT:
+
+				case MgFormat.R16_SNORM:
+				case MgFormat.R16G16_SNORM:
+				case MgFormat.R16G16B16_SNORM:
+				case MgFormat.R16G16B16A16_SNORM:
 					return short.MaxValue;
 
 				case MgFormat.R32_SINT:
@@ -97,6 +130,8 @@ namespace Magnesium.Metal
 				case MgFormat.R64G64_SINT:
 				case MgFormat.R64G64B64_SINT:
 				case MgFormat.R64G64B64A64_SINT:
+				case MgFormat.B8G8R8_SINT:
+				case MgFormat.B8G8R8A8_SINT:
 					return AmtRenderPassClearValueType.COLOR_INT;
 
 				case MgFormat.R8_UINT:
@@ -109,12 +144,30 @@ namespace Magnesium.Metal
 				case MgFormat.R16G16B16A16_UINT:
 				case MgFormat.R32_UINT:
 				case MgFormat.R64_UINT:
+				case MgFormat.B8G8R8_UINT:
+				case MgFormat.B8G8R8A8_UINT:
 					return AmtRenderPassClearValueType.COLOR_UINT;
 
 				case MgFormat.R32_SFLOAT:
 				case MgFormat.R32G32_SFLOAT:
 				case MgFormat.R32G32B32_SFLOAT:
 				case MgFormat.R32G32B32A32_SFLOAT:
+				case MgFormat.R8G8B8_UNORM:
+				case MgFormat.R8G8B8A8_UNORM:
+				case MgFormat.R8G8B8_SNORM:
+				case MgFormat.R8G8B8A8_SNORM:
+					
+				case MgFormat.B8G8R8_UNORM:
+				case MgFormat.B8G8R8A8_UNORM:
+				case MgFormat.B8G8R8_SNORM:
+				case MgFormat.B8G8R8A8_SNORM:
+
+				case MgFormat.R16G16B16_UNORM:
+				case MgFormat.R16G16B16_SNORM:
+
+				case MgFormat.R16G16B16A16_UNORM:
+				case MgFormat.R16G16B16A16_SNORM:
+					
 					return AmtRenderPassClearValueType.COLOR_FLOAT;
 				default:
 					throw new NotSupportedException();

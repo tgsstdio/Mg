@@ -49,9 +49,11 @@ namespace Magnesium.Metal
 			Debug.Assert(bFramebuffer != null, nameof(pRenderPassBegin.Framebuffer) + " is null");
 
 			const uint FIRST_SUBPASS = 0;
-			var descriptor = InitializeDescriptor(FIRST_SUBPASS, bRenderPass, pRenderPassBegin.ClearValues, bFramebuffer);
+			var item = InitializeDescriptor(FIRST_SUBPASS, bRenderPass, pRenderPassBegin.ClearValues, bFramebuffer);
 
-			var nextIndex = mBag.RenderPasses.Push(descriptor);
+			// TODO : NEED TO BIND FRAMEBUFFER TEXTURE LATE FOR RENDER OUT  
+
+			var nextIndex = mBag.RenderPasses.Push(item);
 			mInstructions.Add(new AmtEncodingInstruction
 			{
 				Category = AmtEncoderCategory.Graphics,
@@ -83,18 +85,38 @@ namespace Magnesium.Metal
 			var stage = recording.Graphics;
 			Debug.Assert(stage != null, nameof(stage) + " is null");
 			Debug.Assert(stage.Grid != null, nameof(stage.Grid) + " is null");
-			var item = stage.Grid.RenderPasses[index];
-			stage.Encoder = cmdBuf.CreateRenderCommandEncoder(item);
+			var subpass = stage.Grid.RenderPasses[index];
+			Debug.Assert(subpass != null, nameof(subpass) + " is null");
+
+			var descriptor = subpass.Descriptor;
+			Debug.Assert(descriptor != null, nameof(descriptor) + " is null");
+
+			var offset = 0;
+			foreach (var attachment in subpass.ColorAttachments)
+			{
+				descriptor.ColorAttachments[offset].Texture = attachment.GetTexture();
+				++offset;
+			}
+
+			if (subpass.DepthStencil != null)
+			{
+				var combinedTexture = subpass.DepthStencil.GetTexture();
+				descriptor.DepthAttachment.Texture = combinedTexture;
+				descriptor.StencilAttachment.Texture = combinedTexture;
+			}
+
+			stage.Encoder = cmdBuf.CreateRenderCommandEncoder(descriptor);
 		}
 
-		static MTLRenderPassDescriptor InitializeDescriptor(
+		static AmtCmdBindRenderPassRecord InitializeDescriptor(
 			uint subpassIndex,
 			AmtRenderPass renderPass,
 			MgClearValue[] clearValues, 
 			AmtFramebuffer fb
 		)
 		{
-			var dest = new MTLRenderPassDescriptor {  };
+			var output = new AmtCmdBindRenderPassRecord { };
+			var passDescriptor = new MTLRenderPassDescriptor {  };
 
 			var subpass = renderPass.Subpasses[subpassIndex];
 			var fbSubPass = fb.Subpasses[subpassIndex];
@@ -135,36 +157,38 @@ namespace Magnesium.Metal
 				}
 				var destIndex = (nint)attachment.Index;
 
-				dest.ColorAttachments[destIndex].ClearColor = new MTLClearColor(r, g, b, a);
-				dest.ColorAttachments[destIndex].LoadAction = attachment.LoadAction;
-				dest.ColorAttachments[destIndex].StoreAction = attachment.StoreAction;
-
-				// ATTACHING FRAMEBUFFER HERE
-				dest.ColorAttachments[destIndex].Texture = 
-					fbSubPass.ColorAttachments[attachment.Index].GetTexture();
-				// TODO: RESOLVE MULTISAMPLING
-
+				passDescriptor.ColorAttachments[destIndex].ClearColor = new MTLClearColor(r, g, b, a);
+				passDescriptor.ColorAttachments[destIndex].LoadAction = attachment.LoadAction;
+				passDescriptor.ColorAttachments[destIndex].StoreAction = attachment.StoreAction;
 			}
 
+			output.Descriptor = passDescriptor;
 
+			// LATE BINDING
+			var noOfColorAttachments = subpass.ColorAttachments.Length;
+			output.ColorAttachments = new IAmtImageView[noOfColorAttachments];
+			for (var i = 0; i < noOfColorAttachments; ++i)
+			{
+				output.ColorAttachments[i] = fbSubPass.ColorAttachments[i];
+			}
+
+			// TODO: RESOLVE MULTISAMPLING
 
 			if (subpass.DepthStencil != null)
 			{
 				var depthValue = clearValues[subpass.DepthStencil.Index];
-				dest.DepthAttachment.ClearDepth = depthValue.DepthStencil.Depth;
-				dest.DepthAttachment.LoadAction = subpass.DepthStencil.LoadAction;
-				dest.DepthAttachment.StoreAction = subpass.DepthStencil.StoreAction;
+				passDescriptor.DepthAttachment.ClearDepth = depthValue.DepthStencil.Depth;
+				passDescriptor.DepthAttachment.LoadAction = subpass.DepthStencil.LoadAction;
+				passDescriptor.DepthAttachment.StoreAction = subpass.DepthStencil.StoreAction;
 
-				dest.StencilAttachment.ClearStencil = depthValue.DepthStencil.Stencil;
-				dest.StencilAttachment.LoadAction = subpass.DepthStencil.StencilLoadAction;
-				dest.StencilAttachment.StoreAction = subpass.DepthStencil.StencilStoreAction;
+				passDescriptor.StencilAttachment.ClearStencil = depthValue.DepthStencil.Stencil;
+				passDescriptor.StencilAttachment.LoadAction = subpass.DepthStencil.StencilLoadAction;
+				passDescriptor.StencilAttachment.StoreAction = subpass.DepthStencil.StencilStoreAction;
 
-				// TODO: RESOLVE MULTISAMPLING
-				dest.DepthAttachment.Texture = fbSubPass.DepthStencil.GetTexture();
-				dest.StencilAttachment.Texture = fbSubPass.DepthStencil.GetTexture();
+				output.DepthStencil = fbSubPass.DepthStencil;
 			}
 
-			return dest;
+			return output;
 		}
 
 		#endregion

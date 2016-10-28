@@ -173,6 +173,7 @@ namespace Magnesium.Metal
 				PipelineBindPoint = MgPipelineBindPoint.GRAPHICS,
 				Flags = 0,
 				InputAttachments = null,
+				ColorAttachmentCount = 1,
 				ColorAttachments = new[] { colorReference },
 				ResolveAttachments = null,
 				DepthStencilAttachment = depthReference,

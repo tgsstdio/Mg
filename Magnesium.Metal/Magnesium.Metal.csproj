@@ -163,6 +163,7 @@
     <Compile Include="Device\IAmtDescriptorSetBindingLocator.cs" />
     <Compile Include="Device\AmtDescriptorSetUpdateKey.cs" />
     <Compile Include="Device\AmtDescriptorSetBindingLocator.cs" />
+    <Compile Include="CommandBuffer\Recording\AmtCmdBindRenderPassRecord.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Magnesium\Magnesium.csproj">

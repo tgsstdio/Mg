@@ -247,7 +247,7 @@ namespace MetalSample
 
 		public void Draw(MTKView view)
 		{
-			Render();
+			//Render();
 		}
 
 		Vector3[] positionVboData = new Vector3[]{
@@ -447,7 +447,7 @@ namespace MetalSample
 			};
 			err = mGraphicsConfiguration.Device.CreateDescriptorSetLayout(dslCreateInfo, null, out pSetLayout);
 
-			IMgDescriptorSet[] dSets = new IMgDescriptorSet[] { };
+			IMgDescriptorSet[] dSets;
 			MgDescriptorSetAllocateInfo pAllocateInfo = new MgDescriptorSetAllocateInfo
 			{
 				DescriptorPool = mGraphicsConfiguration.Partition.DescriptorPool,
