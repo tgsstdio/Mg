@@ -864,13 +864,17 @@ namespace Magnesium.Metal
 			if (mIndexBuffer == null)
 				return;
 
+			// ADD TO BUFFER OFFSET TO POINT TO FIRST INDEX 
+			var indexTypeSize = (mIndexType == MTLIndexType.UInt16) ? sizeof(UInt16) : sizeof(UInt32);
+			var indexBufferOffset = mBufferOffset + (nuint) (firstIndex * indexTypeSize);
+
 			var item = new AmtDrawIndexedRecord
 			{
 				PrimitiveType = mCurrentPipeline.Topology,
 				IndexCount = indexCount,
 				IndexType = mIndexType,
 				IndexBuffer = mIndexBuffer.VertexBuffer,
-				BufferOffset = mBufferOffset,
+				BufferOffset = indexBufferOffset,
 				InstanceCount = instanceCount,
 				VertexOffset = vertexOffset,
 				FirstInstance = firstInstance,

@@ -508,7 +508,16 @@ namespace Magnesium.Metal
 		{
 			if (depthStencil != null)
 			{
-				DepthCompareFunction = depthStencil.DepthCompareOp;
+				// VULKAN : If there is no depth framebuffer attachment, it is as if the depth test always passes.
+				if (!depthStencil.DepthTestEnable)
+				{
+					DepthCompareFunction = MgCompareOp.ALWAYS;
+				}
+				else
+				{
+					DepthCompareFunction = depthStencil.DepthCompareOp;
+				}
+
 				DepthWriteEnabled = depthStencil.DepthWriteEnable;
 
 				{

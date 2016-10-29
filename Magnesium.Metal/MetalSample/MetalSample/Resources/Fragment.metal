@@ -33,6 +33,7 @@ vertex ColorInOut lighting_vertex(vertex_t vertex_array [[stage_in]],
     
     float4 in_position = float4(vertex_array.position, 1.0);
     out.position = uniforms.modelview_projection_matrix * in_position;
+    out.position.y *= -1.0;
     
     float4 eye_normal = normalize(uniforms.normal_matrix * float4(vertex_array.normal, 0.0));
     float n_dot_l = dot(eye_normal.rgb, normalize(light_position));

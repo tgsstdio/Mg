@@ -170,6 +170,7 @@ namespace MetalSample
 			{
 				//
 				Reshape();
+				Update();
 			}
 			else {
 				//Console.WriteLine("Metal is not supported on this device");
@@ -252,22 +253,22 @@ namespace MetalSample
 		}
 
 		Vector3[] positionVboData = new Vector3[]{
-			new Vector3(-1.0f, -1.0f,  1.0f),
-			new Vector3(-0.333333f, -0.333333f, 0.333333f), // normal
-			new Vector3( 1.0f, -1.0f,  1.0f),
-			new Vector3(0.333333f, -0.333333f, 0.333333f), // normal
-			new Vector3( 1.0f,  1.0f,  1.0f),
-			new Vector3(0.333333f, 0.333333f, 0.333333f), // normal
-			new Vector3(-1.0f,  1.0f,  1.0f),
-			new Vector3(-0.333333f, 0.333333f, 0.333333f), // normal
-			new Vector3(-1.0f, -1.0f, -1.0f),
-			new Vector3(-0.333333f, -0.333333f, -0.333333f), // normal
-			new Vector3( 1.0f, -1.0f, -1.0f),
-			new Vector3(0.333333f, -0.333333f, -0.333333f), // normal
-			new Vector3( 1.0f,  1.0f, -1.0f),
-			new Vector3(0.333333f, 0.333333f, -0.333333f), // normal
-			new Vector3(-1.0f,  1.0f, -1.0f),
+			new Vector3(-1.0f, 1.0f,  -1.0f),
 			new Vector3(-0.333333f, 0.333333f, -0.333333f), // normal
+			new Vector3( 1.0f, 1.0f,  -1.0f),
+			new Vector3(0.333333f, 0.333333f, -0.333333f), // normal
+			new Vector3( 1.0f, -1.0f,  -1.0f),
+			new Vector3(0.333333f, -0.333333f, -0.333333f), // normal
+			new Vector3(-1.0f, -1.0f,  -1.0f),
+			new Vector3(-0.333333f, -0.333333f, -0.333333f), // normal
+			new Vector3(-1.0f, 1.0f, 1.0f),
+			new Vector3(-0.333333f, 0.333333f, 0.333333f), // normal
+			new Vector3( 1.0f, 1.0f, 1.0f),
+			new Vector3(0.333333f, 0.333333f, 0.333333f), // normal
+			new Vector3( 1.0f, -1.0f, 1.0f),
+			new Vector3(0.333333f, -0.333333f, 0.333333f), // normal
+			new Vector3(-1.0f, -1.0f, 1.0f),
+			new Vector3(-0.333333f, -0.333333f, 0.333333f), // normal
 		};
 
 		uint[] indicesVboData = new uint[]{
@@ -280,7 +281,7 @@ namespace MetalSample
                 // left face
                 4, 0, 3, 3, 7, 4,
                 // bottom face
-                0, 1, 5, 5, 4, 0,
+                0, 5, 1, 4, 5, 0,
                 // right face
                 1, 5, 6, 6, 2, 1, };
 
@@ -587,6 +588,7 @@ namespace MetalSample
 						{
 							DepthCompareOp = MgCompareOp.LESS,
 							DepthWriteEnable = true,
+							DepthTestEnable = true,
 						},
 						MultisampleState = new MgPipelineMultisampleStateCreateInfo
 						{
@@ -598,6 +600,7 @@ namespace MetalSample
 						{
 							FrontFace = MgFrontFace.COUNTER_CLOCKWISE,
 							PolygonMode = MgPolygonMode.FILL,
+							CullMode = MgCullModeFlagBits.BACK_BIT,
 						},
 						VertexInputState = new MgPipelineVertexInputStateCreateInfo
 						{
@@ -746,7 +749,7 @@ namespace MetalSample
 					RenderArea = mGraphicsDevice.Scissor,
 					ClearValues = new MgClearValue[]
 					{
-					MgClearValue.FromColorAndFormat(mSwapchainCollection.Format, new MgColor4f(0,0,0,0)),
+					MgClearValue.FromColorAndFormat(mSwapchainCollection.Format, new MgColor4f(0.5f,0.5f,0.5f,0.5f)),
 					new MgClearValue{ DepthStencil = new MgClearDepthStencilValue{ Depth = 1f} },
 					},
 				};
@@ -784,6 +787,7 @@ namespace MetalSample
 					MgIndexType.UINT32);
 
 				cmdBuf.CmdDrawIndexed((uint)indicesVboData.Length, 1, 0, 0, 0);
+				//cmdBuf.CmdDrawIndexed(15, 1, 0, 0, 0);
 
 				cmdBuf.CmdEndRenderPass();
 
