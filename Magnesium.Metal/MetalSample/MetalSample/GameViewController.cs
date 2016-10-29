@@ -237,6 +237,7 @@ namespace MetalSample
 			catch (Exception ex)
 			{
 				Console.WriteLine(ex.Message);
+				throw ex;
 			}
 		}
 
@@ -247,7 +248,7 @@ namespace MetalSample
 
 		public void Draw(MTKView view)
 		{
-			//Render();
+			Render();
 		}
 
 		Vector3[] positionVboData = new Vector3[]{
@@ -704,6 +705,7 @@ namespace MetalSample
 			catch (Exception ex)
 			{
 				Console.WriteLine(ex.Message);
+				throw ex;
 			}
 		}
 
