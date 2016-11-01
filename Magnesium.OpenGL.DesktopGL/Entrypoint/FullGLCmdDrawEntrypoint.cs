@@ -115,7 +115,7 @@ namespace Magnesium.OpenGL.DesktopGL
 				throw new ArgumentOutOfRangeException ("stride", "stride >= int.MaxValue");
 			}
 
-			GL.MultiDrawElementsIndirect ((All)GetPrimitiveType (topology), GetIndexBufferType (indexType), indirect, (int)count, (int)stride);
+			GL.MultiDrawElementsIndirect ((PrimitiveType)GetPrimitiveType (topology), (DrawElementsType) GetIndexBufferType (indexType), indirect, (int)count, (int)stride);
 		}
 
 		public void DrawArraysIndirect (MgPrimitiveTopology topology, IntPtr indirect, uint count, uint stride)

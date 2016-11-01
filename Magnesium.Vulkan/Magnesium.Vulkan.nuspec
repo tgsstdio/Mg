@@ -2,15 +2,18 @@
 <package >
   <metadata>
     <id>Magnesium.Vulkan</id>
-    <version>4.0.0</version>
+    <version>4.0.1</version>
     <authors>David Young</authors>
     <owners>David Young</owners>
     <licenseUrl>https://github.com/tgsstdio/Mg/blob/master/LICENSE.txt</licenseUrl>
     <projectUrl>https://github.com/tgsstdio/Mg</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>C# implementation of Vulkan 1.0 library</description>
-    <releaseNotes>C# Interface only</releaseNotes>
+    <releaseNotes></releaseNotes>
     <copyright>Copyright 2016 David Young</copyright>
-    <tags>graphics, vulkan</tags>    
+    <tags>graphics vulkan</tags>    
+	<dependencies>
+		<dependency id="Magnesium" version="4.0.0" />
+	</dependencies>
   </metadata>  
 </package>
