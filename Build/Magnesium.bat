@@ -1,0 +1,1 @@
+nuget pack "..\Magnesium\Magnesium.csproj" -Prop Configuration=Release

@@ -1,16 +1,16 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>Magnesium</id>
+    <id>Magnesium.OpenGL</id>
     <version>4.0.0</version>
     <authors>David Young</authors>
     <owners>David Young</owners>
     <licenseUrl>https://github.com/tgsstdio/Mg/blob/master/LICENSE.txt</licenseUrl>
     <projectUrl>https://github.com/tgsstdio/Mg</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>C# graphics frontend interface (to Vulkan or any graphics library)</description>
-    <releaseNotes>C# Interface only</releaseNotes>
+    <description>Mg OpenGL interface</description>
+    <releaseNotes>Partial OpenGL implementation of Vulkan 1.0 library </releaseNotes>
     <copyright>Copyright 2016 David Young</copyright>
-    <tags>graphics, vulkan</tags>
+    <tags>graphics, vulkan, OpenGL</tags>
   </metadata>
 </package>

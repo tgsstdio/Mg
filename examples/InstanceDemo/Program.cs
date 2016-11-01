@@ -7,25 +7,8 @@ namespace InstanceDemo
 {
 	class MainClass
 	{
-		[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-		public struct LayerProperties
-		{
-			[MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-			public string layerName;
-			public UInt32 specVersion;
-			public UInt32 implementationVersion;
-			[MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-			public string description;
-		}
-
-		[DllImport("vulkan-1", CallingConvention = CallingConvention.Winapi)]
-		extern static unsafe UInt32 vkEnumerateInstanceLayerProperties(ref UInt32 pPropertyCount, [In, Out] LayerProperties[] pProperties);
-
-
 		public static void Main(string[] args)
 		{
-			Console.WriteLine("Hello World!");
-
 			try
 			{
 				var entrypoint = new VkEntrypoint();
@@ -48,28 +31,43 @@ namespace InstanceDemo
 						EngineName = "Magnesium.Vulkan",
 						EngineVersion = 1,
 					},
-					MgEnableExtensionsOption.ALL);
+					MgInstanceExtensionOptions.ALL);
 
-					using (var device = driver.CreateLogicalDevice(null, MgEnableExtensionsOption.ALL))
+					using (var device = driver.CreateLogicalDevice(null, MgDeviceExtensionOptions.ALL))
 					{                                                             
 
 						if (device.Queues.Length > 0)
 						{
 							Console.WriteLine(nameof(device.Queues.Length) + " : " + device.Queues.Length);
 
-							using (var partition = device.Queues[0].CreatePartition())
-							{
-								IMgBuffer buffer;
-								var result = partition.Device.CreateBuffer(new MgBufferCreateInfo { SharingMode = MgSharingMode.EXCLUSIVE, Size = 1024, Usage = MgBufferUsageFlagBits.VERTEX_BUFFER_BIT }, callback, out buffer);
-								buffer.DestroyBuffer(partition.Device, callback);
-							}
+                            using (var partition = device.Queues[0].CreatePartition(0,
+                                new MgDescriptorPoolCreateInfo
+                                {
+                                    MaxSets = 1,
+                                    PoolSizes = new MgDescriptorPoolSize[]
+                                    {
+                                        new MgDescriptorPoolSize
+                                        {
+                                            DescriptorCount = 1,
+                                            Type = MgDescriptorType.COMBINED_IMAGE_SAMPLER,
+                                        }
+                                    },
+                                })
+                            )
+                            {
+                                IMgBuffer buffer;
+                                var result = partition.Device.CreateBuffer(new MgBufferCreateInfo { SharingMode = MgSharingMode.EXCLUSIVE, Size = 1024, Usage = MgBufferUsageFlagBits.VERTEX_BUFFER_BIT }, callback, out buffer);
+                                buffer.DestroyBuffer(partition.Device, callback);
+                            }
 						}
-					}                  
-				}
+					}
+                    Console.WriteLine("NO ERRORS!");
+                }
 			}
 			catch (Exception ex)
 			{
 				Console.WriteLine(ex);
+                throw ex;
 			}
 		}
 

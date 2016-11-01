@@ -265,10 +265,13 @@
     <Compile Include="Handles\VkInteropsUtility.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Magnesium\Magnesium.csproj">
-      <Project>{9f9ac448-9d17-43e5-8889-285426290891}</Project>
-      <Name>Magnesium</Name>
-    </ProjectReference>
+    <Reference Include="Magnesium, Version=4.0.6136.42367, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Magnesium.4.0.0\lib\portable-net45+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10\Magnesium.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
 </Project>
