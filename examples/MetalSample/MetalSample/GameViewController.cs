@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Threading;
 
 using AppKit;
-using Foundation;
 using Magnesium;
 using Magnesium.Metal;
 using Metal;
 using MetalKit;
-using ModelIO;
 using OpenTK;
 using SimpleInjector;
 
@@ -125,7 +121,7 @@ namespace MetalSample
 
 		public GameViewController(IntPtr handle) : base(handle)
 		{
-			
+
 		}
 
 		IMgCommandBuffer mPrePresentBarrierCmd;
@@ -151,7 +147,7 @@ namespace MetalSample
 
 			if (mGraphicsDevice != null)
 				mGraphicsDevice.Dispose();
-			
+
 			if (mContainer != null)
 				mContainer.Dispose();
 		}
@@ -188,7 +184,7 @@ namespace MetalSample
 			{
 				mGraphicsDevice = new AmtGraphicsDevice(mApplicationView, mGraphicsConfiguration.LogicalDevice);
 				mSwapchainCollection = mContainer.GetInstance<Magnesium.IMgSwapchainCollection>();
-							
+
 				var setupCommands = new Magnesium.IMgCommandBuffer[1];
 				var pAllocateInfo = new Magnesium.MgCommandBufferAllocateInfo
 				{
@@ -221,7 +217,7 @@ namespace MetalSample
 						},
 					}
 				};
-	
+
 				mGraphicsConfiguration.Partition.Queue.QueueSubmit(pSubmits, null);
 				mGraphicsConfiguration.Partition.Queue.QueueWaitIdle();
 
@@ -287,13 +283,13 @@ namespace MetalSample
 
 		class BufferInfo
 		{
-			public IMgBuffer Buffer { get; set;}
-			public IMgDeviceMemory DeviceMemory { get; set;}
-			public ulong Offset { get; set;}
-			public ulong Length { get; set;}
+			public IMgBuffer Buffer { get; set; }
+			public IMgDeviceMemory DeviceMemory { get; set; }
+			public ulong Offset { get; set; }
+			public ulong Length { get; set; }
 		}
 
-		private BufferInfo mVertices; 
+		private BufferInfo mVertices;
 		private BufferInfo mIndices;
 		private BufferInfo mUniforms;
 
@@ -482,7 +478,7 @@ namespace MetalSample
 				}
 			};
 			mGraphicsConfiguration.Device.UpdateDescriptorSets(writes, null);
-		
+
 
 			mSetLayout = pSetLayout;
 		}
@@ -539,7 +535,7 @@ namespace MetalSample
 				MgShaderModuleCreateInfo vertCreateInfo = new MgShaderModuleCreateInfo
 				{
 					Code = vertMemory,
-					CodeSize = new UIntPtr((ulong) vertMemory.Length),
+					CodeSize = new UIntPtr((ulong)vertMemory.Length),
 				};
 
 				IMgShaderModule vertexProgram = null;
@@ -630,7 +626,7 @@ namespace MetalSample
 									Offset = (uint) vertexStride,
 								},
 							},
-								
+
 						},
 						ViewportState = new MgPipelineViewportStateCreateInfo
 						{
@@ -663,7 +659,7 @@ namespace MetalSample
 				vertexProgram.DestroyShaderModule(mGraphicsConfiguration.Device, null);
 
 				mPipelineState = pipelines[0];
-            }
+			}
 
 			GenerateRenderingCommandBuffers();
 		}
@@ -716,7 +712,7 @@ namespace MetalSample
 		IMgCommandBuffer[] mRenderCmdBuffers;
 		void GenerateRenderingCommandBuffers()
 		{
-			var noOfFramebuffers = (uint) mGraphicsDevice.Framebuffers.Length;
+			var noOfFramebuffers = (uint)mGraphicsDevice.Framebuffers.Length;
 			var uniformStride = Marshal.SizeOf(typeof(Uniforms));
 
 			mRenderCmdBuffers = new Magnesium.IMgCommandBuffer[noOfFramebuffers];
@@ -808,9 +804,9 @@ namespace MetalSample
 			int rawsize = Marshal.SizeOf<Uniforms>();
 			IntPtr ptr;
 			mUniforms.DeviceMemory.MapMemory(mGraphicsConfiguration.Device,
-			                                (ulong) (rawsize * constantDataBufferIndex),
-                 							(ulong) rawsize, 0, 
-                							out ptr);
+											(ulong)(rawsize * constantDataBufferIndex),
+											 (ulong)rawsize, 0,
+											out ptr);
 			Marshal.StructureToPtr(uniforms, ptr, false);
 			mUniforms.DeviceMemory.UnmapMemory(mGraphicsConfiguration.Device);
 			rotation += .01f;

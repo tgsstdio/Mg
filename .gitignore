@@ -78,3 +78,6 @@ Magnesium.Vulkan/obj/*
 Magnesium.Vulkan/.vs/Magnesium.Vulkan/v14/.suo
 Build/.vs/Mg ALL PORTABLE/v14/.suo
 Build/.vs/Mg.OpenGL.DesktopGL/v14/.suo
+
+Build/lib/*
+*.nupkg

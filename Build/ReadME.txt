@@ -17,3 +17,5 @@ nuget.exe push Release\Magnesium.4.0.0.symbols.nupkg <api-key> -Source https://n
 nuget push Release\Magnesium.Vulkan.4.0.1.nupkg <api-key> -Source https://www.nuget.org/api/v2/package
 
 nuget push Release\Magnesium.OpenGL.4.0.0.nupkg <api-key> -Source https://www.nuget.org/api/v2/package
+
+nuget push Magnesium.Metal.4.0.1.nupkg <api-key> -Source https://www.nuget.org/api/v2/package
