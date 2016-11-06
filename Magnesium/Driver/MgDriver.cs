@@ -65,7 +65,11 @@ namespace Magnesium
 			return mEntrypoint.CreateInstance (instCreateInfo, null, out mInstance);
 		}
 
-		public IMgLogicalDevice CreateLogicalDevice(IMgSurfaceKHR presentationSurface, MgDeviceExtensionOptions option)
+		public IMgLogicalDevice CreateLogicalDevice(
+            IMgSurfaceKHR presentationSurface,
+            MgDeviceExtensionOptions option,
+            MgQueueAllocation allocationUsage,
+            MgQueueFlagBits deviceUsage)
 		{
             string[] extensions = null;
 
@@ -93,15 +97,10 @@ namespace Magnesium
                 extensions = enabledExtensions.ToArray();
             }            
 
-			return CreateDevice (firstPhysicalDevice, presentationSurface, MgQueueAllocation.One, MgQueueFlagBits.GRAPHICS_BIT, extensions);
+			return CreateDevice (firstPhysicalDevice, presentationSurface, allocationUsage, deviceUsage, extensions);
 		}
 
-		//public IMgLogicalDevice CreateLogicalDevice(MgEnableExtensionsOption option)
-		//{
-		//	return CreateDevice (0, null, MgQueueAllocation.One, MgQueueFlagBits.GRAPHICS_BIT);
-		//}
-
-		static uint FindAppropriateQueueFamily (MgQueueFamilyProperties[] queueProps, MgQueueFlagBits requestedQueueType)
+        static uint FindAppropriateQueueFamily (MgQueueFamilyProperties[] queueProps, MgQueueFlagBits requestedQueueType)
 		{
 			for (uint i = 0; i < queueProps.Length; ++i)
 			{

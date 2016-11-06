@@ -23,9 +23,15 @@ namespace Magnesium.OpenGL.DesktopGL
 		}
 
 		private IMgSurfaceKHR mSurface;
-		public void Initialize ()
-		{                                  
-			var createInfo = new MgWin32SurfaceCreateInfoKHR {
+		public void Initialize (uint width, uint height)
+		{     
+            mWindow.ClientRectangle = new System.Drawing.Rectangle(
+                mWindow.ClientRectangle.X,
+                mWindow.ClientRectangle.Y,
+                (int) width,
+                (int) height);
+
+            var createInfo = new MgWin32SurfaceCreateInfoKHR {
 				// DOUBLE CHECK 
 				Hinstance = Process.GetCurrentProcess ().Handle,
 				Hwnd = mWindow.WindowInfo.Handle,

@@ -41,7 +41,8 @@ namespace Magnesium.OpenGL.DesktopGL
 			IGLDevicePlatform glPlatform,
 			IMgGraphicsDeviceLogger logger,
 			IGLQueueRenderer queueRenderer,
-            IBackbufferContext bbContext
+            IBackbufferContext bbContext,
+            MgFramebufferCollection framebuffers
 		)
 		{
 			mPartition = partition;
@@ -53,7 +54,7 @@ namespace Magnesium.OpenGL.DesktopGL
 			mSelector = selector;
 			mQueueRenderer = queueRenderer;
             mBBContext = bbContext;
-
+            mFramebuffers = framebuffers;
         }
 
 		public IMgImageView DepthStencilImageView {
@@ -62,10 +63,10 @@ namespace Magnesium.OpenGL.DesktopGL
 			}
 		}
 
-		private IMgFramebuffer[] mFramebuffers;
+		private readonly MgFramebufferCollection mFramebuffers;
 		public IMgFramebuffer[] Framebuffers {
 			get {
-				return mFramebuffers;
+				return mFramebuffers.Framebuffers;
 			}
 		}
 
@@ -155,32 +156,6 @@ namespace Magnesium.OpenGL.DesktopGL
 			mRenderpass = new GLRenderPass (attachmentDescriptions);
 		}
 
-		void CreateFramebuffers (IMgSwapchainCollection swapchainCollection, MgGraphicsDeviceCreateInfo createInfo)
-		{
-			var frameBuffers = new IMgFramebuffer[swapchainCollection.Buffers.Length];
-			for (uint i = 0; i < frameBuffers.Length; i++)
-			{
-				var frameBufferCreateInfo = new MgFramebufferCreateInfo
-				{
-					RenderPass = mRenderpass,
-					Attachments = new []
-					{
-                        swapchainCollection.Buffers[i].View,
-						// Depth/Stencil attachment is the same for all frame buffers
-						mView,
-					},
-					Width = createInfo.Width,
-					Height = createInfo.Height,
-					Layers = 1,
-				};
-
-				var err = mPartition.Device.CreateFramebuffer(frameBufferCreateInfo, null, out frameBuffers[i]);
-				Debug.Assert(err == Result.SUCCESS);
-			}
-
-			mFramebuffers = frameBuffers;
-		}
-
         public void Create(IMgCommandBuffer setupCmdBuffer, IMgSwapchainCollection swapchainCollection, MgGraphicsDeviceCreateInfo createInfo)
         {
 			if (createInfo == null)
@@ -209,7 +184,7 @@ namespace Magnesium.OpenGL.DesktopGL
 					
 			SetupSwapchain (swapchainCollection, createInfo);
 
-			CreateFramebuffers (swapchainCollection, createInfo);
+            mFramebuffers.Create(swapchainCollection, mRenderpass, mView, createInfo.Width, createInfo.Height);
 
 			Scissor = new MgRect2D { 
 				Extent = new MgExtent2D{ Width = createInfo.Width, Height = createInfo.Height },
@@ -272,6 +247,7 @@ namespace Magnesium.OpenGL.DesktopGL
 
 		void ReleaseUnmanagedResources ()
 		{
+            mFramebuffers.Clear();
 			if (mRenderpass != null)
 			{
 				mRenderpass.DestroyRenderPass (mPartition.Device, null);

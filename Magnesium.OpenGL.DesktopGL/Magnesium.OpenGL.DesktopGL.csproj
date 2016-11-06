@@ -91,8 +91,8 @@
     <Folder Include="CommandBuffer\" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Magnesium, Version=4.0.6136.42367, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\Build\packages\Magnesium.4.0.0\lib\portable-net45+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10\Magnesium.dll</HintPath>
+    <Reference Include="Magnesium, Version=4.0.6155.3351, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\Build\packages\Magnesium.5.0.0\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="OpenTK, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">

@@ -8,12 +8,12 @@ namespace Magnesium
 	public class MgSwapchainCollection : IMgSwapchainCollection
 	{
 		private readonly IMgImageTools mImageTools;
-		private readonly IMgThreadPartition mPartition;
+		private readonly IMgGraphicsConfiguration mGraphicsConfiguration;
 		private readonly IMgPresentationSurface mLayer;
-		public MgSwapchainCollection (IMgPresentationSurface layer, IMgThreadPartition partition, IMgImageTools imageTools)
+		public MgSwapchainCollection (IMgPresentationSurface layer, IMgGraphicsConfiguration graphicsConfiguration, IMgImageTools imageTools)
 		{
 			mLayer = layer;
-			mPartition = partition;
+			mGraphicsConfiguration = graphicsConfiguration;
 			mImageTools = imageTools;
             Format = MgFormat.UNDEFINED;
         }
@@ -24,7 +24,7 @@ namespace Magnesium
 		{
 			// Get the list of VkFormat's that are supported:
 			MgSurfaceFormatKHR[] surfFormats;
-			var err = mPartition.PhysicalDevice.GetPhysicalDeviceSurfaceFormatsKHR(mLayer.Surface, out surfFormats);
+			var err = mGraphicsConfiguration.Partition.PhysicalDevice.GetPhysicalDeviceSurfaceFormatsKHR(mLayer.Surface, out surfFormats);
 			Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
 
 			// If the format list includes just one entry of VK_FORMAT_UNDEFINED,
@@ -80,12 +80,12 @@ namespace Magnesium
 
 			// Get physical device surface properties and formats
 			MgSurfaceCapabilitiesKHR surfCaps;
-			err = mPartition.PhysicalDevice.GetPhysicalDeviceSurfaceCapabilitiesKHR(mLayer.Surface, out surfCaps);
+			err = mGraphicsConfiguration.Partition.PhysicalDevice.GetPhysicalDeviceSurfaceCapabilitiesKHR(mLayer.Surface, out surfCaps);
 			Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
 
 			// Get available present modes
 			MgPresentModeKHR[] presentModes;
-			err = mPartition.PhysicalDevice.GetPhysicalDeviceSurfacePresentModesKHR(mLayer.Surface, out presentModes);
+			err = mGraphicsConfiguration.Partition.PhysicalDevice.GetPhysicalDeviceSurfacePresentModesKHR(mLayer.Surface, out presentModes);
 			Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
 
 			var swapchainExtent = new MgExtent2D {};
@@ -154,7 +154,7 @@ namespace Magnesium
 				CompositeAlpha = MgCompositeAlphaFlagBitsKHR.OPAQUE_BIT_KHR,
 			};
 
-			err = mPartition.Device.CreateSwapchainKHR(swapchainCI, null, out mSwapChain);
+			err = mGraphicsConfiguration.Device.CreateSwapchainKHR(swapchainCI, null, out mSwapChain);
 			Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
 
 			// If an existing swap chain is re-created, destroy the old swap chain
@@ -163,13 +163,13 @@ namespace Magnesium
 			{ 
 				for (uint i = 0; i < mImageCount; i++)
 				{
-					mBuffers[i].View.DestroyImageView(mPartition.Device, null);
+					mBuffers[i].View.DestroyImageView(mGraphicsConfiguration.Device, null);
 				}
-				oldSwapchain.DestroySwapchainKHR(mPartition.Device, null);
+				oldSwapchain.DestroySwapchainKHR(mGraphicsConfiguration.Device, null);
 			}
 
 			// Get the swap chain images
-			err = mPartition.Device.GetSwapchainImagesKHR(mSwapChain, out mImages);
+			err = mGraphicsConfiguration.Device.GetSwapchainImagesKHR(mSwapChain, out mImages);
 			Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
 
 			// Get the swap chain buffers containing the image and imageview
@@ -212,7 +212,7 @@ namespace Magnesium
 				colorAttachmentView.Image = buffer.Image;
 
 				IMgImageView bufferView;
-				err = mPartition.Device.CreateImageView(colorAttachmentView, null, out bufferView);
+				err = mGraphicsConfiguration.Device.CreateImageView(colorAttachmentView, null, out bufferView);
 				Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
 				buffer.View = bufferView;
 
@@ -240,10 +240,10 @@ namespace Magnesium
 
 			for (uint i = 0; i < mImageCount; i++)
 			{
-				mBuffers[i].View.DestroyImageView(mPartition.Device, null);
+				mBuffers[i].View.DestroyImageView(mGraphicsConfiguration.Device, null);
 			}
             if (mSwapChain != null)
-			    mSwapChain.DestroySwapchainKHR(mPartition.Device, null);
+			    mSwapChain.DestroySwapchainKHR(mGraphicsConfiguration.Device, null);
 
 			mIsDisposed = true;
 		}
