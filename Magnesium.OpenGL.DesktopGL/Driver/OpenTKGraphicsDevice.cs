@@ -27,7 +27,7 @@ namespace Magnesium.OpenGL.DesktopGL
 
 		IMgGraphicsDeviceLogger mLogger;
 
-		IMgThreadPartition mPartition;
+		IMgGraphicsConfiguration mGraphicsConfiguration;
 
 		IGLFramebufferHelperSelector mSelector;
 
@@ -35,17 +35,16 @@ namespace Magnesium.OpenGL.DesktopGL
 
 		public OpenTKGraphicsDevice (
 			INativeWindow window,
-			IMgThreadPartition partition,
+            IMgGraphicsConfiguration configuration,
 			IGLFramebufferHelperSelector selector,
 			IGLExtensionLookup extensions,
 			IGLDevicePlatform glPlatform,
 			IMgGraphicsDeviceLogger logger,
 			IGLQueueRenderer queueRenderer,
-            IBackbufferContext bbContext,
-            MgFramebufferCollection framebuffers
+            IBackbufferContext bbContext
 		)
 		{
-			mPartition = partition;
+			mGraphicsConfiguration = configuration;
 			mView = new GLNullImageView ();
 			mWindow = window;
 			mExtensions = extensions;
@@ -54,7 +53,8 @@ namespace Magnesium.OpenGL.DesktopGL
 			mSelector = selector;
 			mQueueRenderer = queueRenderer;
             mBBContext = bbContext;
-            mFramebuffers = framebuffers;
+            // SHOULD BE HIDDEN
+            mFramebuffers = new MgFramebufferCollection(mGraphicsConfiguration);
         }
 
 		public IMgImageView DepthStencilImageView {
@@ -250,7 +250,7 @@ namespace Magnesium.OpenGL.DesktopGL
             mFramebuffers.Clear();
 			if (mRenderpass != null)
 			{
-				mRenderpass.DestroyRenderPass (mPartition.Device, null);
+				mRenderpass.DestroyRenderPass (mGraphicsConfiguration.Device, null);
 			}
 		}
 

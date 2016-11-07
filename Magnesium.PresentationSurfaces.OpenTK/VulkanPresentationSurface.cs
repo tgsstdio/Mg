@@ -4,11 +4,11 @@ using OpenTK;
 namespace Magnesium.PresentationSurfaces.OpenTK
 {
     // HANDLES THE WINDOWING ISSUE
-    public class OpenTKPresentationSurface : IMgPresentationSurface
+    public class VulkanPresentationSurface : IMgPresentationSurface
 	{
 		private readonly MgDriverContext mDriverContext;
 		private readonly INativeWindow mWindow;
-		public OpenTKPresentationSurface(MgDriverContext context, INativeWindow window)
+		public VulkanPresentationSurface(MgDriverContext context, INativeWindow window)
 		{
 			mDriverContext = context;
 			mWindow = window;

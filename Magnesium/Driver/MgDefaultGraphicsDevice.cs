@@ -15,10 +15,11 @@ namespace Magnesium
         	}
         }
 
-        public MgDefaultGraphicsDevice (IMgGraphicsConfiguration configuration, MgFramebufferCollection framebuffers, IMgImageTools imageTools)
+        public MgDefaultGraphicsDevice (IMgGraphicsConfiguration configuration, IMgImageTools imageTools)
 		{
             mGraphicsConfiguration = configuration;
-            mFramebuffers = framebuffers;
+            // SHOULD BE HIDDEN
+            mFramebuffers = new MgFramebufferCollection(mGraphicsConfiguration);
 			mImageTools = imageTools;
 		}
 

@@ -2,18 +2,18 @@
 <package >
   <metadata>
     <id>Magnesium.PresentationSurfaces.OpenTK</id>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <authors>David Young</authors>
     <owners>David Young</owners>
     <licenseUrl>https://github.com/tgsstdio/Mg/blob/master/LICENSE.txt</licenseUrl>
     <projectUrl>https://github.com/tgsstdio/Mg</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Contains OpenTK implementation of IMgPresentationSurface </description>
-    <releaseNotes>Initial release</releaseNotes>
+    <releaseNotes>Adding specific Vulkan and DesktopGL surfaces </releaseNotes>
     <copyright>Copyright 2016 David Young</copyright>
     <tags>graphics vulkan OpenGL</tags>
 	<dependencies>
-		<dependency id="Magnesium" version="5.0.1" />
+		<dependency id="Magnesium" version="5.0.4" />
 	</dependencies>
   </metadata>
 </package>

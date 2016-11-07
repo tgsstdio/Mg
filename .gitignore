@@ -81,3 +81,5 @@ Build/.vs/Mg.OpenGL.DesktopGL/v14/.suo
 
 Build/lib/*
 *.nupkg
+*.suo
+Magnesium.PresentationSurfaces.OpenTK/.vs/Magnesium.PresentationSurfaces.OpenTK/v14/.suo

@@ -2,18 +2,18 @@
 <package >
   <metadata>
     <id>Magnesium.OpenGL</id>
-    <version>5.0.0</version>
+    <version>5.0.3</version>
     <authors>David Young</authors>
     <owners>David Young</owners>
     <licenseUrl>https://github.com/tgsstdio/Mg/blob/master/LICENSE.txt</licenseUrl>
     <projectUrl>https://github.com/tgsstdio/Mg</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Partial OpenGL polyfill implementation of Vulkan 1.0 library using OpenGL</description>
-    <releaseNotes>Updated interfaces</releaseNotes>
+    <releaseNotes>Updated w.r.t Magnesium 5.0.4</releaseNotes>
     <copyright>Copyright 2016 David Young</copyright>
     <tags>graphics vulkan OpenGL</tags>
 	<dependencies>
-		<dependency id="Magnesium" version="5.0.0" />
+		<dependency id="Magnesium" version="5.0.4" />
 	</dependencies>
   </metadata>
 </package>
