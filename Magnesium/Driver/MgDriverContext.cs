@@ -4,10 +4,10 @@ using System.Diagnostics;
 
 namespace Magnesium
 {
-	public class MgDriver : IDisposable
+	public class MgDriverContext : IDisposable
 	{
 		private IMgEntrypoint mEntrypoint;
-		public MgDriver (IMgEntrypoint entrypoint)
+		public MgDriverContext (IMgEntrypoint entrypoint)
 		{
 			mEntrypoint = entrypoint;
 		}
@@ -250,7 +250,7 @@ namespace Magnesium
 			return new MgLogicalDevice (gpu, device, availableQueues);
 		}
 
-		~MgDriver ()
+		~MgDriverContext ()
 		{
 			Dispose (false);	
 		}

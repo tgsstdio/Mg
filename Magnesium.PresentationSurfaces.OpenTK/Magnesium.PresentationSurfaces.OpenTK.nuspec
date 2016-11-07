@@ -1,16 +1,19 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>Magnesium</id>
-    <version>5.0.3</version>
+    <id>Magnesium.PresentationSurfaces.OpenTK</id>
+    <version>1.0.1</version>
     <authors>David Young</authors>
     <owners>David Young</owners>
     <licenseUrl>https://github.com/tgsstdio/Mg/blob/master/LICENSE.txt</licenseUrl>
     <projectUrl>https://github.com/tgsstdio/Mg</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>C# graphics frontend interface (to Vulkan or any graphics library)</description>
-    <releaseNotes>Replace MgThreadPartition with MgGraphicsConfiguration in utility classes </releaseNotes>
+    <description>Contains OpenTK implementation of IMgPresentationSurface </description>
+    <releaseNotes>Initial release</releaseNotes>
     <copyright>Copyright 2016 David Young</copyright>
-    <tags>graphics, vulkan</tags>
+    <tags>graphics vulkan OpenGL</tags>
+	<dependencies>
+		<dependency id="Magnesium" version="5.0.1" />
+	</dependencies>
   </metadata>
 </package>

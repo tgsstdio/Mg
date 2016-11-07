@@ -8,17 +8,17 @@ namespace Magnesium
 	{
 		public MgPresentationLayer 
 		(
-			IMgThreadPartition partition, 
+			IMgGraphicsConfiguration graphicsConfiguration, 
 			IMgSwapchainCollection collection,
 			IMgPresentationBarrierEntrypoint barrier
 		)
 		{
-			mPartition = partition;
+			mGraphicsConfiguration = graphicsConfiguration;
 			mCollection = collection;
 			mBarrier = barrier;
 		}
 
-		private readonly IMgThreadPartition mPartition;
+		private readonly IMgGraphicsConfiguration mGraphicsConfiguration;
 		private readonly IMgPresentationBarrierEntrypoint mBarrier;
 		private readonly IMgSwapchainCollection mCollection;
 
@@ -29,7 +29,7 @@ namespace Magnesium
 		uint AcquireNextImage (IMgSemaphore presentComplete, ulong timeout)
 		{
 			uint nextImage;
-			Result err = mPartition.Device.AcquireNextImageKHR (mCollection.Swapchain, timeout, presentComplete, null, out nextImage);
+			Result err = mGraphicsConfiguration.Device.AcquireNextImageKHR (mCollection.Swapchain, timeout, presentComplete, null, out nextImage);
 			Debug.Assert (err == Result.SUCCESS);
 			return nextImage;
 		}
@@ -52,7 +52,7 @@ namespace Magnesium
 					}
 				};
 
-				var result = mPartition.Queue.QueueSubmit(submitInfo, null);
+				var result = mGraphicsConfiguration.Queue.QueueSubmit(submitInfo, null);
 				Debug.Assert(result == Result.SUCCESS, result + " != Result.SUCCESS");
 
 				presentImages.Add(new MgPresentInfoKHRImage
@@ -68,9 +68,9 @@ namespace Magnesium
 			};
 
 			//err = swapChain.queuePresent(queue, currentBuffer, semaphores.renderComplete);
-			err = mPartition.Queue.QueuePresentKHR (presentInfo);
+			err = mGraphicsConfiguration.Queue.QueuePresentKHR (presentInfo);
 			Debug.Assert (err == Result.SUCCESS, err + " != Result.SUCCESS");
-			err = mPartition.Queue.QueueWaitIdle ();
+			err = mGraphicsConfiguration.Queue.QueueWaitIdle ();
 			Debug.Assert (err == Result.SUCCESS, err + " != Result.SUCCESS");
         }
 
@@ -92,7 +92,7 @@ namespace Magnesium
 				}
 			};
 
-			var result = mPartition.Queue.QueueSubmit(submitInfo, null);
+			var result = mGraphicsConfiguration.Queue.QueueSubmit(submitInfo, null);
 			Debug.Assert(result == Result.SUCCESS, result + " != Result.SUCCESS");
 
 			return nextImage;

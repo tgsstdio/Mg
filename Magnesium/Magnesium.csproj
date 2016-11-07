@@ -37,8 +37,6 @@
   <ItemGroup>
     <Compile Include="Driver\IMgGraphicsConfiguration.cs" />
     <Compile Include="Driver\IMgPresentationLayer.cs" />
-    <Compile Include="Driver\MgApplicationConfiguration.cs" />
-    <Compile Include="Driver\MgApplicationConfigurationInfo.cs" />
     <Compile Include="Driver\MgDefaultGraphicsConfiguration.cs" />
     <Compile Include="Driver\MgFramebufferCollection.cs" />
     <Compile Include="Driver\MgInstanceExtensionOptions.cs" />
@@ -255,7 +253,7 @@
     <Compile Include="Driver\MgQueueInfo.cs" />
     <Compile Include="Driver\MgThreadPartition.cs" />
     <Compile Include="Driver\MgLogicalDevice.cs" />
-    <Compile Include="Driver\MgDriver.cs" />
+    <Compile Include="Driver\MgDriverContext.cs" />
     <Compile Include="Device\IMgDeviceMemory.cs" />
     <Compile Include="Device\IMgBuffer.cs" />
     <Compile Include="Device\IMgCommandPool.cs" />

@@ -6,11 +6,11 @@ namespace Magnesium
 {
 	public class MgLinearImageOptimizer : IMgTextureGenerator
 	{
-		private readonly IMgThreadPartition mPartition;
+		private readonly IMgGraphicsConfiguration mGraphicsConfiguration;
 		private readonly IMgImageTools mImageTools;
-		public MgLinearImageOptimizer (IMgThreadPartition partition, IMgImageTools imageTools)
+		public MgLinearImageOptimizer (IMgGraphicsConfiguration configuration, IMgImageTools imageTools)
 		{
-			mPartition = partition;
+			mGraphicsConfiguration = configuration;
 			mImageTools = imageTools;
 		}
 
@@ -42,7 +42,7 @@ namespace Magnesium
 					Depth = 1 },
 			};
 
-			var device = mPartition.Device;
+			var device = mGraphicsConfiguration.Device;
 
 			var err = device.CreateImage(imageCreateInfo, allocator, out mappableImage);
 			Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
@@ -57,9 +57,11 @@ namespace Magnesium
 				AllocationSize = memReqs.Size,
 			};
 
+            Debug.Assert(mGraphicsConfiguration.Partition != null);
+
 			// Get memory type that can be mapped to host memory
 			uint memoryTypeIndex;
-			bool isValid = mPartition.GetMemoryType(memReqs.MemoryTypeBits, MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT, out memoryTypeIndex);
+			bool isValid = mGraphicsConfiguration.Partition.GetMemoryType(memReqs.MemoryTypeBits, MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT, out memoryTypeIndex);
 			Debug.Assert(isValid);
 			memAllocInfo.MemoryTypeIndex = memoryTypeIndex;
 
@@ -103,7 +105,7 @@ namespace Magnesium
 				ImageLayout =  MgImageLayout.SHADER_READ_ONLY_OPTIMAL,
 			};
 
-			var cmdPool = mPartition.CommandPool;
+			var cmdPool = mGraphicsConfiguration.Partition.CommandPool;
 
 			var cmdBufAllocateInfo = new MgCommandBufferAllocateInfo
 			{
@@ -142,7 +144,7 @@ namespace Magnesium
 				CommandBuffers = commands,
 			};
 
-			var queue = mPartition.Queue;
+			var queue = mGraphicsConfiguration.Queue;
 			queue.QueueSubmit(new[] {submitInfo}, fence);
 
 //			// NOT SURE IF 

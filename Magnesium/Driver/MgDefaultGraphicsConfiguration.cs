@@ -31,14 +31,14 @@ namespace Magnesium
             }
         }
 
-        private readonly MgApplicationConfiguration mAppConfiguration;
+        private readonly MgDriverContext mDriverContext;
         private readonly IMgPresentationSurface mPresentationSurface;
         public MgDefaultGraphicsConfiguration(
-            MgApplicationConfiguration appConfiguration,
+            MgDriverContext context,
             IMgPresentationSurface presentationSurface)
 		{
             // WINDOW HOOK 
-            mAppConfiguration = appConfiguration;
+            mDriverContext = context;
 			mPresentationSurface =  presentationSurface;            
 		}
 
@@ -48,7 +48,7 @@ namespace Magnesium
             ReleaseUnmanagedResources();
             // GRAPHICS DEVICE
             mPresentationSurface.Initialize(width, height);
-            mLogicalDevice = mAppConfiguration.Driver.CreateLogicalDevice(
+            mLogicalDevice = mDriverContext.CreateLogicalDevice(
                 mPresentationSurface.Surface,
                 MgDeviceExtensionOptions.ALL,
                 MgQueueAllocation.One,
