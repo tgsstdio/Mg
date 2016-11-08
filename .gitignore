@@ -79,6 +79,9 @@ Magnesium.Vulkan/.vs/Magnesium.Vulkan/v14/.suo
 Build/.vs/Mg ALL PORTABLE/v14/.suo
 Build/.vs/Mg.OpenGL.DesktopGL/v14/.suo
 
+examples/*/packages/*
+examples/*/*/bin/*
+examples/*/*/obj/*
 Build/lib/*
 *.nupkg
 *.suo
