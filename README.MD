@@ -30,6 +30,8 @@ Magnesium and its implementations uses [Semantic Versioning v2.0.0](http://semve
  - (BUGFIX) Magnesium.Vulkan v5.0.2 - 9th Nov 2016
 	- FIXED - CmdBindDescriptorSets to pass in null into dynamic offsets 
 	- FIXED - CreateGraphicsPipelines to accept array of dynamic states 
+ - Magnesium.Metal v5.0.0 - 9 Nov 2016
+ 	- Updated w.r.t Magnesium v5.0.4 	
 
 ### Version 4.0.0
  - Moving all implementations under one roof/repository
@@ -79,7 +81,7 @@ Therefore a indirect interface class must be created act as a bridge to allow im
 |-----------|----------|-----------|
 | [Magnesium](https://www.nuget.org/packages/Magnesium/) | 5.0.4  | Core C# Vulkan interface with all applications should reference |
 | [Magnesium.Vulkan](https://www.nuget.org/packages/Magnesium.Vulkan/) | 5.0.2 | C# interface to Vulkan version 1.0.17 |
-| [Magnesium.Metal](https://www.nuget.org/packages/Magnesium.Metal/) | 4.0.0  |iOS polyfill for Magnesium for iOS devices using Apple's own Metal API |
+| [Magnesium.Metal](https://www.nuget.org/packages/Magnesium.Metal/) | 5.0.0  |iOS polyfill for Magnesium for iOS devices using Apple's own Metal API |
 | [Magnesium.OpenGL](https://www.nuget.org/packages/Magnesium.OpenGL/) | 5.0.3  | OpenGL enumation/polyfill to replicate most of Vulkan entities and features |
 | [Magnesium.OpenGL.DesktopGL](https://www.nuget.org/packages/Magnesium.OpenGL.DesktopGL/) | 5.0.3  | OpenTK / OpenGL 4.5 implementation |
 | [Magnesium.PresentationSurfaces.OpenTK](https://www.nuget.org/packages/Magnesium.PresentationSurfaces.OpenTK/) | 1.0.2  | Contains OpenTK implementation of IMgPresentationSurface for Vulkan & DesktopGL |
