@@ -11,14 +11,12 @@ namespace Magnesium
 			IMgPhysicalDevice physicalDevice,
 			IMgDevice device, IMgQueue queue, 
 			IMgCommandPool commandPool,
-			IMgDescriptorPool descPool, 
 			MgPhysicalDeviceMemoryProperties deviceMemoryProperties)
 		{
 			mPhysicalDevice = physicalDevice;
 			mDevice = device;
 			this.Queue = queue;
 			this.CommandPool = commandPool;
-			this.DescriptorPool = descPool;
 			mDeviceMemoryProperties = deviceMemoryProperties;
 		}
 
@@ -53,7 +51,6 @@ namespace Magnesium
 		{
 			// Command buffers first
 			CommandPool.DestroyCommandPool (Device, null);
-			DescriptorPool.DestroyDescriptorPool (Device, null);
 		}
 
 		protected virtual void ReleaseManagedResources ()
@@ -96,11 +93,6 @@ namespace Magnesium
 		}
 
 		public IMgCommandPool CommandPool {
-			get;
-			private set;
-		}
-
-		public IMgDescriptorPool DescriptorPool {
 			get;
 			private set;
 		}

@@ -8,7 +8,7 @@ namespace Magnesium
 		uint QueueFamilyIndex { get; }
 		IMgDevice Device { get; }
 		IMgQueue Queue { get; }
-		IMgThreadPartition CreatePartition (MgCommandPoolCreateFlagBits flags, MgDescriptorPoolCreateInfo descPoolCreateInfo);
+		IMgThreadPartition CreatePartition (MgCommandPoolCreateFlagBits flags);
 	}
 }
 

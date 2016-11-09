@@ -7,12 +7,14 @@ Four words to describe Magnesium:
 Quick Links
 
 - [CHANGELOG](#changelog)
-- [BUILD](#build)
+- [DESIGN DECISIONS](#design-decisions)
+- [NUGET PACKAGES](#nuget-packages)
+- [BUILD INSTRUCTIONS](#build-instructions)
 - [LICENSE](#license)
 - [WHY?](#why?)
 - [CROSS PLATFORM DEV GUIDE](#cross-platform-dev-guide)
 - [PLATFORM SUMMARY](#platform-summary)
-
+- [IMPLEMENTATIONS TODOs](#implementations-todos)
 
 ----------
 
@@ -20,6 +22,12 @@ Quick Links
 ## CHANGELOG
 
 Magnesium and its implementations uses [Semantic Versioning v2.0.0](http://semver.org/) for versioning assemblies
+
+### Version 5.0.0
+ - Removing descriptor pool from IMgQueueInfo.CreatePartition because MgDescriptorPools should be explicitly set based on usage
+ - Added MgGraphicsConfiguration to process one IMgThreadPartition 
+ - Modify IMgPresentationSurface.Initialize method signature
+	 -  void Initialize(MgFormat format, uint width, uint height);
 
 ### Version 4.0.0
  - Moving all implementations under one roof/repository
@@ -34,7 +42,7 @@ Magnesium and its implementations uses [Semantic Versioning v2.0.0](http://semve
 	- Magnesium.OpenGL.DesktopGL 
 		- implementation created for MonoGame + OpenTK
 	- Magnesium.Metal 
-		- Metal iOS API
+		- implementation using Metal iOS API for MacOS and iOS
 
 ### Version 3.0.0
  - Breaking changes from classes to interfaces due to Magnesium.Vulkan implementation 
@@ -48,8 +56,36 @@ Magnesium and its implementations uses [Semantic Versioning v2.0.0](http://semve
 
 ----------
 
+## DESIGN DECISIONS
 
-## BUILD
+1. It is the responsibility of the programmer to clean up any unmanaged memory used by Mg objects themselves after use. 
+Almost Mg interfaces require explicit calls to its DestoryXXX methods (e.g. void DeleteInstance ) to dispose any memory associated to the objects.
+
+2. Magnesium does not SPECIFIC a shader language of choice, rather relying on the shader language available to the platform itself. 
+
+3. To benefit more multi-threaded application use in Vulkan/Magnesium, it is recommended to restrict instances of command pools (i.e. IMgCommandPool) and descriptor pools (i.e. IMgDescriptorPool) to a single thread.
+For example, in application that uses 2 thread, each thread would have its own descriptor pool(s) and command pool(s) and none of the instances should be shared between those threads.          
+
+4. (TODO) You will not directly modify/set for any indirect draw call buffer data as the structs used for indirect draws.
+Therefore a indirect interface class must be created act as a bridge to allow improve portability.   
+
+----------
+
+## NUGET PACKAGES
+
+| Interface / Implementation | Version  | Description |
+|-----------|----------|-----------|
+| [Magnesium](https://www.nuget.org/packages/Magnesium/) | 5.0.0  | Core C# Vulkan interface with all applications should reference |
+| [Magnesium.Vulkan](https://www.nuget.org/packages/Magnesium.Vulkan/) | 5.0.0 | C# interface to Vulkan version 1.0.17 |
+| [Magnesium.Metal](https://www.nuget.org/packages/Magnesium.Metal/) | 5.0.0  |iOS polyfill for Magnesium for iOS devices using Apple's own Metal API |
+| [Magnesium.OpenGL](https://www.nuget.org/packages/Magnesium.OpenGL/) | 5.0.0  | OpenGL enumation/polyfill to replicate most of Vulkan entities and features |
+| [Magnesium.OpenGL.DesktopGL](https://www.nuget.org/packages/Magnesium.OpenGL.DesktopGL/) | 5.0.0  | OpenTK / OpenGL 4.5 implementation |
+
+
+-----------
+
+## BUILD INSTRUCTIONS 
+
 
  1. Change directory to the Build folder in the repository 
  2. Open ```Mg ALL BUILD.sln``` in Visual Studio or Xamarin Studio
@@ -148,6 +184,7 @@ public class MgPipelineStageCreateInfo
 }
 
 ```
+METAL: final Position.y should be flipped in the vertex shader
 
 OPENGL: gl_Position.y should be flipped in the vertex shader 	
 
@@ -180,7 +217,6 @@ METAL: Only one of the descriptor sets can be bound. Internally, descriptor sets
 
 ----------
 
-
 ## PLATFORM SUMMARY
 
 
@@ -202,4 +238,22 @@ METAL: Only one of the descriptor sets can be bound. Internally, descriptor sets
 
 ----------
 
-> Written with [StackEdit](https://stackedit.io/)
+## IMPLEMENTATIONS TODOs
+
+| Features | Magnesium.Vulkan | Magnesium.Metal | Magnesium.OpenGL.DesktopGL |
+|----------|------------------|-----------------|----------------------------|
+| Draw arrays  | Yes  |  Yes  | Yes  |
+| Draw indexed  | Yes | Yes | Yes |
+| Indirect draws  | Yes, partial | Yes, partial  | Yes, partial  |
+| Indirect draw indexed |  Yes, partial   | Yes, partial  | Yes, partial  |
+| Graphics Pipelines | Yes, Completed  | Yes, Completed | No |
+| Secondary Command Buffers  | Yes, Completed  | No | No |
+| Compute Pipelines | Yes, Completed  | Yes, Completed | No |
+| Query Pools  | Yes, Completed | No | No |
+| Pipeline caches  | Yes, Completed | No | No |
+| CmdUpdateDescriptorSets (Writes)  | Yes, Completed | Yes, Completed | No |
+| CmdUpdateDescriptorSets (Copies)  | Yes, Completed | No | No |
+| Subpasses  | Yes, Completed | Yes, Partial | No |
+| Framebuffers  | Yes, Completed | Yes, Partial | No |
+
+> Written with [StackEdit](https://stackedit.io/) & Visual Studio Code

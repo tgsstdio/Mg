@@ -30,28 +30,11 @@ namespace Magnesium
 
 		public IMgThreadPartition CreatePartition()
 		{
-			var descPoolCreateInfo = new MgDescriptorPoolCreateInfo {
-				MaxSets = 0,
-				};
-
-			return CreatePartition(0, descPoolCreateInfo);
+			return CreatePartition(0);
 		}
 
-		public IMgThreadPartition CreatePartition (MgCommandPoolCreateFlagBits flags, MgDescriptorPoolCreateInfo descPoolCreateInfo)
+		public IMgThreadPartition CreatePartition (MgCommandPoolCreateFlagBits flags)
 		{
-            if (descPoolCreateInfo == null)
-                throw new ArgumentNullException(nameof(descPoolCreateInfo));
-
-            if (descPoolCreateInfo.MaxSets <= 0)
-                throw new ArgumentOutOfRangeException(nameof(descPoolCreateInfo.MaxSets) + "must be > 0");
-
-            if (descPoolCreateInfo.PoolSizes == null)
-                throw new ArgumentNullException(nameof(descPoolCreateInfo.PoolSizes));
-
-            if (descPoolCreateInfo.PoolSizes.Length <= 0)
-                throw new ArgumentOutOfRangeException(nameof(descPoolCreateInfo.PoolSizes) + "must be > 0");
-
-
             IMgCommandPool commandPool;
 			var cmdPoolCreateInfo = new MgCommandPoolCreateInfo {
 				QueueFamilyIndex = this.QueueFamilyIndex,
@@ -61,14 +44,10 @@ namespace Magnesium
 			var errCode = Device.CreateCommandPool (cmdPoolCreateInfo, null, out commandPool);
 			Debug.Assert (errCode == Result.SUCCESS);
 
-			IMgDescriptorPool descPool;
-			errCode = Device.CreateDescriptorPool (descPoolCreateInfo, null, out descPool);
-			Debug.Assert (errCode == Result.SUCCESS);
-
 			MgPhysicalDeviceMemoryProperties prop;
 			mParent.GetPhysicalDeviceMemoryProperties (out prop);
 
-			var result = new MgThreadPartition (mParent, Device, this.Queue, commandPool, descPool, prop);
+			var result = new MgThreadPartition (mParent, Device, this.Queue, commandPool, prop);
 			return result;
 		}
 

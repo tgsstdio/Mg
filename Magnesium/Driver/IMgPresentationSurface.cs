@@ -4,7 +4,7 @@ namespace Magnesium
 {
 	public interface IMgPresentationSurface : IDisposable
 	{
-		void Initialize();
+		void Initialize(uint width, uint height);
 		IMgSurfaceKHR Surface { get; }
 	}
 }

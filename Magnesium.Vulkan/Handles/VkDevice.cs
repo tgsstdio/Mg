@@ -721,7 +721,6 @@ namespace Magnesium.Vulkan
 
 			try
 			{
-
 				for (var i = 0; i < createInfoCount; ++i)
 				{
 					var current = pCreateInfos[i];
@@ -841,14 +840,18 @@ namespace Magnesium.Vulkan
 				dynamicStateCount = (uint) dynamicState.DynamicStates.Length;
 				if (dynamicStateCount > 0)
 				{
-					pDynamicStates = VkInteropsUtility.AllocateHGlobalArray(
-						dynamicState.DynamicStates,
-						(item) =>
-						{
-							return item;
-						});					
+                    var bufferSize = (int) (dynamicStateCount * sizeof(int));
+                    pDynamicStates = Marshal.AllocHGlobal(bufferSize);
 
-					attachedItems.Add(pDynamicStates);
+                    var tempData = new int[dynamicStateCount];
+                    for(var i = 0; i < dynamicStateCount; ++i) 
+                    {
+                        tempData[i] = (int) dynamicState.DynamicStates[i];
+                    }
+
+                    Marshal.Copy(tempData, 0, pDynamicStates, (int) dynamicStateCount);
+
+                    attachedItems.Add(pDynamicStates);
 				}
 			}
 

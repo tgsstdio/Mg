@@ -2,14 +2,14 @@
 <package >
   <metadata>
     <id>Magnesium</id>
-    <version>4.0.0</version>
+    <version>5.0.4</version>
     <authors>David Young</authors>
     <owners>David Young</owners>
     <licenseUrl>https://github.com/tgsstdio/Mg/blob/master/LICENSE.txt</licenseUrl>
     <projectUrl>https://github.com/tgsstdio/Mg</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>C# graphics frontend interface (to Vulkan or any graphics library)</description>
-    <releaseNotes>C# Interface only</releaseNotes>
+    <releaseNotes>Replace MgThreadPartition with MgGraphicsConfiguration in utility classes </releaseNotes>
     <copyright>Copyright 2016 David Young</copyright>
     <tags>graphics, vulkan</tags>
   </metadata>
