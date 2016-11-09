@@ -1,3 +1,6 @@
+Magnesium.Metal v5.0.0 - 9 Nov 2016
+ - Updated w.r.t Magnesium v5.0.4 
+
 Magnesium.Vulkan v5.0.2 - 9 Nov 2016
  - FIXED - CmdBindDescriptorSets to pass in null into dynamic offsets 
  - FIXED - CreateGraphicsPipelines to accept array of dynamic states 
