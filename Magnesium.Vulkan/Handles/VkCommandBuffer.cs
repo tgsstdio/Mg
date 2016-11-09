@@ -183,21 +183,24 @@ namespace Magnesium.Vulkan
 
 		public void CmdBindDescriptorSets(MgPipelineBindPoint pipelineBindPoint, IMgPipelineLayout layout, UInt32 firstSet, UInt32 descriptorSetCount, IMgDescriptorSet[] pDescriptorSets, UInt32[] pDynamicOffsets)
 		{
-			var bLayout = (VkPipelineLayout) layout;
-			Debug.Assert(bLayout != null);
 
-			var stride = Marshal.SizeOf(typeof(IntPtr));
-			IntPtr sets = Marshal.AllocHGlobal((int)(stride * descriptorSetCount));
+            var bLayout = (VkPipelineLayout)layout;
+            Debug.Assert(bLayout != null);
 
-			var src = new ulong[descriptorSetCount];
-			for (uint i = 0; i < descriptorSetCount; ++i)
-			{
-				var bDescSet = (VkDescriptorSet) pDescriptorSets[i];
-				Debug.Assert(bDescSet != null);
-				src[i] = bDescSet.Handle;
-			}
+            var stride = Marshal.SizeOf(typeof(IntPtr));
+            IntPtr sets = Marshal.AllocHGlobal((int)(stride * descriptorSetCount));
 
-			Interops.vkCmdBindDescriptorSets(this.Handle, (VkPipelineBindPoint)pipelineBindPoint, bLayout.Handle, firstSet, descriptorSetCount, src, (uint) pDynamicOffsets.Length, pDynamicOffsets);
+            var src = new ulong[descriptorSetCount];
+            for (uint i = 0; i < descriptorSetCount; ++i)
+            {
+                var bDescSet = (VkDescriptorSet)pDescriptorSets[i];
+                Debug.Assert(bDescSet != null);
+                src[i] = bDescSet.Handle;
+            }
+
+            // var dynamic (uint)pDynamicOffsets.Length
+            uint dynamicOffsetCount = pDynamicOffsets != null ? (uint)pDynamicOffsets.Length : 0U;
+            Interops.vkCmdBindDescriptorSets(this.Handle, (VkPipelineBindPoint)pipelineBindPoint, bLayout.Handle, firstSet, descriptorSetCount, src, dynamicOffsetCount, pDynamicOffsets);
 		}
 
 		public void CmdBindIndexBuffer(IMgBuffer buffer, UInt64 offset, MgIndexType indexType)
