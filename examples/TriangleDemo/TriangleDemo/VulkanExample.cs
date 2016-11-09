@@ -1237,7 +1237,7 @@ namespace TriangleDemo
 
         private void ReleaseManagedResources()
         {
-            throw new NotImplementedException();
+           
         }
 
         private void ReleaseUnmanagedResources()
