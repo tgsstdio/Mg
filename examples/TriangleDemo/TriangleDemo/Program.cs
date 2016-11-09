@@ -7,8 +7,6 @@ namespace TriangleDemo
 {
     class Program
     {
-        private static bool IsWindowClosed = false;
-
         public static void Main(string[] args)
         {
             try
@@ -18,8 +16,7 @@ namespace TriangleDemo
                 using (var window = new NativeWindow())
                 {
                     window.Title = "Vulkan Example - Basic indexed triangle";
-
-                    window.Closed += Window_Closed;
+                    window.Visible = true;
 
                     container.RegisterInstance<INativeWindow>(window);
 
@@ -42,7 +39,7 @@ namespace TriangleDemo
                     container.Register<Magnesium.IMgSwapchainCollection, Magnesium.MgSwapchainCollection>(new PerScopeLifetime());
 
 
-                    using (var scope = container.BeginScope())                    
+                    using (var scope = container.BeginScope())
                     using (var driver = container.GetInstance<MgDriverContext>())
                     {
                         driver.Initialize(
@@ -60,23 +57,23 @@ namespace TriangleDemo
                         {
                             var example = container.GetInstance<VulkanExample>();
 
-                            while (IsWindowClosed)
+                            var gameWindow = new GameWindow(window);
+
+                            gameWindow.RenderFrame += (sender, e) =>
                             {
                                 example.RenderLoop();
-                            }
+                            };
+
+                            gameWindow.Run(60, 60);
                         }
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
         }
 
-        private static void Window_Closed(object sender, EventArgs e)
-        {
-            IsWindowClosed = true;
-        }
     }
 }

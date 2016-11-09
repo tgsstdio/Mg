@@ -86,3 +86,4 @@ Build/lib/*
 *.nupkg
 *.suo
 Magnesium.PresentationSurfaces.OpenTK/.vs/Magnesium.PresentationSurfaces.OpenTK/v14/.suo
+*.user

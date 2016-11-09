@@ -14,7 +14,7 @@ using System.Runtime.InteropServices;
 
 namespace TriangleDemo
 {
-    public class VulkanExample
+    public class VulkanExample : IDisposable
     {
         // Vertex buffer and attributes
         class VertexBufferInfo
@@ -234,7 +234,7 @@ namespace TriangleDemo
             };
 
             // Create in signaled state so we don't wait on first render of each command buffer
-            var noOfCommandBuffers = 1; // TODO: drawCmdBuffers.Length;
+            var noOfCommandBuffers = drawCmdBuffers.Length; // TODO: drawCmdBuffers.Length;
             for (var i = 0; i < noOfCommandBuffers; ++i)
             {
                 IMgFence fence;
@@ -719,6 +719,8 @@ namespace TriangleDemo
                         DescriptorCount = 1,
                         StageFlags = MgShaderStageFlagBits.VERTEX_BIT,
                         ImmutableSamplers = null,
+                        DescriptorType = MgDescriptorType.UNIFORM_BUFFER,
+                        Binding = 0,
                     }
                 },
             };
@@ -744,43 +746,33 @@ namespace TriangleDemo
         {
 
             using (var vertFs = System.IO.File.OpenRead("shaders/triangle.vert.spv"))
-            using (var vertMs = new System.IO.MemoryStream())
             using (var fragFs = System.IO.File.OpenRead("shaders/triangle.frag.spv"))
-            using (var fragMs = new System.IO.MemoryStream())
             {
-                //  shaderStages[0] = loadShader(getAssetPath() + "shaders/triangle.vert.spv", VK_SHADER_STAGE_VERTEX_BIT);
-                vertFs.CopyTo(vertMs);
                 // Load shaders
                 // Vulkan loads it's shaders from an immediate binary representation called SPIR-V
                 // Shaders are compiled offline from e.g. GLSL using the reference glslang compiler
-                vertMs.Seek(0, System.IO.SeekOrigin.Begin);
-
-                var vsCreateInfo = new MgShaderModuleCreateInfo
-                {
-                    Code = vertMs,
-                    CodeSize = new UIntPtr((ulong)vertFs.Length),
-                };
 
                 IMgShaderModule vsModule;
-                mConfiguration.Device.CreateShaderModule(vsCreateInfo, null, out vsModule);
-
-                // shaderStages[1] = loadShader(getAssetPath() + "shaders/triangle.frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT);
-
-                fragFs.CopyTo(fragMs);
-                // Load shaders
-                // Vulkan loads it's shaders from an immediate binary representation called SPIR-V
-                // Shaders are compiled offline from e.g. GLSL using the reference glslang compiler
-                fragMs.Seek(0, System.IO.SeekOrigin.Begin);
-
-                var fsCreateInfo = new MgShaderModuleCreateInfo
                 {
-                    Code = fragMs,
-                    CodeSize = new UIntPtr((ulong)fragFs.Length),
-                };
+                    var vsCreateInfo = new MgShaderModuleCreateInfo
+                    {
+                        Code = vertFs,
+                        CodeSize = new UIntPtr((ulong)vertFs.Length),
+                    };
+                    //  shaderStages[0] = loadShader(getAssetPath() + "shaders/triangle.vert.spv", VK_SHADER_STAGE_VERTEX_BIT);
+                    mConfiguration.Device.CreateShaderModule(vsCreateInfo, null, out vsModule);
+                }
 
                 IMgShaderModule fsModule;
-                mConfiguration.Device.CreateShaderModule(fsCreateInfo, null, out fsModule);
-
+                {
+                    var fsCreateInfo = new MgShaderModuleCreateInfo
+                    {
+                        Code = fragFs,
+                        CodeSize = new UIntPtr((ulong)fragFs.Length),
+                    };
+                    // shaderStages[1] = loadShader(getAssetPath() + "shaders/triangle.frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT);
+                    mConfiguration.Device.CreateShaderModule(fsCreateInfo, null, out fsModule);
+                }
 
                 // Create the graphics pipeline used in this example
                 // Vulkan uses the concept of rendering pipelines to encapsulate fixed states, replacing OpenGL's complex state machine
@@ -792,26 +784,22 @@ namespace TriangleDemo
 
                     Stages = new MgPipelineShaderStageCreateInfo[]
                     {
-                    new MgPipelineShaderStageCreateInfo
-                    {
-                        Stage = MgShaderStageFlagBits.VERTEX_BIT,
-                        Module = vsModule,
-                        Name = "vertFunc",
-                    },
-                    new MgPipelineShaderStageCreateInfo
-                    {
-                        Stage = MgShaderStageFlagBits.VERTEX_BIT,
-                        Module = fsModule,
-                        Name = "fragFunc",
-                    },
+                        new MgPipelineShaderStageCreateInfo
+                        {
+                            Stage = MgShaderStageFlagBits.VERTEX_BIT,
+                            Module = vsModule,
+                            Name = "vertFunc",
+                        },
+                        new MgPipelineShaderStageCreateInfo
+                        {
+                            Stage = MgShaderStageFlagBits.FRAGMENT_BIT,
+                            Module = fsModule,
+                            Name = "fragFunc",
+                        },
                     },
 
-                    // The layout used for this pipeline (can be shared among multiple pipelines using the same layout)
-                    Layout = mPipelineLayout,
-
-                    // Renderpass this pipeline is attached to
-                    RenderPass = mGraphicsDevice.Renderpass,
-
+                    VertexInputState = vertices.inputState,
+                    
                     // Construct the differnent states making up the pipeline
                     InputAssemblyState = new MgPipelineInputAssemblyStateCreateInfo
                     {
@@ -832,6 +820,7 @@ namespace TriangleDemo
                         LineWidth = 1.0f,
                     },
 
+
                     // Color blend state describes how blend factors are calculated (if used)
                     // We need one blend attachment state per color attachment (even if blending is not used
                     ColorBlendState = new MgPipelineColorBlendStateCreateInfo
@@ -846,23 +835,24 @@ namespace TriangleDemo
                         },
                     },
 
+                    // Multi sampling state
+                    // This example does not make use fo multi sampling (for anti-aliasing), the state must still be set and passed to the pipeline
+                    MultisampleState = new MgPipelineMultisampleStateCreateInfo
+                    {
+                        RasterizationSamples = MgSampleCountFlagBits.COUNT_1_BIT,
+                        SampleMask = null,
+                    },
+
+
+                    // The layout used for this pipeline (can be shared among multiple pipelines using the same layout)
+                    Layout = mPipelineLayout,
+
+                    // Renderpass this pipeline is attached to
+                    RenderPass = mGraphicsDevice.Renderpass,
+
                     // Viewport state sets the number of viewports and scissor used in this pipeline
                     // Note: This is actually overriden by the dynamic states (see below)
                     ViewportState = null,
-
-                    // Enable dynamic states
-                    // Most states are baked into the pipeline, but there are still a few dynamic states that can be changed within a command buffer
-                    // To be able to change these we need do specify which dynamic states will be changed using this pipeline. Their actual states are set later on in the command buffer.
-                    // For this example we will set the viewport and scissor using dynamic states
-
-                    DynamicState = new MgPipelineDynamicStateCreateInfo
-                    {
-                        DynamicStates = new[]
-                        {
-                        MgDynamicState.VIEWPORT,
-                        MgDynamicState.SCISSOR,
-                    }
-                    },
 
                     // Depth and stencil state containing depth and stencil compare and test operations
                     // We only use depth tests and want depth tests and writes to be enabled and compare with less or equal
@@ -887,12 +877,18 @@ namespace TriangleDemo
                         },
                     },
 
-                    // Multi sampling state
-                    // This example does not make use fo multi sampling (for anti-aliasing), the state must still be set and passed to the pipeline
-                    MultisampleState = new MgPipelineMultisampleStateCreateInfo
+                    // Enable dynamic states
+                    // Most states are baked into the pipeline, but there are still a few dynamic states that can be changed within a command buffer
+                    // To be able to change these we need do specify which dynamic states will be changed using this pipeline. Their actual states are set later on in the command buffer.
+                    // For this example we will set the viewport and scissor using dynamic states
+
+                    DynamicState = new MgPipelineDynamicStateCreateInfo
                     {
-                        RasterizationSamples = MgSampleCountFlagBits.COUNT_1_BIT,
-                        SampleMask = null,
+                        DynamicStates = new[]
+                        {
+                            MgDynamicState.VIEWPORT,
+                            MgDynamicState.SCISSOR,
+                        }
                     },
                 };
 
@@ -1141,7 +1137,14 @@ namespace TriangleDemo
 
         public void RenderLoop()
         {
-            render();
+            try
+            {
+                render();
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
 
         void render()
@@ -1212,69 +1215,109 @@ namespace TriangleDemo
             updateUniformBuffers();
         }
 
+        #region IDisposable Support
+        private bool mIsDisposed = false; // To detect redundant calls
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (mIsDisposed)
+            {
+                return;
+            }
+
+            ReleaseUnmanagedResources();
+
+            if (disposing)
+            {  
+                ReleaseManagedResources();
+            }
+
+            mIsDisposed = true;            
+        }
+
+        private void ReleaseManagedResources()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ReleaseUnmanagedResources()
+        {
+            var device = mConfiguration.Device;
+            if (device != null)
+            {
+
+                // Clean up used Vulkan resources 
+                // Note: Inherited destructor cleans up resources stored in base class
+                if (mPipeline != null)
+                    mPipeline.DestroyPipeline(device, null);
+
+                if (mPipelineLayout != null)
+                    mPipelineLayout.DestroyPipelineLayout(device, null);
+
+                if (mDescriptorSetLayout != null)
+                    mDescriptorSetLayout.DestroyDescriptorSetLayout(device, null);
+
+                if (vertices.buffer != null)
+                    vertices.buffer.DestroyBuffer(device, null);
+
+                if (vertices.memory != null)
+                    vertices.memory.FreeMemory(device, null);
+
+                if (indices.buffer != null)
+                    indices.buffer.DestroyBuffer(device, null);
+
+                if (indices.memory != null)
+                    indices.memory.FreeMemory(device, null);
+
+                if (uniformDataVS.buffer != null)
+                    uniformDataVS.buffer.DestroyBuffer(device, null);
+
+                if (uniformDataVS.memory != null)
+                    uniformDataVS.memory.FreeMemory(device, null);
+
+                if (mPresentCompleteSemaphore != null)
+                    mPresentCompleteSemaphore.DestroySemaphore(device, null);
+
+
+                if (mRenderCompleteSemaphore != null)
+                    mRenderCompleteSemaphore.DestroySemaphore(device, null);
+
+                foreach (var fence in mWaitFences)
+                {
+                    fence.DestroyFence(device, null);
+                }
+
+                if (mDescriptorPool != null)
+                    mDescriptorPool.DestroyDescriptorPool(device, null);
+
+                if (drawCmdBuffers != null)
+                    mConfiguration.Device.FreeCommandBuffers(mConfiguration.Partition.CommandPool, drawCmdBuffers);
+
+                if (mPostPresentCmdBuffer != null)
+                    mConfiguration.Device.FreeCommandBuffers(mConfiguration.Partition.CommandPool, new[] { mPostPresentCmdBuffer });
+
+
+                if (mPrePresentCmdBuffer != null)
+                    mConfiguration.Device.FreeCommandBuffers(mConfiguration.Partition.CommandPool, new[] { mPrePresentCmdBuffer });
+
+                if (mGraphicsDevice != null)
+                    mGraphicsDevice.Dispose();
+            }
+        }
+
         ~VulkanExample()
         {
-            //var device = mConfiguration.Device;
-            //if (device != null)
-            //{
+            Dispose(false);
+        }
 
-            //    // Clean up used Vulkan resources 
-            //    // Note: Inherited destructor cleans up resources stored in base class
-            //    if (mPipeline != null)
-            //        mPipeline.DestroyPipeline(device, null);
-
-            //    if (mPipelineLayout != null)
-            //        mPipelineLayout.DestroyPipelineLayout(device, null);
-
-            //    if (mDescriptorSetLayout != null)
-            //        mDescriptorSetLayout.DestroyDescriptorSetLayout(device, null);
-
-            //    if (vertices.buffer != null)
-            //        vertices.buffer.DestroyBuffer(device, null);
-
-            //    if (vertices.memory != null)
-            //        vertices.memory.FreeMemory(device, null);
-
-            //    if (indices.buffer != null)
-            //        indices.buffer.DestroyBuffer(device, null);
-
-            //    if (indices.memory != null)
-            //        indices.memory.FreeMemory(device, null);
-
-            //    if (uniformDataVS.buffer != null)
-            //        uniformDataVS.buffer.DestroyBuffer(device, null);
-
-            //    if (uniformDataVS.memory != null)
-            //        uniformDataVS.memory.FreeMemory(device, null);
-
-            //    if (mPresentCompleteSemaphore != null)
-            //        mPresentCompleteSemaphore.DestroySemaphore(device, null);
-
-
-            //    if (mRenderCompleteSemaphore != null)
-            //        mRenderCompleteSemaphore.DestroySemaphore(device, null);
-
-            //    foreach (var fence in mWaitFences)
-            //    {
-            //        fence.DestroyFence(device, null);
-            //    }
-
-            //    if (mDescriptorPool != null)
-            //        mDescriptorPool.DestroyDescriptorPool(device, null);
-
-            //    if (drawCmdBuffers != null)
-            //        mConfiguration.Device.FreeCommandBuffers(mConfiguration.Partition.CommandPool, drawCmdBuffers);
-
-            //    if (mPostPresentCmdBuffer != null)
-            //        mConfiguration.Device.FreeCommandBuffers(mConfiguration.Partition.CommandPool, new[] { mPostPresentCmdBuffer });
-
-
-            //    if (mPrePresentCmdBuffer != null)
-            //        mConfiguration.Device.FreeCommandBuffers(mConfiguration.Partition.CommandPool, new[] { mPrePresentCmdBuffer });
-
-            //    if (mGraphicsDevice != null)
-            //        mGraphicsDevice.Dispose();
-            //}
-        }        
+        // This code added to correctly implement the disposable pattern.
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(true);
+            // TODO: uncomment the following line if the finalizer is overridden above.
+            GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }
