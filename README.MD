@@ -1,8 +1,6 @@
 # Magnesium
 
-Four words to describe Magnesium:
-
-> C# Vulkan interface/polyfill
+> C# Vulkan interface/polyfill for WINDOWS and MacOS
 
 Quick Links
 
@@ -25,9 +23,13 @@ Magnesium and its implementations uses [Semantic Versioning v2.0.0](http://semve
 
 ### Version 5.0.0
  - Removing descriptor pool from IMgQueueInfo.CreatePartition because MgDescriptorPools should be explicitly set based on usage
- - Added MgGraphicsConfiguration to process one IMgThreadPartition 
+ - Added IMgGraphicsConfiguration/MgDefaultGraphicsConfiguration to process one IMgThreadPartition 
  - Modify IMgPresentationSurface.Initialize method signature
 	 -  void Initialize(MgFormat format, uint width, uint height);
+ - New assembly created Magnesium.PresentationSurfaces.OpenTK
+ - (BUGFIX) Magnesium.Vulkan v5.0.2 - 9th Nov 2016
+	- FIXED - CmdBindDescriptorSets to pass in null into dynamic offsets 
+	- FIXED - CreateGraphicsPipelines to accept array of dynamic states 
 
 ### Version 4.0.0
  - Moving all implementations under one roof/repository
@@ -73,13 +75,14 @@ Therefore a indirect interface class must be created act as a bridge to allow im
 
 ## NUGET PACKAGES
 
-| Interface / Implementation | Version  | Description |
+| Interface / Implementation | Latest Version  | Description |
 |-----------|----------|-----------|
-| [Magnesium](https://www.nuget.org/packages/Magnesium/) | 5.0.0  | Core C# Vulkan interface with all applications should reference |
-| [Magnesium.Vulkan](https://www.nuget.org/packages/Magnesium.Vulkan/) | 5.0.0 | C# interface to Vulkan version 1.0.17 |
-| [Magnesium.Metal](https://www.nuget.org/packages/Magnesium.Metal/) | 5.0.0  |iOS polyfill for Magnesium for iOS devices using Apple's own Metal API |
-| [Magnesium.OpenGL](https://www.nuget.org/packages/Magnesium.OpenGL/) | 5.0.0  | OpenGL enumation/polyfill to replicate most of Vulkan entities and features |
-| [Magnesium.OpenGL.DesktopGL](https://www.nuget.org/packages/Magnesium.OpenGL.DesktopGL/) | 5.0.0  | OpenTK / OpenGL 4.5 implementation |
+| [Magnesium](https://www.nuget.org/packages/Magnesium/) | 5.0.4  | Core C# Vulkan interface with all applications should reference |
+| [Magnesium.Vulkan](https://www.nuget.org/packages/Magnesium.Vulkan/) | 5.0.2 | C# interface to Vulkan version 1.0.17 |
+| [Magnesium.Metal](https://www.nuget.org/packages/Magnesium.Metal/) | 4.0.0  |iOS polyfill for Magnesium for iOS devices using Apple's own Metal API |
+| [Magnesium.OpenGL](https://www.nuget.org/packages/Magnesium.OpenGL/) | 5.0.3  | OpenGL enumation/polyfill to replicate most of Vulkan entities and features |
+| [Magnesium.OpenGL.DesktopGL](https://www.nuget.org/packages/Magnesium.OpenGL.DesktopGL/) | 5.0.3  | OpenTK / OpenGL 4.5 implementation |
+| [Magnesium.PresentationSurfaces.OpenTK](https://www.nuget.org/packages/Magnesium.PresentationSurfaces.OpenTK/) | 1.0.2  | Contains OpenTK implementation of IMgPresentationSurface for Vulkan & DesktopGL |
 
 
 -----------
@@ -184,6 +187,10 @@ public class MgPipelineStageCreateInfo
 }
 
 ```
+
+VULKAN: Since METAL does not allow *"main"* as a function entrypoint in MgPipelineStageCreateInfo.Name, please use another 
+entrypoint other than *"main"*. See [SPIRVReplace](https://github.com/tgsstdio/SPIRVReplace) CLI to convert glsl to valid SPIRV bytecode on Windows. 
+
 METAL: final Position.y should be flipped in the vertex shader
 
 OPENGL: gl_Position.y should be flipped in the vertex shader 	
