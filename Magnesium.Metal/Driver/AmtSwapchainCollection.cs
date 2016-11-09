@@ -62,8 +62,6 @@ namespace Magnesium.Metal
 		{
 			Width = width;
 			Height = height;
-
-			mApplicationView.DrawableSize = new CoreGraphics.CGSize((nfloat)width, (nfloat)height);
 		}
 
 		public void Dispose()

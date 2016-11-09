@@ -2,18 +2,18 @@
 <package >
   <metadata>
     <id>Magnesium.Metal</id>
-    <version>4.0.1</version>
+    <version>5.0.0</version>
     <authors>David Young</authors>
     <owners>David Young</owners>
     <licenseUrl>https://github.com/tgsstdio/Mg/blob/master/LICENSE.txt</licenseUrl>
     <projectUrl>https://github.com/tgsstdio/Mg</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Vulkan 1.0 implementation using Xamarin.Metal</description>
-    <releaseNotes>Missing assembly</releaseNotes>
+    <releaseNotes>Updated interface w.r.t Magnesium 5.0.4</releaseNotes>
     <copyright>Copyright 2016 David Young</copyright>
     <tags>graphics vulkan metal</tags>    
 	<dependencies>
-		<dependency id="Magnesium" version="4.0.0" />
+		<dependency id="Magnesium" version="5.0.4" />
 	</dependencies>
   </metadata>
   <files>
