@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 
 using AppKit;
 using Magnesium;
 using Magnesium.Metal;
 using Metal;
 using MetalKit;
-using OpenTK;
 using SimpleInjector;
 
 namespace MetalSample

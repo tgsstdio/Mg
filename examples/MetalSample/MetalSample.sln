@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetalSample", "MetalSample\MetalSample.csproj", "{FD60230A-95C4-4B5B-96A4-DD0129F1146D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Magnesium.Metal", "..\..\Magnesium.Metal\Magnesium.Metal.csproj", "{32B6046B-4432-4DDF-9718-EB5C3A1A0285}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -15,9 +13,5 @@ Global
 		{FD60230A-95C4-4B5B-96A4-DD0129F1146D}.Debug|x86.Build.0 = Debug|x86
 		{FD60230A-95C4-4B5B-96A4-DD0129F1146D}.Release|x86.ActiveCfg = Release|x86
 		{FD60230A-95C4-4B5B-96A4-DD0129F1146D}.Release|x86.Build.0 = Release|x86
-		{32B6046B-4432-4DDF-9718-EB5C3A1A0285}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{32B6046B-4432-4DDF-9718-EB5C3A1A0285}.Debug|x86.Build.0 = Debug|Any CPU
-		{32B6046B-4432-4DDF-9718-EB5C3A1A0285}.Release|x86.ActiveCfg = Release|Any CPU
-		{32B6046B-4432-4DDF-9718-EB5C3A1A0285}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

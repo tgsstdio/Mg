@@ -760,14 +760,17 @@ namespace MetalSample
 
 			if (disposing)
 			{
-				// TODO: dispose managed state (managed objects).
+				ReleaseManagedResources();
 			}
 			ReleaseUnmanagedResources();
-			// TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-			// TODO: set large fields to null.
 
 			mIsDisposed = true;
 
+		}
+
+		void ReleaseManagedResources()
+		{
+			
 		}
 
 		void ReleaseUnmanagedResources()

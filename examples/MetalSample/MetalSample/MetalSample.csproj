@@ -50,14 +50,15 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.Mac" />
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="Magnesium">
       <HintPath>..\packages\Magnesium.5.0.4\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
     </Reference>
     <Reference Include="SimpleInjector">
       <HintPath>..\packages\SimpleInjector.3.2.7\lib\net45\SimpleInjector.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="Magnesium.Metal">
+      <HintPath>..\packages\Magnesium.Metal.5.0.0\lib\portable-net45+netcore45+wpa81\Magnesium.Metal.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -104,12 +105,6 @@
     <BundleResource Include="Resources\Fragment.metal">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </BundleResource>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Magnesium.Metal\Magnesium.Metal.csproj">
-      <Project>{32B6046B-4432-4DDF-9718-EB5C3A1A0285}</Project>
-      <Name>Magnesium.Metal</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
 </Project>
