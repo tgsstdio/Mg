@@ -8,18 +8,19 @@ namespace Magnesium.Metal
 	{
 		private readonly MTKView mApplicationView;
 
-		private readonly IMgLogicalDevice mLogicalDevice;
+		private readonly IMgGraphicsConfiguration mConfiguration;
 
 		private IMgRenderPass mRenderpass;
 
-		private IMgFramebuffer[] mFramebuffers;
+		private MgFramebufferCollection mFramebuffers;
 
 		private bool mDeviceCreated = false;
 
-		public AmtGraphicsDevice(MTKView view, IMgLogicalDevice device)
+		public AmtGraphicsDevice(MTKView view, IMgGraphicsConfiguration config)
 		{
 			mApplicationView = view;
-			mLogicalDevice = device;
+			mConfiguration = config;
+			mFramebuffers = new MgFramebufferCollection(config);
 		}
 
 		public MgViewport CurrentViewport
@@ -32,7 +33,7 @@ namespace Magnesium.Metal
 		{
 			get
 			{
-				return mFramebuffers;
+				return mFramebuffers.Framebuffers;
 			}
 		}
 
@@ -58,6 +59,13 @@ namespace Magnesium.Metal
 			}
 		}
 
+		void ReleaseUnmanagedResources()
+		{
+			mRenderpass = null;
+			mDepthStencilView = null;
+			mFramebuffers.Clear();
+		}
+
 		public void Create(IMgCommandBuffer setupCmdBuffer, IMgSwapchainCollection swapchainCollection, MgGraphicsDeviceCreateInfo dsCreateInfo)
 		{
 
@@ -76,15 +84,12 @@ namespace Magnesium.Metal
 			var depthFormat = AmtFormatExtensions.GetPixelFormat(dsCreateInfo.DepthStencil);
 			var sampleCount = AmtSampleCountFlagBitExtensions.TranslateSampleCount(dsCreateInfo.Samples);
 
+			ReleaseUnmanagedResources();
 
 			mApplicationView.SampleCount = sampleCount;
 			// FIXME : RUNTIME ISSUE WITH SETTING COLOR FORMAT; SHOULD "FIGURE" OUT APPROPRIATE COLOR FORMAT SOMEHOW
 			mApplicationView.ColorPixelFormat = colorFormat;
 			mApplicationView.DepthStencilPixelFormat = depthFormat;
-
-			mFramebuffers = null;
-			mRenderpass = null;
-			mDepthStencilView = null;
 
 			CreateDepthStencilImageView();
 			CreateRenderpass(dsCreateInfo);
@@ -93,7 +98,12 @@ namespace Magnesium.Metal
 			bSwapchainCollection.Format = dsCreateInfo.Color;
 			bSwapchainCollection.Create(setupCmdBuffer, dsCreateInfo.Width, dsCreateInfo.Height);
 
-			CreateFramebuffers(swapchainCollection, dsCreateInfo);
+			mFramebuffers.Create(
+				swapchainCollection,
+				mRenderpass,
+				mDepthStencilView,
+				dsCreateInfo.Width,
+				dsCreateInfo.Height);
 
 			Scissor = new MgRect2D
 			{
@@ -190,37 +200,9 @@ namespace Magnesium.Metal
 			Result err;
 
 			IMgRenderPass renderPass;
-			err = mLogicalDevice.Device.CreateRenderPass(renderPassInfo, null, out renderPass);
+			err = mConfiguration.Device.CreateRenderPass(renderPassInfo, null, out renderPass);
 			Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
 			mRenderpass = renderPass;
-		}
-
-		void CreateFramebuffers(IMgSwapchainCollection swapchains, MgGraphicsDeviceCreateInfo createInfo)
-		{
-			Debug.Assert(mDepthStencilView != null);
-			// Create frame buffers for every swap chain image
-			var frameBuffers = new IMgFramebuffer[swapchains.Buffers.Length];
-			for (uint i = 0; i < frameBuffers.Length; i++)
-			{
-				var frameBufferCreateInfo = new MgFramebufferCreateInfo
-				{
-					RenderPass = mRenderpass,
-					Attachments = new[]
-					{
-						swapchains.Buffers[i].View,
-						// Depth/Stencil attachment is the same for all frame buffers
-						mDepthStencilView,
-					},
-					Width = createInfo.Width,
-					Height = createInfo.Height,
-					Layers = 1,
-				};
-
-				var err = mLogicalDevice.Device.CreateFramebuffer(frameBufferCreateInfo, null, out frameBuffers[i]);
-				Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
-			}
-
-			mFramebuffers = frameBuffers;
 		}
 
 		public bool DeviceCreated()
@@ -233,6 +215,8 @@ namespace Magnesium.Metal
 		{
 			if (mIsDisposed)
 				return;
+
+			ReleaseUnmanagedResources();
 
 			mIsDisposed = true;
 		}
