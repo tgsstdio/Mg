@@ -6,8 +6,8 @@
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <ProjectGuid>{6C74B420-5DE6-43ED-AB99-18AE19342284}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>MonoGame.Textures.Ktx</RootNamespace>
-    <AssemblyName>MonoGame.Textures.Ktx</AssemblyName>
+    <RootNamespace>Magnesium.Ktx</RootNamespace>
+    <AssemblyName>Magnesium.Ktx</AssemblyName>
     <TargetFrameworkProfile>Profile111</TargetFrameworkProfile>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>

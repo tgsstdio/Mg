@@ -202,7 +202,7 @@ namespace MonoGame.Textures.Ktx
 
 				}
 
-				var format = DetermineFormat(header.GlType, header.GlFormat);
+				var format = DetermineFormat(header.GlType, header.GlFormat, header.GlInternalFormat);
 
 				// MgImageOptimizer takes 
 				// 1. byte array 
@@ -228,12 +228,178 @@ namespace MonoGame.Textures.Ktx
 			}		
 		}
 
-		private MgFormat DetermineFormat(uint glType, uint glFormat)
+        private enum GLIntFmt
+        {
+            UNDEFINED = 0
+            // ASTC SRGB ALPHA 8
+            ,GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x4_KHR = 0x93D0
+            ,GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x4_KHR = 0x93D1
+            ,GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x5_KHR = 0x93D2
+            ,GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x5_KHR = 0x93D3
+            ,GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x6_KHR = 0x93D4
+            ,GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x5_KHR = 0x93D5
+            ,GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x6_KHR = 0x93D6
+            ,GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x8_KHR = 0x93D7
+            ,GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x5_KHR = 0x93D8
+            ,GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x6_KHR = 0x93D9
+            ,GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x8_KHR = 0x93DA
+            ,GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x10_KHR = 0x93DB
+            ,GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x10_KHR = 0x93DC
+            ,GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x12_KHR = 0x93DD
+
+            // ASTC RBGA
+            ,GL_COMPRESSED_RGBA_ASTC_4x4_KHR = 0x93B0
+            ,GL_COMPRESSED_RGBA_ASTC_5x4_KHR = 0x93B1
+            ,GL_COMPRESSED_RGBA_ASTC_5x5_KHR = 0x93B2
+            ,GL_COMPRESSED_RGBA_ASTC_6x5_KHR = 0x93B3
+            ,GL_COMPRESSED_RGBA_ASTC_6x6_KHR = 0x93B4
+            ,GL_COMPRESSED_RGBA_ASTC_8x5_KHR = 0x93B5
+            ,GL_COMPRESSED_RGBA_ASTC_8x6_KHR = 0x93B6
+            ,GL_COMPRESSED_RGBA_ASTC_8x8_KHR = 0x93B7
+            ,GL_COMPRESSED_RGBA_ASTC_10x5_KHR = 0x93B8
+            ,GL_COMPRESSED_RGBA_ASTC_10x6_KHR = 0x93B9
+            ,GL_COMPRESSED_RGBA_ASTC_10x8_KHR = 0x93BA
+            ,GL_COMPRESSED_RGBA_ASTC_10x10_KHR = 0x93BB
+            ,GL_COMPRESSED_RGBA_ASTC_12x10_KHR = 0x93BC
+            ,GL_COMPRESSED_RGBA_ASTC_12x12_KHR = 0x93BD
+
+            // DXT
+            ,GL_COMPRESSED_RGB_S3TC_DXT1_EXT = 0x83F0
+            ,GL_COMPRESSED_RGBA_S3TC_DXT1_EXT = 0x83F1
+            ,GL_COMPRESSED_RGBA_S3TC_DXT3_EXT = 0x83F2
+            ,GL_COMPRESSED_RGBA_S3TC_DXT5_EXT = 0x83F3
+
+            // DXT SRGB
+            ,GL_COMPRESSED_SRGB_S3TC_DXT1_EXT = 0x8C4C
+            ,GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT = 0x8C4D
+            ,GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT = 0x8C4E
+            ,GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT = 0x8C4F
+
+            // ARB_texture_compression_rgtc
+            ,GL_COMPRESSED_RED_RGTC1 = 0x8DBB
+            ,GL_COMPRESSED_SIGNED_RED_RGTC1 = 0x8DBC
+            ,GL_COMPRESSED_RG_RGTC2 = 0x8DBD
+            ,GL_COMPRESSED_SIGNED_RG_RGTC2 = 0x8DBE
+
+            // GL_ARB_texture_compression_bptc
+            ,GL_COMPRESSED_RGBA_BPTC_UNORM_ARB = 0x8E8C
+            ,GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM_ARB = 0x8E8D
+            ,GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT_ARB = 0x8E8E
+            ,GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_ARB = 0x8E8F
+        };
+
+        private MgFormat DetermineFormat(uint glType, uint glFormat, uint glInternalFormat)
 		{
 			const int IS_COMPRESSED = 0;
-			if (glType == IS_COMPRESSED)
-			{
-                return MgFormat.UNDEFINED;
+            if (glType == IS_COMPRESSED)
+            {
+                GLIntFmt internalFormat = (GLIntFmt) glInternalFormat;
+
+                switch (internalFormat)
+                {
+                    default:
+                        throw new NotSupportedException();
+
+                    // DXT
+                    case GLIntFmt.GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
+                        return MgFormat.BC1_RGB_UNORM_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_SRGB_S3TC_DXT1_EXT:
+                        return MgFormat.BC1_RGB_SRGB_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
+                        return MgFormat.BC1_RGBA_UNORM_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT:
+                        return MgFormat.BC1_RGBA_SRGB_BLOCK;
+
+                    case GLIntFmt.GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
+                        return MgFormat.BC3_UNORM_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT:
+                        return MgFormat.BC3_SRGB_BLOCK;
+
+                    case GLIntFmt.GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
+                        return MgFormat.BC5_SNORM_BLOCK;
+
+                    // ARB_texture_compression_rgtc
+                    case GLIntFmt.GL_COMPRESSED_RED_RGTC1:
+                        return MgFormat.BC3_UNORM_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_SIGNED_RED_RGTC1:
+                        return MgFormat.BC4_SNORM_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_SIGNED_RG_RGTC2:
+                        return MgFormat.BC5_SNORM_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_RG_RGTC2:
+                        return MgFormat.BC5_UNORM_BLOCK;
+
+                    // GL_ARB_texture_compression_bptc
+                    case GLIntFmt.GL_COMPRESSED_RGBA_BPTC_UNORM_ARB:
+                        return MgFormat.BC7_UNORM_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM_ARB:
+                        return MgFormat.BC7_SRGB_BLOCK;
+
+                    case GLIntFmt.GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT_ARB:
+                        return MgFormat.BC6H_SFLOAT_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_ARB:
+                        return MgFormat.BC6H_UFLOAT_BLOCK;
+
+                    // ASTC SRGBA
+                    case GLIntFmt.GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x4_KHR:
+                        return MgFormat.ASTC_4x4_SRGB_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x4_KHR:
+                        return MgFormat.ASTC_5x4_SRGB_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x5_KHR:
+                        return MgFormat.ASTC_5x5_SRGB_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x5_KHR:
+                        return MgFormat.ASTC_6x5_SRGB_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x6_KHR:
+                        return MgFormat.ASTC_6x6_SRGB_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x5_KHR:
+                        return MgFormat.ASTC_8x5_SRGB_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x6_KHR:
+                        return MgFormat.ASTC_8x6_SRGB_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x8_KHR:
+                        return MgFormat.ASTC_8x8_SRGB_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x5_KHR:
+                        return MgFormat.ASTC_10x5_SRGB_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x6_KHR:
+                        return MgFormat.ASTC_10x6_SRGB_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x8_KHR:
+                        return MgFormat.ASTC_10x8_SRGB_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x10_KHR:
+                        return MgFormat.ASTC_10x10_SRGB_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x10_KHR:
+                        return MgFormat.ASTC_12x10_SRGB_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x12_KHR:
+                        return MgFormat.ASTC_12x12_SRGB_BLOCK;
+
+                    // ASTC RGBA
+                    case GLIntFmt.GL_COMPRESSED_RGBA_ASTC_4x4_KHR:
+                        return MgFormat.ASTC_4x4_UNORM_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_RGBA_ASTC_5x4_KHR:
+                        return MgFormat.ASTC_5x4_SRGB_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_RGBA_ASTC_5x5_KHR:
+                        return MgFormat.ASTC_5x5_UNORM_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_RGBA_ASTC_6x5_KHR:
+                        return MgFormat.ASTC_6x5_UNORM_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_RGBA_ASTC_6x6_KHR:
+                        return MgFormat.ASTC_6x6_UNORM_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_RGBA_ASTC_8x5_KHR:
+                        return MgFormat.ASTC_8x5_UNORM_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_RGBA_ASTC_8x6_KHR:
+                        return MgFormat.ASTC_8x6_UNORM_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_RGBA_ASTC_8x8_KHR:
+                        return MgFormat.ASTC_8x8_UNORM_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_RGBA_ASTC_10x5_KHR:
+                        return MgFormat.ASTC_10x5_UNORM_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_RGBA_ASTC_10x6_KHR:
+                        return MgFormat.ASTC_10x6_UNORM_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_RGBA_ASTC_10x8_KHR:
+                        return MgFormat.ASTC_10x8_UNORM_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_RGBA_ASTC_10x10_KHR:
+                        return MgFormat.ASTC_10x10_UNORM_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_RGBA_ASTC_12x10_KHR:
+                        return MgFormat.ASTC_12x10_UNORM_BLOCK;
+                    case GLIntFmt.GL_COMPRESSED_RGBA_ASTC_12x12_KHR:
+                        return MgFormat.ASTC_12x12_UNORM_BLOCK;
+
+                }
 			}
 			else
 			{
@@ -251,7 +417,8 @@ namespace MonoGame.Textures.Ktx
 				const uint GL_UNSIGNED_INT = 0x1405;
 				const uint GL_UNSIGNED_INT_24_8 = 0x84FA;
 
-				const uint GL_UNSIGNED_SHORT_4_4_4_4 = 0x8033;
+
+                const uint GL_UNSIGNED_SHORT_4_4_4_4 = 0x8033;
 				const uint GL_UNSIGNED_SHORT_5_5_5_1 = 0x8034;
 
 				const uint GL_UNSIGNED_INT_8_8_8_8_REVERSED = 0x8367;
@@ -274,6 +441,8 @@ namespace MonoGame.Textures.Ktx
                 switch (glFormat)
                 {
 
+
+
                     case GL_RGBA:
                         {
                             const uint GL_UNSIGNED_SHORT_1_5_5_5_REV = 0x8366;
@@ -286,6 +455,7 @@ namespace MonoGame.Textures.Ktx
                                 case GL_UNSIGNED_BYTE:
                                     return MgFormat.R8G8B8A8_UINT;
                                 // NOT SURE ABOUT THESE
+    
                                 case GL_UNSIGNED_INT_8_8_8_8_REVERSED:
                                     return MgFormat.A8B8G8R8_UINT_PACK32;
                                 case GL_UNSIGNED_INT_2_10_10_10_REVERSED:
@@ -319,8 +489,15 @@ namespace MonoGame.Textures.Ktx
                         }
                     case GL_RGB:
                         {
+                            const uint GL_UNSIGNED_INT_10F_11F_11F_REV = 0x8C3B;
+
+
                             switch (glType)
                             {
+                                case GL_UNSIGNED_SHORT_4_4_4_4:
+                                    return MgFormat.R4G4B4A4_UNORM_PACK16;
+                                case GL_UNSIGNED_INT_10F_11F_11F_REV:
+                                    return MgFormat.B10G11R11_UFLOAT_PACK32;
                                 case GL_BYTE:
                                     return MgFormat.R8G8B8_SINT;
                                 case GL_UNSIGNED_SHORT:
@@ -384,6 +561,8 @@ namespace MonoGame.Textures.Ktx
                                     return MgFormat.D16_UNORM;
                                 case GL_FLOAT:
                                     return MgFormat.D32_SFLOAT;
+                                case GL_FLOAT_32_UNSIGNED_INT_24_8_REV:
+                                    return MgFormat.X8_D24_UNORM_PACK32;
                                 default:
                                     throw new NotSupportedException("glType is not supported for " + nameof(GL_DEPTH_COMPONENT) + " : " + glType);
                             }
@@ -425,13 +604,13 @@ namespace MonoGame.Textures.Ktx
                             switch (glType)
                             {
                                 case GL_UNSIGNED_BYTE:
-                                    return MgFormat.R8_UINT;
+                                    return MgFormat.R8_UNORM;
                                 case GL_BYTE:
-                                    return MgFormat.R8_SINT;
+                                    return MgFormat.R8_SNORM;
                                 case GL_UNSIGNED_SHORT:
-                                    return MgFormat.R16_UINT;
+                                    return MgFormat.R16_UNORM;
                                 case GL_SHORT:
-                                    return MgFormat.R16_SINT;
+                                    return MgFormat.R16_SNORM;
                                 case GL_HALF_FLOAT:
                                     return MgFormat.R16_SFLOAT;
                                 case GL_FLOAT:
