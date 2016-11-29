@@ -1,0 +1,65 @@
+	ARB_texture_compression_rgtc
+
+	COMPRESSED_RED_RGTC1                       0x8DBB
+    COMPRESSED_SIGNED_RED_RGTC1                0x8DBC
+    COMPRESSED_RG_RGTC2                        0x8DBD
+    COMPRESSED_SIGNED_RG_RGTC2                 0x8DBE
+	
+	Such images are easily edited along 4x4 texel boundaries,
+	
+    The compressed signed red-green format is reasonably suited for
+    storing compressed normal maps.
+
+    This extension uses the same compression format as the
+    EXT_texture_compression_latc extension except the color data is stored
+    in the red and green components rather than luminance and alpha.
+    Representing compressed red and green components is consistent with
+    the BC4 and BC5 compressed formats supported by DirectX 10.
+	
+	ARB_texture_compression_bptc 
+	https://www.opengl.org/registry/specs/ARB/texture_compression_bptc.txt
+	
+        COMPRESSED_RGBA_BPTC_UNORM_ARB                 0x8E8C
+        COMPRESSED_SRGB_ALPHA_BPTC_UNORM_ARB           0x8E8D
+        COMPRESSED_RGB_BPTC_SIGNED_FLOAT_ARB           0x8E8E
+        COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_ARB         0x8E8F
+	
+    This extension provides additional texture compression functionality
+    specific to the BPTC and BPTC_FLOAT compressed texture formats (called BC7
+    and BC6H respectively in Microsoft's DirectX API), subject to all the
+    requirements and limitations described by the extension
+    GL_ARB_texture_compression.	
+	
+    BPTC Compressed Texture Image Format
+
+    Compressed texture images stored using the BPTC compressed image formats
+    are represented as a collection of 4x4 texel blocks, where each block
+    contains 128 bits of texel data.  The image is encoded as a normal 2D
+    raster image in which each 4x4 block is treated as a single pixel.  If a
+    BPTC image has a width or height that is not a multiple of four, the data
+    corresponding to texels outside the image are irrelevant and undefined.
+
+    When a BPTC image with a width of <w>, height of <h>, and block size of
+    <blocksize> (16 bytes) is decoded, the corresponding image size (in bytes)
+    is:
+    
+        ceil(<w>/4) * ceil(<h>/4) * blocksize.
+
+    When decoding a BPTC image, the block containing the texel at offset
+    (<x>, <y>) begins at an offset (in bytes) relative to the base of the
+    image of:
+
+        blocksize * (ceil(<w>/4) * floor(<y>/4) + floor(<x>/4)).
+
+    The data corresponding to a specific texel (<x>, <y>) are extracted from a
+    4x4 texel block using a relative (x,y) value of
+    
+        (<x> modulo 4, <y> modulo 4).
+
+    There are two distinct BPTC image formats each of which has two
+    variants. COMPRESSED_RGBA_BPTC_UNORM_ARB and
+    COMPRESSED_SRGB_ALPHA_BPTC_UNORM_ARB compress 8-bit fixed-point
+    data. COMPRESSED_RGB_BPTC_SIGNED_FLOAT_ARB and
+    COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_ARB compress high dynamic range
+    floating point values. The formats are similar, so the description of the
+    float format will reference significant sections of the UNORM description.	

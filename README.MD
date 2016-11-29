@@ -85,7 +85,7 @@ Therefore a indirect interface class must be created act as a bridge to allow im
 | [Magnesium.OpenGL](https://www.nuget.org/packages/Magnesium.OpenGL/) | 5.0.3  | OpenGL enumation/polyfill to replicate most of Vulkan entities and features |
 | [Magnesium.OpenGL.DesktopGL](https://www.nuget.org/packages/Magnesium.OpenGL.DesktopGL/) | 5.0.3  | OpenTK / OpenGL 4.5 implementation |
 | [Magnesium.PresentationSurfaces.OpenTK](https://www.nuget.org/packages/Magnesium.PresentationSurfaces.OpenTK/) | 1.0.2  | Contains OpenTK implementation of IMgPresentationSurface for Vulkan & DesktopGL |
-
+| [Magnesium.Ktx](https://www.nuget.org/packages/Magnesium.Ktx/) | 1.0.0 | Loads Khronos .ktx image files |
 
 -----------
 
