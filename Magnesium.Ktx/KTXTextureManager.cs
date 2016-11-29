@@ -3,7 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using Magnesium;
 
-namespace MonoGame.Textures.Ktx
+namespace Magnesium.Ktx
 {
 	public class KTXTextureManager : IKTXTextureLoader
 	{

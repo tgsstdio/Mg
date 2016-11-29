@@ -1,9 +1,8 @@
-﻿using Magnesium;
-using System;
+﻿using System;
 
-namespace MonoGame.Textures.Ktx
+namespace Magnesium.Ktx
 {
-	public class KTXLoadInstructions
+    public class KTXLoadInstructions
 	{
 		public KTXError Result;
 		public UInt32 TextureDimensions;

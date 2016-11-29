@@ -1,7 +1,5 @@
-﻿using MonoGame.Textures.Ktx;
+﻿using Magnesium.Ktx;
 using System;
-using MonoGame.Textures;
-using Magnesium;
 
 namespace KtxReader
 {

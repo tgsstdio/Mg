@@ -5,9 +5,9 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextureDemo", "TextureDemo.csproj", "{AFE28C8E-DC39-48D2-AD23-F155855EDB7A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Magnesium.Ktx", "..\MonoGame.Textures.Ktx\Magnesium.Ktx.csproj", "{6C74B420-5DE6-43ED-AB99-18AE19342284}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KtxReader", "..\KtxReader\KtxReader.csproj", "{F463E8DB-7A72-4EC6-B6CB-36FED4F60FB8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Magnesium.Ktx", "..\..\Magnesium.Ktx\Magnesium.Ktx.csproj", "{6C74B420-5DE6-43ED-AB99-18AE19342284}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,14 +19,14 @@ Global
 		{AFE28C8E-DC39-48D2-AD23-F155855EDB7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AFE28C8E-DC39-48D2-AD23-F155855EDB7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AFE28C8E-DC39-48D2-AD23-F155855EDB7A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6C74B420-5DE6-43ED-AB99-18AE19342284}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6C74B420-5DE6-43ED-AB99-18AE19342284}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6C74B420-5DE6-43ED-AB99-18AE19342284}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6C74B420-5DE6-43ED-AB99-18AE19342284}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F463E8DB-7A72-4EC6-B6CB-36FED4F60FB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F463E8DB-7A72-4EC6-B6CB-36FED4F60FB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F463E8DB-7A72-4EC6-B6CB-36FED4F60FB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F463E8DB-7A72-4EC6-B6CB-36FED4F60FB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C74B420-5DE6-43ED-AB99-18AE19342284}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C74B420-5DE6-43ED-AB99-18AE19342284}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C74B420-5DE6-43ED-AB99-18AE19342284}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C74B420-5DE6-43ED-AB99-18AE19342284}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

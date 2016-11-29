@@ -62,8 +62,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MonoGame.Textures.Ktx\Magnesium.Ktx.csproj">
-      <Project>{6c74b420-5de6-43ed-ab99-18ae19342284}</Project>
+    <ProjectReference Include="..\..\Magnesium.Ktx\Magnesium.Ktx.csproj">
+      <Project>{6C74B420-5DE6-43ED-AB99-18AE19342284}</Project>
       <Name>Magnesium.Ktx</Name>
     </ProjectReference>
   </ItemGroup>

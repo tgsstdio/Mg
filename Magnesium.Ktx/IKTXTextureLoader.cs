@@ -1,7 +1,7 @@
 ﻿using Magnesium;
 using System.IO;
 
-namespace MonoGame.Textures.Ktx
+namespace Magnesium.Ktx
 {
     public interface IKTXTextureLoader
     {

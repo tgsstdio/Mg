@@ -1,4 +1,4 @@
-﻿namespace MonoGame.Textures.Ktx
+﻿namespace Magnesium.Ktx
 {
 	public class MipmapData
 	{
