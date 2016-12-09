@@ -2,19 +2,22 @@
 using System.IO;
 using System.Collections.Generic;
 using Magnesium;
+using System.Diagnostics;
 
 namespace Magnesium.Ktx
 {
 	public class KTXTextureManager : IKTXTextureLoader
 	{
 		private readonly IMgTextureGenerator mTextureOptimizer;
+        private readonly IMgGraphicsConfiguration mGraphicsConfiguration;
 
-		public KTXTextureManager(IMgTextureGenerator optimizer)
+		public KTXTextureManager(IMgTextureGenerator optimizer, IMgGraphicsConfiguration configuration)
 		{
 			mTextureOptimizer = optimizer;
+            mGraphicsConfiguration = configuration;
 		}
 
-		public MgTextureInfo[] Load(Stream fs)
+		public KTXTextureOutput Load(Stream fs)
 		{
 			var HEADER_SIZE = KTXHeader.KTX_HEADER_SIZE;
 			var headerChunk = new byte[HEADER_SIZE];
@@ -131,7 +134,7 @@ namespace Magnesium.Ktx
 			public MgImageMipmap[] Mipmaps { get; set; }
 		}        
 
-		MgTextureInfo[] LoadTexture (
+		KTXTextureOutput LoadTexture (
 			Stream src,
 			KTXHeader header)
 		{
@@ -141,8 +144,6 @@ namespace Magnesium.Ktx
 			bool isFirstTime = true;
 			int previousLodSize = 0;
 			byte[] data = null;
-
-			var textures = new List<MgTextureInfo>();
 
 			var faces = new KTXFaceData[header.NumberOfFaces];
 			for(var i = 0; i < faces.Length; ++i)
@@ -204,27 +205,34 @@ namespace Magnesium.Ktx
 
 				var format = DetermineFormat(header.GlType, header.GlFormat, header.GlInternalFormat);
 
-				// MgImageOptimizer takes 
-				// 1. byte array 
-				// 2. image source
+                // MgImageOptimizer takes 
+                // 1. byte array 
+                // 2. image source
 
-				foreach(var face in faces)
-				{                      
-					var source = new MgImageSource
-					{
-						Format = format,
-						Height = header.PixelHeight,
-						Width = header.PixelWidth,
-						Mipmaps = face.Mipmaps,
-						Size = (uint) dest.Length,
-					};
+                var output = new KTXTextureOutput();
 
-					var texture =  mTextureOptimizer.Load(dest.ToArray(), source, null, null);
+                // one face at a time
+                var face = faces[0];
+                				                      
+				output.Source = new MgImageSource
+				{
+					Format = format,
+					Height = header.PixelHeight,
+					Width = header.PixelWidth,
+					Mipmaps = face.Mipmaps,
+					Size = (uint) dest.Length,
+				};
 
-					textures.Add(texture);
-				}
+                output.TextureInfo =  mTextureOptimizer.Load(dest.ToArray(), output.Source, null, null);
 
-				return textures.ToArray();
+                // QUEUE WAIT ON 
+                var err = mGraphicsConfiguration.Queue.QueueWaitIdle();
+                Debug.Assert(err == Result.SUCCESS);
+                mGraphicsConfiguration.Device.FreeCommandBuffers(
+                    mGraphicsConfiguration.Partition.CommandPool,
+                    new[] { output.TextureInfo.Command });
+
+                return output;
 			}		
 		}
 

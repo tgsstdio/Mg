@@ -37,6 +37,14 @@
       <HintPath>packages\Magnesium.5.0.4\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Magnesium.PresentationSurfaces.OpenTK, Version=1.0.2.30735, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Magnesium.PresentationSurfaces.OpenTK.1.0.2\lib\net45\Magnesium.PresentationSurfaces.OpenTK.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Magnesium.Vulkan, Version=5.0.1.33684, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Magnesium.Vulkan.5.0.2\lib\portable45-net45+win8+wpa81\Magnesium.Vulkan.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="OpenTK, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>packages\OpenTK.2.0.0\lib\net20\OpenTK.dll</HintPath>
       <Private>True</Private>
@@ -56,6 +64,7 @@
     <Compile Include="DryIoc\Container.cs" />
     <Compile Include="DryIoc\FactoryCompiler.cs" />
     <Compile Include="DryIoc\ImTools.cs" />
+    <Compile Include="GameWindow.cs" />
     <Compile Include="MgGraphicsConfigurationManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -65,6 +74,12 @@
     <None Include="App.config" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Magnesium.Ktx\Magnesium.Ktx.csproj">
+      <Project>{6c74b420-5de6-43ed-ab99-18ae19342284}</Project>
+      <Name>Magnesium.Ktx</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

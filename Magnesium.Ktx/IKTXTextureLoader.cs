@@ -5,6 +5,6 @@ namespace Magnesium.Ktx
 {
     public interface IKTXTextureLoader
     {
-        MgTextureInfo[] Load(Stream fs);
+        KTXTextureOutput Load(Stream fs);
     }
 }

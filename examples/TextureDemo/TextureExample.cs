@@ -1,4 +1,5 @@
 ﻿using Magnesium;
+using Magnesium.Ktx;
 using OpenTK;
 using System;
 using System.Diagnostics;
@@ -17,6 +18,8 @@ namespace TextureDemo
     public class TextureExample : IDisposable
     {
         private MgGraphicsConfigurationManager mManager;
+        private MgPhysicalDeviceFeatures mFeatures;
+        private MgPhysicalDeviceProperties mPhysicalDeviceProperties;
 
         private float mZoom;
 
@@ -39,6 +42,9 @@ namespace TextureDemo
             };
 
             mManager.Initialize(createInfo);
+
+            mManager.Configuration.Partition.PhysicalDevice.GetPhysicalDeviceProperties(out mPhysicalDeviceProperties);
+            mManager.Configuration.Partition.PhysicalDevice.GetPhysicalDeviceFeatures(out mFeatures);
         }
 //#define VERTEX_BUFFER_BIND_ID 0
 
@@ -167,6 +173,13 @@ namespace TextureDemo
                     device.FreeCommandBuffers(
                         mManager.Configuration.Partition.CommandPool,
                         mPresentBuffers);
+
+                    if (drawCmdBuffers != null)
+                    {
+                        device.FreeCommandBuffers(
+                            mManager.Configuration.Partition.CommandPool,
+                            drawCmdBuffers);
+                    }
                 }
 
                 if (mDescriptorPool != null)
@@ -252,331 +265,113 @@ namespace TextureDemo
                 new[] { imageMemoryBarrier });
         }
 
-    //void loadTexture(std::string fileName, IMgFormat format, bool forceLinearTiling)
-    //{
-    //#if defined(__ANDROID__)
-		  //  // Textures are stored inside the apk on Android (compressed)
-		  //  // So they need to be loaded via the asset manager
-		  //  AAsset* asset = AAssetManager_open(androidApp->activity->assetManager, fileName.c_str(), AASSET_MODE_STREAMING);
-		  //  assert(asset);
-		  //  size_t size = AAsset_getLength(asset);
-		  //  assert(size > 0);
+        void loadTexture(string fileName, MgFormat format, bool forceLinearTiling)
+        {
+            IMgImageTools imageTools = new Magnesium.MgImageTools();
+            IMgTextureGenerator optimizer = new Magnesium.MgStagingBufferOptimizer(mManager.Configuration, imageTools);            
+            IKTXTextureLoader loader = new KTXTextureManager(optimizer, mManager.Configuration);
+            using (var fs = System.IO.File.OpenRead(fileName))
+            {
+                var result = loader.Load(fs);
 
-		  //  void *textureData = malloc(size);
-		  //  AAsset_read(asset, textureData, size);
-		  //  AAsset_close(asset);
+                // Create sampler
+                // In Vulkan textures are accessed by samplers
+                // This separates all the sampling information from the 
+                // texture data
+                // This means you could have multiple sampler objects
+                // for the same texture with different settings
+                // Similar to the samplers available with OpenGL 3.3
+                var samplerCreateInfo = new MgSamplerCreateInfo
+                {
+                    MagFilter = MgFilter.LINEAR,
+                    MinFilter = MgFilter.LINEAR,
+                    MipmapMode = MgSamplerMipmapMode.LINEAR,
+                    AddressModeU = MgSamplerAddressMode.REPEAT,
+                    AddressModeV = MgSamplerAddressMode.REPEAT,
+                    AddressModeW = MgSamplerAddressMode.REPEAT,
+                    MipLodBias = 0.0f,
+                    CompareOp = MgCompareOp.NEVER,
+                    MinLod = 0.0f,
+                    BorderColor = MgBorderColor.FLOAT_OPAQUE_WHITE,
+                };
 
-		  //  gli::texture2D tex2D(gli::load((const char*)textureData, size));
-    //#else
-    //    gli::texture2D tex2D(gli::load(fileName));
-    //#endif
+                // Set max level-of-detail to mip level count of the texture
+                var mipLevels = (uint)result.Source.Mipmaps.Length;
+                samplerCreateInfo.MaxLod = (float)mipLevels;
+                // Enable anisotropic filtering
+                // This feature is optional, so we must check if it's supported on the device
+                //mManager.Configuration.Partition.
 
-    //    assert(!tex2D.empty());
 
-    //    IMgFormatProperties formatProperties;
+                if (mFeatures.SamplerAnisotropy)
+                {
+                    // Use max. level of anisotropy for this example
+                    samplerCreateInfo.MaxAnisotropy = mPhysicalDeviceProperties.Limits.MaxSamplerAnisotropy;
+                    samplerCreateInfo.AnisotropyEnable = true;
+                }
+                else
+                {
+                    // The device does not support anisotropic filtering
+                    samplerCreateInfo.MaxAnisotropy = 1.0f;
+                    samplerCreateInfo.AnisotropyEnable = false;
+                }
 
-    //    texture.width = static_cast<uint32_t>(tex2D[0].dimensions().x);
-    //    texture.height = static_cast<uint32_t>(tex2D[0].dimensions().y);
-    //    texture.mipLevels = static_cast<uint32_t>(tex2D.levels());
+                IMgSampler sampler;
+                var err = mManager.Configuration.Device.CreateSampler(samplerCreateInfo, null, out sampler);
+                Debug.Assert(err == Result.SUCCESS);
 
-    //    // Get device properites for the requested texture format
-    //    IMgGetPhysicalDeviceFormatProperties(physicalDevice, format, &formatProperties);
+                // Create image view
+                // Textures are not directly accessed by the shaders and
+                // are abstracted by image views containing additional
+                // information and sub resource ranges
+                var viewCreateInfo = new MgImageViewCreateInfo
+                {
+                    Image = result.TextureInfo.Image,
+                    // TODO : FETCH VIEW TYPE FROM KTX 
+                    ViewType = MgImageViewType.TYPE_2D,
+                    Format = result.Source.Format,
+                    Components = new MgComponentMapping
+                    {
+                        R = MgComponentSwizzle.R,
+                        G = MgComponentSwizzle.G,
+                        B = MgComponentSwizzle.B,
+                        A = MgComponentSwizzle.A,
+                    },
+                    // The subresource range describes the set of mip levels (and array layers) that can be accessed through this image view
+                    // It's possible to create multiple image views for a single image referring to different (and/or overlapping) ranges of the image
+                    SubresourceRange = new MgImageSubresourceRange
+                    {
+                        AspectMask = MgImageAspectFlagBits.COLOR_BIT,
+                        BaseMipLevel = 0,
+                        BaseArrayLayer = 0,
+                        LayerCount = 1,
+                        LevelCount = mipLevels,
+                    }
+                };
 
-    //    // Only use linear tiling if requested (and supported by the device)
-    //    // Support for linear tiling is mostly limited, so prefer to use
-    //    // optimal tiling instead
-    //    // On most implementations linear tiling will only support a very
-    //    // limited amount of formats and features (mip maps, cubemaps, arrays, etc.)
-    //    IMgBool32 useStaging = true;
+                IMgImageView view;
+                err = mManager.Configuration.Device.CreateImageView(viewCreateInfo, null, out view);
+                Debug.Assert(err == Result.SUCCESS);
 
-    //    // Only use linear tiling if forced
-    //    if (forceLinearTiling)
-    //    {
-    //        // Don't use linear if format is not supported for (linear) shader sampling
-    //        useStaging = !(formatProperties.linearTilingFeatures & IMg_FORMAT_FEATURE_SAMPLED_IMAGE_BIT);
-    //    }
-
-    //    IMgMemoryAllocateInfo memAllocInfo = IMgTools::initializers::memoryAllocateInfo();
-    //    IMgMemoryRequirements memReqs = { };
-
-    //    if (useStaging)
-    //    {
-    //        // Create a host-visible staging buffer that contains the raw image data
-    //        IMgBuffer stagingBuffer;
-    //        IMgDeviceMemory stagingMemory;
-
-    //        IMgBufferCreateInfo bufferCreateInfo = IMgTools::initializers::bufferCreateInfo();
-    //        bufferCreateInfo.size = tex2D.size();
-    //        // This buffer is used as a transfer source for the buffer copy
-    //        bufferCreateInfo.usage = IMg_BUFFER_USAGE_TRANSFER_SRC_BIT;
-    //        bufferCreateInfo.sharingMode = IMg_SHARING_MODE_EXCLUSIVE;
-
-    //        Debug.Assert(IMgCreateBuffer(device, &bufferCreateInfo, null, &stagingBuffer));
-
-    //        // Get memory requirements for the staging buffer (alignment, memory type bits)
-    //        IMgGetBufferMemoryRequirements(device, stagingBuffer, &memReqs);
-
-    //        memAllocInfo.allocationSize = memReqs.size;
-    //        // Get memory type index for a host visible buffer
-    //        memAllocInfo.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, IMg_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
-
-    //        Debug.Assert(IMgAllocateMemory(device, &memAllocInfo, null, &stagingMemory));
-    //        Debug.Assert(IMgBindBufferMemory(device, stagingBuffer, stagingMemory, 0));
-
-    //        // Copy texture data into staging buffer
-    //        uint8_t* data;
-    //        Debug.Assert(IMgMapMemory(device, stagingMemory, 0, memReqs.size, 0, (void**)&data));
-    //        memcpy(data, tex2D.data(), tex2D.size());
-    //        IMgUnmapMemory(device, stagingMemory);
-
-    //        // Setup buffer copy regions for each mip level
-    //        std::vector<IMgBufferImageCopy> bufferCopyRegions;
-    //        uint32_t offset = 0;
-
-    //        for (uint32_t i = 0; i < texture.mipLevels; i++)
-    //        {
-    //            IMgBufferImageCopy bufferCopyRegion = { };
-    //            bufferCopyRegion.imageSubresource.aspectMask = IMg_IMAGE_ASPECT_COLOR_BIT;
-    //            bufferCopyRegion.imageSubresource.mipLevel = i;
-    //            bufferCopyRegion.imageSubresource.baseArrayLayer = 0;
-    //            bufferCopyRegion.imageSubresource.layerCount = 1;
-    //            bufferCopyRegion.imageExtent.width = static_cast<uint32_t>(tex2D[i].dimensions().x);
-    //            bufferCopyRegion.imageExtent.height = static_cast<uint32_t>(tex2D[i].dimensions().y);
-    //            bufferCopyRegion.imageExtent.depth = 1;
-    //            bufferCopyRegion.bufferOffset = offset;
-
-    //            bufferCopyRegions.push_back(bufferCopyRegion);
-
-    //            offset += static_cast<uint32_t>(tex2D[i].size());
-    //        }
-
-    //        // Create optimal tiled target image
-    //        IMgImageCreateInfo imageCreateInfo = IMgTools::initializers::imageCreateInfo();
-    //        imageCreateInfo.imageType = IMg_IMAGE_TYPE_2D;
-    //        imageCreateInfo.format = format;
-    //        imageCreateInfo.mipLevels = texture.mipLevels;
-    //        imageCreateInfo.arrayLayers = 1;
-    //        imageCreateInfo.samples = IMg_SAMPLE_COUNT_1_BIT;
-    //        imageCreateInfo.tiling = IMg_IMAGE_TILING_OPTIMAL;
-    //        imageCreateInfo.usage = IMg_IMAGE_USAGE_SAMPLED_BIT;
-    //        imageCreateInfo.sharingMode = IMg_SHARING_MODE_EXCLUSIVE;
-    //        // Set initial layout of the image to undefined
-    //        imageCreateInfo.initialLayout = IMg_IMAGE_LAYOUT_UNDEFINED;
-    //        imageCreateInfo.extent = { texture.width, texture.height, 1 };
-    //        imageCreateInfo.usage = IMg_IMAGE_USAGE_TRANSFER_DST_BIT | IMg_IMAGE_USAGE_SAMPLED_BIT;
-
-    //        Debug.Assert(IMgCreateImage(device, &imageCreateInfo, null, &texture.image));
-
-    //        IMgGetImageMemoryRequirements(device, texture.image, &memReqs);
-
-    //        memAllocInfo.allocationSize = memReqs.size;
-    //        memAllocInfo.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, IMg_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-
-    //        Debug.Assert(IMgAllocateMemory(device, &memAllocInfo, null, &texture.deviceMemory));
-    //        Debug.Assert(IMgBindImageMemory(device, texture.image, texture.deviceMemory, 0));
-
-    //        IMgCommandBuffer copyCmd = VulkanExampleBase::createCommandBuffer(IMg_COMMAND_BUFFER_LEVEL_PRIMARY, true);
-
-    //        // Image barrier for optimal image
-
-    //        // The sub resource range describes the regions of the image we will be transition
-    //        IMgImageSubresourceRange subresourceRange = { };
-    //        // Image only contains color data
-    //        subresourceRange.aspectMask = IMg_IMAGE_ASPECT_COLOR_BIT;
-    //        // Start at first mip level
-    //        subresourceRange.baseMipLevel = 0;
-    //        // We will transition on all mip levels
-    //        subresourceRange.levelCount = texture.mipLevels;
-    //        // The 2D texture only has one layer
-    //        subresourceRange.layerCount = 1;
-
-    //        // Optimal image will be used as destination for the copy, so we must transfer from our
-    //        // initial undefined image layout to the transfer destination layout
-    //        setImageLayout(
-    //            copyCmd,
-    //            texture.image,
-    //            IMg_IMAGE_ASPECT_COLOR_BIT,
-    //            IMg_IMAGE_LAYOUT_UNDEFINED,
-    //            IMg_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-    //            subresourceRange);
-
-    //        // Copy mip levels from staging buffer
-    //        IMgCmdCopyBufferToImage(
-    //            copyCmd,
-    //            stagingBuffer,
-    //            texture.image,
-    //            IMg_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-    //            static_cast<uint32_t>(bufferCopyRegions.size()),
-    //            bufferCopyRegions.data());
-
-    //        // Change texture image layout to shader read after all mip levels have been copied
-    //        texture.imageLayout = IMg_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    //        setImageLayout(
-    //            copyCmd,
-    //            texture.image,
-    //            IMg_IMAGE_ASPECT_COLOR_BIT,
-    //            IMg_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-    //            texture.imageLayout,
-    //            subresourceRange);
-
-    //        VulkanExampleBase::flushCommandBuffer(copyCmd, queue, true);
-
-    //        // Clean up staging resources
-    //        IMgFreeMemory(device, stagingMemory, null);
-    //        IMgDestroyBuffer(device, stagingBuffer, null);
-    //    }
-    //    else
-    //    {
-    //        // Prefer using optimal tiling, as linear tiling 
-    //        // may support only a small set of features 
-    //        // depending on implementation (e.g. no mip maps, only one layer, etc.)
-
-    //        IMgImage mappableImage;
-    //        IMgDeviceMemory mappableMemory;
-
-    //        // Load mip map level 0 to linear tiling image
-    //        IMgImageCreateInfo imageCreateInfo = IMgTools::initializers::imageCreateInfo();
-    //        imageCreateInfo.imageType = IMg_IMAGE_TYPE_2D;
-    //        imageCreateInfo.format = format;
-    //        imageCreateInfo.mipLevels = 1;
-    //        imageCreateInfo.arrayLayers = 1;
-    //        imageCreateInfo.samples = IMg_SAMPLE_COUNT_1_BIT;
-    //        imageCreateInfo.tiling = IMg_IMAGE_TILING_LINEAR;
-    //        imageCreateInfo.usage = IMg_IMAGE_USAGE_SAMPLED_BIT;
-    //        imageCreateInfo.sharingMode = IMg_SHARING_MODE_EXCLUSIVE;
-    //        imageCreateInfo.initialLayout = IMg_IMAGE_LAYOUT_PREINITIALIZED;
-    //        imageCreateInfo.extent = { texture.width, texture.height, 1 };
-    //        Debug.Assert(IMgCreateImage(device, &imageCreateInfo, null, &mappableImage));
-
-    //        // Get memory requirements for this image 
-    //        // like size and alignment
-    //        IMgGetImageMemoryRequirements(device, mappableImage, &memReqs);
-    //        // Set memory allocation size to required memory size
-    //        memAllocInfo.allocationSize = memReqs.size;
-
-    //        // Get memory type that can be mapped to host memory
-    //        memAllocInfo.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, IMg_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
-
-    //        // Allocate host memory
-    //        Debug.Assert(IMgAllocateMemory(device, &memAllocInfo, null, &mappableMemory));
-
-    //        // Bind allocated image for use
-    //        Debug.Assert(IMgBindImageMemory(device, mappableImage, mappableMemory, 0));
-
-    //        // Get sub resource layout
-    //        // Mip map count, array layer, etc.
-    //        MgImageSubresource subRes = { };
-    //        subRes.aspectMask = IMg_IMAGE_ASPECT_COLOR_BIT;
-
-    //        MgSubresourceLayout subResLayout;
-    //        IntPtr data;
-
-    //        // Get sub resources layout 
-    //        // Includes row pitch, size offsets, etc.
-    //        IMgGetImageSubresourceLayout(device, mappableImage, &subRes, &subResLayout);
-
-    //        // Map image memory
-    //        Debug.Assert(IMgMapMemory(device, mappableMemory, 0, memReqs.size, 0, &data));
-
-    //        // Copy image data into memory
-    //        memcpy(data, tex2D[subRes.mipLevel].data(), tex2D[subRes.mipLevel].size());
-
-    //        IMgUnmapMemory(device, mappableMemory);
-
-    //        // Linear tiled images don't need to be staged
-    //        // and can be directly used as textures
-    //        texture.image = mappableImage;
-    //        texture.deviceMemory = mappableMemory;
-    //        texture.imageLayout = IMg_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-
-    //        IMgCommandBuffer copyCmd = VulkanExampleBase::createCommandBuffer(IMg_COMMAND_BUFFER_LEVEL_PRIMARY, true);
-
-    //        // Setup image memory barrier transfer image to shader read layout
-
-    //        // The sub resource range describes the regions of the image we will be transition
-    //        IMgImageSubresourceRange subresourceRange = { };
-    //        // Image only contains color data
-    //        subresourceRange.aspectMask = IMg_IMAGE_ASPECT_COLOR_BIT;
-    //        // Start at first mip level
-    //        subresourceRange.baseMipLevel = 0;
-    //        // Only one mip level, most implementations won't support more for linear tiled images
-    //        subresourceRange.levelCount = 1;
-    //        // The 2D texture only has one layer
-    //        subresourceRange.layerCount = 1;
-
-    //        setImageLayout(
-    //            copyCmd,
-    //            texture.image,
-    //            IMg_IMAGE_ASPECT_COLOR_BIT,
-    //            IMg_IMAGE_LAYOUT_PREINITIALIZED,
-    //            texture.imageLayout,
-    //            subresourceRange);
-
-    //        VulkanExampleBase::flushCommandBuffer(copyCmd, queue, true);
-    //    }
-
-    //    // Create sampler
-    //    // In Vulkan textures are accessed by samplers
-    //    // This separates all the sampling information from the 
-    //    // texture data
-    //    // This means you could have multiple sampler objects
-    //    // for the same texture with different settings
-    //    // Similar to the samplers available with OpenGL 3.3
-    //    MgSamplerCreateInfo sampler = IMgTools::initializers::samplerCreateInfo();
-    //    sampler.magFilter = IMg_FILTER_LINEAR;
-    //    sampler.minFilter = IMg_FILTER_LINEAR;
-    //    sampler.mipmapMode = IMg_SAMPLER_MIPMAP_MODE_LINEAR;
-    //    sampler.addressModeU = IMg_SAMPLER_ADDRESS_MODE_REPEAT;
-    //    sampler.addressModeV = IMg_SAMPLER_ADDRESS_MODE_REPEAT;
-    //    sampler.addressModeW = IMg_SAMPLER_ADDRESS_MODE_REPEAT;
-    //    sampler.mipLodBias = 0.0f;
-    //    sampler.compareOp = IMg_COMPARE_OP_NEVER;
-    //    sampler.minLod = 0.0f;
-    //    // Set max level-of-detail to mip level count of the texture
-    //    sampler.maxLod = (useStaging) ? (float)texture.mipLevels : 0.0f;
-    //    // Enable anisotropic filtering
-    //    // This feature is optional, so we must check if it's supported on the device
-    //    if (vulkanDevice->features.samplerAnisotropy)
-    //    {
-    //        // Use max. level of anisotropy for this example
-    //        sampler.maxAnisotropy = vulkanDevice->properties.limits.maxSamplerAnisotropy;
-    //        sampler.anisotropyEnable = IMg_TRUE;
-    //    }
-    //    else
-    //    {
-    //        // The device does not support anisotropic filtering
-    //        sampler.maxAnisotropy = 1.0;
-    //        sampler.anisotropyEnable = IMg_FALSE;
-    //    }
-    //    sampler.borderColor = IMg_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
-    //    Debug.Assert(IMgCreateSampler(device, &sampler, null, &texture.sampler));
-
-    //    // Create image view
-    //    // Textures are not directly accessed by the shaders and
-    //    // are abstracted by image views containing additional
-    //    // information and sub resource ranges
-    //    MgImageViewCreateInfo view = IMgTools::initializers::imageViewCreateInfo();
-    //    view.image = IMg_NULL_HANDLE;
-    //    view.viewType = IMg_IMAGE_VIEW_TYPE_2D;
-    //    view.format = format;
-    //    view.components = { IMg_COMPONENT_SWIZZLE_R, IMg_COMPONENT_SWIZZLE_G, IMg_COMPONENT_SWIZZLE_B, IMg_COMPONENT_SWIZZLE_A };
-    //    // The subresource range describes the set of mip levels (and array layers) that can be accessed through this image view
-    //    // It's possible to create multiple image views for a single image referring to different (and/or overlapping) ranges of the image
-    //    view.subresourceRange.aspectMask = IMg_IMAGE_ASPECT_COLOR_BIT;
-    //    view.subresourceRange.baseMipLevel = 0;
-    //    view.subresourceRange.baseArrayLayer = 0;
-    //    view.subresourceRange.layerCount = 1;
-    //    // Linear tiling usually won't support mip maps
-    //    // Only set mip map count if optimal tiling is used
-    //    view.subresourceRange.levelCount = (useStaging) ? texture.mipLevels : 1;
-    //    view.image = texture.image;
-    //    Debug.Assert(IMgCreateImageView(device, &view, null, &texture.view));
-
-    //    // Fill image descriptor image info that can be used during the descriptor set setup
-    //    texture.descriptor.imageLayout = IMg_IMAGE_LAYOUT_GENERAL;
-    //    texture.descriptor.imageView = texture.view;
-    //    texture.descriptor.sampler = texture.sampler;
-    //}
+                texture = new Texture
+                {
+                    image = result.TextureInfo.Image,
+                    imageLayout = result.TextureInfo.ImageLayout,
+                    deviceMemory = result.TextureInfo.DeviceMemory,
+                    sampler = sampler,
+                    width = result.Source.Width,
+                    height = result.Source.Height,
+                    mipLevels = mipLevels,
+                    view = view,
+                    descriptor = new MgDescriptorImageInfo
+                    {
+                        ImageLayout = MgImageLayout.GENERAL,
+                        ImageView = view,
+                        Sampler = sampler,
+                    }
+                };
+            }
+        }
 
         // Free all Vulkan resources used a texture object
         void destroyTextureImage(Texture texture)
@@ -617,6 +412,7 @@ namespace TextureDemo
             };
 
             var cmdBufferCount = (uint) mManager.Graphics.Framebuffers.Length;
+            drawCmdBuffers = new IMgCommandBuffer[cmdBufferCount];
 
             var cmdBufAllocateInfo = new MgCommandBufferAllocateInfo
             {
@@ -1147,7 +943,7 @@ namespace TextureDemo
         }
 
         private bool mPrepared = false;
-        public void render()
+        public void Render()
         {
             if (!mPrepared)
                 return;
@@ -1173,19 +969,19 @@ namespace TextureDemo
             updateUniformBuffers();
         }
 
-        void keyPressed(uint keyCode)
-        {
-            switch (keyCode)
-            {
-                case KEY_KPADD:
-                case GAMEPAD_BUTTON_R1:
-                    changeLodBias(0.1f);
-                    break;
-                case KEY_KPSUB:
-                case GAMEPAD_BUTTON_L1:
-                    changeLodBias(-0.1f);
-                    break;
-            }
-        }
+        //void keyPressed(uint keyCode)
+        //{
+        //    switch (keyCode)
+        //    {
+        //        case KEY_KPADD:
+        //        case GAMEPAD_BUTTON_R1:
+        //            changeLodBias(0.1f);
+        //            break;
+        //        case KEY_KPSUB:
+        //        case GAMEPAD_BUTTON_L1:
+        //            changeLodBias(-0.1f);
+        //            break;
+        //    }
+        //}
     }
 }

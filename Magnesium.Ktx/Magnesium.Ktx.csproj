@@ -31,6 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="IKTXTextureLoader.cs" />
+    <Compile Include="KTXTextureOutput.cs" />
     <Compile Include="MipmapData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="KeyValueArrayData.cs" />
@@ -43,8 +44,8 @@
     <Compile Include="TexturePageInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Magnesium, Version=4.0.6136.42367, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\examples\TextureDemo\packages\Magnesium.4.0.0\lib\portable-net45+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10\Magnesium.dll</HintPath>
+    <Reference Include="Magnesium, Version=5.0.4.30756, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\examples\TextureDemo\packages\Magnesium.5.0.4\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
