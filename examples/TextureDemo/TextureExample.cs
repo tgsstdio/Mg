@@ -45,6 +45,8 @@ namespace TextureDemo
 
             mManager.Configuration.Partition.PhysicalDevice.GetPhysicalDeviceProperties(out mPhysicalDeviceProperties);
             mManager.Configuration.Partition.PhysicalDevice.GetPhysicalDeviceFeatures(out mFeatures);
+
+            prepare();
         }
 //#define VERTEX_BUFFER_BIND_ID 0
 
@@ -265,7 +267,7 @@ namespace TextureDemo
                 new[] { imageMemoryBarrier });
         }
 
-        void loadTexture(string fileName, MgFormat format, bool forceLinearTiling)
+        void loadTexture(string fileName, MgFormat format)
         {
             IMgImageTools imageTools = new Magnesium.MgImageTools();
             IMgTextureGenerator optimizer = new Magnesium.MgStagingBufferOptimizer(mManager.Configuration, imageTools);            
@@ -378,11 +380,19 @@ namespace TextureDemo
         {
             var device = mManager.Configuration.Device;
             Debug.Assert(device != null);
+         
+            if (texture.view != null)
+                texture.view.DestroyImageView(device, null);
 
-            texture.view.DestroyImageView(device, null);
-            texture.image.DestroyImage(device, null);
-            texture.sampler.DestroySampler(device, null);
-            texture.deviceMemory.FreeMemory(device, null);
+            if (texture.image != null)
+                texture.image.DestroyImage(device, null);
+
+            if (texture.sampler != null)
+                texture.sampler.DestroySampler(device, null);
+
+            if (texture.deviceMemory != null)
+                texture.deviceMemory.FreeMemory(device, null);
+            
         }
 
         IMgCommandBuffer[] drawCmdBuffers;
@@ -439,15 +449,15 @@ namespace TextureDemo
 
                 cmdBuf.CmdBeginRenderPass(renderPassBeginInfo,  MgSubpassContents.INLINE);
 
-                var viewport = new MgViewport
-                {
-                    Width = mManager.Width,
-                    Height = mManager.Height,
-                    MinDepth = 0f,
-                    MaxDepth = 1f,
-                };
+                //var viewport = new MgViewport
+                //{
+                //    Width = mManager.Width,
+                //    Height = mManager.Height,
+                //    MinDepth = 0f,
+                //    MaxDepth = 1f,
+                //};
 
-                cmdBuf.CmdSetViewport(0, new[] { viewport });
+                cmdBuf.CmdSetViewport(0, new[] { mManager.Graphics.CurrentViewport });
 
                 var scissor = new MgRect2D {
                     Extent = new MgExtent2D
@@ -482,7 +492,7 @@ namespace TextureDemo
         IMgCommandBuffer mPrePresentCmdBuffer;
         IMgCommandBuffer mPostPresentCmdBuffer;
         // Command buffers for submitting present barriers
-        void setupPresentationBarries()
+        void setupPresentationBarriers()
         {
             var cmdBufAllocateInfo = new MgCommandBufferAllocateInfo
             {
@@ -509,6 +519,9 @@ namespace TextureDemo
         void draw()
         {
             // VulkanExampleBase::prepareFrame();
+            Debug.Assert(mPostPresentCmdBuffer != null);
+            Debug.Assert(mPrePresentCmdBuffer != null);
+
             var currentBuffer = mManager.Layer.BeginDraw(mPostPresentCmdBuffer, null);
 
             // Command buffer to be sumitted to the queue
@@ -771,8 +784,8 @@ namespace TextureDemo
             Debug.Assert(mManager.Configuration != null);
             var device = mManager.Configuration.Device;
 
-            using (var vertFs = System.IO.File.OpenRead("shaders/texture/texture.vert.spv"))
-            using (var fragFs = System.IO.File.OpenRead("shaders/texture/texture.frag.spv"))
+            using (var vertFs = System.IO.File.OpenRead("Shaders/texture.vert.spv"))
+            using (var fragFs = System.IO.File.OpenRead("Shaders/texture.frag.spv"))
             {
                 // Load shaders
                 IMgShaderModule vertSM;
@@ -824,25 +837,25 @@ namespace TextureDemo
                     InputAssemblyState = new MgPipelineInputAssemblyStateCreateInfo
                     {
                         Topology = MgPrimitiveTopology.TRIANGLE_LIST,
-                        PrimitiveRestartEnable = false,
+                        PrimitiveRestartEnable = false,                        
                     },
 
                     RasterizationState = new MgPipelineRasterizationStateCreateInfo
                     {
                         PolygonMode = MgPolygonMode.FILL,
                         CullMode = MgCullModeFlagBits.NONE,
-                        FrontFace = MgFrontFace.COUNTER_CLOCKWISE,
+                        FrontFace = MgFrontFace.COUNTER_CLOCKWISE,                        
                     },
 
                     ColorBlendState = new MgPipelineColorBlendStateCreateInfo
                     {
                         Attachments = new MgPipelineColorBlendAttachmentState[]
                         {
-                    new MgPipelineColorBlendAttachmentState
-                    {
-                        ColorWriteMask = MgColorComponentFlagBits.R_BIT | MgColorComponentFlagBits.G_BIT | MgColorComponentFlagBits.B_BIT | MgColorComponentFlagBits.A_BIT,
-                        BlendEnable = false,
-                    },
+                            new MgPipelineColorBlendAttachmentState
+                            {
+                                ColorWriteMask = MgColorComponentFlagBits.R_BIT | MgColorComponentFlagBits.G_BIT | MgColorComponentFlagBits.B_BIT | MgColorComponentFlagBits.A_BIT,
+                                BlendEnable = false,                                
+                            },
                         }
                     },
 
@@ -859,6 +872,7 @@ namespace TextureDemo
                     {
                         DepthTestEnable = true,
                         DepthWriteEnable = true,
+                        StencilTestEnable = false,
                         DepthCompareOp = MgCompareOp.LESS_OR_EQUAL,
                         Front = new MgStencilOpState
                         {
@@ -930,15 +944,13 @@ namespace TextureDemo
             generateQuad();
             setupVertexDescriptions();
             prepareUniformBuffers();
-            //loadTexture(
-            //    getAssetPath() + "textures/pattern_02_bc2.ktx",
-            //    IMg_FORMAT_BC2_UNORM_BLOCK,
-            //    false);
+            loadTexture("Textures/pattern_02_bc2.ktx", MgFormat.BC2_UNORM_BLOCK);
             setupDescriptorSetLayout();
             preparePipelines();
             setupDescriptorPool();
             setupDescriptorSet();
             buildCommandBuffers();
+            setupPresentationBarriers();
             mPrepared = true;
         }
 
@@ -947,6 +959,7 @@ namespace TextureDemo
         {
             if (!mPrepared)
                 return;
+            updateUniformBuffers();
             draw();
         }
 

@@ -13,9 +13,10 @@ namespace TextureDemo
 
                 using (var container = new Container ())
                 using (var window = new NativeWindow())
-                {
+                {                   
                     window.Title = "Vulkan Example - Basic indexed triangle";
                     window.Visible = true;
+
 
                     container.RegisterInstance<INativeWindow>(window);
 
@@ -30,16 +31,18 @@ namespace TextureDemo
                     container.Register<Magnesium.IMgEntrypoint, Magnesium.Vulkan.VkEntrypoint>(Reuse.Singleton);
 
                     // SCOPE
-                    container.Register<Magnesium.IMgGraphicsDevice, Magnesium.MgDefaultGraphicsDevice>(Reuse.InCurrentScope);
-                    container.Register<TextureExample>(Reuse.InCurrentScope);
-                    container.Register<Magnesium.IMgPresentationBarrierEntrypoint, Magnesium.MgPresentationBarrierEntrypoint>(Reuse.InCurrentScope);
 
-                    container.Register<Magnesium.IMgPresentationLayer, Magnesium.MgPresentationLayer>(Reuse.InCurrentScope);
-                    container.Register<Magnesium.IMgSwapchainCollection, Magnesium.MgSwapchainCollection>(Reuse.InCurrentScope);
-
+                    container.Register<Magnesium.IMgPresentationBarrierEntrypoint, Magnesium.MgPresentationBarrierEntrypoint>(Reuse.Singleton);
 
                     using (var scope = container.OpenScope())
                     {
+                        container.Register<TextureExample>(Reuse.InResolutionScope);
+                        container.Register<Magnesium.IMgGraphicsDevice, Magnesium.MgDefaultGraphicsDevice>(Reuse.InResolutionScope);
+                        container.Register<Magnesium.IMgPresentationLayer, Magnesium.MgPresentationLayer>(Reuse.InResolutionScope);
+                        container.Register<Magnesium.IMgSwapchainCollection, Magnesium.MgSwapchainCollection>(Reuse.InResolutionScope);
+                        container.Register<MgGraphicsConfigurationManager>(Reuse.InResolutionScope);
+
+
                         using (var driver = container.Resolve<Magnesium.MgDriverContext>())
                         {
                             driver.Initialize(
@@ -58,7 +61,7 @@ namespace TextureDemo
                                 {
                                     using (var gameWindow = new GameWindow(window))
                                     using (var example = container.Resolve<TextureExample>())
-                                    {
+                                    {                                        
                                         gameWindow.RenderFrame += (sender, e) =>
                                         {
                                             example.Render();

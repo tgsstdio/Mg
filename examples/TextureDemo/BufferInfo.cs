@@ -164,9 +164,10 @@ namespace TextureDemo
             var localData = new byte[sizeInBytes];
 
             var startOffset = startIndex * stride;
-            Buffer.BlockCopy(data, startOffset, localData, 0, (int) sizeInBytes);
+            var totalBytesToCopy = (int)sizeInBytes;
+            Buffer.BlockCopy(data, startOffset, localData, 0, totalBytesToCopy);
 
-            Marshal.Copy(localData, startIndex, dest, elementCount);
+            Marshal.Copy(localData, startIndex, dest, totalBytesToCopy);
 
             mDeviceMemory.UnmapMemory(mDevice);
 
