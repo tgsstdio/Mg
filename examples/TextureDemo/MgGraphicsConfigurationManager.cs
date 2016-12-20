@@ -32,6 +32,13 @@ namespace TextureDemo
         }
 
         private IMgSwapchainCollection mSwapchains;
+        public IMgSwapchainCollection Swapchains
+        {
+            get
+            {
+                return mSwapchains;
+            }
+        }
 
         private uint mWidth;
         public uint Width

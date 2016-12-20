@@ -400,7 +400,7 @@ namespace TextureDemo
         {
             var cmdBufInfo = new MgCommandBufferBeginInfo
             {
-
+                
             };
 
             var renderPassBeginInfo = new MgRenderPassBeginInfo
@@ -408,17 +408,17 @@ namespace TextureDemo
                 RenderPass = mManager.Graphics.Renderpass,
                 RenderArea = new MgRect2D
                 {
-                    Offset = new MgOffset2D { X = 0, Y = 0},
+                    Offset = new MgOffset2D { X = 0, Y = 0 },
                     Extent = new MgExtent2D {
                         Width = mManager.Width,
                         Height = mManager.Height
-                    },                    
+                    },
                 },
                 ClearValues = new MgClearValue[]
                 {
-                    new MgClearValue { Color = new MgClearColorValue() },
+                    MgClearValue.FromColorAndFormat(mManager.Swapchains.Format, new MgColor4f(1f, 0f, 0f, 1f)),
                     new MgClearValue { DepthStencil = new MgClearDepthStencilValue(1f, 0) }
-                },
+                },                
             };
 
             var cmdBufferCount = (uint) mManager.Graphics.Framebuffers.Length;
@@ -459,19 +459,19 @@ namespace TextureDemo
 
                 cmdBuf.CmdSetViewport(0, new[] { mManager.Graphics.CurrentViewport });
 
-                var scissor = new MgRect2D {
-                    Extent = new MgExtent2D
-                    {
-                        Height = mManager.Height,
-                        Width = mManager.Width,                        
-                    },
-                    Offset = new MgOffset2D
-                    {
-                        X = 0,
-                        Y = 0,
-                    }
-                };
-                cmdBuf.CmdSetScissor(0, new [] { scissor });
+                //var scissor = new MgRect2D {
+                //    Extent = new MgExtent2D
+                //    {
+                //        Height = mManager.Height,
+                //        Width = mManager.Width,                        
+                //    },
+                //    Offset = new MgOffset2D
+                //    {
+                //        X = 0,
+                //        Y = 0,
+                //    }
+                //};
+                cmdBuf.CmdSetScissor(0, new [] { mManager.Graphics.Scissor });
 
                 cmdBuf.CmdBindDescriptorSets( MgPipelineBindPoint.GRAPHICS, mPipelineLayout, 0, 1, mDescriptorSets, null);
                 cmdBuf.CmdBindPipeline( MgPipelineBindPoint.GRAPHICS, mSolidPipeline);
@@ -551,23 +551,23 @@ namespace TextureDemo
             {
                 new VertexData
                 {
-                    pos = new Vector3(  1.0f,  1.0f, 0.0f ),
+                    pos = new Vector3(  0.9f,  0.9f, 0.0f ),
                     uv = new Vector2( 1.0f, 1.0f ),
-                    normal = new Vector3( 0.0f, 0.0f, 1.0f )
+                    normal = new Vector3( 0.0f, 0.0f, -1.0f )
                 },
 
                 new VertexData
                 {
                     pos = new Vector3(   -1.0f,  1.0f, 0.0f ),
                     uv = new Vector2(  0.0f, 1.0f ),
-                    normal = new Vector3( 0.0f, 0.0f, 1.0f  )
+                    normal = new Vector3( 0.0f, 0.0f, -1.0f  )
                 },
 
                 new VertexData
                 {
                     pos = new Vector3(  -1.0f, -1.0f, 0.0f ),
                     uv = new Vector2( 0.0f, 0.0f ),
-                    normal = new Vector3( 0.0f, 0.0f, 1.0f )
+                    normal = new Vector3( 0.0f, 0.0f, -1.0f )
                 },
 
 
@@ -575,7 +575,7 @@ namespace TextureDemo
                 {
                     pos = new Vector3( 1.0f, -1.0f, 0.0f  ),
                     uv = new Vector2( 1.0f, 0.0f ),
-                    normal = new Vector3( 0.0f, 0.0f, 1.0f )
+                    normal = new Vector3( 0.0f, 0.0f, -1.0f )
                 },
             };
 
@@ -784,8 +784,8 @@ namespace TextureDemo
             Debug.Assert(mManager.Configuration != null);
             var device = mManager.Configuration.Device;
 
-            using (var vertFs = System.IO.File.OpenRead("Shaders/texture.vert.spv"))
-            using (var fragFs = System.IO.File.OpenRead("Shaders/texture.frag.spv"))
+            using (var vertFs = System.IO.File.OpenRead("Shaders/texture0.vert.spv"))
+            using (var fragFs = System.IO.File.OpenRead("Shaders/texture0.frag.spv"))
             {
                 // Load shaders
                 IMgShaderModule vertSM;
@@ -868,18 +868,25 @@ namespace TextureDemo
                     // MgPipelineViewportStateCreateInfo viewportState =
                     //    IMgTools::initializers::pipelineViewportStateCreateInfo(1, 1, 0);
 
+                    ViewportState = null,
+
                     DepthStencilState = new MgPipelineDepthStencilStateCreateInfo
                     {
                         DepthTestEnable = true,
                         DepthWriteEnable = true,
-                        StencilTestEnable = false,
                         DepthCompareOp = MgCompareOp.LESS_OR_EQUAL,
-                        Front = new MgStencilOpState
-                        {
-                            CompareOp = MgCompareOp.ALWAYS,
-                        },
+                        DepthBoundsTestEnable = false,
                         Back = new MgStencilOpState
                         {
+                            FailOp = MgStencilOp.KEEP,
+                            PassOp = MgStencilOp.KEEP,
+                            CompareOp = MgCompareOp.ALWAYS,
+                        },
+                        StencilTestEnable = false,
+                        Front = new MgStencilOpState
+                        {
+                            FailOp = MgStencilOp.KEEP,
+                            PassOp = MgStencilOp.KEEP,
                             CompareOp = MgCompareOp.ALWAYS,
                         },
                     },
@@ -919,10 +926,10 @@ namespace TextureDemo
             uboVS.projection = Matrix4.CreatePerspectiveFieldOfView(
                 MathHelper.DegreesToRadians(60.0f),
                 (float) mManager.Width / (float) mManager.Height,
-                0.001f,
+                1f,
                 256.0f
-            );                
- 
+            );
+
             //glm::mat4 viewMatrix = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, zoom));
 
             //uboVS.model = viewMatrix * glm::translate(glm::mat4(), cameraPos);
