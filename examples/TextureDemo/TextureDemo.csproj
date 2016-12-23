@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -27,7 +27,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -35,6 +35,10 @@
   <ItemGroup>
     <Reference Include="Magnesium, Version=5.0.4.30756, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Magnesium.5.0.4\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Magnesium.Ktx, Version=1.0.0.4888, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Magnesium.Ktx.1.0.0\lib\portable45-net45+win8+wpa81\Magnesium.Ktx.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Magnesium.PresentationSurfaces.OpenTK, Version=1.0.2.30735, Culture=neutral, processorArchitecture=MSIL">
@@ -103,12 +107,6 @@
     <None Include="Textures\pattern_02_bc2.ktx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Magnesium.Ktx\Magnesium.Ktx.csproj">
-      <Project>{6c74b420-5de6-43ed-ab99-18ae19342284}</Project>
-      <Name>Magnesium.Ktx</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
