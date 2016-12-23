@@ -1,3 +1,6 @@
+- Magnesium.Ktx v1.0.0 - 24 Dec 2016
+	- Loads Khronos .ktx image files
+
 Magnesium.Metal v5.0.0 - 9 Nov 2016
  - Updated w.r.t Magnesium v5.0.4 
 

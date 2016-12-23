@@ -5,9 +5,10 @@
 Quick Links
 
 - [CHANGELOG](#changelog)
-- [DESIGN DECISIONS](#design-decisions)
 - [NUGET PACKAGES](#nuget-packages)
+- [EXAMPLES](#examples)
 - [BUILD INSTRUCTIONS](#build-instructions)
+- [DESIGN DECISIONS](#design-decisions)
 - [LICENSE](#license)
 - [WHY?](#why?)
 - [CROSS PLATFORM DEV GUIDE](#cross-platform-dev-guide)
@@ -32,7 +33,9 @@ Magnesium and its implementations uses [Semantic Versioning v2.0.0](http://semve
 	- FIXED - CreateGraphicsPipelines to accept array of dynamic states 
  - Magnesium.Metal v5.0.0 - 9 Nov 2016
  	- Updated w.r.t Magnesium v5.0.4 	
-
+ - Magnesium.Ktx v1.0.0 - 24 Dec 2016
+	- Loads Khronos .ktx image files
+		
 ### Version 4.0.0
  - Moving all implementations under one roof/repository
 	- Magnesium 
@@ -58,20 +61,6 @@ Magnesium and its implementations uses [Semantic Versioning v2.0.0](http://semve
 
  - Now using Semantic Versioning v2.0.0 (http://semver.org/)
 
-----------
-
-## DESIGN DECISIONS
-
-1. It is the responsibility of the programmer to clean up any unmanaged memory used by Mg objects themselves after use. 
-Almost Mg interfaces require explicit calls to its DestoryXXX methods (e.g. void DeleteInstance ) to dispose any memory associated to the objects.
-
-2. Magnesium does not SPECIFIC a shader language of choice, rather relying on the shader language available to the platform itself. 
-
-3. To benefit more multi-threaded application use in Vulkan/Magnesium, it is recommended to restrict instances of command pools (i.e. IMgCommandPool) and descriptor pools (i.e. IMgDescriptorPool) to a single thread.
-For example, in application that uses 2 thread, each thread would have its own descriptor pool(s) and command pool(s) and none of the instances should be shared between those threads.          
-
-4. (TODO) You will not directly modify/set for any indirect draw call buffer data as the structs used for indirect draws.
-Therefore a indirect interface class must be created act as a bridge to allow improve portability.   
 
 ----------
 
@@ -99,7 +88,40 @@ Therefore a indirect interface class must be created act as a bridge to allow im
 	- Magnesium.OpenGL
 	- Magnesium.Vulkan
 
+-----------
 
+## EXAMPLES 
+	
+All Magnesium demos can be found in the examples folder
+ 
+ - InstanceDemo (Windows)
+ 	- Console only Vulkan interface test
+ - MetalSample (MacOS)
+ 	- Spinning cube translation of Metal cube demo
+ - KtxReader (Cross-Platform)
+ 	- Opens a .ktx for testing
+ - TriangleDemo (Windows, OpenTK)
+	 - Simple Vulkan triangle demo based on [Sascha Willems](https://github.com/SaschaWillems)'s [triangle demo](https://github.com/SaschaWillems/Vulkan/blob/master/triangle/triangle.cpp)
+ - TextureDemo (Windows, OpenTK)
+ 	- Opens a .ktx image file and display it on a plane. Code based on [Sascha Willems](https://github.com/SaschaWillems)'s [texture demo](https://github.com/SaschaWillems/Vulkan/blob/master/texture/texture.cpp)
+
+	
+----------
+
+## DESIGN DECISIONS
+
+1. It is the responsibility of the programmer to clean up any unmanaged memory used by Mg objects themselves after use. 
+Almost Mg interfaces require explicit calls to its DestoryXXX methods (e.g. void DeleteInstance ) to dispose any memory associated to the objects.
+
+2. Magnesium does not SPECIFIC a shader language of choice, rather relying on the shader language available to the platform itself. 
+
+3. To benefit more multi-threaded application use in Vulkan/Magnesium, it is recommended to restrict instances of command pools (i.e. IMgCommandPool) and descriptor pools (i.e. IMgDescriptorPool) to a single thread.
+For example, in application that uses 2 thread, each thread would have its own descriptor pool(s) and command pool(s) and none of the instances should be shared between those threads.          
+
+4. (TODO) You will not directly modify/set for any indirect draw call buffer data as the structs used for indirect draws.
+Therefore a indirect interface class must be created act as a bridge to allow improve portability.   
+	
+	
 ----------
 
 ## LICENSE
