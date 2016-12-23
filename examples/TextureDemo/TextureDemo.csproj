@@ -82,6 +82,7 @@
     <None Include="Shaders\texture.vert.spv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Shaders\texture1.vert" />
     <None Include="Shaders\texture0.frag" />
     <None Include="Shaders\texture0.frag.spv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -89,6 +90,9 @@
     <None Include="Shaders\texture0.vert" />
     <None Include="Shaders\texture0.vert.spv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Shaders\texture1.vert.spv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Textures\pattern_02_bc2.ktx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

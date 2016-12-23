@@ -89,3 +89,4 @@ Magnesium.PresentationSurfaces.OpenTK/.vs/Magnesium.PresentationSurfaces.OpenTK/
 *.user
 examples/*/bin/*
 examples/*/obj/*
+*.db
