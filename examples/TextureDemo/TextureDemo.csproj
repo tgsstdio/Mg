@@ -82,6 +82,12 @@
     <None Include="Shaders\texture.vert.spv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Shaders\texture1.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Shaders\texture1.frag.spv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Shaders\texture1.vert" />
     <None Include="Shaders\texture0.frag" />
     <None Include="Shaders\texture0.frag.spv">

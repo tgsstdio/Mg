@@ -28,5 +28,8 @@ out gl_PerVertex
 
 void main() 
 {
-	gl_Position = ubo.projection * (ubo.viewPos + vec4(inPos.xyz, 1.0));
+	outUV = inUV;
+	outLodBias = ubo.lodBias;
+
+	gl_Position = ubo.projection * vec4(ubo.viewPos + inPos.xyz, 1.0);
 }

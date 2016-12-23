@@ -419,7 +419,7 @@ namespace TextureDemo
                 },                
                 ClearValues = new MgClearValue[]
                 {
-                    MgClearValue.FromColorAndFormat(mManager.Swapchains.Format, new MgColor4f(1f, 0f, 0f, 1f)),
+                    MgClearValue.FromColorAndFormat(mManager.Swapchains.Format, new MgColor4f(0f, 0f, 0f, 0f)),
                     new MgClearValue { DepthStencil = new MgClearDepthStencilValue(1024f, 0) }
                 },                
             };
@@ -549,28 +549,26 @@ namespace TextureDemo
 
         void generateQuad()
         {
-            const float Z_DEPTH = 0f;
-
             // Setup vertices for a single uv-mapped quad made from two triangles
             VertexData[] quadCorners =
             {
                 new VertexData
                 {
-                    pos = new Vector3(  0.9f,  0.9f, Z_DEPTH ),
+                    pos = new Vector3(  1f,  1f, 0f ),
                     uv = new Vector2( 1.0f, 1.0f ),
                     normal = new Vector3( 0.0f, 0.0f, -1.0f )
                 },
 
                 new VertexData
                 {
-                    pos = new Vector3(   -1.0f,  1.0f, Z_DEPTH ),
+                    pos = new Vector3(   -1.0f,  1.0f, 0f ),
                     uv = new Vector2(  0.0f, 1.0f ),
                     normal = new Vector3( 0.0f, 0.0f, -1.0f  )
                 },
 
                 new VertexData
                 {
-                    pos = new Vector3(  -1.0f, -1.0f, Z_DEPTH ),
+                    pos = new Vector3(  -1.0f, -1.0f, 0f ),
                     uv = new Vector2( 0.0f, 0.0f ),
                     normal = new Vector3( 0.0f, 0.0f, -1.0f )
                 },
@@ -578,7 +576,7 @@ namespace TextureDemo
 
                 new VertexData
                 {
-                    pos = new Vector3( 1.0f, -1.0f, Z_DEPTH ),
+                    pos = new Vector3( 1.0f, -1.0f, 0f ),
                     uv = new Vector2( 1.0f, 0.0f ),
                     normal = new Vector3( 0.0f, 0.0f, -1.0f )
                 },
@@ -790,7 +788,7 @@ namespace TextureDemo
             var device = mManager.Configuration.Device;
 
             using (var vertFs = System.IO.File.OpenRead("Shaders/texture1.vert.spv"))
-            using (var fragFs = System.IO.File.OpenRead("Shaders/texture0.frag.spv"))
+            using (var fragFs = System.IO.File.OpenRead("Shaders/texture1.frag.spv"))
             {
                 // Load shaders
                 IMgShaderModule vertSM;
@@ -944,17 +942,21 @@ namespace TextureDemo
                 ((float)mManager.Width / (float)mManager.Height),
                 0.001f, 256.0f
             );
-           // uboVS.projection = Matrix4.Identity;
+            // uboVS.projection = Matrix4.Identity;
             //uboVS.projection = Matrix4.CreateTranslation(1f,0f,0.5f);
 
-            //glm::mat4 viewMatrix = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, zoom));
+            //var viewMatrix = Matrix4.CreateTranslation( 0f, 0f, mZoom);
 
-            //uboVS.model = viewMatrix * glm::translate(glm::mat4(), cameraPos);
-            //uboVS.model = glm::rotate(uboVS.model, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
-            //uboVS.model = glm::rotate(uboVS.model, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-            //uboVS.model = glm::rotate(uboVS.model, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+            ////uboVS.model = viewMatrix * glm::translate(glm::mat4(), cameraPos);
+            //var rotateX = Matrix4.RotateX(rotation.x);
+            //var rotateY = Matrix4.RotateY(rotation.y);
+            //var rotateZ = Matrix4.RotateZ(rotation.Z);
+            ////uboVS.model = glm::rotate(uboVS.model, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+            ////uboVS.model = glm::rotate(uboVS.model, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+            ////uboVS.model = glm::rotate(uboVS.model, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+            //uboVS.model = rotateZ * rotateY * rotateX * viewMatrix;
 
-            uboVS.lodBias = 0f;
+            uboVS.lodBias = 0.5f;
 
             uboVS.model = Matrix4.Identity;
 
