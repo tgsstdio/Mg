@@ -20,7 +20,7 @@ namespace TriangleDemo
 
                     container.RegisterInstance<INativeWindow>(window);
 
-                    // Magnesium
+                    // Magnesium                    
                     container.Register<Magnesium.MgDriverContext>(new PerContainerLifetime());
                     container.Register<Magnesium.IMgPresentationSurface, Magnesium.PresentationSurfaces.OpenTK.VulkanPresentationSurface>(new PerContainerLifetime());
 
@@ -28,6 +28,7 @@ namespace TriangleDemo
                     container.Register<Magnesium.IMgImageTools, Magnesium.MgImageTools>(new PerContainerLifetime());
 
                     // Magnesium.VUlkan
+                    container.Register<TriangleDemo.ITriangleDemoShaderPath, SPIRVTriangleShaderPath>(new PerContainerLifetime());
                     container.Register<Magnesium.IMgEntrypoint, Magnesium.Vulkan.VkEntrypoint>(new PerContainerLifetime());
 
                     // SCOPE

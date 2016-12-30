@@ -5,7 +5,6 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 */
 
-using OpenTK;
 using Magnesium;
 using System.Collections.Generic;
 using System;
@@ -49,9 +48,9 @@ namespace TriangleDemo
 
         struct UniformBufferObject
         {
-            public OpenTK.Matrix4 projectionMatrix;
-            public OpenTK.Matrix4 modelMatrix;
-            public OpenTK.Matrix4 viewMatrix;
+            public Matrix4 projectionMatrix;
+            public Matrix4 modelMatrix;
+            public Matrix4 viewMatrix;
         };
 
         UniformBufferObject uboVS;
@@ -105,13 +104,15 @@ namespace TriangleDemo
             IMgGraphicsConfiguration configuration,
             IMgSwapchainCollection swapchains,
             IMgGraphicsDevice graphicsDevice,
-            IMgPresentationLayer presentationLayer
+            IMgPresentationLayer presentationLayer,
+            ITriangleDemoShaderPath shaderPath
         )
         {
             mConfiguration = configuration;
             mSwapchains = swapchains;
             mGraphicsDevice = graphicsDevice;
             mPresentationLayer = presentationLayer;
+            mTrianglePath = shaderPath;
 
             mWidth = 1280U;
             mHeight = 720U;
@@ -124,7 +125,7 @@ namespace TriangleDemo
             }
             catch(Exception ex)
             {
-                Console.WriteLine(ex);
+                throw ex;
             }
         }
 
@@ -246,8 +247,8 @@ namespace TriangleDemo
 
         struct TriangleVertex
         {
-            public OpenTK.Vector3 position;
-            public OpenTK.Vector3 color;
+            public Vector3 position;
+            public Vector3 color;
         };
 
         class StagingBuffer
@@ -283,7 +284,7 @@ namespace TriangleDemo
                 },
             };
 
-            var structSize = Marshal.SizeOf<TriangleVertex>();
+            var structSize = Marshal.SizeOf(typeof(TriangleVertex));
             var vertexBufferSize = (ulong)(vertexBuffer.Length * structSize);
 
             // Setup indices
@@ -536,7 +537,7 @@ namespace TriangleDemo
             //	layout (location = 0) in vec3 inPos;
             //	layout (location = 1) in vec3 inColor;
 
-            var vertexSize = (uint) Marshal.SizeOf<Vector3>();
+            var vertexSize = (uint) Marshal.SizeOf(typeof(Vector3));
 
             vertices.inputAttributes = new MgVertexInputAttributeDescription[]
             {
@@ -744,9 +745,10 @@ namespace TriangleDemo
 
         void preparePipelines()
         {
-
-            using (var vertFs = System.IO.File.OpenRead("shaders/triangle.vert.spv"))
-            using (var fragFs = System.IO.File.OpenRead("shaders/triangle.frag.spv"))
+            // System.IO.File.OpenRead("shaders/triangle.vert.spv")
+            using (var vertFs = mTrianglePath.OpenVertexShader())
+            // System.IO.File.OpenRead("shaders/triangle.frag.spv")
+            using (var fragFs = mTrianglePath.OpenFragmentShader())
             {
                 // Load shaders
                 // Vulkan loads it's shaders from an immediate binary representation called SPIR-V
@@ -799,7 +801,7 @@ namespace TriangleDemo
                     },
 
                     VertexInputState = vertices.inputState,
-                    
+
                     // Construct the differnent states making up the pipeline
                     InputAssemblyState = new MgPipelineInputAssemblyStateCreateInfo
                     {
@@ -1102,11 +1104,22 @@ namespace TriangleDemo
 
         #endregion
 
+        /// <summary>
+        /// Convert degrees to radians
+        /// </summary>
+        /// <param name="degrees">An angle in degrees</param>
+        /// <returns>The angle expressed in radians</returns>
+        public static float DegreesToRadians(float degrees)
+        {
+            const double degToRad = System.Math.PI / 180.0;
+            return (float) (degrees * degToRad);
+        }
+
         void updateUniformBuffers()
         {
             // Update matrices
             uboVS.projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(
-                MathHelper.DegreesToRadians(60.0f), 
+                DegreesToRadians(60.0f), 
                 (mWidth / mHeight), 
                 1.0f,
                 256.0f);
@@ -1137,14 +1150,7 @@ namespace TriangleDemo
 
         public void RenderLoop()
         {
-            try
-            {
-                render();
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
+            render();
         }
 
         void render()
@@ -1217,6 +1223,7 @@ namespace TriangleDemo
 
         #region IDisposable Support
         private bool mIsDisposed = false; // To detect redundant calls
+        private ITriangleDemoShaderPath mTrianglePath;
 
         protected virtual void Dispose(bool disposing)
         {
