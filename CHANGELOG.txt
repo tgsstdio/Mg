@@ -1,4 +1,10 @@
-- Magnesium.Ktx v1.0.0 - 24 Dec 2016
+Magnesium.OpenGL v5.1.1 - 5 Jan 2017
+	- Added IMgFence/IGLFence implementation
+	
+Magnesium.OpenGL.DesktopGL v5.1.1 - 5 Jan 2017
+	- Implemented GLFullFence of IMgFence interface
+
+Magnesium.Ktx v1.0.0 - 24 Dec 2016
 	- Loads Khronos .ktx image files
 
 Magnesium.Metal v5.0.0 - 9 Nov 2016

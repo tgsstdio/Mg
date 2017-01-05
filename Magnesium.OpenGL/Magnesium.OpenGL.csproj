@@ -30,6 +30,8 @@
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Device\IGLFence.cs" />
+    <Compile Include="Entrypoint\IGLFenceEntrypoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Driver\GLEntrypoint.cs" />
     <Compile Include="Queue\IGLQueue.cs" />

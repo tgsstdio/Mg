@@ -22,7 +22,8 @@ namespace TriangleDemo.DesktopGL
 
                     // Magnesium                    
                     container.Register<Magnesium.MgDriverContext>(new PerContainerLifetime());
-                    container.Register<Magnesium.IMgPresentationSurface, Magnesium.PresentationSurfaces.OpenTK.VulkanPresentationSurface>(new PerContainerLifetime());
+                    //container.Register<Magnesium.IMgPresentationSurface, Magnesium.PresentationSurfaces.OpenTK.VulkanPresentationSurface>(new PerContainerLifetime());
+                    container.Register<Magnesium.IMgPresentationSurface, Magnesium.PresentationSurfaces.OpenTK.DesktopGLPresentationSurface>(new PerContainerLifetime());
 
                     container.Register<Magnesium.IMgGraphicsConfiguration, Magnesium.MgDefaultGraphicsConfiguration>(new PerContainerLifetime());
                     container.Register<Magnesium.IMgImageTools, Magnesium.MgImageTools>(new PerContainerLifetime());
@@ -32,12 +33,17 @@ namespace TriangleDemo.DesktopGL
                     SetupOpenGL(container);
 
                     // SCOPE
-                    container.Register<Magnesium.IMgGraphicsDevice, Magnesium.MgDefaultGraphicsDevice>(new PerScopeLifetime());
+                    //container.Register<Magnesium.IMgGraphicsDevice, Magnesium.MgDefaultGraphicsDevice>(new PerScopeLifetime());
+                    // IMgGraphicsDevice
+                    container.Register<Magnesium.IMgGraphicsDevice, Magnesium.OpenGL.DesktopGL.OpenTKGraphicsDevice>(new PerScopeLifetime());
+
                     container.Register<VulkanExample>(new PerScopeLifetime());
                     container.Register<Magnesium.IMgPresentationBarrierEntrypoint, Magnesium.MgPresentationBarrierEntrypoint>(new PerScopeLifetime());
 
                     container.Register<Magnesium.IMgPresentationLayer, Magnesium.MgPresentationLayer>(new PerScopeLifetime());
-                    container.Register<Magnesium.IMgSwapchainCollection, Magnesium.MgSwapchainCollection>(new PerScopeLifetime());
+                    //container.Register<Magnesium.IMgSwapchainCollection, Magnesium.MgSwapchainCollection>(new PerScopeLifetime());
+                    // IMgSwapchainCollection
+                    container.Register<Magnesium.IMgSwapchainCollection, Magnesium.OpenGL.DesktopGL.OpenTKSwapchainCollection>(new PerScopeLifetime());
 
 
                     using (var scope = container.BeginScope())
@@ -89,10 +95,10 @@ namespace TriangleDemo.DesktopGL
             container.Register<Magnesium.IMgEntrypoint, Magnesium.OpenGL.GLEntrypoint>(new PerContainerLifetime());
 
             // IMgGraphicsDevice
-            container.Register<Magnesium.IMgGraphicsDevice, Magnesium.OpenGL.DesktopGL.OpenTKGraphicsDevice>(new PerContainerLifetime());
+            //container.Register<Magnesium.IMgGraphicsDevice, Magnesium.OpenGL.DesktopGL.OpenTKGraphicsDevice>(new PerContainerLifetime());
 
             // IMgSwapchainCollection
-            container.Register<Magnesium.IMgSwapchainCollection, Magnesium.OpenGL.DesktopGL.OpenTKSwapchainCollection>(new PerContainerLifetime());
+            //container.Register<Magnesium.IMgSwapchainCollection, Magnesium.OpenGL.DesktopGL.OpenTKSwapchainCollection>(new PerContainerLifetime());
 
             // Magnesium.OpenGL INTERNALS
             container.Register<Magnesium.OpenGL.IGLGraphicsPipelineCompiler, Magnesium.OpenGL.GLSLGraphicsPipelineCompilier>(new PerContainerLifetime());
@@ -101,7 +107,7 @@ namespace TriangleDemo.DesktopGL
             container.Register<Magnesium.OpenGL.IGLDeviceEntrypoint, Magnesium.OpenGL.DefaultGLDeviceEntrypoint>(new PerContainerLifetime());
 
             // WINDOW 
-            container.Register<Magnesium.IMgPresentationSurface, Magnesium.PresentationSurfaces.OpenTK.DesktopGLPresentationSurface>(new PerContainerLifetime());
+            //container.Register<Magnesium.IMgPresentationSurface, Magnesium.PresentationSurfaces.OpenTK.DesktopGLPresentationSurface>(new PerContainerLifetime());
 
             container.Register<Magnesium.OpenGL.IGLCmdBlendEntrypoint, Magnesium.OpenGL.DesktopGL.FullGLCmdBlendEntrypoint>(new PerContainerLifetime());
             container.Register<Magnesium.OpenGL.IGLCmdStencilEntrypoint, Magnesium.OpenGL.DesktopGL.FullGLCmdStencilEntrypoint>(new PerContainerLifetime());
@@ -128,6 +134,7 @@ namespace TriangleDemo.DesktopGL
             container.Register<Magnesium.OpenGL.IGLFramebufferHelperSelector, Magnesium.OpenGL.DesktopGL.FullGLFramebufferHelperSelector>(new PerContainerLifetime());
             container.Register<Magnesium.OpenGL.IGLFramebufferSupport, Magnesium.OpenGL.DesktopGL.FullGLFramebufferSupport>(new PerContainerLifetime());
             container.Register<Magnesium.OpenGL.IGLExtensionLookup, Magnesium.OpenGL.DesktopGL.FullGLExtensionLookup>(new PerContainerLifetime());
+            container.Register<Magnesium.OpenGL.IGLFenceEntrypoint, Magnesium.OpenGL.DesktopGL.FullGLFullFenceEntrypoint>(new PerContainerLifetime());
 
             // Magnesium.OpenGL.DesktopGL INTERNALS
             container.Register<Magnesium.OpenGL.DesktopGL.IOpenTKSwapchainKHR, Magnesium.OpenGL.DesktopGL.GLSwapchainKHR>(new PerContainerLifetime());

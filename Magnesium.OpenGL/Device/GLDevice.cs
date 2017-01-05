@@ -167,7 +167,8 @@ namespace Magnesium.OpenGL
 		}
 		public Result CreateFence (MgFenceCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgFence fence)
 		{
-			throw new NotImplementedException ();
+            fence = mEntrypoint.Fence.CreateFence();
+            return Result.SUCCESS;
 		}
 //		public void DestroyFence (MgFence fence, IMgAllocationCallbacks allocator)
 //		{
@@ -175,15 +176,76 @@ namespace Magnesium.OpenGL
 //		}
 		public Result ResetFences (IMgFence[] pFences)
 		{
-			throw new NotImplementedException ();
+			foreach(var fence in pFences)
+            {
+                IGLFence bFence = (IGLFence) fence;
+                bFence.Reset();
+            }
+            return Result.SUCCESS;                
 		}
 		public Result GetFenceStatus (IMgFence fence)
 		{
-			throw new NotImplementedException ();
-		}
+            IGLFence bFence = (IGLFence)fence;
+            return (bFence.IsSignalled) ? Result.SUCCESS : Result.NOT_READY;
+        }
+
 		public Result WaitForFences (IMgFence[] pFences, bool waitAll, ulong timeout)
 		{
-			throw new NotImplementedException ();
+            if (timeout == 0)
+            {
+                // report current state only
+
+                // NO WAITING AT ALL 
+                foreach (var fence in pFences)
+                {
+                    IGLFence bFence = (IGLFence)fence;
+                    // TODO MAYBE NON BLOCKING ONLY
+                    if (!bFence.IsSignalled)
+                    {
+                        return Result.TIMEOUT;
+                    }
+                }
+                return Result.SUCCESS;
+            }
+            else
+            {
+                Stopwatch timer = new Stopwatch();
+
+                var noOfFences = pFences.Length;
+
+                ulong elapsedInNanoSecs = 0UL;
+                var remainingTime = timeout;
+
+                var currentFence = 0;
+                do
+                {
+                    IGLFence bFence = (IGLFence)pFences[currentFence];
+                    timer.Start();
+                    // ONE AT A TIME
+                    var isSignalled = bFence.IsReady((long)remainingTime);
+
+                    timer.Stop();
+ 
+                    elapsedInNanoSecs = (ulong) ((timer.ElapsedTicks * 1000000000) / Stopwatch.Frequency);
+
+                    if (isSignalled)
+                    {
+                        // remove elapsed time from timeout
+                        remainingTime -= elapsedInNanoSecs;
+                        currentFence += 1;
+                    }
+
+                    // COMPLETED LAST FENCE
+                    if (currentFence >= noOfFences)
+                    {
+                        return Result.SUCCESS;
+                    }
+                }
+                while (elapsedInNanoSecs < timeout);
+
+                return Result.TIMEOUT;
+            }            
+
 		}
 		public Result CreateSemaphore (MgSemaphoreCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgSemaphore pSemaphore)
 		{

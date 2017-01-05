@@ -18,7 +18,8 @@ namespace Magnesium.OpenGL
 			IGLSemaphoreEntrypoint semaphore,
 			IGLGraphicsPipelineEntrypoint graphicsPipeline,
 			IGLImageFormatEntrypoint imageFormat,
-			IGLGraphicsPipelineCompiler graphicsCompiler
+			IGLGraphicsPipelineCompiler graphicsCompiler,
+            IGLFenceEntrypoint fence
 		)
 		{
 			VBO = vbo;
@@ -34,6 +35,7 @@ namespace Magnesium.OpenGL
 			GraphicsPipeline = graphicsPipeline;
 			ImageFormat = imageFormat;
 			GraphicsCompiler = graphicsCompiler;
+            Fence = fence;
 		}
 
 		#region IGLDeviceCapabilities implementation
@@ -104,7 +106,13 @@ namespace Magnesium.OpenGL
 			get;
 			private set;
 		}
-		#endregion
-	}
+
+        public IGLFenceEntrypoint Fence
+        {
+            get;
+            private set;
+        }
+        #endregion
+    }
 }
 
