@@ -30,6 +30,26 @@
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="CommandBuffer\AmtBlitGrid.cs" />
+    <Compile Include="CommandBuffer\AmtBlitRecording.cs" />
+    <Compile Include="CommandBuffer\AmtCommandBuffer.cs" />
+    <Compile Include="CommandBuffer\AmtCommandBufferRecord.cs" />
+    <Compile Include="CommandBuffer\AmtCommandEncoder.cs" />
+    <Compile Include="CommandBuffer\AmtCommandRecording.cs" />
+    <Compile Include="CommandBuffer\AmtComputeGrid.cs" />
+    <Compile Include="CommandBuffer\AmtComputeRecording.cs" />
+    <Compile Include="CommandBuffer\AmtEncoderCategory.cs" />
+    <Compile Include="CommandBuffer\AmtEncoderContext.cs" />
+    <Compile Include="CommandBuffer\AmtEncodingInstruction.cs" />
+    <Compile Include="CommandBuffer\AmtGraphicsEncoder.cs" />
+    <Compile Include="CommandBuffer\AmtGraphicsGrid.cs" />
+    <Compile Include="CommandBuffer\AmtGraphicsRecording.cs" />
+    <Compile Include="CommandBuffer\AmtIncrementalChunkifier.cs" />
+    <Compile Include="CommandBuffer\AmtRecordInstruction.cs" />
+    <Compile Include="CommandBuffer\IAmtBlitEncoder.cs" />
+    <Compile Include="CommandBuffer\IAmtComputeEncoder.cs" />
+    <Compile Include="CommandBuffer\IAmtEncoderContextSorter.cs" />
+    <Compile Include="CommandBuffer\IAmtGraphicsEncoder.cs" />
     <Compile Include="Device\IGLFence.cs" />
     <Compile Include="Entrypoint\IGLFenceEntrypoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
