@@ -16,8 +16,8 @@ namespace Magnesium.OpenGL
 		private readonly GLCmdBufferStore<int> mBackCompareMasks;
 		private readonly GLCmdBufferStore<int> mFrontCompareMasks;
 		private readonly GLCmdBufferStore<int> mFrontReferences;
-		private readonly GLCmdBufferStore<int> mBackWriteMasks;
-		private readonly GLCmdBufferStore<int> mFrontWriteMasks;
+		private readonly GLCmdBufferStore<uint> mBackWriteMasks;
+		private readonly GLCmdBufferStore<uint> mFrontWriteMasks;
 		private readonly GLCmdBufferStore<MgColor4f> mBlendConstants;
 		private readonly GLCmdBufferStore<int> mBackReferences;
 		private readonly GLCmdBufferStore<GLGraphicsPipelineBlendColorState> mColorBlends;
@@ -65,10 +65,10 @@ namespace Magnesium.OpenGL
 			mBackReferences = new GLCmdBufferStore<int> (); 
 			mClearables.Add (mBackReferences);
 
-			mBackWriteMasks = new GLCmdBufferStore<int> (); 
+			mBackWriteMasks = new GLCmdBufferStore<uint> (); 
 			mClearables.Add (mBackWriteMasks);
 
-			mFrontWriteMasks = new GLCmdBufferStore<int> (); 
+			mFrontWriteMasks = new GLCmdBufferStore<uint> (); 
 			mClearables.Add (mFrontWriteMasks);
 
 			mBlendConstants = new GLCmdBufferStore<MgColor4f> (); 
@@ -85,14 +85,14 @@ namespace Magnesium.OpenGL
 			}
 		}
 
-		public IGLCmdBufferStore<int> BackWriteMasks { 
+		public IGLCmdBufferStore<uint> BackWriteMasks { 
 			get
 			{
 				return mBackWriteMasks;
 			}
 		}
 
-		public IGLCmdBufferStore<int> FrontWriteMasks { 
+		public IGLCmdBufferStore<uint> FrontWriteMasks { 
 			get {
 				return mFrontWriteMasks;
 			}
@@ -370,12 +370,12 @@ namespace Magnesium.OpenGL
 
 				if ((face & MgStencilFaceFlagBits.FRONT_BIT) > 0)
 				{
-					FrontWriteMasks.Add ((int)mask);
+					FrontWriteMasks.Add (mask);
 				}
 
 				if ((face & MgStencilFaceFlagBits.BACK_BIT) > 0)
 				{
-					BackWriteMasks.Add ((int)mask);
+					BackWriteMasks.Add (mask);
 				}
 			}
 		}

@@ -3,8 +3,8 @@ namespace Magnesium.OpenGL
 	public interface IGLCmdBufferRepository
 	{
 		IGLCmdBufferStore<MgColor4f> BlendConstants { get; }
-		IGLCmdBufferStore<int> BackWriteMasks { get;	 }
-		IGLCmdBufferStore<int> FrontWriteMasks { get;  }
+		IGLCmdBufferStore<uint> BackWriteMasks { get;	 }
+		IGLCmdBufferStore<uint> FrontWriteMasks { get;  }
 		IGLCmdBufferStore<int> BackReferences { get; }
 		IGLCmdBufferStore<int> FrontReferences { get; }
 		IGLCmdBufferStore<int> FrontCompareMasks { get; 	}

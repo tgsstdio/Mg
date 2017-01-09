@@ -122,10 +122,15 @@ namespace Magnesium.OpenGL
 
 			if (past.Front.WriteMask != next.Front.WriteMask)
 			{
-				mStencil.SetStencilWriteMask (next.Front.WriteMask);
+				mStencil.SetStencilWriteMask (MgStencilFaceFlagBits.FRONT_BIT, next.Front.WriteMask);
 			}
 
-			var newStencilEnabled = (next.Flags & GLGraphicsPipelineFlagBits.StencilEnabled);
+            if (past.Back.WriteMask != next.Back.WriteMask)
+            {
+                mStencil.SetStencilWriteMask(MgStencilFaceFlagBits.BACK_BIT, next.Back.WriteMask);
+            }
+
+            var newStencilEnabled = (next.Flags & GLGraphicsPipelineFlagBits.StencilEnabled);
 			if (mStencil.IsStencilBufferEnabled != (newStencilEnabled != 0))
 			{
 				if (mStencil.IsStencilBufferEnabled)

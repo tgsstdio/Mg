@@ -112,7 +112,20 @@ namespace Magnesium.OpenGL.DesktopGL
 		{
 			
 		}
-		#endregion
-	}
+
+        public void SetDepthBounds(float min, float max)
+        {
+            GL.Ext.DepthBounds(min, max);
+
+            {
+                var error = GL.GetError();
+                if (error != ErrorCode.NoError)
+                {
+                    Debug.WriteLine("SetDepthBounds : " + error);
+                }
+            }
+        }
+        #endregion
+    }
 }
 

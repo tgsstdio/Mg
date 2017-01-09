@@ -2,7 +2,7 @@
 {
 	public struct GLGraphicsPipelineStencilMasks
 	{
-		public int WriteMask { get; set;}
+		public uint WriteMask { get; set;}
 		public int Reference { get; set;}
 		public int CompareMask { get; set;}
 	}

@@ -6,15 +6,20 @@ namespace Magnesium.OpenGL
 	{
 		public GLClearAttachmentInfo Attachment { get; set; }
 		public MgClearValue Value { get; set; }
+        public MgColor4f Color { get; set; }
 
-		 
-		#region IEquatable implementation
-		public bool Equals (GLClearValueArrayItem other)
+        #region IEquatable implementation
+        public bool Equals (GLClearValueArrayItem other)
 		{
 			if (!Attachment.Equals(other.Attachment))
 			{
 				return false;
 			}
+
+            if (!Color.Equals(other.Color))
+            {
+                return false;
+            }
 
 			switch (this.Attachment.AttachmentType)
 			{

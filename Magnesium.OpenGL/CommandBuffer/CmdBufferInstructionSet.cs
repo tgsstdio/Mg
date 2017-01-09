@@ -42,12 +42,12 @@
 			set;
 		}
 
-		public int[] FrontWriteMasks {
+		public uint[] FrontWriteMasks {
 			get;
 			set;
 		}
 
-		public int[] BackWriteMasks {
+		public uint[] BackWriteMasks {
 			get;
 			set;
 		}

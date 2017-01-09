@@ -30,8 +30,10 @@
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="CommandBuffer\AmtBeginRenderpassRecord.cs" />
     <Compile Include="CommandBuffer\AmtBlitGrid.cs" />
     <Compile Include="CommandBuffer\AmtBlitRecording.cs" />
+    <Compile Include="CommandBuffer\AmtBoundPipelineRecord.cs" />
     <Compile Include="CommandBuffer\AmtCommandBuffer.cs" />
     <Compile Include="CommandBuffer\AmtCommandBufferRecord.cs" />
     <Compile Include="CommandBuffer\AmtCommandEncoder.cs" />
@@ -40,16 +42,24 @@
     <Compile Include="CommandBuffer\AmtComputeRecording.cs" />
     <Compile Include="CommandBuffer\AmtEncoderCategory.cs" />
     <Compile Include="CommandBuffer\AmtEncoderContext.cs" />
+    <Compile Include="CommandBuffer\AmtEncoderItemCollection.cs" />
     <Compile Include="CommandBuffer\AmtEncodingInstruction.cs" />
+    <Compile Include="CommandBuffer\AmtGLStencilFunctionInfo.cs" />
+    <Compile Include="CommandBuffer\AmtGraphicsBag.cs" />
     <Compile Include="CommandBuffer\AmtGraphicsEncoder.cs" />
     <Compile Include="CommandBuffer\AmtGraphicsGrid.cs" />
     <Compile Include="CommandBuffer\AmtGraphicsRecording.cs" />
     <Compile Include="CommandBuffer\AmtIncrementalChunkifier.cs" />
+    <Compile Include="CommandBuffer\AmtPipelineStencilWriteInfo.cs" />
+    <Compile Include="CommandBuffer\AmtQueueRenderer.cs" />
+    <Compile Include="CommandBuffer\AmtQueueSubmission.cs" />
     <Compile Include="CommandBuffer\AmtRecordInstruction.cs" />
+    <Compile Include="CommandBuffer\AmtStateRenderer.cs" />
     <Compile Include="CommandBuffer\IAmtBlitEncoder.cs" />
     <Compile Include="CommandBuffer\IAmtComputeEncoder.cs" />
     <Compile Include="CommandBuffer\IAmtEncoderContextSorter.cs" />
     <Compile Include="CommandBuffer\IAmtGraphicsEncoder.cs" />
+    <Compile Include="CommandBuffer\IAmtStateRenderer.cs" />
     <Compile Include="Device\IGLFence.cs" />
     <Compile Include="Entrypoint\IGLFenceEntrypoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

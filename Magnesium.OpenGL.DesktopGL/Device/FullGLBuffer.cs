@@ -17,7 +17,11 @@ namespace Magnesium.OpenGL.DesktopGL
 				return BufferTarget.ArrayBuffer;
 			case GLMemoryBufferType.INDIRECT:
 				return BufferTarget.DrawIndirectBuffer;
-			default:
+            //case GLMemoryBufferType.TRANSFER_SRC:
+            //    return BufferTarget.CopyReadBuffer;
+            //case GLMemoryBufferType.TRANSFER_DST:
+            //    return BufferTarget.CopyWriteBuffer;
+            default:
 				throw new NotSupportedException ();
 			}
 		}

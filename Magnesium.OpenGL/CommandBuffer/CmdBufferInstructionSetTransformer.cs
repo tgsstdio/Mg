@@ -100,13 +100,13 @@ namespace Magnesium.OpenGL
 				(r, i) => r.FrontCompareMasks.At (i),
 				(gp) => gp.Front.CompareMask);
 
-			FrontWriteMasks = new DynamicStateItemStore<int> (
+			FrontWriteMasks = new DynamicStateItemStore<uint> (
 				GLGraphicsPipelineDynamicStateFlagBits.STENCIL_WRITE_MASK,
 				(d) => d.FrontWriteMask,
 				(r, i) => r.FrontWriteMasks.At (i),
 				(gp) => gp.Front.WriteMask);
 
-			BackWriteMasks = new DynamicStateItemStore<int> (
+			BackWriteMasks = new DynamicStateItemStore<uint> (
 				GLGraphicsPipelineDynamicStateFlagBits.STENCIL_WRITE_MASK,
 				(d) => d.BackWriteMask,
 				(r, i) => r.BackWriteMasks.At (i),
@@ -166,12 +166,12 @@ namespace Magnesium.OpenGL
 			private set;
 		}
 
-		public DynamicStateItemStore<int> FrontWriteMasks {
+		public DynamicStateItemStore<uint> FrontWriteMasks {
 			get;
 			private set;
 		}
 
-		public DynamicStateItemStore<int> BackWriteMasks {
+		public DynamicStateItemStore<uint> BackWriteMasks {
 			get;
 			private set;
 		}

@@ -16,21 +16,29 @@ namespace Magnesium.OpenGL
         // NOT SURE IF THIS IS NEEDED IN HERE
         private List<GLCmdDrawCommand> mIncompleteDraws = new List<GLCmdDrawCommand>();
         public CmdBufferInstructionSet InstructionSet { get; private set; }
+        private AmtGraphicsBag mBag;
 
         public AmtGraphicsEncoder
         (
             IAmtEncoderContextSorter instructions, 
-            IGLCmdBufferRepository repository
+            IGLCmdBufferRepository repository,
+            AmtGraphicsBag bag
         )
         {
             mInstructions = instructions;
             mRepository = repository;
+            mBag = bag;
         }
 
         public AmtGraphicsGrid AsGrid()
         {
-            throw new NotImplementedException();
+            return new AmtGraphicsGrid
+            {
+                Renderpasses = mBag.Renderpasses.ToArray(),
+            };
         }
+
+        #region BeginRenderPass methods
 
         private GLCmdRenderPassCommand mIncompleteRenderPass;
         public void BeginRenderPass(MgRenderPassBeginInfo pRenderPassBegin, MgSubpassContents contents)
@@ -39,7 +47,117 @@ namespace Magnesium.OpenGL
             mIncompleteRenderPass.Origin = pRenderPassBegin.RenderPass;
             mIncompleteRenderPass.ClearValues = pRenderPassBegin.ClearValues;
             mIncompleteRenderPass.Contents = contents;
+
+            var beginInfo =  InitialiseRenderpassInfo(pRenderPassBegin);
+
+            var nextIndex = mBag.Renderpasses.Push(beginInfo);
+
+            var instruction = new AmtEncodingInstruction
+            {
+                Category = AmtEncoderCategory.Graphics,
+                Index = nextIndex,
+                Operation = CmdBeginRenderPass,
+            };
+
+            mInstructions.Add(instruction);
         }
+
+        private static void CmdBeginRenderPass(AmtCommandRecording arg1, uint arg2)
+        {
+            var context = arg1.Graphics;
+            Debug.Assert(context != null);
+            var grid = context.Grid;
+            Debug.Assert(grid != null);
+            var passInfo = grid.Renderpasses[arg2];
+            var renderer = context.StateRenderer;
+            Debug.Assert(renderer != null);
+            renderer.BeginRenderpass(passInfo);
+        }
+
+        AmtBeginRenderpassRecord InitialiseRenderpassInfo(MgRenderPassBeginInfo pass)
+        {
+            Debug.Assert(pass != null);
+
+            var glPass = (IGLRenderPass)pass.RenderPass;
+
+            var noOfAttachments = glPass.AttachmentFormats == null ? 0 : glPass.AttachmentFormats.Length;
+            var noOfClearValues = pass.ClearValues == null ? 0 : pass.ClearValues.Length;
+
+            var finalLength = Math.Min(noOfAttachments, noOfClearValues);
+
+            var finalValues = new List<GLClearValueArrayItem>();
+
+            GLQueueClearBufferMask combinedMask = 0;
+            for (var i = 0; i < finalLength; ++i)
+            {
+                var attachment = glPass.AttachmentFormats[i];
+
+                var clearValue = new GLClearValueArrayItem
+                {
+                    Attachment = attachment,
+                    Value = pass.ClearValues[i]
+                };
+
+                finalValues.Add(clearValue);
+
+                switch (attachment.AttachmentType)
+                {
+                    case GLClearAttachmentType.COLOR_INT:
+                        clearValue.Color = ExtractColorI(attachment, pass.ClearValues[i].Color.Int32);
+                        combinedMask |= GLQueueClearBufferMask.Color;
+                        break;
+                    case GLClearAttachmentType.COLOR_UINT:
+                        clearValue.Color = ExtractColorUi(attachment, pass.ClearValues[i].Color.Uint32);
+                        combinedMask |= GLQueueClearBufferMask.Color;
+                        break;
+                    case GLClearAttachmentType.COLOR_FLOAT:
+                        clearValue.Color = pass.ClearValues[i].Color.Float32;
+                        combinedMask |= GLQueueClearBufferMask.Color;
+                        break;
+                    case GLClearAttachmentType.DEPTH_STENCIL:
+                        clearValue.Value = pass.ClearValues[i];
+                        combinedMask |= GLQueueClearBufferMask.Depth;
+                        break;
+                    default:
+                        break;
+                }
+
+            }
+
+            return new AmtBeginRenderpassRecord
+            {
+                Bitmask = combinedMask,
+                ClearState = new GLCmdClearValuesParameter
+                {
+                    Attachments = finalValues.ToArray(),
+                }
+            };
+        }
+
+        public static MgColor4f ExtractColorUi(GLClearAttachmentInfo attachment, MgVec4Ui initialValue)
+        {
+            return new MgColor4f
+            {
+                R = Math.Min((float)initialValue.X, attachment.Divisor) / attachment.Divisor,
+                G = Math.Min((float)initialValue.Y, attachment.Divisor) / attachment.Divisor,
+                B = Math.Min((float)initialValue.Z, attachment.Divisor) / attachment.Divisor,
+                A = Math.Min((float)initialValue.W, attachment.Divisor) / attachment.Divisor,
+            };
+        }
+
+        public static MgColor4f ExtractColorI(GLClearAttachmentInfo attachment, MgVec4i initialValue)
+        {
+            return new MgColor4f
+            {
+                R = Math.Max(Math.Min((float)initialValue.X, attachment.Divisor), -attachment.Divisor) / attachment.Divisor,
+                G = Math.Max(Math.Min((float)initialValue.Y, attachment.Divisor), -attachment.Divisor) / attachment.Divisor,
+                B = Math.Max(Math.Min((float)initialValue.Z, attachment.Divisor), -attachment.Divisor) / attachment.Divisor,
+                A = Math.Max(Math.Min((float)initialValue.W, attachment.Divisor), -attachment.Divisor) / attachment.Divisor,
+            };
+        }
+
+
+        #endregion
 
         public void BindDescriptorSets(IMgPipelineLayout layout, uint firstSet, uint descriptorSetCount, IMgDescriptorSet[] pDescriptorSets, uint[] pDynamicOffsets)
         {
@@ -112,13 +230,11 @@ namespace Magnesium.OpenGL
             Debug.Assert(pipeline != null);
 
             var glPipeline = (IGLGraphicsPipeline)pipeline;
-            mRepository.PushGraphicsPipeline(glPipeline);
-            // TODO: TRANSFORM into more GL specific code
 
             mCurrentPipeline = glPipeline;
-            // TODO : ONLY if pipeline ATTACHED and dynamic state has been set
 
-            var nextIndex = (uint)mRepository.GraphicsPipelines.LastIndex().Value;
+            var pipelineInfo = InitialisePipelineInfo(); 
+            var nextIndex = mBag.Pipelines.Push(pipelineInfo);
 
             var instruction = new AmtEncodingInstruction
             {
@@ -130,9 +246,178 @@ namespace Magnesium.OpenGL
             mInstructions.Add(instruction);
         }
 
+        private AmtBoundPipelineRecordInfo InitialisePipelineInfo()
+        {
+            // ONLY if pipeline ATTACHED and dynamic state has been set
+            var frontReference = mCurrentPipeline.Front.Reference;
+            var backReference = mCurrentPipeline.Back.Reference;
+
+            if (
+                (mCurrentPipeline.DynamicsStates & GLGraphicsPipelineDynamicStateFlagBits.STENCIL_REFERENCE)
+                    == GLGraphicsPipelineDynamicStateFlagBits.STENCIL_REFERENCE
+               )
+            {
+                frontReference = mFrontReference;
+                backReference = mBackReference;
+            }
+
+            var backCompare = mCurrentPipeline.Back.CompareMask;
+            var frontCompare = mCurrentPipeline.Front.CompareMask;
+
+            if (
+                (mCurrentPipeline.DynamicsStates & GLGraphicsPipelineDynamicStateFlagBits.STENCIL_COMPARE_MASK)
+                    == GLGraphicsPipelineDynamicStateFlagBits.STENCIL_COMPARE_MASK
+               )
+            {
+                backCompare = mBackCompare;
+                frontCompare = mFrontCompare;
+            }
+
+            var backWriteMask = mCurrentPipeline.Back.WriteMask;
+            var frontWriteMask = mCurrentPipeline.Front.WriteMask;
+
+            if (
+                (mCurrentPipeline.DynamicsStates & GLGraphicsPipelineDynamicStateFlagBits.STENCIL_COMPARE_MASK)
+                    == GLGraphicsPipelineDynamicStateFlagBits.STENCIL_COMPARE_MASK
+               )
+            {
+                backWriteMask = mBackWrite;
+                frontWriteMask = mFrontWrite;
+            }
+
+            return new AmtBoundPipelineRecordInfo
+            {
+                Pipeline = mCurrentPipeline,
+                LineWidth = FetchLineWidth(),
+                BlendConstants = FetchBlendConstants(),
+                BackStencilInfo = new AmtGLStencilFunctionInfo
+                {
+                    ReferenceMask = backReference,
+                    CompareMask = backCompare,
+                    WriteMask = backWriteMask,
+                    StencilFunction = mCurrentPipeline.StencilState.BackStencilFunction,
+                },
+                FrontStencilInfo = new AmtGLStencilFunctionInfo
+                {
+                    ReferenceMask = frontReference,
+                    CompareMask = frontCompare,
+                    WriteMask = backWriteMask,
+                    StencilFunction = mCurrentPipeline.StencilState.FrontStencilFunction,
+                },
+                DepthBias = FetchDepthBias(),
+                DepthBounds = FetchDepthBounds(),
+                Scissors = FetchScissors(),
+                Viewports = FetchViewports(),
+            };
+        }
+
+        private GLCmdScissorParameter FetchScissors()
+        {
+            var scissors = mCurrentPipeline.Scissors;
+            if (
+                (mCurrentPipeline.DynamicsStates & GLGraphicsPipelineDynamicStateFlagBits.SCISSOR)
+                    == GLGraphicsPipelineDynamicStateFlagBits.SCISSOR
+            )
+            {
+                // TODO : init GL scissors parameter
+            }
+
+            return scissors;
+        }
+
+        private GLCmdViewportParameter FetchViewports()
+        {
+            var viewports = mCurrentPipeline.Viewports;
+            if (
+                (mCurrentPipeline.DynamicsStates & GLGraphicsPipelineDynamicStateFlagBits.VIEWPORT)
+                    == GLGraphicsPipelineDynamicStateFlagBits.VIEWPORT
+            )
+            {
+                // TODO : init GL viewports parameter
+            }
+
+            return viewports;
+        }
+
+        private GLCmdDepthBoundsParameter FetchDepthBounds()
+        {
+            var depthBounds = new GLCmdDepthBoundsParameter
+            {
+                MinDepthBounds = mCurrentPipeline.MinDepthBounds,
+                MaxDepthBounds = mCurrentPipeline.MaxDepthBounds,
+            };
+
+            if (
+                    (mCurrentPipeline.DynamicsStates & GLGraphicsPipelineDynamicStateFlagBits.DEPTH_BOUNDS)
+                        == GLGraphicsPipelineDynamicStateFlagBits.DEPTH_BOUNDS
+            )
+            {
+                depthBounds.MinDepthBounds = mMinDepthBounds;
+                depthBounds.MaxDepthBounds = mMaxDepthBounds;
+            }
+
+            return depthBounds;
+        }
+
+        private GLCmdDepthBiasParameter FetchDepthBias()
+        {
+            var depthBias = new GLCmdDepthBiasParameter
+            {
+                DepthBiasClamp = mCurrentPipeline.DepthBiasClamp,
+                DepthBiasConstantFactor = mCurrentPipeline.DepthBiasConstantFactor,
+                DepthBiasSlopeFactor = mCurrentPipeline.DepthBiasSlopeFactor,
+            };
+
+            if (
+                    (mCurrentPipeline.DynamicsStates & GLGraphicsPipelineDynamicStateFlagBits.DEPTH_BIAS)
+                        == GLGraphicsPipelineDynamicStateFlagBits.DEPTH_BIAS
+                   )
+            {
+                depthBias.DepthBiasClamp = mDepthBiasClamp;
+                depthBias.DepthBiasConstantFactor = mDepthBiasConstantFactor;
+                depthBias.DepthBiasSlopeFactor = mDepthBiasSlopeFactor;
+            }
+
+            return depthBias;
+        }
+
+        private MgColor4f FetchBlendConstants()
+        {
+            var blendConstants = mCurrentPipeline.BlendConstants;
+            if (
+                    (mCurrentPipeline.DynamicsStates & GLGraphicsPipelineDynamicStateFlagBits.BLEND_CONSTANTS)
+                        == GLGraphicsPipelineDynamicStateFlagBits.BLEND_CONSTANTS
+                   )
+            {
+                blendConstants = mBlendConstants;
+            }
+
+            return blendConstants;
+        }
+
+        private float FetchLineWidth()
+        {
+            var lineWidth = mCurrentPipeline.LineWidth;
+            if (
+                (mCurrentPipeline.DynamicsStates & GLGraphicsPipelineDynamicStateFlagBits.LINE_WIDTH)
+                    == GLGraphicsPipelineDynamicStateFlagBits.LINE_WIDTH
+               )
+            {
+                lineWidth = mLineWidth;
+            }
+            return lineWidth;
+        }
+
         private void CmdBindPipeline(AmtCommandRecording arg1, uint arg2)
         {
-            throw new NotImplementedException();
+            var context = arg1.Graphics;
+            Debug.Assert(context != null);
+            var grid = context.Grid;
+            Debug.Assert(grid != null);
+            var pipelineInfo = grid.Pipelines[arg2];
+            var renderer = context.StateRenderer;
+            Debug.Assert(renderer != null);
+            renderer.BindPipeline(pipelineInfo);
         }
 
         #endregion
@@ -647,8 +932,8 @@ namespace Magnesium.OpenGL
 
         #region SetStencilCompareMask methods
 
-        private uint mBackCompare;
-        private uint mFrontCompare;
+        private int mBackCompare;
+        private int mFrontCompare;
 
         public void SetStencilCompareMask(MgStencilFaceFlagBits faceMask, uint compareMask)
         {
@@ -657,11 +942,17 @@ namespace Magnesium.OpenGL
 
             if (backChange)
             {
-                mBackCompare = compareMask;
+                unchecked
+                {
+                    mBackCompare = (int) compareMask;
+                }
             }
             if (frontChange)
             {
-                mFrontCompare = compareMask;
+                unchecked
+                {
+                    mFrontCompare = (int) compareMask;
+                }
             }
 
             // ONLY if 
@@ -683,33 +974,11 @@ namespace Magnesium.OpenGL
                 if (backChange)
                 {
                     mRepository.SetCompareMask(MgStencilFaceFlagBits.BACK_BIT, compareMask);
-
-                    var nextIndex = (uint)mRepository.BackCompareMasks.LastIndex().Value;
-
-                    var instruction = new AmtEncodingInstruction
-                    {
-                        Category = AmtEncoderCategory.Graphics,
-                        Index = nextIndex,
-                        Operation = CmdSetStencilCompareMask
-                    };
-
-                    mInstructions.Add(instruction);
                 }
 
                 if (frontChange)
                 {
-                    mRepository.SetStencilReference(MgStencilFaceFlagBits.FRONT_BIT, compareMask);
-
-                    var nextIndex = (uint)mRepository.FrontCompareMasks.LastIndex().Value;
-
-                    var instruction = new AmtEncodingInstruction
-                    {
-                        Category = AmtEncoderCategory.Graphics,
-                        Index = nextIndex,
-                        Operation = CmdSetStencilCompareMask
-                    };
-
-                    mInstructions.Add(instruction);
+                    mRepository.SetCompareMask(MgStencilFaceFlagBits.FRONT_BIT, compareMask);
                 }
             }
         }
@@ -723,8 +992,8 @@ namespace Magnesium.OpenGL
 
         #region SetStencilReference methods
 
-        private uint mBackReference;
-        private uint mFrontReference;
+        private int mBackReference;
+        private int mFrontReference;
 
         public void SetStencilReference(MgStencilFaceFlagBits faceMask, uint reference)
         {
@@ -733,11 +1002,17 @@ namespace Magnesium.OpenGL
 
             if (backChange)
             {
-                mBackReference = reference;
+                unchecked
+                {
+                    mBackReference = (int) reference;
+                }
             }
             if (frontChange)
             {
-                mFrontReference = reference;
+                unchecked
+                {
+                    mFrontReference = (int) reference;
+                }
             }
 
             // ONLY if 
@@ -759,40 +1034,13 @@ namespace Magnesium.OpenGL
                 if (backChange)
                 {
                     mRepository.SetStencilReference(MgStencilFaceFlagBits.BACK_BIT, reference);
-
-                    var nextIndex = (uint)mRepository.BackReferences.LastIndex().Value;
-
-                    var instruction = new AmtEncodingInstruction
-                    {
-                        Category = AmtEncoderCategory.Graphics,
-                        Index = nextIndex,
-                        Operation = CmdSetStencilReference
-                    };
-
-                    mInstructions.Add(instruction);
                 }
 
                 if (frontChange)
                 {
                     mRepository.SetStencilReference(MgStencilFaceFlagBits.FRONT_BIT, reference);
-
-                    var nextIndex = (uint)mRepository.FrontReferences.LastIndex().Value;
-
-                    var instruction = new AmtEncodingInstruction
-                    {
-                        Category = AmtEncoderCategory.Graphics,
-                        Index = nextIndex,
-                        Operation = CmdSetStencilReference
-                    };
-
-                    mInstructions.Add(instruction);
                 }
             }
-        }
-
-        private void CmdSetStencilReference(AmtCommandRecording arg1, uint arg2)
-        {
-            throw new NotImplementedException();
         }
 
         #endregion
@@ -809,11 +1057,11 @@ namespace Magnesium.OpenGL
 
             if (backChange)
             {
-                mBackWrite = writeMask;
+                mBackWrite = writeMask;                
             }
             if (frontChange)
             {
-                mFrontWrite = writeMask;
+               mFrontWrite = writeMask;                
             }
 
             // ONLY if 
@@ -832,17 +1080,40 @@ namespace Magnesium.OpenGL
                 )
             )
             {
-                if (backChange)
+                if (frontChange && backChange)
                 {
-                    mRepository.SetWriteMask(MgStencilFaceFlagBits.BACK_BIT, writeMask);
+                    var stencilWrite = new AmtPipelineStencilWriteInfo
+                    {
+                        Face = MgStencilFaceFlagBits.FRONT_AND_BACK,
+                        WriteMask = writeMask,
+                    };
 
-                    var nextIndex = (uint)mRepository.BackWriteMasks.LastIndex().Value;
+                    var nextIndex = mBag.StencilWrites.Push(stencilWrite);
 
                     var instruction = new AmtEncodingInstruction
                     {
                         Category = AmtEncoderCategory.Graphics,
                         Index = nextIndex,
-                        Operation = CmdSetStencilWriteMask
+                        Operation = CmdSetStencilWrite
+                    };
+
+                    mInstructions.Add(instruction);
+                }
+                else if (backChange)
+                {
+                    var stencilWrite = new AmtPipelineStencilWriteInfo
+                    {
+                        Face = MgStencilFaceFlagBits.BACK_BIT,
+                        WriteMask = writeMask,
+                    };
+
+                    var nextIndex = mBag.StencilWrites.Push(stencilWrite);
+
+                    var instruction = new AmtEncodingInstruction
+                    {
+                        Category = AmtEncoderCategory.Graphics,
+                        Index = nextIndex,
+                        Operation = CmdSetStencilWrite
                     };
 
                     mInstructions.Add(instruction);
@@ -850,15 +1121,19 @@ namespace Magnesium.OpenGL
 
                 if (frontChange)
                 {
-                    mRepository.SetWriteMask(MgStencilFaceFlagBits.FRONT_BIT, writeMask);
+                    var stencilWrite = new AmtPipelineStencilWriteInfo
+                    {
+                        Face = MgStencilFaceFlagBits.FRONT_BIT,
+                        WriteMask = writeMask,
+                    };
 
-                    var nextIndex = (uint)mRepository.FrontWriteMasks.LastIndex().Value;
+                    var nextIndex = mBag.StencilWrites.Push(stencilWrite);
 
                     var instruction = new AmtEncodingInstruction
                     {
                         Category = AmtEncoderCategory.Graphics,
                         Index = nextIndex,
-                        Operation = CmdSetStencilWriteMask
+                        Operation = CmdSetStencilWrite
                     };
 
                     mInstructions.Add(instruction);
@@ -866,9 +1141,16 @@ namespace Magnesium.OpenGL
             }
         }
 
-        private void CmdSetStencilWriteMask(AmtCommandRecording arg1, uint arg2)
+        private void CmdSetStencilWrite(AmtCommandRecording arg1, uint arg2)
         {
-            throw new NotImplementedException();
+            var context = arg1.Graphics;
+            Debug.Assert(context != null);
+            var grid = context.Grid;
+            Debug.Assert(grid != null);
+            var writeInfo = grid.StencilWrites[arg2];
+            var renderer = context.StateRenderer;
+            Debug.Assert(renderer != null);
+            renderer.SetStencilWriteMask(writeInfo);
         }
 
         #endregion
