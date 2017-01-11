@@ -9,25 +9,21 @@ namespace Magnesium.OpenGL
 {
     public class AmtGraphicsEncoder : IAmtGraphicsEncoder
     {
-        private readonly IGLCmdBufferRepository mRepository;
         private readonly IAmtEncoderContextSorter mInstructions;
         private readonly IGLCmdVBOEntrypoint mVBO;
 
         // NOT SURE IF THIS IS NEEDED IN HERE
-        private List<GLCmdDrawCommand> mIncompleteDraws = new List<GLCmdDrawCommand>();
         public CmdBufferInstructionSet InstructionSet { get; private set; }
         private AmtGraphicsBag mBag;
 
         public AmtGraphicsEncoder
         (
-            IAmtEncoderContextSorter instructions, 
-            IGLCmdBufferRepository repository,
+            IAmtEncoderContextSorter instructions,
             AmtGraphicsBag bag,
             IGLCmdVBOEntrypoint vbo
         )
         {
             mInstructions = instructions;
-            mRepository = repository;
             mBag = bag;
             mVBO = vbo;
         }
@@ -44,7 +40,13 @@ namespace Magnesium.OpenGL
                 DepthBias = mBag.DepthBias.ToArray(),
                 DepthBounds = mBag.DepthBounds.ToArray(),
                 LineWidths = mBag.LineWidths.ToArray(),
-                Scissors = mBag.Scissors.ToArray(),                
+                Scissors = mBag.Scissors.ToArray(),             
+                DrawIndexedIndirects = mBag.DrawIndexedIndirects.ToArray(),
+                DrawIndexeds = mBag.DrawIndexeds.ToArray(),
+                DrawIndirects = mBag.DrawIndirects.ToArray(),
+                Draws = mBag.Draws.ToArray(),
+                StencilFunctions = mBag.StencilFunctions.ToArray(),
+                VAOs = mBag.VAOs.ToArray(),   
             };
         }
 
@@ -179,17 +181,17 @@ namespace Magnesium.OpenGL
             parameter.DynamicOffsets = pDynamicOffsets;
             parameter.DescriptorSets = pDescriptorSets;
 
-            mRepository.DescriptorSets.Add(parameter);
-            var nextIndex = (uint) mRepository.DescriptorSets.LastIndex().Value;
+            //mRepository.DescriptorSets.Add(parameter);
+            //var nextIndex = (uint) mRepository.DescriptorSets.LastIndex().Value;
 
-            var instruction = new AmtEncodingInstruction
-            {
-                Category = AmtEncoderCategory.Graphics,
-                Index = nextIndex,
-                Operation = CmdBindDescriptorSets,
-            };
+            //var instruction = new AmtEncodingInstruction
+            //{
+            //    Category = AmtEncoderCategory.Graphics,
+            //    Index = nextIndex,
+            //    Operation = CmdBindDescriptorSets,
+            //};
 
-            mInstructions.Add(instruction);
+            //mInstructions.Add(instruction);
         }
 
         private static void CmdBindDescriptorSets(AmtCommandRecording arg1, uint arg2)
@@ -420,9 +422,6 @@ namespace Magnesium.OpenGL
 
             mPastViewports = null;
 
-            mRepository.Clear();
-            mIncompleteDraws.Clear();
-
             InvalidateBackStencil();
             InvalidateFrontStencil();
 
@@ -436,11 +435,10 @@ namespace Magnesium.OpenGL
             }
         }
 
-        bool StoreDrawCommand(GLCmdDrawCommand command, out uint nextIndex)
+        bool StoreDrawCommand()
         {
             if (mCurrentPipeline == null)
             {
-                nextIndex = 0;
                 return false;
             }            
             
@@ -450,7 +448,7 @@ namespace Magnesium.OpenGL
             }
 
             // if vbo is missing, generate new one
-            ExtractVertexBuffer();
+            PushVertexArrayIfRequired();
 
             // if front stencil is missing, generate new one
             PushFrontStencilIfRequired();
@@ -458,7 +456,6 @@ namespace Magnesium.OpenGL
             // if back stencil is missing, generate new one
             PushBackStencilIfRequired();
 
-            nextIndex = 0;
             return true;            
         }
 
@@ -550,7 +547,7 @@ namespace Magnesium.OpenGL
 
         // NEED TO MERGE 
         private GLCmdVertexBufferObject mCurrentVertexArray;
-        private void ExtractVertexBuffer()
+        private void PushVertexArrayIfRequired()
         {
             // create new vbo
             if (mCurrentVertexArray == null)
@@ -701,16 +698,21 @@ namespace Magnesium.OpenGL
             // primcount => instanceCount Specifies the number of instances of the indexed geometry that should be drawn.
             // baseinstance => firstInstance Specifies the base instance for use in fetching instanced vertex attributes.
 
-            var command = new GLCmdDrawCommand();
-            command.Draw = new GLCmdInternalDraw();
-            command.Draw.vertexCount = vertexCount;
-            command.Draw.instanceCount = instanceCount;
-            command.Draw.firstVertex = firstVertex;
-            command.Draw.firstInstance = firstInstance;
 
-            uint nextIndex;
-            if (StoreDrawCommand(command, out nextIndex))
+            if (StoreDrawCommand())
             {
+                Debug.Assert(mCurrentPipeline != null);
+                var draw = new GLCmdInternalDraw
+                {                    
+                    Topology = mCurrentPipeline.Topology,
+                    VertexCount = vertexCount,
+                    InstanceCount = instanceCount,
+                    FirstVertex = firstVertex,
+                    FirstInstance = firstInstance,
+                };
+
+                var nextIndex = mBag.Draws.Push(draw);
+
                 mInstructions.Add(new AmtEncodingInstruction
                 {
                     Category = AmtEncoderCategory.Graphics,
@@ -722,7 +724,14 @@ namespace Magnesium.OpenGL
 
         private static void CmdDraw(AmtCommandRecording arg1, uint arg2)
         {
-            throw new NotImplementedException();
+            var context = arg1.Graphics;
+            Debug.Assert(context != null);
+            var grid = context.Grid;
+            Debug.Assert(grid != null);
+            var draw = grid.Draws[arg2];
+            var renderer = context.StateRenderer;
+            Debug.Assert(renderer != null);
+            renderer.Draw(draw);
         }
 
         #endregion
@@ -739,17 +748,24 @@ namespace Magnesium.OpenGL
             // TODO : need to handle negetive offset
             //mDrawCommands.Add (mIncompleteDrawCommand);
 
-            var command = new GLCmdDrawCommand();
-            command.DrawIndexed = new GLCmdInternalDrawIndexed();
-            command.DrawIndexed.indexCount = indexCount;
-            command.DrawIndexed.instanceCount = instanceCount;
-            command.DrawIndexed.firstIndex = firstIndex;
-            command.DrawIndexed.vertexOffset = vertexOffset;
-            command.DrawIndexed.firstInstance = firstInstance;
-
-            uint nextIndex;
-            if (StoreDrawCommand(command, out nextIndex))
+            if (StoreDrawCommand())
             {
+                Debug.Assert(mCurrentPipeline != null);
+                Debug.Assert(mBoundIndexBuffer != null);
+
+                var draw = new GLCmdInternalDrawIndexed
+                {
+                    Topology = mCurrentPipeline.Topology,
+                    IndexType = mBoundIndexBuffer.indexType,
+                    IndexCount = indexCount,
+                    InstanceCount = instanceCount,
+                    FirstIndex = firstIndex,
+                    VertexOffset = vertexOffset,
+                    FirstInstance = firstInstance,
+                };
+
+                var nextIndex = mBag.DrawIndexeds.Push(draw);
+
                 mInstructions.Add(new AmtEncodingInstruction
                 {
                     Category = AmtEncoderCategory.Graphics,
@@ -761,7 +777,14 @@ namespace Magnesium.OpenGL
 
         private static void CmdDrawIndexed(AmtCommandRecording arg1, uint arg2)
         {
-            throw new NotImplementedException();
+            var context = arg1.Graphics;
+            Debug.Assert(context != null);
+            var grid = context.Grid;
+            Debug.Assert(grid != null);
+            var draw = grid.DrawIndexeds[arg2];
+            var renderer = context.StateRenderer;
+            Debug.Assert(renderer != null);
+            renderer.DrawIndexed(draw);
         }
 
         #endregion
@@ -798,16 +821,34 @@ namespace Magnesium.OpenGL
             //				uint  baseInstance;
             //			} DrawElementsIndirectCommand;
             //mDrawCommands.Add (mIncompleteDrawCommand);
-            var command = new GLCmdDrawCommand();
-            command.DrawIndexedIndirect = new GLCmdInternalDrawIndexedIndirect();
-            command.DrawIndexedIndirect.buffer = buffer;
-            command.DrawIndexedIndirect.offset = offset;
-            command.DrawIndexedIndirect.drawCount = drawCount;
-            command.DrawIndexedIndirect.stride = stride;
 
-            uint nextIndex;
-            if (StoreDrawCommand(command, out nextIndex))
+            if (offset >= (ulong)int.MaxValue)
             {
+                throw new InvalidOperationException();
+            }
+
+            if (StoreDrawCommand())
+            {
+                Debug.Assert(mCurrentPipeline != null);
+                Debug.Assert(mBoundIndexBuffer != null);
+
+                var glBuffer = ((IGLBuffer)buffer);
+
+                Debug.Assert(glBuffer != null);
+
+                var indirect = IntPtr.Add(glBuffer.Source, (int)offset);
+
+                var draw = new GLCmdInternalDrawIndexedIndirect
+                {
+                    Indirect = indirect,
+                    Topology = mCurrentPipeline.Topology,
+                    IndexType = mBoundIndexBuffer.indexType,
+                    DrawCount = drawCount,
+                    Stride = stride,
+                };
+
+                var nextIndex = mBag.DrawIndexedIndirects.Push(draw);
+
                 mInstructions.Add(new AmtEncodingInstruction
                 {
                     Category = AmtEncoderCategory.Graphics,
@@ -819,7 +860,14 @@ namespace Magnesium.OpenGL
 
         private void CmdDrawIndexedIndirect(AmtCommandRecording arg1, uint arg2)
         {
-            throw new NotImplementedException();
+            var context = arg1.Graphics;
+            Debug.Assert(context != null);
+            var grid = context.Grid;
+            Debug.Assert(grid != null);
+            var draw = grid.DrawIndexedIndirects[arg2];
+            var renderer = context.StateRenderer;
+            Debug.Assert(renderer != null);
+            renderer.DrawIndexedIndirect(draw);
         }
 
         #endregion
@@ -848,18 +896,33 @@ namespace Magnesium.OpenGL
             //				uint  first;
             //				uint  baseInstance;
             //			} DrawArraysIndirectCommand;
-            //mDrawCommands.Add (mIncompleteDrawCommand);
+            //mDrawCommands.Add (mIncompleteDrawCommand);  
 
-            var command = new GLCmdDrawCommand();
-            command.DrawIndirect = new GLCmdInternalDrawIndirect();
-            command.DrawIndirect.buffer = buffer;
-            command.DrawIndirect.offset = offset;
-            command.DrawIndirect.drawCount = drawCount;
-            command.DrawIndirect.stride = stride;
-
-            uint nextIndex;
-            if (StoreDrawCommand(command, out nextIndex))
+            if (offset >= (ulong)int.MaxValue)
             {
+                throw new InvalidOperationException();
+            }
+
+            if (StoreDrawCommand())
+            {
+                Debug.Assert(mCurrentPipeline != null);
+
+                var glBuffer = ((IGLBuffer)buffer);
+
+                Debug.Assert(glBuffer != null);
+
+                var indirect = IntPtr.Add(glBuffer.Source, (int) offset);
+
+                var draw = new GLCmdInternalDrawIndirect
+                {
+                    Topology = mCurrentPipeline.Topology,
+                    Indirect = indirect,
+                    DrawCount = drawCount,
+                    Stride = stride,
+                 };
+
+                var nextIndex = mBag.DrawIndirects.Push(draw);
+
                 mInstructions.Add(new AmtEncodingInstruction
                 {
                     Category = AmtEncoderCategory.Graphics,
@@ -871,7 +934,14 @@ namespace Magnesium.OpenGL
 
         private static void CmdDrawIndirect(AmtCommandRecording arg1, uint arg2)
         {
-            throw new NotImplementedException();
+            var context = arg1.Graphics;
+            Debug.Assert(context != null);
+            var grid = context.Grid;
+            Debug.Assert(grid != null);
+            var draw = grid.DrawIndirects[arg2];
+            var renderer = context.StateRenderer;
+            Debug.Assert(renderer != null);
+            renderer.DrawIndirect(draw);
         }
 
         #endregion
@@ -883,7 +953,7 @@ namespace Magnesium.OpenGL
 
         public void NextSubpass(MgSubpassContents contents)
         {
-            throw new NotImplementedException();
+      
         }
 
         #region SetBlendConstants methods
@@ -1127,8 +1197,6 @@ namespace Magnesium.OpenGL
                 )
             )
             {
-                mRepository.PushScissors(firstScissor, pScissors);
-
                 var nextIndex = mBag.Scissors.Push(mPastScissors);
 
                 var instruction = new AmtEncodingInstruction

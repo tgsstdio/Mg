@@ -1,24 +1,20 @@
 
+using System;
+
 namespace Magnesium.OpenGL
 {
 	public class GLCmdInternalDrawIndexedIndirect
 	{
-		public uint stride {
+        public IntPtr Indirect { get; set; }
+        public MgPrimitiveTopology Topology { get; set; }
+        public MgIndexType IndexType { get; set; }
+
+		public uint Stride {
 			get;
 			set;
 		}
 
-		public uint drawCount {
-			get;
-			set;
-		}
-
-		public ulong offset {
-			get;
-			set;
-		}
-
-		public IMgBuffer buffer {
+		public uint DrawCount {
 			get;
 			set;
 		}

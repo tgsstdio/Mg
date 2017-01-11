@@ -213,10 +213,10 @@ namespace Magnesium.OpenGL
 
 			var command = new GLCmdDrawCommand ();
 			command.Draw = new GLCmdInternalDraw ();
-			command.Draw.vertexCount = vertexCount;
-			command.Draw.instanceCount = instanceCount;
-			command.Draw.firstVertex = firstVertex;
-			command.Draw.firstInstance = firstInstance;
+			command.Draw.VertexCount = vertexCount;
+			command.Draw.InstanceCount = instanceCount;
+			command.Draw.FirstVertex = firstVertex;
+			command.Draw.FirstInstance = firstInstance;
 
 			StoreDrawCommand(command);
 		}
@@ -233,11 +233,11 @@ namespace Magnesium.OpenGL
 
 			var command = new GLCmdDrawCommand ();
 			command.DrawIndexed = new GLCmdInternalDrawIndexed ();
-			command.DrawIndexed.indexCount = indexCount;
-			command.DrawIndexed.instanceCount = instanceCount;
-			command.DrawIndexed.firstIndex = firstIndex;
-			command.DrawIndexed.vertexOffset = vertexOffset;
-			command.DrawIndexed.firstInstance = firstInstance;
+			command.DrawIndexed.IndexCount = indexCount;
+			command.DrawIndexed.InstanceCount = instanceCount;
+			command.DrawIndexed.FirstIndex = firstIndex;
+			command.DrawIndexed.VertexOffset = vertexOffset;
+			command.DrawIndexed.FirstInstance = firstInstance;
 
 			StoreDrawCommand(command);
 		}
@@ -268,8 +268,8 @@ namespace Magnesium.OpenGL
 			command.DrawIndirect = new GLCmdInternalDrawIndirect ();
 			command.DrawIndirect.buffer = buffer;
 			command.DrawIndirect.offset = offset;
-			command.DrawIndirect.drawCount = drawCount;
-			command.DrawIndirect.stride = stride;
+			command.DrawIndirect.DrawCount = drawCount;
+			command.DrawIndirect.Stride = stride;
 
 			StoreDrawCommand(command);
 		}
@@ -306,8 +306,8 @@ namespace Magnesium.OpenGL
 			command.DrawIndexedIndirect = new GLCmdInternalDrawIndexedIndirect();
 			command.DrawIndexedIndirect.buffer = buffer;
 			command.DrawIndexedIndirect.offset = offset;
-			command.DrawIndexedIndirect.drawCount = drawCount;
-			command.DrawIndexedIndirect.stride = stride;
+			command.DrawIndexedIndirect.DrawCount = drawCount;
+			command.DrawIndexedIndirect.Stride = stride;
 
 			StoreDrawCommand(command);
 		}

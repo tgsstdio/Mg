@@ -12,7 +12,11 @@
         public AmtEncoderItemCollection<GLCmdDepthBoundsParameter> DepthBounds { get; internal set; }
         public AmtEncoderItemCollection<MgColor4f> BlendConstants { get; internal set; }
         public AmtEncoderItemCollection<GLCmdVertexBufferObject> VAOs { get; internal set; }
-        public AmtEncoderItemCollection<AmtGLStencilFunctionInfo> StencilFunctions { get; set; }
+        public AmtEncoderItemCollection<AmtGLStencilFunctionInfo> StencilFunctions { get; internal set; }
+        public AmtEncoderItemCollection<GLCmdInternalDraw> Draws { get; internal set; }
+        public AmtEncoderItemCollection<GLCmdInternalDrawIndexed> DrawIndexeds { get; internal set; }
+        public AmtEncoderItemCollection<GLCmdInternalDrawIndirect> DrawIndirects { get; internal set; }
+        public AmtEncoderItemCollection<GLCmdInternalDrawIndexedIndirect> DrawIndexedIndirects { get; internal set; }
 
         public AmtGraphicsBag()
         {
@@ -27,6 +31,10 @@
             BlendConstants = new AmtEncoderItemCollection<MgColor4f>();
             VAOs = new AmtEncoderItemCollection<GLCmdVertexBufferObject>();
             StencilFunctions = new AmtEncoderItemCollection<AmtGLStencilFunctionInfo>();
+            Draws = new AmtEncoderItemCollection<GLCmdInternalDraw>();
+            DrawIndexeds = new AmtEncoderItemCollection<GLCmdInternalDrawIndexed>();
+            DrawIndirects = new AmtEncoderItemCollection<GLCmdInternalDrawIndirect>();
+            DrawIndexedIndirects = new AmtEncoderItemCollection<GLCmdInternalDrawIndexedIndirect>();
         }
 
         public void Clear()
@@ -42,6 +50,10 @@
             BlendConstants.Clear();
             VAOs.Clear();
             StencilFunctions.Clear();
+            Draws.Clear();
+            DrawIndexeds.Clear();
+            DrawIndirects.Clear();
+            DrawIndexedIndirects.Clear();
         }
     }
 }

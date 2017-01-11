@@ -905,8 +905,15 @@ namespace Magnesium.OpenGL
 
 			for (uint i = 0; i < pAllocateInfo.CommandBufferCount; ++i)
 			{
-				// TODO : for now
-				var buffer = new GLCommandBuffer (true, new GLCmdBufferRepository(), mEntrypoint.VBO, mEntrypoint.ImageFormat);
+                // TODO : for now
+                var sorter = new AmtIncrementalChunkifier();
+                var graphics = new AmtGraphicsEncoder(sorter, new AmtGraphicsBag(), mEntrypoint.VBO);
+                var compute = new AmtComputeEncoder();
+                var blit = new AmtBlitEncoder();
+                var encoder = new AmtCommandEncoder(sorter, graphics, compute, blit);
+
+
+				var buffer = new AmtCommandBuffer(true, encoder);
 				cmdPool.Buffers.Add (buffer);
 				pCommandBuffers [i] = buffer;
 			}
@@ -922,7 +929,7 @@ namespace Magnesium.OpenGL
 		{
 			foreach (var item in pCommandBuffers)
 			{
-				var cmdBuf = item as GLCommandBuffer;
+				var cmdBuf = (IGLCommandBuffer) item;
 				cmdBuf.ResetAllData ();
 			}
 		}

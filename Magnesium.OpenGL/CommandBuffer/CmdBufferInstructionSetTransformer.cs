@@ -434,18 +434,18 @@ namespace Magnesium.OpenGL
 
 				var drawCommand = command.DrawIndexedIndirect;
 				item.Buffer = ExtractIndirectBuffer (drawCommand.buffer);
-				item.Count = drawCommand.drawCount;
+				item.Count = drawCommand.DrawCount;
 				item.Offset = drawCommand.offset;
-				item.Stride = drawCommand.stride;
+				item.Stride = drawCommand.Stride;
 			}
 			else if (command.DrawIndirect != null)
 			{
 				item.Command |= GLCommandBufferFlagBits.CmdDrawIndirect;
 				var drawCommand = command.DrawIndirect;
 				item.Buffer = ExtractIndirectBuffer (drawCommand.buffer);
-				item.Count = drawCommand.drawCount;
+				item.Count = drawCommand.DrawCount;
 				item.Offset = drawCommand.offset;
-				item.Stride = drawCommand.stride;
+				item.Stride = drawCommand.Stride;
 			}
 			else if (command.DrawIndexed != null)
 			{
@@ -453,19 +453,19 @@ namespace Magnesium.OpenGL
 				item.Command |=  ExtractIndexType(repo, command);
 
 				var drawCommand = command.DrawIndexed;
-				item.First = drawCommand.firstIndex;
-				item.FirstInstance = drawCommand.firstInstance;
-				item.Count = drawCommand.indexCount;
-				item.VertexOffset = drawCommand.vertexOffset;
-				item.InstanceCount = drawCommand.instanceCount;
+				item.First = drawCommand.FirstIndex;
+				item.FirstInstance = drawCommand.FirstInstance;
+				item.Count = drawCommand.IndexCount;
+				item.VertexOffset = drawCommand.VertexOffset;
+				item.InstanceCount = drawCommand.InstanceCount;
 			}
 			else if (command.Draw != null)
 			{
 				var drawCommand = command.Draw;
-				item.FirstInstance = drawCommand.firstInstance;
-				item.First = drawCommand.firstVertex;
-				item.InstanceCount = drawCommand.instanceCount;
-				item.Count = drawCommand.vertexCount;
+				item.FirstInstance = drawCommand.FirstInstance;
+				item.First = drawCommand.FirstVertex;
+				item.InstanceCount = drawCommand.InstanceCount;
+				item.Count = drawCommand.VertexCount;
 			}
 			else
 			{

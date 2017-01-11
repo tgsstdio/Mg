@@ -806,22 +806,22 @@ namespace Magnesium.OpenGL
 					CheckProgram (instructionSet, drawItem);
 
 					// Draw here 
-					if ((drawItem.Command & GLCommandBufferFlagBits.CmdDrawIndexedIndirect) == GLCommandBufferFlagBits.CmdDrawIndexedIndirect)
-                    {
-                        DrawIndexedIndirect(drawItem);
-                    }
-                    else if ((drawItem.Command & GLCommandBufferFlagBits.CmdDrawIndexed) == GLCommandBufferFlagBits.CmdDrawIndexed)
-                    {
-                        DrawIndexed(drawItem);
-                    }
-                    else if ((drawItem.Command & GLCommandBufferFlagBits.CmdDrawIndirect) == GLCommandBufferFlagBits.CmdDrawIndirect)
-                    {
-                        DrawIndirect(drawItem);
-                    }
-                    else
-                    {
-                        Draw(drawItem);
-                    }
+					//if ((drawItem.Command & GLCommandBufferFlagBits.CmdDrawIndexedIndirect) == GLCommandBufferFlagBits.CmdDrawIndexedIndirect)
+     //               {
+     //                   DrawIndexedIndirect(drawItem);
+     //               }
+     //               else if ((drawItem.Command & GLCommandBufferFlagBits.CmdDrawIndexed) == GLCommandBufferFlagBits.CmdDrawIndexed)
+     //               {
+     //                   DrawIndexed(drawItem);
+     //               }
+     //               else if ((drawItem.Command & GLCommandBufferFlagBits.CmdDrawIndirect) == GLCommandBufferFlagBits.CmdDrawIndirect)
+     //               {
+     //                   DrawIndirect(drawItem);
+     //               }
+                    //else
+                    //{
+                    //    Draw(drawItem);
+                    //}
 
                     //					pastState = instructionSet;
                     pastPipeline = currentPipeline;
@@ -830,44 +830,24 @@ namespace Magnesium.OpenGL
 			PreviousPipeline = pastPipeline;
 		}
 
-        public void Draw(GLCmdBufferDrawItem drawItem)
+        public void Draw(GLCmdInternalDraw drawItem)
         {
-            mRender.DrawArrays(drawItem.Topology, drawItem.First, drawItem.Count, drawItem.InstanceCount, drawItem.FirstInstance);
+            mRender.DrawArrays(drawItem.Topology, drawItem.FirstVertex, drawItem.VertexCount, drawItem.InstanceCount, drawItem.FirstInstance);
         }
 
-        public void DrawIndirect(GLCmdBufferDrawItem drawItem)
+        public void DrawIndirect(GLCmdInternalDrawIndirect drawItem)
         {
-            if (drawItem.Offset >= (ulong)int.MaxValue)
-            {
-                throw new InvalidOperationException();
-            }
-
-            var indirect = IntPtr.Add(drawItem.Buffer, (int)drawItem.Offset);
-
-            mRender.DrawArraysIndirect(drawItem.Topology, indirect, drawItem.Count, drawItem.Stride);
+            mRender.DrawArraysIndirect(drawItem.Topology, drawItem.Indirect, drawItem.DrawCount, drawItem.Stride);
         }
 
-        public void DrawIndexed(GLCmdBufferDrawItem drawItem)
+        public void DrawIndexed(GLCmdInternalDrawIndexed drawItem)
         {
-            var indexType = (drawItem.Command & GLCommandBufferFlagBits.Index16BitMode) == GLCommandBufferFlagBits.Index16BitMode
-                ? MgIndexType.UINT16 : MgIndexType.UINT32;
-
-            mRender.DrawIndexed(drawItem.Topology, indexType, drawItem.First, drawItem.Count, drawItem.InstanceCount, drawItem.VertexOffset);
+            mRender.DrawIndexed(drawItem.Topology, drawItem.IndexType, drawItem.FirstIndex, drawItem.IndexCount, drawItem.InstanceCount, drawItem.VertexOffset);
         }
 
-        public void DrawIndexedIndirect(GLCmdBufferDrawItem drawItem)
+        public void DrawIndexedIndirect(GLCmdInternalDrawIndexedIndirect drawItem)
         {
-            var indexType = (drawItem.Command & GLCommandBufferFlagBits.Index16BitMode) == GLCommandBufferFlagBits.Index16BitMode
-                ? MgIndexType.UINT16 : MgIndexType.UINT32;
-
-            if (drawItem.Offset >= (ulong)int.MaxValue)
-            {
-                throw new InvalidOperationException();
-            }
-
-            var indirect = IntPtr.Add(drawItem.Buffer, (int)drawItem.Offset);
-
-            mRender.DrawIndexedIndirect(drawItem.Topology, indexType, indirect, drawItem.Count, drawItem.Stride);
+            mRender.DrawIndexedIndirect(drawItem.Topology, drawItem.IndexType, drawItem.Indirect, drawItem.DrawCount, drawItem.Stride);
         }
 
         public void CheckProgram(CmdBufferInstructionSet instructionSet, GLCmdBufferDrawItem drawItem)

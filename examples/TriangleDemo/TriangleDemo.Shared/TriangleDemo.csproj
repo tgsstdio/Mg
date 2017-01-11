@@ -42,10 +42,6 @@
     <Compile Include="VulkanExample.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="LightInject, Version=4.1.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\LightInject.4.1.5\lib\portable-net45+netcore45+wpa81\LightInject.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Magnesium, Version=5.0.4.30756, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Magnesium.5.0.4\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
       <Private>True</Private>

@@ -137,13 +137,13 @@ namespace Magnesium.OpenGL
 					{
 						foreach (var buffer in request.CommandBuffers)
 						{
-							mImageOps.PerformOperation (buffer.ImageInstructions);
+							//mImageOps.PerformOperation (buffer.ImageInstructions);
 
 							// TRY TO FIGURE OUT HOW TO STOP CMDBUF EXECUTION WITHOUT CHANGING 
-							if (buffer.IsQueueReady)
-							{
-								mRenderer.Render (new []{buffer.InstructionSet});
-							}
+							//if (buffer.IsQueueReady)
+							//{
+							//	mRenderer.Render (new []{buffer.InstructionSet});
+							//}
 						}
 					}
 

@@ -36,12 +36,12 @@ namespace Magnesium.OpenGL
 			}
 			Signals = signals.ToArray ();
 
-			var buffers = new List<GLCommandBuffer> ();
+			var buffers = new List<IGLCommandBuffer> ();
 			if (sub.CommandBuffers != null)
 			{
 				foreach (var buf in sub.CommandBuffers)
 				{
-					var glCmdBuf = buf as GLCommandBuffer;
+					var glCmdBuf = (IGLCommandBuffer) buf;
 					if (glCmdBuf != null)
 					{
 						buffers.Add (glCmdBuf);
@@ -53,7 +53,7 @@ namespace Magnesium.OpenGL
 		}
 		public IGLSemaphore[] Waits { get; private set; }
 
-		public GLCommandBuffer[] CommandBuffers { get; private set; }
+		public IGLCommandBuffer[] CommandBuffers { get; private set; }
 
 		public IGLSemaphore[] Signals { get; private set; }
 		public IGLSemaphore OrderFence { get; set; }

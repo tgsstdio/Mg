@@ -2,8 +2,8 @@
 
 namespace Magnesium.OpenGL
 {
-    public class AmtCommandBuffer : IMgCommandBuffer
-	{
+    public class AmtCommandBuffer : IGLCommandBuffer
+    {
 		private bool mIsRecording = false;
 		private bool mIsExecutable = false;
 		private readonly bool mManuallyResettable;

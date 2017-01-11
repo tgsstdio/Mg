@@ -10,10 +10,10 @@ namespace Magnesium.OpenGL
 		public GLCommandPool (MgCommandPoolCreateFlagBits flags)
 		{		
 			Flags = flags;
-			Buffers = new List<GLCommandBuffer> ();
+			Buffers = new List<IGLCommandBuffer> ();
 		}
 
-		public List<GLCommandBuffer> Buffers { get; private set; }
+		public List<IGLCommandBuffer> Buffers { get; private set; }
 
 		#region IMgCommandPool implementation
 		private bool mIsDisposed = false;

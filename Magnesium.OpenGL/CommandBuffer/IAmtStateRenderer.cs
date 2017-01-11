@@ -15,10 +15,10 @@
         void UpdateFrontStencil(AmtGLStencilFunctionInfo stencilInfo);
         void UpdateBackStencil(AmtGLStencilFunctionInfo stencilInfo);
 
-        void Draw(GLCmdBufferDrawItem drawItem);
-        void DrawIndexed(GLCmdBufferDrawItem drawItem);
-        void DrawIndexedIndirect(GLCmdBufferDrawItem drawItem);
-        void DrawIndirect(GLCmdBufferDrawItem drawItem);
+        void Draw(GLCmdInternalDraw drawItem);
+        void DrawIndexed(GLCmdInternalDrawIndexed drawItem);
+        void DrawIndexedIndirect(GLCmdInternalDrawIndexedIndirect drawItem);
+        void DrawIndirect(GLCmdInternalDrawIndirect drawItem);
         void BindVertexArrays(object vao);
     }
 }

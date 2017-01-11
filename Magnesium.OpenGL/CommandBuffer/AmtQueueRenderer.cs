@@ -95,27 +95,4 @@ namespace Magnesium.OpenGL
 		}
 	}
 
-    internal class AmtBlitEncoder
-    {
-        public AmtBlitEncoder()
-        {
-        }
-
-        internal void EndEncoding()
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    internal class AmtComputeEncoder
-    {
-        public AmtComputeEncoder()
-        {
-        }
-
-        internal void EndEncoding()
-        {
-            throw new NotImplementedException();
-        }
-    }
 }

@@ -13,5 +13,9 @@
         public MgColor4f[] BlendConstants { get; set; }
         public GLCmdVertexBufferObject[] VAOs { get; set; }
         public AmtGLStencilFunctionInfo[] StencilFunctions { get; set; }
+        public GLCmdInternalDraw[] Draws { get; set; }
+        public GLCmdInternalDrawIndexed[] DrawIndexeds { get; set; }
+        public GLCmdInternalDrawIndirect[] DrawIndirects { get; set; }
+        public GLCmdInternalDrawIndexedIndirect[] DrawIndexedIndirects { get; set; }
     }
 }
