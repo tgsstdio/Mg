@@ -62,7 +62,7 @@
 			set;
 		}
 
-		public int[] FrontCompareMasks {
+		public uint[] FrontCompareMasks {
 			get;
 			set;
 		}
@@ -76,7 +76,7 @@
 			set;
 		}
 
-		public int[] BackCompareMasks {
+		public uint[] BackCompareMasks {
 			get;
 			set;
 		}

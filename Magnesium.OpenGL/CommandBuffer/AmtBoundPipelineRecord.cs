@@ -11,5 +11,7 @@
         public GLCmdViewportParameter Viewports { get; internal set; }
         internal AmtGLStencilFunctionInfo BackStencilInfo { get; set; }
         internal AmtGLStencilFunctionInfo FrontStencilInfo { get; set; }
+        public uint FrontStencilWriteMask { get; internal set; }
+        public uint BackStencilWriteMask { get; internal set; }
     }
 }

@@ -11,7 +11,7 @@ namespace Magnesium.OpenGL
     {
         private readonly IGLCmdBufferRepository mRepository;
         private readonly IAmtEncoderContextSorter mInstructions;
-        private readonly List<GLCmdRenderPassCommand> mRenderPasses = new List<GLCmdRenderPassCommand>();
+        private readonly IGLCmdVBOEntrypoint mVBO;
 
         // NOT SURE IF THIS IS NEEDED IN HERE
         private List<GLCmdDrawCommand> mIncompleteDraws = new List<GLCmdDrawCommand>();
@@ -22,12 +22,14 @@ namespace Magnesium.OpenGL
         (
             IAmtEncoderContextSorter instructions, 
             IGLCmdBufferRepository repository,
-            AmtGraphicsBag bag
+            AmtGraphicsBag bag,
+            IGLCmdVBOEntrypoint vbo
         )
         {
             mInstructions = instructions;
             mRepository = repository;
             mBag = bag;
+            mVBO = vbo;
         }
 
         public AmtGraphicsGrid AsGrid()
@@ -35,19 +37,22 @@ namespace Magnesium.OpenGL
             return new AmtGraphicsGrid
             {
                 Renderpasses = mBag.Renderpasses.ToArray(),
+                Pipelines = mBag.Pipelines.ToArray(),
+                StencilWrites = mBag.StencilWrites.ToArray(),
+                Viewports = mBag.Viewports.ToArray(),
+                BlendConstants = mBag.BlendConstants.ToArray(),
+                DepthBias = mBag.DepthBias.ToArray(),
+                DepthBounds = mBag.DepthBounds.ToArray(),
+                LineWidths = mBag.LineWidths.ToArray(),
+                Scissors = mBag.Scissors.ToArray(),                
             };
         }
 
         #region BeginRenderPass methods
 
-        private GLCmdRenderPassCommand mIncompleteRenderPass;
+        private AmtBeginRenderpassRecord mBoundRenderPass;
         public void BeginRenderPass(MgRenderPassBeginInfo pRenderPassBegin, MgSubpassContents contents)
         {
-            mIncompleteRenderPass = new GLCmdRenderPassCommand();
-            mIncompleteRenderPass.Origin = pRenderPassBegin.RenderPass;
-            mIncompleteRenderPass.ClearValues = pRenderPassBegin.ClearValues;
-            mIncompleteRenderPass.Contents = contents;
-
             var beginInfo =  InitialiseRenderpassInfo(pRenderPassBegin);
 
             var nextIndex = mBag.Renderpasses.Push(beginInfo);
@@ -159,6 +164,8 @@ namespace Magnesium.OpenGL
 
         #endregion
 
+        #region BindDescriptorSets methods
+
         public void BindDescriptorSets(IMgPipelineLayout layout, uint firstSet, uint descriptorSetCount, IMgDescriptorSet[] pDescriptorSets, uint[] pDynamicOffsets)
         {
             if (layout == null)
@@ -190,40 +197,10 @@ namespace Magnesium.OpenGL
             throw new NotImplementedException();   
         }
 
-        #region BindIndexBuffer methods
-
-        public void BindIndexBuffer(IMgBuffer buffer, ulong offset, MgIndexType indexType)
-        {
-            if (buffer == null)
-                throw new ArgumentNullException(nameof(buffer));
-
-            // TODO: TRANSFORM into more GL specific code
-            var param = new GLCmdIndexBufferParameter();
-            param.buffer = buffer;
-            param.offset = offset;
-            param.indexType = indexType;
-            mRepository.IndexBuffers.Add(param);
-
-            var nextIndex = (uint)mRepository.IndexBuffers.LastIndex().Value;
-
-            var instruction = new AmtEncodingInstruction
-            {
-                Category = AmtEncoderCategory.Graphics,
-                Index = nextIndex,
-                Operation = CmdBindIndexBuffer,
-            };
-
-            mInstructions.Add(instruction);
-        }
-
-        private static void CmdBindIndexBuffer(AmtCommandRecording arg1, uint arg2)
-        {
-            throw new NotImplementedException();
-        }
-
         #endregion
 
         #region BindPipeline methods
+
         private IGLGraphicsPipeline mCurrentPipeline;
         public void BindPipeline(IMgPipeline pipeline)
         {
@@ -243,7 +220,10 @@ namespace Magnesium.OpenGL
                 Operation = CmdBindPipeline,
             };
 
-            mInstructions.Add(instruction);
+            if (mBoundRenderPass != null)
+            {
+                mInstructions.Add(instruction);
+            }
         }
 
         private AmtBoundPipelineRecordInfo InitialisePipelineInfo()
@@ -294,20 +274,20 @@ namespace Magnesium.OpenGL
                 {
                     ReferenceMask = backReference,
                     CompareMask = backCompare,
-                    WriteMask = backWriteMask,
                     StencilFunction = mCurrentPipeline.StencilState.BackStencilFunction,
                 },
                 FrontStencilInfo = new AmtGLStencilFunctionInfo
                 {
                     ReferenceMask = frontReference,
                     CompareMask = frontCompare,
-                    WriteMask = backWriteMask,
                     StencilFunction = mCurrentPipeline.StencilState.FrontStencilFunction,
                 },
                 DepthBias = FetchDepthBias(),
                 DepthBounds = FetchDepthBounds(),
                 Scissors = FetchScissors(),
                 Viewports = FetchViewports(),
+                BackStencilWriteMask = backWriteMask,
+                FrontStencilWriteMask = frontWriteMask,                
             };
         }
 
@@ -319,7 +299,7 @@ namespace Magnesium.OpenGL
                     == GLGraphicsPipelineDynamicStateFlagBits.SCISSOR
             )
             {
-                // TODO : init GL scissors parameter
+                scissors = mPastScissors;
             }
 
             return scissors;
@@ -333,7 +313,7 @@ namespace Magnesium.OpenGL
                     == GLGraphicsPipelineDynamicStateFlagBits.VIEWPORT
             )
             {
-                // TODO : init GL viewports parameter
+                viewports = mPastViewports;
             }
 
             return viewports;
@@ -422,44 +402,29 @@ namespace Magnesium.OpenGL
 
         #endregion
 
-        #region BindVertexBuffers methods
-
-        public void BindVertexBuffers(uint firstBinding, IMgBuffer[] pBuffers, ulong[] pOffsets)
-        {
-            if (pBuffers == null)
-                throw new ArgumentNullException(nameof(pBuffers));
-
-            var param = new GLCmdVertexBufferParameter();
-            param.firstBinding = firstBinding;
-            param.pBuffers = pBuffers;
-            param.pOffsets = pOffsets;
-            mRepository.VertexBuffers.Add(param);
-
-            var nextIndex = (uint)mRepository.VertexBuffers.LastIndex().Value;
-
-            var instruction = new AmtEncodingInstruction
-            {
-                Category = AmtEncoderCategory.Graphics,
-                Index = nextIndex,
-                Operation = CmdBindVertexBuffers,
-            };
-
-            mInstructions.Add(instruction);
-        }
-
-        private static void CmdBindVertexBuffers(AmtCommandRecording arg1, uint arg2)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
         public void Clear()
         {
-            mIncompleteRenderPass = null;
+            mFrontCompare = ~0U;
+            mBackCompare = ~0U;
+            mFrontWrite = ~0U;
+            mBackWrite = ~0U;
+            mFrontReference = 0;
+            mBackReference = 0;
+            mDepthBiasClamp = 0f;
+            mDepthBiasSlopeFactor = 0f;
+            mDepthBiasConstantFactor = 0f;
+
+            mBoundRenderPass = null;
+
+            mPastScissors = null;
+
+            mPastViewports = null;
+
             mRepository.Clear();
-            mRenderPasses.Clear();
             mIncompleteDraws.Clear();
+
+            InvalidateBackStencil();
+            InvalidateFrontStencil();
 
             if (InstructionSet != null)
             {
@@ -473,22 +438,256 @@ namespace Magnesium.OpenGL
 
         bool StoreDrawCommand(GLCmdDrawCommand command, out uint nextIndex)
         {
-            bool hasPipeline = mRepository.MapRepositoryFields(ref command);
-
-            if (!hasPipeline)
+            if (mCurrentPipeline == null)
             {
                 nextIndex = 0;
                 return false;
-            }
+            }            
             
-            if (mIncompleteRenderPass == null)
+            if (mBoundRenderPass == null)
             {
                 throw new InvalidOperationException("Command must be made inside a Renderpass. ");
             }
 
-            mIncompleteRenderPass.DrawCommands.Add(command);
-            nextIndex = (uint) mIncompleteRenderPass.DrawCommands.Count;
+            // if vbo is missing, generate new one
+            ExtractVertexBuffer();
+
+            // if front stencil is missing, generate new one
+            PushFrontStencilIfRequired();
+
+            // if back stencil is missing, generate new one
+            PushBackStencilIfRequired();
+
+            nextIndex = 0;
             return true;            
+        }
+
+        private AmtGLStencilFunctionInfo mPastBackStencil;
+        private void PushBackStencilIfRequired()
+        {
+            if (mCurrentPipeline == null)
+                return;
+
+            if (mPastBackStencil == null)
+            {
+                mPastBackStencil = new AmtGLStencilFunctionInfo
+                {
+                    CompareMask = mBackCompare,
+                    ReferenceMask = mBackReference,
+                    StencilFunction = mCurrentPipeline.StencilState.BackStencilFunction,
+                };
+
+                var nextIndex = mBag.StencilFunctions.Push(mPastBackStencil);
+
+                mInstructions.Add(new AmtEncodingInstruction
+                {
+                    Category = AmtEncoderCategory.Graphics,
+                    Index = nextIndex,
+                    Operation = CmdUpdateBackStencil,
+                });
+            }
+        }
+
+        private void CmdUpdateBackStencil(AmtCommandRecording arg1, uint arg2)
+        {
+            var context = arg1.Graphics;
+            Debug.Assert(context != null);
+            var grid = context.Grid;
+            Debug.Assert(grid != null);
+            var func = grid.StencilFunctions[arg2];
+            var renderer = context.StateRenderer;
+            Debug.Assert(renderer != null);
+            renderer.UpdateBackStencil(func);
+        }
+
+        private void InvalidateBackStencil()
+        {
+            mPastBackStencil = null;
+        }
+
+        private AmtGLStencilFunctionInfo mPastFrontStencil;
+        private void PushFrontStencilIfRequired()
+        {
+            if (mCurrentPipeline == null)
+                return;
+
+            if (mPastFrontStencil == null)
+            {               
+                mPastFrontStencil = new AmtGLStencilFunctionInfo
+                {
+                    CompareMask = mFrontCompare,
+                    ReferenceMask = mFrontReference,
+                    StencilFunction = mCurrentPipeline.StencilState.FrontStencilFunction,
+                };
+
+                var nextIndex = mBag.StencilFunctions.Push(mPastFrontStencil);
+
+                mInstructions.Add(new AmtEncodingInstruction
+                {
+                    Category = AmtEncoderCategory.Graphics,
+                    Index = nextIndex,
+                    Operation = CmdUpdateFrontStencil,
+                });
+            }
+        }
+
+        private void CmdUpdateFrontStencil(AmtCommandRecording arg1, uint arg2)
+        {
+            var context = arg1.Graphics;
+            Debug.Assert(context != null);
+            var grid = context.Grid;
+            Debug.Assert(grid != null);
+            var func = grid.StencilFunctions[arg2];
+            var renderer = context.StateRenderer;
+            Debug.Assert(renderer != null);
+            renderer.UpdateFrontStencil(func);
+        }
+
+        private void InvalidateFrontStencil()
+        {
+            mPastFrontStencil = null;
+        }
+
+        // NEED TO MERGE 
+        private GLCmdVertexBufferObject mCurrentVertexArray;
+        private void ExtractVertexBuffer()
+        {
+            // create new vbo
+            if (mCurrentVertexArray == null)
+            {
+                mCurrentVertexArray = GenerateVBO();
+
+                var nextIndex = mBag.VAOs.Push(mCurrentVertexArray);
+
+                mInstructions.Add(new AmtEncodingInstruction
+                {
+                    Category = AmtEncoderCategory.Graphics,
+                    Index = nextIndex,
+                    Operation = CmdBindVertexBuffers,
+                });
+            }
+            //else
+            //{
+            //    bool useSameBuffers = (command.IndexBuffer.HasValue)
+            //        ? mCurrentVertexArray.Matches(
+            //            command.VertexBuffer.Value,
+            //            command.IndexBuffer.Value)
+            //        : mCurrentVertexArray.Matches(
+            //            command.VertexBuffer.Value);
+
+            //    if (!useSameBuffers)
+            //    {
+            //        mCurrentVertexArray = GenerateVBO(userSettings, command, pipeline);
+            //        VBOs.Add(currentVertexArray);
+            //    }
+            //}            
+        }
+
+        private void CmdBindVertexBuffers(AmtCommandRecording arg1, uint arg2)
+        {
+            var context = arg1.Graphics;
+            Debug.Assert(context != null);
+            var grid = context.Grid;
+            Debug.Assert(grid != null);
+            var vao = grid.VAOs[arg2];
+            var renderer = context.StateRenderer;
+            Debug.Assert(renderer != null);
+            renderer.BindVertexArrays(vao);
+        }
+
+        private GLCmdVertexBufferParameter mBoundVertexBuffer;
+        public void BindVertexBuffers(uint firstBinding, IMgBuffer[] pBuffers, ulong[] pOffsets)
+        {
+            if (pBuffers == null)
+                throw new ArgumentNullException(nameof(pBuffers));
+
+            mBoundVertexBuffer = new GLCmdVertexBufferParameter
+            {
+                firstBinding = firstBinding,
+                pBuffers = pBuffers,
+                pOffsets = pOffsets,
+            };
+        }
+
+        private GLCmdIndexBufferParameter mBoundIndexBuffer;
+        public void BindIndexBuffer(IMgBuffer buffer, ulong offset, MgIndexType indexType)
+        {
+            if (buffer == null)
+                throw new ArgumentNullException(nameof(buffer));           
+
+            mBoundIndexBuffer = new GLCmdIndexBufferParameter
+            {
+                buffer = (IGLBuffer)buffer,
+                offset = offset,
+                indexType = indexType,
+            };
+        }
+
+        GLCmdVertexBufferObject GenerateVBO()
+        {
+            var vertexData = mBoundVertexBuffer;
+            var noOfBindings = mCurrentPipeline.VertexInput.Bindings.Length;
+            var bufferIds = new int[noOfBindings];
+            var offsets = new long[noOfBindings];
+
+            for (uint i = 0; i < vertexData.pBuffers.Length; ++i)
+            {
+                uint index = i + vertexData.firstBinding;
+                var buffer = vertexData.pBuffers[index] as IGLBuffer;
+                // SILENT error
+                if (buffer.BufferType == GLMemoryBufferType.VERTEX)
+                {
+                    bufferIds[i] = buffer.BufferId;
+                    offsets[i] = (vertexData.pOffsets != null) ? (long)vertexData.pOffsets[i] : 0L;
+                }
+                else
+                {
+                    bufferIds[i] = 0;
+                    offsets[i] = 0;
+                }
+            }
+
+            int vbo = mVBO.GenerateVBO();
+            foreach (var attribute in mCurrentPipeline.VertexInput.Attributes)
+            {
+                var bufferId = bufferIds[attribute.Binding];
+                var binding = mCurrentPipeline.VertexInput.Bindings[attribute.Binding];
+                mVBO.AssociateBufferToLocation(vbo, attribute.Location, bufferId, offsets[attribute.Binding], binding.Stride);
+                // GL.VertexArrayVertexBuffer (vertexArray, location, bufferId, new IntPtr (offset), (int)binding.Stride);
+
+                if (attribute.Function == GLVertexAttribFunction.FLOAT)
+                {
+                    // direct state access
+                    mVBO.BindFloatVertexAttribute(vbo, attribute.Location, attribute.Size, attribute.PointerType, attribute.IsNormalized, attribute.Offset);
+
+                    //GL.VertexArrayAttribFormat (vbo, attribute.Location, attribute.Size, attribute.PointerType, attribute.IsNormalized, attribute.Offset);
+                }
+                else if (attribute.Function == GLVertexAttribFunction.INT)
+                {
+                    mVBO.BindIntVertexAttribute(vbo, attribute.Location, attribute.Size, attribute.PointerType, attribute.Offset);
+
+                    //GL.VertexArrayAttribIFormat (vbo, attribute.Location, attribute.Size, attribute.PointerType, attribute.Offset);
+                }
+                else if (attribute.Function == GLVertexAttribFunction.DOUBLE)
+                {
+                    mVBO.BindDoubleVertexAttribute(vbo, attribute.Location, attribute.Size, attribute.PointerType, attribute.Offset);
+                    //GL.VertexArrayAttribLFormat (vbo, attribute.Location, attribute.Size, (All)attribute.PointerType, attribute.Offset);
+                }
+                mVBO.SetupVertexAttributeDivisor(vbo, attribute.Location, attribute.Divisor);
+                //GL.VertexArrayBindingDivisor (vbo, attribute.Location, attribute.Divisor);
+            }
+
+            if (mBoundIndexBuffer != null)
+            {
+                var indexBuffer = mBoundIndexBuffer.buffer;
+                if (indexBuffer != null && indexBuffer.BufferType == GLMemoryBufferType.INDEX)
+                {
+                    mVBO.BindIndexBuffer(vbo, indexBuffer.BufferId);
+                    //GL.VertexArrayElementBuffer (vbo, indexBuffer.BufferId);
+                }
+            }
+
+            return new GLCmdVertexBufferObject(vbo, mVBO);
         }
 
         #region Draw methods 
@@ -679,8 +878,7 @@ namespace Magnesium.OpenGL
 
         public void EndRenderPass()
         {
-            mRenderPasses.Add(mIncompleteRenderPass);
-            mIncompleteRenderPass = null;
+            mBoundRenderPass = null;
         }
 
         public void NextSubpass(MgSubpassContents contents)
@@ -710,9 +908,7 @@ namespace Magnesium.OpenGL
                 )
             )
             {
-                mRepository.PushBlendConstants(blendConstants);
-
-                var nextIndex = (uint)mRepository.BlendConstants.LastIndex().Value;
+                var nextIndex = mBag.BlendConstants.Push(mBlendConstants);
 
                 var instruction = new AmtEncodingInstruction
                 {
@@ -727,17 +923,23 @@ namespace Magnesium.OpenGL
 
         private void CmdSetBlendConstants(AmtCommandRecording arg1, uint arg2)
         {
-            throw new NotImplementedException();
+            var context = arg1.Graphics;
+            Debug.Assert(context != null);
+            var grid = context.Grid;
+            Debug.Assert(grid != null);
+            var blends = grid.BlendConstants[arg2];
+            var renderer = context.StateRenderer;
+            Debug.Assert(renderer != null);
+            renderer.UpdateBlendConstants(blends);
         }
 
         #endregion
 
+        #region SetDepthBias methods
+
         float mDepthBiasConstantFactor;
         float mDepthBiasClamp;
         float mDepthBiasSlopeFactor;
-
-        #region SetDepthBias methods
-
         public void SetDepthBias(float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor)
         {
             mDepthBiasConstantFactor = depthBiasConstantFactor;
@@ -760,13 +962,14 @@ namespace Magnesium.OpenGL
                 )
             )
             {
+                var bias = new GLCmdDepthBiasParameter
+                {
+                    DepthBiasClamp = mDepthBiasClamp,
+                    DepthBiasConstantFactor = mDepthBiasConstantFactor,
+                    DepthBiasSlopeFactor = mDepthBiasSlopeFactor
+                };
 
-                mRepository.PushDepthBias(
-                    depthBiasConstantFactor,
-                    depthBiasClamp,
-                    depthBiasSlopeFactor);
-
-                var nextIndex = (uint)mRepository.BlendConstants.LastIndex().Value;
+                var nextIndex = mBag.DepthBias.Push(bias);
 
                 var instruction = new AmtEncodingInstruction
                 {
@@ -781,7 +984,14 @@ namespace Magnesium.OpenGL
 
         private void CmdSetDepthBias(AmtCommandRecording arg1, uint arg2)
         {
-            throw new NotImplementedException();
+            var context = arg1.Graphics;
+            Debug.Assert(context != null);
+            var grid = context.Grid;
+            Debug.Assert(grid != null);
+            var bias = grid.DepthBias[arg2];
+            var renderer = context.StateRenderer;
+            Debug.Assert(renderer != null);
+            renderer.UpdateDepthBias(bias);
         }
 
         #endregion
@@ -812,13 +1022,13 @@ namespace Magnesium.OpenGL
                 )
             )
             {
+                var bounds = new GLCmdDepthBoundsParameter
+                {
+                    MinDepthBounds = mMinDepthBounds,
+                    MaxDepthBounds = mMaxDepthBounds
+                };
 
-                mRepository.PushDepthBounds(
-                    minDepthBounds,
-                    maxDepthBounds
-                );
-
-                var nextIndex = (uint)mRepository.DepthBounds.LastIndex().Value;
+                var nextIndex = mBag.DepthBounds.Push(bounds);
 
                 var instruction = new AmtEncodingInstruction
                 {
@@ -833,7 +1043,14 @@ namespace Magnesium.OpenGL
 
         private static void CmdSetDepthBounds(AmtCommandRecording arg1, uint arg2)
         {
-            throw new NotImplementedException();
+            var context = arg1.Graphics;
+            Debug.Assert(context != null);
+            var grid = context.Grid;
+            Debug.Assert(grid != null);
+            var bounds = grid.DepthBounds[arg2];
+            var renderer = context.StateRenderer;
+            Debug.Assert(renderer != null);
+            renderer.UpdateDepthBounds(bounds);
         }
 
         #endregion
@@ -861,9 +1078,7 @@ namespace Magnesium.OpenGL
                 )
             )
             {
-                mRepository.PushLineWidth(lineWidth);
-
-                var nextIndex = (uint)mRepository.LineWidths.LastIndex().Value;
+                var nextIndex = mBag.LineWidths.Push(mLineWidth);
 
                 var instruction = new AmtEncodingInstruction
                 {
@@ -878,19 +1093,23 @@ namespace Magnesium.OpenGL
 
         private static void CmdSetLineWidth(AmtCommandRecording arg1, uint arg2)
         {
-            throw new NotImplementedException();
+            var context = arg1.Graphics;
+            Debug.Assert(context != null);
+            var grid = context.Grid;
+            Debug.Assert(grid != null);
+            var lineWidth = grid.LineWidths[arg2];
+            var renderer = context.StateRenderer;
+            Debug.Assert(renderer != null);
+            renderer.UpdateLineWidth(lineWidth);
         }
 
         #endregion
 
         #region SetScissor methods
-        private uint mFirstScissor;
-        private MgRect2D[] mScissors;
 
         public void SetScissor(uint firstScissor, MgRect2D[] pScissors)
         {
-            mFirstScissor = firstScissor;
-            mScissors = pScissors;
+            mPastScissors = new GLCmdScissorParameter(firstScissor, pScissors);
 
             // ONLY if 
             // no pipeline has been set
@@ -910,7 +1129,7 @@ namespace Magnesium.OpenGL
             {
                 mRepository.PushScissors(firstScissor, pScissors);
 
-                var nextIndex = (uint)mRepository.Scissors.LastIndex().Value;
+                var nextIndex = mBag.Scissors.Push(mPastScissors);
 
                 var instruction = new AmtEncodingInstruction
                 {
@@ -925,15 +1144,22 @@ namespace Magnesium.OpenGL
 
         private void CmdSetScissor(AmtCommandRecording arg1, uint arg2)
         {
-            throw new NotImplementedException();
+            var context = arg1.Graphics;
+            Debug.Assert(context != null);
+            var grid = context.Grid;
+            Debug.Assert(grid != null);
+            var scissors = grid.Scissors[arg2];
+            var renderer = context.StateRenderer;
+            Debug.Assert(renderer != null);
+            renderer.UpdateScissors(scissors);
         }
 
         #endregion
 
         #region SetStencilCompareMask methods
 
-        private int mBackCompare;
-        private int mFrontCompare;
+        private uint mBackCompare;
+        private uint mFrontCompare;
 
         public void SetStencilCompareMask(MgStencilFaceFlagBits faceMask, uint compareMask)
         {
@@ -942,51 +1168,25 @@ namespace Magnesium.OpenGL
 
             if (backChange)
             {
-                unchecked
+                if (mBackCompare != compareMask)
                 {
-                    mBackCompare = (int) compareMask;
+                    InvalidateBackStencil();
+
+                    mBackCompare = compareMask;                    
                 }
             }
             if (frontChange)
             {
-                unchecked
+                if (mFrontCompare != compareMask)
                 {
-                    mFrontCompare = (int) compareMask;
-                }
-            }
+                    InvalidateFrontStencil();
 
-            // ONLY if 
-            // no pipeline has been set
-            // OR pipeline ATTACHED and dynamic state has been set
-            if
-            (
-                (mCurrentPipeline == null)
-                ||
-                (mCurrentPipeline != null
-                    &&
-                    (
-                        (mCurrentPipeline.DynamicsStates & GLGraphicsPipelineDynamicStateFlagBits.STENCIL_COMPARE_MASK)
-                            == GLGraphicsPipelineDynamicStateFlagBits.STENCIL_COMPARE_MASK
-                    )
-                )
-            )
-            {
-                if (backChange)
-                {
-                    mRepository.SetCompareMask(MgStencilFaceFlagBits.BACK_BIT, compareMask);
-                }
-
-                if (frontChange)
-                {
-                    mRepository.SetCompareMask(MgStencilFaceFlagBits.FRONT_BIT, compareMask);
+                    mFrontCompare = compareMask;                    
                 }
             }
         }
 
-        private void CmdSetStencilCompareMask(AmtCommandRecording arg1, uint arg2)
-        {
-            throw new NotImplementedException();
-        }
+
 
         #endregion
 
@@ -1002,43 +1202,26 @@ namespace Magnesium.OpenGL
 
             if (backChange)
             {
-                unchecked
+                if (mBackReference != reference)
                 {
-                    mBackReference = (int) reference;
+                    InvalidateBackStencil();
+
+                    unchecked
+                    {
+                        mBackReference = (int)reference;
+                    }
                 }
             }
             if (frontChange)
             {
-                unchecked
+                if (mFrontReference != reference)
                 {
-                    mFrontReference = (int) reference;
-                }
-            }
+                    InvalidateFrontStencil();
 
-            // ONLY if 
-            // no pipeline has been set
-            // OR pipeline ATTACHED and dynamic state has been set
-            if
-            (
-                (mCurrentPipeline == null)
-                ||
-                (mCurrentPipeline != null
-                    &&
-                    (
-                        (mCurrentPipeline.DynamicsStates & GLGraphicsPipelineDynamicStateFlagBits.STENCIL_REFERENCE)
-                            == GLGraphicsPipelineDynamicStateFlagBits.STENCIL_REFERENCE
-                    )
-                )
-            )
-            {
-                if (backChange)
-                {
-                    mRepository.SetStencilReference(MgStencilFaceFlagBits.BACK_BIT, reference);
-                }
-
-                if (frontChange)
-                {
-                    mRepository.SetStencilReference(MgStencilFaceFlagBits.FRONT_BIT, reference);
+                    unchecked
+                    {
+                        mFrontReference = (int)reference;
+                    }
                 }
             }
         }
@@ -1150,13 +1333,20 @@ namespace Magnesium.OpenGL
             var writeInfo = grid.StencilWrites[arg2];
             var renderer = context.StateRenderer;
             Debug.Assert(renderer != null);
-            renderer.SetStencilWriteMask(writeInfo);
+            renderer.UpdateStencilWriteMask(writeInfo);
         }
 
         #endregion
 
+        #region SetViewports methods
+
+        private GLCmdViewportParameter mPastViewports;
+        private GLCmdScissorParameter mPastScissors;
+
         public void SetViewports(uint firstViewport, MgViewport[] pViewports)
         {
+            mPastViewports = new GLCmdViewportParameter(firstViewport, pViewports);
+
             // ONLY if 
             // no pipeline has been set
             // OR pipeline ATTACHED and dynamic state has been set
@@ -1173,8 +1363,31 @@ namespace Magnesium.OpenGL
                 )
             )
             {
+                var nextIndex = mBag.Viewports.Push(mPastViewports);
 
+                var instruction = new AmtEncodingInstruction
+                {
+                    Category = AmtEncoderCategory.Graphics,
+                    Index = nextIndex,
+                    Operation = CmdSetViewports
+                };
+
+                mInstructions.Add(instruction);
             }
         }
+
+        private void CmdSetViewports(AmtCommandRecording arg1, uint arg2)
+        {
+            var context = arg1.Graphics;
+            Debug.Assert(context != null);
+            var grid = context.Grid;
+            Debug.Assert(grid != null);
+            var viewports = grid.Viewports[arg2];
+            var renderer = context.StateRenderer;
+            Debug.Assert(renderer != null);
+            renderer.UpdateViewports(viewports);
+        }
+
+        #endregion
     }
 }

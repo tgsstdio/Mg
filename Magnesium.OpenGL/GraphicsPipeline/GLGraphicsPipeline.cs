@@ -663,14 +663,14 @@ namespace Magnesium.OpenGL
 
 				// SAME STENCIL MODE USED FOR FRONT AND BACK
 				Front = new GLGraphicsPipelineStencilMasks {
-					CompareMask = (int)depthStencilState.Front.CompareMask,
+					CompareMask = depthStencilState.Front.CompareMask,
 					WriteMask = depthStencilState.Front.WriteMask,
 					Reference = (int)depthStencilState.Front.Reference,
 				};
 
 				Back = new GLGraphicsPipelineStencilMasks 
 				{
-					CompareMask = (int)depthStencilState.Back.CompareMask,
+					CompareMask = depthStencilState.Back.CompareMask,
 					WriteMask = depthStencilState.Back.WriteMask,
 					Reference = (int)depthStencilState.Back.Reference,
 				};

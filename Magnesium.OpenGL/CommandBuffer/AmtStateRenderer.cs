@@ -162,6 +162,62 @@ namespace Magnesium.OpenGL
             UpdateDepthBounds(pipelineInfo.DepthBounds);
             UpdateFrontStencil(pipelineInfo.FrontStencilInfo);
             UpdateBackStencil(pipelineInfo.BackStencilInfo);
+
+            if (pipelineInfo.FrontStencilWriteMask == pipelineInfo.BackStencilWriteMask)
+            {
+                UpdateStencilWriteMask(new AmtPipelineStencilWriteInfo
+                {
+                    Face = MgStencilFaceFlagBits.FRONT_AND_BACK,
+                    WriteMask = pipelineInfo.FrontStencilWriteMask,
+                });
+            }
+            else
+            {
+                UpdateStencilWriteMask(new AmtPipelineStencilWriteInfo
+                {
+                    Face = MgStencilFaceFlagBits.FRONT_BIT,
+                    WriteMask = pipelineInfo.FrontStencilWriteMask,
+                });
+                UpdateStencilWriteMask(new AmtPipelineStencilWriteInfo
+                {
+                    Face = MgStencilFaceFlagBits.BACK_BIT,
+                    WriteMask = pipelineInfo.BackStencilWriteMask,
+                });
+            }
+        }
+
+        #endregion
+
+        #region UpdateStencilWriteMask methods
+        private uint mPastFrontWriteMask;
+        private uint mPastBackWriteMask;
+        public void UpdateStencilWriteMask(AmtPipelineStencilWriteInfo write)
+        {
+            if ((write.Face & MgStencilFaceFlagBits.FRONT_AND_BACK) == MgStencilFaceFlagBits.FRONT_AND_BACK)
+            {
+                if (mPastFrontWriteMask != write.WriteMask || mPastBackWriteMask != write.WriteMask)
+                {
+                    mStencil.SetStencilWriteMask(MgStencilFaceFlagBits.FRONT_AND_BACK, write.WriteMask);
+                    mPastFrontWriteMask = write.WriteMask;
+                    mPastBackWriteMask = write.WriteMask;
+                }
+            }
+            else if ((write.Face & MgStencilFaceFlagBits.FRONT_BIT) != 0)
+            {
+                if (mPastFrontWriteMask != write.WriteMask)
+                {
+                    mStencil.SetStencilWriteMask(MgStencilFaceFlagBits.FRONT_BIT, write.WriteMask);
+                    mPastFrontWriteMask = write.WriteMask;
+                }
+            }
+            else if ((write.Face & MgStencilFaceFlagBits.BACK_BIT) != 0)
+            {
+                if (mPastBackWriteMask != write.WriteMask)
+                {
+                    mStencil.SetStencilWriteMask(MgStencilFaceFlagBits.BACK_BIT, write.WriteMask);
+                    mPastBackWriteMask = write.WriteMask;
+                }
+            }
         }
 
         #endregion
@@ -517,7 +573,7 @@ namespace Magnesium.OpenGL
         #region UpdateFrontStencil methods
 
         AmtGLStencilFunctionInfo mPastFrontStencilInfo;
-        private void UpdateFrontStencil(AmtGLStencilFunctionInfo stencilInfo)
+        public void UpdateFrontStencil(AmtGLStencilFunctionInfo stencilInfo)
         {
             if (
                 mPastFrontStencilInfo.StencilFunction != stencilInfo.StencilFunction 
@@ -543,7 +599,7 @@ namespace Magnesium.OpenGL
         #region UpdateBackStencil methods
 
         AmtGLStencilFunctionInfo mPastBackStencilInfo;
-        private void UpdateBackStencil(AmtGLStencilFunctionInfo stencilInfo)
+        public void UpdateBackStencil(AmtGLStencilFunctionInfo stencilInfo)
         {
             if (
                 mPastBackStencilInfo.StencilFunction != stencilInfo.StencilFunction
@@ -590,7 +646,7 @@ namespace Magnesium.OpenGL
         #region UpdateBlendConstants methods
 
         private MgColor4f mPastBlendConstants;
-        private void UpdateBlendConstants(MgColor4f blendConstants)
+        public void UpdateBlendConstants(MgColor4f blendConstants)
         {
             if (!mPastBlendConstants.Equals(blendConstants))
             {
@@ -603,7 +659,7 @@ namespace Magnesium.OpenGL
 
         #region UpdateDepthBias methods
 
-        private void UpdateDepthBias(GLCmdDepthBiasParameter nextDepthBias)
+        public void UpdateDepthBias(GLCmdDepthBiasParameter nextDepthBias)
         {
             var previous = mPastRasterization.DepthBias;
 
@@ -631,7 +687,7 @@ namespace Magnesium.OpenGL
         #region UpdateScissors methods 
 
         private GLCmdScissorParameter mPastScissors;
-        private void UpdateScissors(GLCmdScissorParameter currentScissors)
+        public void UpdateScissors(GLCmdScissorParameter currentScissors)
         {
             // scissor 
             if (ChangesFoundInScissors(mPastScissors, currentScissors))
@@ -657,7 +713,7 @@ namespace Magnesium.OpenGL
         #region UpdateViewports methods
 
         private GLCmdViewportParameter mPastViewport;
-        private void UpdateViewports(GLCmdViewportParameter currentViewport)
+        public void UpdateViewports(GLCmdViewportParameter currentViewport)
         {
             // viewport
             if (ChangesFoundInViewports(mPastViewport, currentViewport))
@@ -682,7 +738,7 @@ namespace Magnesium.OpenGL
 
         #region UpdateLineWidth methods
 
-        private void UpdateLineWidth(float lineWidth)
+        public void UpdateLineWidth(float lineWidth)
         {
             if (Math.Abs(mPastRasterization.LineWidth - lineWidth) > float.Epsilon)
             {
@@ -701,7 +757,24 @@ namespace Magnesium.OpenGL
 			var initialStencilValue = mStencil.Initialize ();
 			mPastStencilInfo = initialStencilValue;
 
-			var initialDepthValue = mDepth.Initialize ();
+            mPastFrontWriteMask = initialStencilValue.Front.WriteMask;
+            mPastBackWriteMask = initialStencilValue.Back.WriteMask;
+
+            mPastFrontStencilInfo = new AmtGLStencilFunctionInfo
+            {
+                CompareMask = initialStencilValue.Front.CompareMask,
+                ReferenceMask = initialStencilValue.Front.Reference,
+                StencilFunction = initialStencilValue.Enums.FrontStencilFunction,
+            };
+
+            mPastBackStencilInfo = new AmtGLStencilFunctionInfo
+            {
+                CompareMask = initialStencilValue.Back.CompareMask,
+                ReferenceMask = initialStencilValue.Back.Reference,
+                StencilFunction = initialStencilValue.Enums.BackStencilFunction,
+            };
+
+            var initialDepthValue = mDepth.Initialize ();
 			PreviousPipeline = new GLCmdBufferPipelineItem {
 				DepthState = initialDepthValue,
 				StencilState = initialStencilValue.Enums,
@@ -734,50 +807,70 @@ namespace Magnesium.OpenGL
 
 					// Draw here 
 					if ((drawItem.Command & GLCommandBufferFlagBits.CmdDrawIndexedIndirect) == GLCommandBufferFlagBits.CmdDrawIndexedIndirect)
-					{
-						var indexType = (drawItem.Command & GLCommandBufferFlagBits.Index16BitMode) == GLCommandBufferFlagBits.Index16BitMode
-							? MgIndexType.UINT16 : MgIndexType.UINT32;
+                    {
+                        DrawIndexedIndirect(drawItem);
+                    }
+                    else if ((drawItem.Command & GLCommandBufferFlagBits.CmdDrawIndexed) == GLCommandBufferFlagBits.CmdDrawIndexed)
+                    {
+                        DrawIndexed(drawItem);
+                    }
+                    else if ((drawItem.Command & GLCommandBufferFlagBits.CmdDrawIndirect) == GLCommandBufferFlagBits.CmdDrawIndirect)
+                    {
+                        DrawIndirect(drawItem);
+                    }
+                    else
+                    {
+                        Draw(drawItem);
+                    }
 
-						if (drawItem.Offset >= (ulong) int.MaxValue)
-						{
-							throw new InvalidOperationException ();
-						}
-
-						var indirect = IntPtr.Add (drawItem.Buffer, (int) drawItem.Offset);
-
-						mRender.DrawIndexedIndirect (drawItem.Topology, indexType, indirect, drawItem.Count, drawItem.Stride);
-					}
-					else if ((drawItem.Command & GLCommandBufferFlagBits.CmdDrawIndexed) == GLCommandBufferFlagBits.CmdDrawIndexed)
-					{
-						var indexType = (drawItem.Command & GLCommandBufferFlagBits.Index16BitMode) == GLCommandBufferFlagBits.Index16BitMode
-							? MgIndexType.UINT16 : MgIndexType.UINT32;
-
-						mRender.DrawIndexed (drawItem.Topology, indexType, drawItem.First, drawItem.Count, drawItem.InstanceCount, drawItem.VertexOffset);
-					}
-					else if ((drawItem.Command & GLCommandBufferFlagBits.CmdDrawIndirect) == GLCommandBufferFlagBits.CmdDrawIndirect)
-					{
-						if (drawItem.Offset >= (ulong) int.MaxValue)
-						{
-							throw new InvalidOperationException ();
-						}
-
-						var indirect = IntPtr.Add (drawItem.Buffer, (int) drawItem.Offset);
-
-						mRender.DrawArraysIndirect (drawItem.Topology, indirect, drawItem.Count, drawItem.Stride);
-					}
-					else
-					{
-						mRender.DrawArrays(drawItem.Topology, drawItem.First, drawItem.Count, drawItem.InstanceCount, drawItem.FirstInstance);
-					}
-
-//					pastState = instructionSet;
-					pastPipeline = currentPipeline;
+                    //					pastState = instructionSet;
+                    pastPipeline = currentPipeline;
 				}
 			}
 			PreviousPipeline = pastPipeline;
 		}
 
-		public void CheckProgram(CmdBufferInstructionSet instructionSet, GLCmdBufferDrawItem drawItem)
+        public void Draw(GLCmdBufferDrawItem drawItem)
+        {
+            mRender.DrawArrays(drawItem.Topology, drawItem.First, drawItem.Count, drawItem.InstanceCount, drawItem.FirstInstance);
+        }
+
+        public void DrawIndirect(GLCmdBufferDrawItem drawItem)
+        {
+            if (drawItem.Offset >= (ulong)int.MaxValue)
+            {
+                throw new InvalidOperationException();
+            }
+
+            var indirect = IntPtr.Add(drawItem.Buffer, (int)drawItem.Offset);
+
+            mRender.DrawArraysIndirect(drawItem.Topology, indirect, drawItem.Count, drawItem.Stride);
+        }
+
+        public void DrawIndexed(GLCmdBufferDrawItem drawItem)
+        {
+            var indexType = (drawItem.Command & GLCommandBufferFlagBits.Index16BitMode) == GLCommandBufferFlagBits.Index16BitMode
+                ? MgIndexType.UINT16 : MgIndexType.UINT32;
+
+            mRender.DrawIndexed(drawItem.Topology, indexType, drawItem.First, drawItem.Count, drawItem.InstanceCount, drawItem.VertexOffset);
+        }
+
+        public void DrawIndexedIndirect(GLCmdBufferDrawItem drawItem)
+        {
+            var indexType = (drawItem.Command & GLCommandBufferFlagBits.Index16BitMode) == GLCommandBufferFlagBits.Index16BitMode
+                ? MgIndexType.UINT16 : MgIndexType.UINT32;
+
+            if (drawItem.Offset >= (ulong)int.MaxValue)
+            {
+                throw new InvalidOperationException();
+            }
+
+            var indirect = IntPtr.Add(drawItem.Buffer, (int)drawItem.Offset);
+
+            mRender.DrawIndexedIndirect(drawItem.Topology, indexType, indirect, drawItem.Count, drawItem.Stride);
+        }
+
+        public void CheckProgram(CmdBufferInstructionSet instructionSet, GLCmdBufferDrawItem drawItem)
 		{
 			// bind program
 			if (mCache.ProgramID != drawItem.ProgramID)
@@ -814,7 +907,7 @@ namespace Magnesium.OpenGL
 
 		}
 
-        public void SetStencilWriteMask(AmtPipelineStencilWriteInfo write)
+        public void BindVertexArrays(object vao)
         {
             throw new NotImplementedException();
         }

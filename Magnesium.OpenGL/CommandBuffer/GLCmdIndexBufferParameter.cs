@@ -6,7 +6,7 @@ namespace Magnesium.OpenGL
 	{
 		public MgIndexType indexType;
 		public ulong offset;
-		public IMgBuffer buffer;
+		public IGLBuffer buffer;
 	}
 }
 

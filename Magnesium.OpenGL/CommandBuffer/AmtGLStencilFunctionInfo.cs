@@ -2,12 +2,11 @@
 
 namespace Magnesium.OpenGL
 {
-    internal struct AmtGLStencilFunctionInfo : IEquatable<AmtGLStencilFunctionInfo>
+    public class AmtGLStencilFunctionInfo : IEquatable<AmtGLStencilFunctionInfo>
     {
         public int ReferenceMask { get; set; }
         public MgCompareOp StencilFunction { get; set; }
-        public uint WriteMask { get;  set; }
-        public int CompareMask { get;  set; }
+        public uint CompareMask { get;  set; }
 
         public bool Equals(AmtGLStencilFunctionInfo other)
         {

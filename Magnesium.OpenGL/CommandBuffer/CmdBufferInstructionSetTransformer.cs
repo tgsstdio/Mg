@@ -88,13 +88,13 @@ namespace Magnesium.OpenGL
 				(gp) => gp.LineWidth
 			);
 
-			BackCompareMasks = new DynamicStateItemStore<int> (
+			BackCompareMasks = new DynamicStateItemStore<uint> (
 				GLGraphicsPipelineDynamicStateFlagBits.STENCIL_COMPARE_MASK,
 				(d) => d.BackCompareMask,
 				(r, i) => r.BackCompareMasks.At (i),
 				(gp) => gp.Back.CompareMask);
 
-			FrontCompareMasks = new DynamicStateItemStore<int> (
+			FrontCompareMasks = new DynamicStateItemStore<uint> (
 				GLGraphicsPipelineDynamicStateFlagBits.STENCIL_COMPARE_MASK,
 				(d) => d.FrontCompareMask,
 				(r, i) => r.FrontCompareMasks.At (i),
@@ -176,12 +176,12 @@ namespace Magnesium.OpenGL
 			private set;
 		}
 
-		public DynamicStateItemStore<int> FrontCompareMasks {
+		public DynamicStateItemStore<uint> FrontCompareMasks {
 			get;
 			private set;
 		}
 
-		public DynamicStateItemStore<int> BackCompareMasks {
+		public DynamicStateItemStore<uint> BackCompareMasks {
 			get;
 			private set;
 		}
@@ -236,7 +236,7 @@ namespace Magnesium.OpenGL
 
 		void InsertNullVBO ()
 		{
-			VBOs.Add (new GLCmdVertexBufferObject (0, 0, null, null));
+			VBOs.Add (new GLCmdVertexBufferObject(0, null));
 		}
 
 		GLCmdVertexBufferObject GenerateVBO (IGLCmdBufferRepository repository, GLCmdDrawCommand command, IGLGraphicsPipeline pipeline)
@@ -304,7 +304,7 @@ namespace Magnesium.OpenGL
 				}
 			}
 
-			return new GLCmdVertexBufferObject(vbo, command.VertexBuffer.Value, command.IndexBuffer, mVBO);
+			return new GLCmdVertexBufferObject(vbo, mVBO);
 		}
 
 		GLCmdVertexBufferObject GetLastVBO ()
@@ -319,26 +319,27 @@ namespace Magnesium.OpenGL
 			{				
 				var currentVertexArray = GetLastVBO ();
 
-				// create new vbo
-				if (currentVertexArray == null)
-				{
-					currentVertexArray = GenerateVBO (userSettings, command, pipeline);
-					VBOs.Add (currentVertexArray);
-				} else
-				{
-					bool useSameBuffers = (command.IndexBuffer.HasValue)
-						? currentVertexArray.Matches (
-							command.VertexBuffer.Value,
-							command.IndexBuffer.Value)
-						: currentVertexArray.Matches (
-							command.VertexBuffer.Value);
+                // create new vbo
+                if (currentVertexArray == null)
+                {
+                    currentVertexArray = GenerateVBO(userSettings, command, pipeline);
+                    VBOs.Add(currentVertexArray);
+                }
+				//} else
+				//{
+				//	bool useSameBuffers = (command.IndexBuffer.HasValue)
+				//		? currentVertexArray.Matches (
+				//			command.VertexBuffer.Value,
+				//			command.IndexBuffer.Value)
+				//		: currentVertexArray.Matches (
+				//			command.VertexBuffer.Value);
 
-					if (!useSameBuffers)
-					{
-						currentVertexArray = GenerateVBO (userSettings, command, pipeline);
-						VBOs.Add (currentVertexArray);
-					}
-				}
+				//	if (!useSameBuffers)
+				//	{
+				//		currentVertexArray = GenerateVBO (userSettings, command, pipeline);
+				//		VBOs.Add (currentVertexArray);
+				//	}
+				//}
 
 				return currentVertexArray.VBO;
 			} 

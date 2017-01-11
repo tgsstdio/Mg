@@ -13,8 +13,8 @@ namespace Magnesium.OpenGL
 		private readonly GLCmdBufferStore<float> mLineWidths;
 		private readonly GLCmdBufferStore<GLCmdDepthBiasParameter> mDepthBias;
 		private readonly GLCmdBufferStore<GLCmdDepthBoundsParameter> mDepthBounds;
-		private readonly GLCmdBufferStore<int> mBackCompareMasks;
-		private readonly GLCmdBufferStore<int> mFrontCompareMasks;
+		private readonly GLCmdBufferStore<uint> mBackCompareMasks;
+		private readonly GLCmdBufferStore<uint> mFrontCompareMasks;
 		private readonly GLCmdBufferStore<int> mFrontReferences;
 		private readonly GLCmdBufferStore<uint> mBackWriteMasks;
 		private readonly GLCmdBufferStore<uint> mFrontWriteMasks;
@@ -53,10 +53,10 @@ namespace Magnesium.OpenGL
 			mDepthBounds = new GLCmdBufferStore<GLCmdDepthBoundsParameter> ();
 			mClearables.Add (mDepthBounds);
 
-			mFrontCompareMasks = new GLCmdBufferStore<int> ();
+			mFrontCompareMasks = new GLCmdBufferStore<uint> ();
 			mClearables.Add (mFrontCompareMasks);
 
-			mBackCompareMasks = new GLCmdBufferStore<int> ();
+			mBackCompareMasks = new GLCmdBufferStore<uint> ();
 			mClearables.Add (mBackCompareMasks);
 
 			mFrontReferences = new GLCmdBufferStore<int> (); 
@@ -110,13 +110,13 @@ namespace Magnesium.OpenGL
 			}
 		}
 
-		public IGLCmdBufferStore<int> FrontCompareMasks { 
+		public IGLCmdBufferStore<uint> FrontCompareMasks { 
 			get {
 				return mFrontCompareMasks;
 			}
 		}
 
-		public IGLCmdBufferStore<int> BackCompareMasks { 
+		public IGLCmdBufferStore<uint> BackCompareMasks { 
 			get {
 				return mBackCompareMasks;
 			}
@@ -395,12 +395,12 @@ namespace Magnesium.OpenGL
 			{	
 				if ((face & MgStencilFaceFlagBits.FRONT_BIT) > 0)
 				{
-					FrontCompareMasks.Add ((int)mask);
+					FrontCompareMasks.Add (mask);
 				}
 
 				if ((face & MgStencilFaceFlagBits.BACK_BIT) > 0)
 				{
-					BackCompareMasks.Add ((int)mask);
+					BackCompareMasks.Add (mask);
 				}
 			}
 		}

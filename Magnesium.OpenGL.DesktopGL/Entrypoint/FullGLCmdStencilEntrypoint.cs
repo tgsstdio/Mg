@@ -117,14 +117,14 @@ namespace Magnesium.OpenGL.DesktopGL
 			}
 		}
 
-		public void SetFrontFaceCullStencilFunction (MgCompareOp func, int referenceStencil, int stencilMask)
+		public void SetFrontFaceCullStencilFunction (MgCompareOp func, int referenceStencil, uint compare)
 		{
 			var cullFaceModeFront = StencilFace.Front;
 			GL.StencilFuncSeparate (
 				cullFaceModeFront,
 				GetStencilFunc (func),
 				referenceStencil,
-				stencilMask);
+				compare);
 
 			{
 				var error = GL.GetError ();
@@ -135,14 +135,14 @@ namespace Magnesium.OpenGL.DesktopGL
 			}
 		}
 
-		public void SetBackFaceCullStencilFunction(MgCompareOp func, int referenceStencil, int stencilMask)
+		public void SetBackFaceCullStencilFunction(MgCompareOp func, int referenceStencil, uint compare)
 		{
 			var cullFaceModeBack = StencilFace.Back;					
 			GL.StencilFuncSeparate (
 				cullFaceModeBack,
 				GetStencilFunc (func),
 				referenceStencil,
-				stencilMask);
+				compare);
 
 			{
 				var error = GL.GetError ();
@@ -211,12 +211,12 @@ namespace Magnesium.OpenGL.DesktopGL
 		public void SetStencilFunction(
 			MgCompareOp stencilFunction,
 			int referenceStencil,
-			int stencilMask)
+			uint compare)
 		{
 			GL.StencilFunc(
 				GetStencilFunc (stencilFunction),
 				referenceStencil,
-				stencilMask);
+				compare);
 
 			{
 				var error = GL.GetError ();

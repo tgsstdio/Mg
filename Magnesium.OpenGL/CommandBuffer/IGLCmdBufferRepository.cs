@@ -7,8 +7,8 @@ namespace Magnesium.OpenGL
 		IGLCmdBufferStore<uint> FrontWriteMasks { get;  }
 		IGLCmdBufferStore<int> BackReferences { get; }
 		IGLCmdBufferStore<int> FrontReferences { get; }
-		IGLCmdBufferStore<int> FrontCompareMasks { get; 	}
-		IGLCmdBufferStore<int> BackCompareMasks { get;  }
+		IGLCmdBufferStore<uint> FrontCompareMasks { get; 	}
+		IGLCmdBufferStore<uint> BackCompareMasks { get;  }
 		IGLCmdBufferStore<GLCmdVertexBufferParameter> VertexBuffers { get; 	}
 		IGLCmdBufferStore<GLCmdIndexBufferParameter> IndexBuffers { get;  }
 		IGLCmdBufferStore<IGLGraphicsPipeline> GraphicsPipelines { get;  }

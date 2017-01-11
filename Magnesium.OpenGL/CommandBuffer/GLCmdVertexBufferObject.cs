@@ -5,26 +5,12 @@ namespace Magnesium.OpenGL
 	public class GLCmdVertexBufferObject : IDisposable
 	{
 		public int VBO { get; private set; }
-		private int mVertexBuffer;
-		private int? mIndexBuffer;
 		private readonly IGLCmdVBOEntrypoint mFactory;
 
-		public GLCmdVertexBufferObject (int vbo, int vertexBuffer, int? indexBuffer, IGLCmdVBOEntrypoint factory)
-		{
+		public GLCmdVertexBufferObject(int vbo, IGLCmdVBOEntrypoint factory)
+        {
 			VBO = vbo;
-			mVertexBuffer = vertexBuffer;
-			mIndexBuffer = indexBuffer;
 			mFactory = factory;
-		}
-
-		public bool Matches(int vertexBuffer)
-		{
-			return (mVertexBuffer == vertexBuffer);								
-		}
-
-		public bool Matches(int vertexBuffer, int indexBuffer)
-		{
-			return (mVertexBuffer == vertexBuffer && mIndexBuffer.HasValue && mIndexBuffer.Value == indexBuffer);	
 		}
 
 		#region IDisposable implementation

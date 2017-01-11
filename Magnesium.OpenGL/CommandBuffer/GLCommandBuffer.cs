@@ -172,7 +172,7 @@ namespace Magnesium.OpenGL
 		public void CmdBindIndexBuffer (IMgBuffer buffer, ulong offset, MgIndexType indexType)
 		{
 			var param = new GLCmdIndexBufferParameter ();
-			param.buffer = buffer;
+			param.buffer = (IGLBuffer) buffer;
 			param.offset = offset;
 			param.indexType = indexType;
 			mRepository.IndexBuffers.Add (param);
