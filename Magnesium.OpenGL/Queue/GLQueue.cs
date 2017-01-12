@@ -5,7 +5,7 @@ namespace Magnesium.OpenGL
 {
 	public class GLQueue : IGLQueue
 	{
-		private IGLQueueRenderer mRenderer;
+		private AmtQueueRenderer mRenderer;
 		private IGLSemaphoreEntrypoint mSignalModule;
 
 		~GLQueue()
@@ -39,7 +39,7 @@ namespace Magnesium.OpenGL
 
 		private IGLCmdImageEntrypoint mImageOps;
 
-		public GLQueue (IGLQueueRenderer renderer, IGLSemaphoreEntrypoint generator, IGLCmdImageEntrypoint imageOps)
+		public GLQueue (AmtQueueRenderer renderer, IGLSemaphoreEntrypoint generator, IGLCmdImageEntrypoint imageOps)
 		{
 			mRenderer = renderer;
 			mSignalModule = generator;
@@ -102,7 +102,7 @@ namespace Magnesium.OpenGL
 					var order = new GLQueueSubmitOrder ();
 					order.Key = mOrderKey;
 					order.Submissions = new Dictionary<uint, IGLSemaphore> ();
-					order.Fence = fence as IGLQueueFence;
+					order.Fence = (IGLFence) fence;
 					foreach (var sub in children)
 					{
 						order.Submissions.Add (sub.Key, sub.OrderFence);
@@ -137,13 +137,7 @@ namespace Magnesium.OpenGL
 					{
 						foreach (var buffer in request.CommandBuffers)
 						{
-							//mImageOps.PerformOperation (buffer.ImageInstructions);
-
-							// TRY TO FIGURE OUT HOW TO STOP CMDBUF EXECUTION WITHOUT CHANGING 
-							//if (buffer.IsQueueReady)
-							//{
-							//	mRenderer.Render (new []{buffer.InstructionSet});
-							//}
+                            mRenderer.Render(buffer);
 						}
 					}
 
@@ -200,7 +194,9 @@ namespace Magnesium.OpenGL
 
 						if (order.Submissions.Count <= 0)
 						{
-							order.Fence.Signal ();
+							var fence = order.Fence;
+                            fence.Reset();
+                            fence.BeginSync();
 							mOrders.Remove (orderKey);
 						}
 					}

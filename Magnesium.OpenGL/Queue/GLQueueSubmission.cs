@@ -2,7 +2,7 @@
 
 namespace Magnesium.OpenGL
 {
-	class GLQueueSubmission
+	public class GLQueueSubmission
 	{
 		public uint Key;
 		public GLQueueSubmission (uint key, MgSubmitInfo sub)

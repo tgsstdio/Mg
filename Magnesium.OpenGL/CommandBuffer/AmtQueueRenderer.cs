@@ -2,79 +2,54 @@
 
 namespace Magnesium.OpenGL
 {
-	class AmtQueueRenderer
+	public class AmtQueueRenderer
 	{
-        private IAmtStateRenderer mRenderer;
-
-        public AmtQueueRenderer(IAmtStateRenderer renderer)
+        private readonly IGLQueueRenderer mRenderer;
+        private readonly IGLBlitOperationEntrypoint mBlit;
+        public AmtQueueRenderer(IGLQueueRenderer renderer, IGLBlitOperationEntrypoint blit)
 		{
             mRenderer = renderer;
+            mBlit = blit;
 		}
 
-		public void Render(AmtQueueSubmission request)
+		public void Render(IGLCommandBuffer buffer)
 		{
-			foreach (var buffer in request.CommandBuffers)
+			if (buffer.IsQueueReady)
 			{
-				if (buffer.IsQueueReady)
+				AmtCommandRecording recording = GenerateRecording(buffer, mRenderer);
+
+				foreach (var context in buffer.Record.Contexts)
 				{
-					AmtCommandRecording recording = GenerateRecording(buffer, mRenderer);
-
-					foreach (var context in buffer.Record.Contexts)
+					if (context.Category == AmtEncoderCategory.Compute)
 					{
-						if (context.Category == AmtEncoderCategory.Compute)
-						{
-                            recording.Compute.Encoder = new AmtComputeEncoder();
-						}
-						else if (context.Category == AmtEncoderCategory.Blit)
-						{
-							recording.Blit.Encoder = new AmtBlitEncoder();
-                        }
+                        recording.Compute.Encoder = new AmtComputeEncoder();
+					}
+					else if (context.Category == AmtEncoderCategory.Blit)
+					{
+                        recording.Blit.Entrypoint = mBlit;
+                    }
 
-						for (var i = context.First; i <= context.Last; ++i)
-						{
-							buffer.Record.Instructions[i].Perform(recording);
-						}
-
-						if (context.Category == AmtEncoderCategory.Compute)
-						{
-							recording.Compute.Encoder.EndEncoding();
-							recording.Compute.Encoder = null;
-						}
-						else if (context.Category == AmtEncoderCategory.Blit)
-						{
-							recording.Blit.Encoder.EndEncoding();
-							recording.Blit.Encoder = null;
-						}
+					for (var i = context.First; i <= context.Last; ++i)
+					{
+						buffer.Record.Instructions[i].Perform(recording);
 					}
 
-					TriggerSemaphores(request.Signals);
+					if (context.Category == AmtEncoderCategory.Compute)
+					{
+						recording.Compute.Encoder.EndEncoding();
+						recording.Compute.Encoder = null;
+					}
+					////else if (context.Category == AmtEncoderCategory.Blit)
+					////{
+					////	recording.Blit.Encoder.EndEncoding();
+					////	recording.Blit.Encoder = null;
+					////}
+				}       
 
-                    if (request.OrderFence != null)
-                    {
-                        request.OrderFence.Signal();
-                    }              
-
-				}
-			}
-            if (request.Fence != null)
-            {
-                request.Fence.BeginSync();
-            }
+			}			
         }
 
-		static void TriggerSemaphores(IGLSemaphore[] signals)
-		{
-			// SIGNAL SEMAPHORE
-			foreach (var signal in signals)
-			{
-				signal.Reset();
-				// APPLY HANDLER TO COMMAND BUFFER
-
-				signal.BeginSync();
-			}
-		}
-
-		static AmtCommandRecording GenerateRecording(AmtCommandBuffer buffer, IAmtStateRenderer renderer)
+		static AmtCommandRecording GenerateRecording(IGLCommandBuffer buffer, IGLQueueRenderer renderer)
 		{
 			return new AmtCommandRecording
 			{

@@ -103,7 +103,8 @@ namespace TriangleDemo.DesktopGL
             // Magnesium.OpenGL INTERNALS
             container.Register<Magnesium.OpenGL.IGLGraphicsPipelineCompiler, Magnesium.OpenGL.GLSLGraphicsPipelineCompilier>(new PerContainerLifetime());
             container.Register<Magnesium.OpenGL.IGLQueue, Magnesium.OpenGL.GLQueue>(new PerContainerLifetime());
-            container.Register<Magnesium.OpenGL.IGLQueueRenderer, Magnesium.OpenGL.GLQueueRenderer>(new PerContainerLifetime());
+            container.Register<Magnesium.OpenGL.IGLQueueRenderer, Magnesium.OpenGL.AmtStateRenderer>(new PerContainerLifetime());
+            container.Register<Magnesium.OpenGL.AmtQueueRenderer>(new PerContainerLifetime());
             container.Register<Magnesium.OpenGL.IGLDeviceEntrypoint, Magnesium.OpenGL.DefaultGLDeviceEntrypoint>(new PerContainerLifetime());
 
             // WINDOW 
@@ -135,6 +136,7 @@ namespace TriangleDemo.DesktopGL
             container.Register<Magnesium.OpenGL.IGLFramebufferSupport, Magnesium.OpenGL.DesktopGL.FullGLFramebufferSupport>(new PerContainerLifetime());
             container.Register<Magnesium.OpenGL.IGLExtensionLookup, Magnesium.OpenGL.DesktopGL.FullGLExtensionLookup>(new PerContainerLifetime());
             container.Register<Magnesium.OpenGL.IGLFenceEntrypoint, Magnesium.OpenGL.DesktopGL.FullGLFullFenceEntrypoint>(new PerContainerLifetime());
+            container.Register<Magnesium.OpenGL.IGLBlitOperationEntrypoint, Magnesium.OpenGL.DesktopGL.FullGLBlitOperationEntrypoint>(new PerContainerLifetime());
 
             // Magnesium.OpenGL.DesktopGL INTERNALS
             container.Register<Magnesium.OpenGL.DesktopGL.IOpenTKSwapchainKHR, Magnesium.OpenGL.DesktopGL.GLSwapchainKHR>(new PerContainerLifetime());

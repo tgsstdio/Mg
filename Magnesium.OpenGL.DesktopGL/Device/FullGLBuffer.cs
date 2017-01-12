@@ -5,62 +5,84 @@ namespace Magnesium.OpenGL.DesktopGL
 {
 	internal class FullGLBuffer : IGLBuffer
 	{
-		private static BufferTarget GetBufferTarget(GLMemoryBufferType bufferType)
-		{
-			switch(bufferType)
-			{
-			case GLMemoryBufferType.SSBO:
-				return BufferTarget.ShaderStorageBuffer;
-			case GLMemoryBufferType.INDEX:
-				return BufferTarget.ElementArrayBuffer;
-			case GLMemoryBufferType.VERTEX:
-				return BufferTarget.ArrayBuffer;
-			case GLMemoryBufferType.INDIRECT:
-				return BufferTarget.DrawIndirectBuffer;
-            //case GLMemoryBufferType.TRANSFER_SRC:
-            //    return BufferTarget.CopyReadBuffer;
-            //case GLMemoryBufferType.TRANSFER_DST:
-            //    return BufferTarget.CopyWriteBuffer;
-            default:
-				throw new NotSupportedException ();
-			}
-		}
+		//private static BufferTarget GetBufferTarget(MgBufferCreateInfo info)
+		//{
+		//	switch(info.Usage)
+		//	{
+		//	case MgBufferUsageFlagBits.STORAGE_BUFFER_BIT:
+		//		return BufferTarget.ShaderStorageBuffer;
+		//	case MgBufferUsageFlagBits.INDEX_BUFFER_BIT:
+		//		return BufferTarget.ElementArrayBuffer;
+		//	case MgBufferUsageFlagBits.VERTEX_BUFFER_BIT:
+		//		return BufferTarget.ArrayBuffer;
+		//	case MgBufferUsageFlagBits.INDIRECT_BUFFER_BIT:
+		//		return BufferTarget.DrawIndirectBuffer;
+  //          case MgBufferUsageFlagBits.TRANSFER_SRC_BIT:
+  //              return BufferTarget.CopyReadBuffer;
+  //          case MgBufferUsageFlagBits.TRANSFER_DST_BIT:
+  //              return BufferTarget.CopyWriteBuffer;
+  //          default:
+		//		throw new NotSupportedException ();
+		//	}
+		//}
 
 		public FullGLBuffer (MgBufferCreateInfo info)
-		{	
-			switch(info.Usage)
-			{
-			case MgBufferUsageFlagBits.STORAGE_BUFFER_BIT:
-				BufferType = GLMemoryBufferType.SSBO;
-				break;
-			case MgBufferUsageFlagBits.INDEX_BUFFER_BIT:
-				BufferType = GLMemoryBufferType.INDEX;
-				break;
-			case MgBufferUsageFlagBits.VERTEX_BUFFER_BIT:
-				BufferType = GLMemoryBufferType.VERTEX;
-				break;
-			case MgBufferUsageFlagBits.INDIRECT_BUFFER_BIT:
-				BufferType = GLMemoryBufferType.INDIRECT;
-				break;				
-			default:
-				throw new NotSupportedException ();
-			}
+        {
+            IsBufferType = DetermineBufferType(info);
 
-			Target = GetBufferTarget (BufferType);
-			RequestedSize = info.Size;
-		}
+            Usage = info.Usage;
 
-		public GLMemoryBufferType BufferType { get; private set;}
+            //Target = GetBufferTarget(info);
+            RequestedSize = info.Size;
+        }
 
-		public IntPtr Source { get; set; }
+        private static bool DetrimineIfVertexBuffer(MgBufferCreateInfo info)
+        {
+            var isVertexFlags = MgBufferUsageFlagBits.VERTEX_BUFFER_BIT;
+            return (info.Usage & isVertexFlags) == isVertexFlags;
+        }
+
+        private static bool DetrimineIfStorageBuffer(MgBufferCreateInfo info)
+        {
+            var isStorageFlags = MgBufferUsageFlagBits.STORAGE_BUFFER_BIT;
+            return (info.Usage & isStorageFlags) == isStorageFlags;
+        }
+
+        private static bool DetermineIfIndexBuffer(MgBufferCreateInfo info)
+        {
+            var isIndexFlags = MgBufferUsageFlagBits.INDEX_BUFFER_BIT;
+            return ((info.Usage & isIndexFlags) == isIndexFlags);
+        }
+
+        private static bool DetermineBufferType(MgBufferCreateInfo info)
+        {
+            var isBufferFlags = MgBufferUsageFlagBits.STORAGE_BUFFER_BIT
+                | MgBufferUsageFlagBits.TRANSFER_DST_BIT
+                | MgBufferUsageFlagBits.TRANSFER_SRC_BIT
+                | MgBufferUsageFlagBits.UNIFORM_BUFFER_BIT
+                | MgBufferUsageFlagBits.INDEX_BUFFER_BIT
+                | MgBufferUsageFlagBits.VERTEX_BUFFER_BIT;
+
+            return ((info.Usage & isBufferFlags) != 0);
+        }
+
+        public IntPtr Source { get; set; }
 
 		// INDEX, 
 		public BufferTarget Target { get; private set;}
 		public int BufferId { get; private set; }
 		public ulong RequestedSize { get; set; }
+        public bool IsBufferType { get; private set; }
 
-		#region IMgBuffer implementation
-		public Result BindBufferMemory (IMgDevice device, IMgDeviceMemory memory, ulong memoryOffset)
+        public MgBufferUsageFlagBits Usage
+        {
+            get;
+            private set;          
+        }
+
+
+        #region IMgBuffer implementation
+        public Result BindBufferMemory (IMgDevice device, IMgDeviceMemory memory, ulong memoryOffset)
 		{
 			var internalMemory = memory as GLDeviceMemory;
 			if (internalMemory == null)
@@ -75,16 +97,9 @@ namespace Magnesium.OpenGL.DesktopGL
 			var offset = (Int32) memoryOffset;
 			this.Source = IntPtr.Add (internalMemory.Handle, offset);
 
-			switch(internalMemory.BufferType) 
-			{
-			case GLMemoryBufferType.SSBO:
-			case GLMemoryBufferType.VERTEX:
-			case GLMemoryBufferType.INDEX:
-				this.BufferId = internalMemory.BufferId;
-				break;
-			default:
-				// IGNORE
-				break;
+            if (IsBufferType)
+            {
+                this.BufferId = internalMemory.BufferId;
 			}
 
 			return Result.SUCCESS;
@@ -96,22 +111,10 @@ namespace Magnesium.OpenGL.DesktopGL
 			if (mIsDisposed)
 				return;
 
-			switch(BufferType)
-			{
-			case GLMemoryBufferType.SSBO:
-			case GLMemoryBufferType.INDEX:
-			case GLMemoryBufferType.VERTEX:
-				GL.DeleteBuffer (this.BufferId);
-
-
-
-				break;
-			case GLMemoryBufferType.INDIRECT:
-				break;				
-			default:
-				throw new NotSupportedException ();
-			}
-
+            if (IsBufferType)
+            {
+                GL.DeleteBuffer(this.BufferId);
+            }
 
 			mIsDisposed = true;
 		}

@@ -33,6 +33,7 @@
     <Compile Include="Device\GLFullFence.cs" />
     <Compile Include="Driver\IBackbufferContext.cs" />
     <Compile Include="Driver\OpenTKBackbufferContext.cs" />
+    <Compile Include="Entrypoint\FullGLBlitOperationEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLFullFenceEntrypoint.cs" />
     <Compile Include="Entrypoint\NullMgGraphicsDeviceLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

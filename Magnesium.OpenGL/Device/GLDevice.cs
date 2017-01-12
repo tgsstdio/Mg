@@ -70,16 +70,61 @@ namespace Magnesium.OpenGL
 			var internalBuffer = buffer as IGLBuffer;
 			if (internalBuffer == null)
 			{
-				throw new ArgumentException ("buffer");
+				throw new ArgumentException (nameof(buffer));
 			}
 
+            uint mask = DetermineBufferMemoryType(internalBuffer.Usage);
 			pMemoryRequirements = new MgMemoryRequirements {
 				Size = internalBuffer.RequestedSize,
-				MemoryTypeBits = internalBuffer.BufferType.GetMask (),
+				MemoryTypeBits = mask,
 			};
 		}
 
-		internal static int CalculateMipLevels(int width, int height = 0, int depth = 0)
+        private uint DetermineBufferMemoryType(MgBufferUsageFlagBits usage)
+        {
+            var flags = MgBufferUsageFlagBits.STORAGE_BUFFER_BIT;
+            // 1st precedence
+            if ((usage & flags) == flags)
+            {
+                return GLMemoryBufferType.SSBO.GetMask();
+            }
+
+            flags = MgBufferUsageFlagBits.VERTEX_BUFFER_BIT;
+            if ((usage & flags) == flags)
+            {
+                return GLMemoryBufferType.VERTEX.GetMask();
+            }
+
+            flags = MgBufferUsageFlagBits.INDIRECT_BUFFER_BIT;
+            if ((usage & flags) == flags)
+            {
+                return GLMemoryBufferType.INDIRECT.GetMask();
+            }
+
+            flags = MgBufferUsageFlagBits.INDEX_BUFFER_BIT;
+            if ((usage & flags) == flags)
+            {
+                return GLMemoryBufferType.INDEX.GetMask();
+            }
+
+            flags = MgBufferUsageFlagBits.TRANSFER_DST_BIT;
+            if ((usage & flags) == flags)
+            {
+                return GLMemoryBufferType.TRANSFER_DST.GetMask();
+            }
+
+            flags = MgBufferUsageFlagBits.TRANSFER_SRC_BIT;
+            if ((usage & flags) == flags)
+            {
+                return GLMemoryBufferType.TRANSFER_SRC.GetMask();
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        internal static int CalculateMipLevels(int width, int height = 0, int depth = 0)
 		{
 			int levels = 1;
 			int size = Math.Max(Math.Max(width, height), depth);
@@ -93,6 +138,11 @@ namespace Magnesium.OpenGL
 
 		public void GetImageMemoryRequirements (IMgImage image, out MgMemoryRequirements memoryRequirements)
 		{
+            if (image == null)
+            {
+                throw new ArgumentNullException(nameof(image));
+            }
+
 			var texture = image as GLImage;
 
 			uint imageSize = 0;
@@ -838,7 +888,7 @@ namespace Magnesium.OpenGL
 
 							var buf = info.Buffer as IGLBuffer;
 
-							if (buf != null && buf.BufferType == GLMemoryBufferType.SSBO)
+							if (buf != null && ((buf.Usage & MgBufferUsageFlagBits.STORAGE_BUFFER_BIT) == MgBufferUsageFlagBits.STORAGE_BUFFER_BIT))
 							{
 								var bufferDesc = localSet.Bindings [offset + i].BufferDesc;
 								bufferDesc.BufferId = buf.BufferId;
@@ -909,7 +959,7 @@ namespace Magnesium.OpenGL
                 var sorter = new AmtIncrementalChunkifier();
                 var graphics = new AmtGraphicsEncoder(sorter, new AmtGraphicsBag(), mEntrypoint.VBO);
                 var compute = new AmtComputeEncoder();
-                var blit = new AmtBlitEncoder();
+                var blit = new AmtBlitEncoder(sorter, new AmtBlitBag());
                 var encoder = new AmtCommandEncoder(sorter, graphics, compute, blit);
 
 

@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace Magnesium.OpenGL
 {
-    public class AmtStateRenderer : IAmtStateRenderer
+    public class AmtStateRenderer : IGLQueueRenderer
     {
         private readonly IGLCmdBlendEntrypoint mBlend;
         private readonly IGLCmdStencilEntrypoint mStencil;
@@ -122,7 +122,7 @@ namespace Magnesium.OpenGL
 
         public void EndRenderpass()
         {
-            throw new NotImplementedException();
+           
         }
 
         #endregion
@@ -788,48 +788,6 @@ namespace Magnesium.OpenGL
 		public GLCmdBufferPipelineItem PreviousPipeline { get ; private set; }
 		//public GLCmdBufferDrawItem mPreviousItem;
 
-		public void Render(CmdBufferInstructionSet[] items)
-		{
-			var pastPipeline = PreviousPipeline;
-			var pastStencil = mPastStencilInfo;
-			var clearValues = 0;
-
-			var isFirst = true;
-
-			foreach (var instructionSet in items)
-			{
-				foreach (var drawItem in instructionSet.DrawItems)
-				{
-					// TODO : bind render target
-					var currentPipeline = instructionSet.Pipelines[drawItem.Pipeline];
-
-					CheckProgram (instructionSet, drawItem);
-
-					// Draw here 
-					//if ((drawItem.Command & GLCommandBufferFlagBits.CmdDrawIndexedIndirect) == GLCommandBufferFlagBits.CmdDrawIndexedIndirect)
-     //               {
-     //                   DrawIndexedIndirect(drawItem);
-     //               }
-     //               else if ((drawItem.Command & GLCommandBufferFlagBits.CmdDrawIndexed) == GLCommandBufferFlagBits.CmdDrawIndexed)
-     //               {
-     //                   DrawIndexed(drawItem);
-     //               }
-     //               else if ((drawItem.Command & GLCommandBufferFlagBits.CmdDrawIndirect) == GLCommandBufferFlagBits.CmdDrawIndirect)
-     //               {
-     //                   DrawIndirect(drawItem);
-     //               }
-                    //else
-                    //{
-                    //    Draw(drawItem);
-                    //}
-
-                    //					pastState = instructionSet;
-                    pastPipeline = currentPipeline;
-				}
-			}
-			PreviousPipeline = pastPipeline;
-		}
-
         public void Draw(GLCmdInternalDraw drawItem)
         {
             mRender.DrawArrays(drawItem.Topology, drawItem.FirstVertex, drawItem.VertexCount, drawItem.InstanceCount, drawItem.FirstInstance);
@@ -850,42 +808,42 @@ namespace Magnesium.OpenGL
             mRender.DrawIndexedIndirect(drawItem.Topology, drawItem.IndexType, drawItem.Indirect, drawItem.DrawCount, drawItem.Stride);
         }
 
-        public void CheckProgram(CmdBufferInstructionSet instructionSet, GLCmdBufferDrawItem drawItem)
-		{
-			// bind program
-			if (mCache.ProgramID != drawItem.ProgramID)
-			{
-				mCache.ProgramID = drawItem.ProgramID;
-				mCache.VBO = drawItem.VBO;
-				mCache.DescriptorSet = instructionSet.DescriptorSets [drawItem.DescriptorSet];
-				mCache.BindDescriptorSet ();
-			}
-			else
-			{
-				mCache.VBO = drawItem.VBO;
-
-				if (mCache.DescriptorSetIndex != drawItem.DescriptorSet)
-				{
-					// TODO : FIX ME
-					mCache.DescriptorSet = instructionSet.DescriptorSets [drawItem.DescriptorSet];
-
-					if (mCache.DescriptorSet != null)
-					{
-						mCache.BindDescriptorSet ();
-					}
-				}
-			}
-
-			// bind constant buffers
-//			if (currentProgram.GetBufferMask () != nextState.BufferMask)
+//        public void CheckProgram(CmdBufferInstructionSet instructionSet, GLCmdBufferDrawItem drawItem)
+//		{
+//			// bind program
+//			if (mCache.ProgramID != drawItem.ProgramID)
 //			{
-//				currentProgram.BindMask (mBuffers);
+//				mCache.ProgramID = drawItem.ProgramID;
+//				mCache.VBO = drawItem.VBO;
+//				mCache.DescriptorSet = instructionSet.DescriptorSets [drawItem.DescriptorSet];
+//				mCache.BindDescriptorSet ();
 //			}
-			// bind uniforms
+//			else
+//			{
+//				mCache.VBO = drawItem.VBO;
+
+//				if (mCache.DescriptorSetIndex != drawItem.DescriptorSet)
+//				{
+//					// TODO : FIX ME
+//					mCache.DescriptorSet = instructionSet.DescriptorSets [drawItem.DescriptorSet];
+
+//					if (mCache.DescriptorSet != null)
+//					{
+//						mCache.BindDescriptorSet ();
+//					}
+//				}
+//			}
+
+//			// bind constant buffers
+////			if (currentProgram.GetBufferMask () != nextState.BufferMask)
+////			{
+////				currentProgram.BindMask (mBuffers);
+////			}
+//			// bind uniforms
 
 
 
-		}
+//		}
 
         public void BindVertexArrays(object vao)
         {

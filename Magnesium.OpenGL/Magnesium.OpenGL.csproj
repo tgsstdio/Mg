@@ -31,6 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CommandBuffer\AmtBeginRenderpassRecord.cs" />
+    <Compile Include="CommandBuffer\AmtBlitBag.cs" />
     <Compile Include="CommandBuffer\AmtBlitEncoder.cs" />
     <Compile Include="CommandBuffer\AmtBlitGrid.cs" />
     <Compile Include="CommandBuffer\AmtBlitRecording.cs" />
@@ -42,6 +43,8 @@
     <Compile Include="CommandBuffer\AmtComputeEncoder.cs" />
     <Compile Include="CommandBuffer\AmtComputeGrid.cs" />
     <Compile Include="CommandBuffer\AmtComputeRecording.cs" />
+    <Compile Include="CommandBuffer\AmtCopyBufferRecord.cs" />
+    <Compile Include="CommandBuffer\AmtCopyBufferRegionRecord.cs" />
     <Compile Include="CommandBuffer\AmtEncoderCategory.cs" />
     <Compile Include="CommandBuffer\AmtEncoderContext.cs" />
     <Compile Include="CommandBuffer\AmtEncoderItemCollection.cs" />
@@ -61,9 +64,9 @@
     <Compile Include="CommandBuffer\IAmtComputeEncoder.cs" />
     <Compile Include="CommandBuffer\IAmtEncoderContextSorter.cs" />
     <Compile Include="CommandBuffer\IAmtGraphicsEncoder.cs" />
-    <Compile Include="CommandBuffer\IAmtStateRenderer.cs" />
     <Compile Include="Device\IGLCommandBuffer.cs" />
     <Compile Include="Device\IGLFence.cs" />
+    <Compile Include="Entrypoint\IGLBlitOperationEntrypoint.cs" />
     <Compile Include="Entrypoint\IGLFenceEntrypoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Driver\GLEntrypoint.cs" />
@@ -143,14 +146,12 @@
     <Compile Include="CommandBuffer\GLCmdDescriptorSetParameter.cs" />
     <Compile Include="CommandBuffer\GLCmdDepthBiasParameter.cs" />
     <Compile Include="CommandBuffer\GLCmdDepthBoundsParameter.cs" />
-    <Compile Include="CommandBuffer\ICmdBufferInstructionSetComposer.cs" />
     <Compile Include="CommandBuffer\GLCmdVertexBufferObject.cs" />
     <Compile Include="CommandBuffer\GLCmdBufferDrawItem.cs" />
     <Compile Include="CommandBuffer\GLCmdBufferPipelineItem.cs" />
     <Compile Include="CommandBuffer\GLCmdClearValuesParameter.cs" />
     <Compile Include="CommandBuffer\GLCommandBufferFlagBits.cs" />
     <Compile Include="CommandBuffer\GLClearValueArrayItem.cs" />
-    <Compile Include="CommandBuffer\CmdBufferInstructionSet.cs" />
     <Compile Include="CommandBuffer\CmdImageInstructionSet.cs" />
     <Compile Include="CommandBuffer\GLCmdTexImageData.cs" />
     <Compile Include="CommandBuffer\IGLCmdBufferStoreResettable.cs" />
@@ -162,10 +163,8 @@
     <Compile Include="Entrypoint\GLInternalImageFormat.cs" />
     <Compile Include="Queue\GLQueue.cs" />
     <Compile Include="Queue\GLQueueSubmission.cs" />
-    <Compile Include="Queue\IGLQueueRenderer.cs" />
     <Compile Include="Queue\GLQueueSubmitOrder.cs" />
     <Compile Include="Queue\IGLQueueFence.cs" />
-    <Compile Include="Queue\GLQueueRenderer.cs" />
     <Compile Include="Entrypoint\IGLCmdBlendEntrypoint.cs" />
     <Compile Include="Entrypoint\IGLCmdDrawEntrypoint.cs" />
     <Compile Include="Entrypoint\IGLCmdRasterizationEntrypoint.cs" />
@@ -186,6 +185,7 @@
     <Compile Include="Entrypoint\IGLCmdImageEntrypoint.cs" />
     <Compile Include="Entrypoint\IGLGraphicsPipelineCompiler.cs" />
     <Compile Include="Entrypoint\GLSLGraphicsPipelineCompilier.cs" />
+    <Compile Include="Queue\IGLQueueRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Magnesium, Version=4.0.6155.29495, Culture=neutral, processorArchitecture=MSIL">

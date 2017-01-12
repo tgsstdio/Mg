@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Magnesium.OpenGL
 {
@@ -13,7 +10,7 @@ namespace Magnesium.OpenGL
         private readonly IGLCmdVBOEntrypoint mVBO;
 
         // NOT SURE IF THIS IS NEEDED IN HERE
-        public CmdBufferInstructionSet InstructionSet { get; private set; }
+        //public CmdBufferInstructionSet InstructionSet { get; private set; }
         private AmtGraphicsBag mBag;
 
         public AmtGraphicsEncoder
@@ -425,14 +422,14 @@ namespace Magnesium.OpenGL
             InvalidateBackStencil();
             InvalidateFrontStencil();
 
-            if (InstructionSet != null)
-            {
-                foreach (var vbo in InstructionSet.VBOs)
-                {
-                    vbo.Dispose();
-                }
-                InstructionSet = null;
-            }
+            //if (InstructionSet != null)
+            //{
+            //    foreach (var vbo in InstructionSet.VBOs)
+            //    {
+            //        vbo.Dispose();
+            //    }
+            //    InstructionSet = null;
+            //}
         }
 
         bool StoreDrawCommand()
@@ -632,7 +629,7 @@ namespace Magnesium.OpenGL
                 uint index = i + vertexData.firstBinding;
                 var buffer = vertexData.pBuffers[index] as IGLBuffer;
                 // SILENT error
-                if (buffer.BufferType == GLMemoryBufferType.VERTEX)
+                if ((buffer.Usage & MgBufferUsageFlagBits.VERTEX_BUFFER_BIT) == MgBufferUsageFlagBits.VERTEX_BUFFER_BIT)
                 {
                     bufferIds[i] = buffer.BufferId;
                     offsets[i] = (vertexData.pOffsets != null) ? (long)vertexData.pOffsets[i] : 0L;
@@ -677,7 +674,7 @@ namespace Magnesium.OpenGL
             if (mBoundIndexBuffer != null)
             {
                 var indexBuffer = mBoundIndexBuffer.buffer;
-                if (indexBuffer != null && indexBuffer.BufferType == GLMemoryBufferType.INDEX)
+                if (indexBuffer != null && ((indexBuffer.Usage & MgBufferUsageFlagBits.INDEX_BUFFER_BIT) == MgBufferUsageFlagBits.INDEX_BUFFER_BIT))
                 {
                     mVBO.BindIndexBuffer(vbo, indexBuffer.BufferId);
                     //GL.VertexArrayElementBuffer (vbo, indexBuffer.BufferId);
