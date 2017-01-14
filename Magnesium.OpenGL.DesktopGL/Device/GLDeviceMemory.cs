@@ -23,6 +23,8 @@ namespace Magnesium.OpenGL.DesktopGL
                 return BufferTarget.CopyReadBuffer;
             case GLMemoryBufferType.TRANSFER_DST:
                 return BufferTarget.CopyWriteBuffer;
+            case GLMemoryBufferType.UNIFORM:
+                return BufferTarget.UniformBuffer;
             default:
 				throw new NotSupportedException ();
 			}

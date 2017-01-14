@@ -7,12 +7,12 @@ namespace TriangleDemo.DesktopGL
     {
         public Stream OpenFragmentShader()
         {
-            throw new NotImplementedException();
+            return System.IO.File.OpenRead("shaders/triangle.frag");
         }
 
         public Stream OpenVertexShader()
         {
-            throw new NotImplementedException();
+            return System.IO.File.OpenRead("shaders/triangle.vert");
         }
     }
 }

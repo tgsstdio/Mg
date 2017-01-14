@@ -101,6 +101,12 @@ namespace Magnesium.OpenGL
                 return GLMemoryBufferType.INDIRECT.GetMask();
             }
 
+            flags = MgBufferUsageFlagBits.UNIFORM_BUFFER_BIT;
+            if ((usage & flags) == flags)
+            {
+                return GLMemoryBufferType.UNIFORM.GetMask();
+            }
+
             flags = MgBufferUsageFlagBits.INDEX_BUFFER_BIT;
             if ((usage & flags) == flags)
             {
@@ -120,7 +126,7 @@ namespace Magnesium.OpenGL
             }
             else
             {
-                throw new NotSupportedException();
+                throw new NotSupportedException("BufferMemoryType not supported");
             }
         }
 

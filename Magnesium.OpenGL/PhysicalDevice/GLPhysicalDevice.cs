@@ -10,7 +10,8 @@ namespace Magnesium.OpenGL
 		INDEX = 3,
 		IMAGE = 4,
         TRANSFER_SRC = 5,
-        TRANSFER_DST = 6
+        TRANSFER_DST = 6,
+        UNIFORM = 7,
 	}
 
 	public static class GLMemoryBufferExtensions 
@@ -33,6 +34,8 @@ namespace Magnesium.OpenGL
                 return 1 << 5;
             case GLMemoryBufferType.TRANSFER_DST:
                 return 1 << 6;
+            case GLMemoryBufferType.UNIFORM:
+                return 1 << 7;
             default:
 				throw new NotSupportedException ();
 			}
@@ -74,7 +77,7 @@ namespace Magnesium.OpenGL
 			// 0 : buffer based 
 			// 1 : host defined (for INDIRECT)
 			pMemoryProperties = new MgPhysicalDeviceMemoryProperties();
-			var slots = new MgMemoryType[7];
+			var slots = new MgMemoryType[8];
 
 			const uint allOn = (uint)(
 			                       MgMemoryPropertyFlagBits.DEVICE_LOCAL_BIT |
@@ -91,6 +94,7 @@ namespace Magnesium.OpenGL
 			slots [4] = new MgMemoryType{ PropertyFlags = allOn };
             slots [5] = new MgMemoryType { PropertyFlags = allOn };
             slots [6] = new MgMemoryType { PropertyFlags = allOn };
+            slots [7] = new MgMemoryType { PropertyFlags = allOn };
 
             pMemoryProperties.MemoryTypes = slots;
 		}
