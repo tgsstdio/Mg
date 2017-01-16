@@ -16,6 +16,7 @@
 		IGLGraphicsPipelineCompiler GraphicsCompiler { get; }
 		IGLImageFormatEntrypoint ImageFormat { get; }
         IGLFenceEntrypoint Fence { get; }
-	}
+        IGLPipelineCacheLayoutEntrypoint Layout { get; }
+    }
 }
 

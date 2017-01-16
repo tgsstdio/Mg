@@ -45,6 +45,7 @@
     <Compile Include="CommandBuffer\AmtComputeRecording.cs" />
     <Compile Include="CommandBuffer\AmtCopyBufferRecord.cs" />
     <Compile Include="CommandBuffer\AmtCopyBufferRegionRecord.cs" />
+    <Compile Include="CommandBuffer\AmtDescriptorSetBindingCache.cs" />
     <Compile Include="CommandBuffer\AmtEncoderCategory.cs" />
     <Compile Include="CommandBuffer\AmtEncoderContext.cs" />
     <Compile Include="CommandBuffer\AmtEncoderItemCollection.cs" />
@@ -66,6 +67,7 @@
     <Compile Include="CommandBuffer\IAmtGraphicsEncoder.cs" />
     <Compile Include="Device\IGLCommandBuffer.cs" />
     <Compile Include="Device\IGLFence.cs" />
+    <Compile Include="Entrypoint\IGLPipelineCacheLayoutEntrypoint.cs" />
     <Compile Include="Entrypoint\IGLBlitOperationEntrypoint.cs" />
     <Compile Include="Entrypoint\IGLFenceEntrypoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -112,7 +114,6 @@
     <Compile Include="Device\GLCommandPool.cs" />
     <Compile Include="Device\GLRenderPass.cs" />
     <Compile Include="CommandBuffer\GLCmdComputeCommand.cs" />
-    <Compile Include="CommandBuffer\IGLCmdBufferRepository.cs" />
     <Compile Include="CommandBuffer\GLCmdRenderPassCommand.cs" />
     <Compile Include="CommandBuffer\GLCmdDrawCommand.cs" />
     <Compile Include="CommandBuffer\GLCmdInternalDraw.cs" />
@@ -122,7 +123,6 @@
     <Compile Include="Device\IGLRenderPass.cs" />
     <Compile Include="Device\GLClearAttachmentType.cs" />
     <Compile Include="Device\GLClearAttachmentInfo.cs" />
-    <Compile Include="CommandBuffer\DynamicStateItemStore.cs" />
     <Compile Include="GraphicsPipeline\IGLGraphicsPipeline.cs" />
     <Compile Include="GraphicsPipeline\GLGraphicsPipelineStencilState.cs" />
     <Compile Include="GraphicsPipeline\GLGraphicsPipelineStencilMasks.cs" />
@@ -139,8 +139,6 @@
     <Compile Include="CommandBuffer\GLCmdScissorParameter.cs" />
     <Compile Include="CommandBuffer\GLCmdViewportParameter.cs" />
     <Compile Include="CommandBuffer\IGLCmdMergeableParameter.cs" />
-    <Compile Include="CommandBuffer\GLCmdBufferStore.cs" />
-    <Compile Include="CommandBuffer\IGLCmdBufferStore.cs" />
     <Compile Include="CommandBuffer\GLCmdVertexBufferParameter.cs" />
     <Compile Include="CommandBuffer\GLCmdIndexBufferParameter.cs" />
     <Compile Include="CommandBuffer\GLCmdDescriptorSetParameter.cs" />
@@ -154,10 +152,8 @@
     <Compile Include="CommandBuffer\GLClearValueArrayItem.cs" />
     <Compile Include="CommandBuffer\CmdImageInstructionSet.cs" />
     <Compile Include="CommandBuffer\GLCmdTexImageData.cs" />
-    <Compile Include="CommandBuffer\IGLCmdBufferStoreResettable.cs" />
     <Compile Include="GraphicsPipeline\GLVertexInputAttribute.cs" />
     <Compile Include="GraphicsPipeline\GLGraphicsPipeline.cs" />
-    <Compile Include="CommandBuffer\GLCmdBufferRepository.cs" />
     <Compile Include="Entrypoint\IGLGraphicsPipelineEntrypoint.cs" />
     <Compile Include="Entrypoint\IGLImageFormatEntrypoint.cs" />
     <Compile Include="Entrypoint\GLInternalImageFormat.cs" />

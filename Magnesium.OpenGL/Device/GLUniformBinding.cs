@@ -2,12 +2,14 @@
 {
 	public struct GLUniformBinding
 	{
-		public MgDescriptorType DescriptorType {
+        public uint DescriptorCount { get; internal set; }
+        public MgDescriptorType DescriptorType {
 			get;
 			set;
 		}
 
 		public int Location { get; set; }
-	}
+        public MgShaderStageFlagBits StageFlags { get; internal set; }
+    }
 }
 

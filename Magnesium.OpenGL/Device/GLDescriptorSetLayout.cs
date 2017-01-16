@@ -12,7 +12,12 @@ namespace Magnesium.OpenGL
 			{
 				foreach (var binding in pCreateInfo.Bindings)
 				{
-					var uniform = new GLUniformBinding{Location = (int) binding.Binding, DescriptorType = binding.DescriptorType };
+					var uniform = new GLUniformBinding{                        
+                        Location = (int) binding.Binding,
+                        DescriptorType = binding.DescriptorType,
+                        DescriptorCount = binding.DescriptorCount,
+                        StageFlags = binding.StageFlags,
+                    };
 					Uniforms.Add (uniform);
 				}
 			}

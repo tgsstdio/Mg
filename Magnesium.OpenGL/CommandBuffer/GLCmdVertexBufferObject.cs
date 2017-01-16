@@ -33,7 +33,7 @@ namespace Magnesium.OpenGL
 				return;
 
 			if (mFactory != null && VBO != 0)
-				//mFactory.DeleteVBO(VBO);
+				mFactory.DeleteVBO(VBO);
 
 			mDisposed = true;
 		}

@@ -144,10 +144,10 @@ namespace Magnesium.OpenGL.DesktopGL
 			int[] result = new int[1];
 			result [0] = vbo;
 
-			Debug.Assert (GL.IsVertexArray (vbo));
+			//Debug.Assert (GL.IsVertexArray (vbo));
 
 			// FIXME : FIGURE OUT WHY
-			GL.DeleteVertexArray(result [0]);
+			GL.DeleteVertexArrays(1, result);
 
 			{
 				var error = GL.GetError ();

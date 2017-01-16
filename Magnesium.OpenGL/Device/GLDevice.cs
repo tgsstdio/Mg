@@ -284,10 +284,10 @@ namespace Magnesium.OpenGL
  
                     elapsedInNanoSecs = (ulong) ((timer.ElapsedTicks * 1000000000) / Stopwatch.Frequency);
 
+                    // remove elapsed time from timeout
+                    remainingTime -= elapsedInNanoSecs;
                     if (isSignalled)
                     {
-                        // remove elapsed time from timeout
-                        remainingTime -= elapsedInNanoSecs;
                         currentFence += 1;
                     }
 
@@ -649,8 +649,12 @@ namespace Magnesium.OpenGL
 
 				var programId = mEntrypoint.GraphicsCompiler.Compile (info);
 
+                var internalLayout = new AmtInternalPipelineLayout(programId, layout, mEntrypoint.Layout);
+
 				/// MAKE SURE ACTIVE UNIFORMS ARE AVAILABLE
 				int noOfActiveUniforms = mEntrypoint.GraphicsPipeline.GetActiveUniforms(programId);
+
+               // var names = mEntrypoint.GraphicsPipeline.GetUniformBlocks(programId);
 
 				var uniqueLocations = new SortedDictionary<int, GLVariableBind> ();
 				foreach (var binding in layout.Bindings)
@@ -887,14 +891,19 @@ namespace Magnesium.OpenGL
 						break;
 					case MgDescriptorType.STORAGE_BUFFER:
 					case MgDescriptorType.STORAGE_BUFFER_DYNAMIC:
-						// HOPEFULLY DESCRIPTOR SETS ARE GROUPED BY COMMON TYPES
-						for (int i = 0; i < count; ++i)
+                    case MgDescriptorType.UNIFORM_BUFFER:
+                    case MgDescriptorType.UNIFORM_BUFFER_DYNAMIC:
+                        // HOPEFULLY DESCRIPTOR SETS ARE GROUPED BY COMMON TYPES
+                        for (int i = 0; i < count; ++i)
 						{
 							var info = desc.BufferInfo [i];
 
 							var buf = info.Buffer as IGLBuffer;
 
-							if (buf != null && ((buf.Usage & MgBufferUsageFlagBits.STORAGE_BUFFER_BIT) == MgBufferUsageFlagBits.STORAGE_BUFFER_BIT))
+                            var isBufferFlags = MgBufferUsageFlagBits.STORAGE_BUFFER_BIT
+                                        | MgBufferUsageFlagBits.UNIFORM_BUFFER_BIT;
+
+                            if (buf != null && ((buf.Usage & isBufferFlags) == isBufferFlags))
 							{
 								var bufferDesc = localSet.Bindings [offset + i].BufferDesc;
 								bufferDesc.BufferId = buf.BufferId;
@@ -902,7 +911,7 @@ namespace Magnesium.OpenGL
 						}
 						break;
 					default:
-						throw new NotSupportedException ();					
+						throw new NotSupportedException ("UpdateDescriptorSets");					
 					}
 
 				}

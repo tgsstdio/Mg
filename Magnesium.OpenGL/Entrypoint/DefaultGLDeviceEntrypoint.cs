@@ -19,8 +19,9 @@ namespace Magnesium.OpenGL
 			IGLGraphicsPipelineEntrypoint graphicsPipeline,
 			IGLImageFormatEntrypoint imageFormat,
 			IGLGraphicsPipelineCompiler graphicsCompiler,
-            IGLFenceEntrypoint fence
-		)
+            IGLFenceEntrypoint fence,
+            IGLPipelineCacheLayoutEntrypoint layout
+        )
 		{
 			VBO = vbo;
 			Sampler = sampler;
@@ -36,6 +37,7 @@ namespace Magnesium.OpenGL
 			ImageFormat = imageFormat;
 			GraphicsCompiler = graphicsCompiler;
             Fence = fence;
+            Layout = layout;
 		}
 
 		#region IGLDeviceCapabilities implementation
@@ -112,6 +114,10 @@ namespace Magnesium.OpenGL
             get;
             private set;
         }
+
+        public IGLPipelineCacheLayoutEntrypoint Layout {
+            get;
+            private set; }
         #endregion
     }
 }

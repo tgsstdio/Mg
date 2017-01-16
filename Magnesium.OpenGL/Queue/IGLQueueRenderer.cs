@@ -25,7 +25,7 @@ namespace Magnesium.OpenGL
         void DrawIndexed(GLCmdInternalDrawIndexed drawItem);
         void DrawIndexedIndirect(GLCmdInternalDrawIndexedIndirect drawItem);
         void DrawIndirect(GLCmdInternalDrawIndirect drawItem);
-        void BindVertexArrays(object vao);
+        void BindVertexArrays(GLCmdVertexBufferObject vao);
     }
 }
 

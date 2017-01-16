@@ -59,28 +59,11 @@ namespace Magnesium.OpenGL
                 {
                     if (state.Attachment.LoadOp == MgAttachmentLoadOp.CLEAR)
                     {
-                        if (state.Attachment.AttachmentType == GLClearAttachmentType.COLOR_INT)
-                        {
+                        if (state.Attachment.AttachmentType == GLClearAttachmentType.COLOR_INT
+                            || state.Attachment.AttachmentType == GLClearAttachmentType.COLOR_FLOAT
+                            || state.Attachment.AttachmentType == GLClearAttachmentType.COLOR_UINT)
+                        {   
                             var clearValue = state.Color;
-                            if (!mPastClearValues.ClearColor.Equals(state))
-                            {
-                                mClear.SetClearColor(clearValue);
-                                mPastClearValues.ClearColor = clearValue;
-                            }
-                        }
-                        else if (state.Attachment.AttachmentType == GLClearAttachmentType.COLOR_FLOAT)
-                        {
-                            var clearValue = state.Color;
-                            if (!mPastClearValues.ClearColor.Equals(clearValue))
-                            {
-                                mClear.SetClearColor(clearValue);
-                                mPastClearValues.ClearColor = clearValue;
-                            }
-                        }
-                        else if (state.Attachment.AttachmentType == GLClearAttachmentType.COLOR_UINT)
-                        {
-                            var clearValue = state.Color;
-                            //GL.ClearColor (clearValue.X, clearValue.Y, clearValue.Z, clearValue.W);
                             if (!mPastClearValues.ClearColor.Equals(clearValue))
                             {
                                 mClear.SetClearColor(clearValue);
@@ -845,9 +828,12 @@ namespace Magnesium.OpenGL
 
 //		}
 
-        public void BindVertexArrays(object vao)
+        public void BindVertexArrays(GLCmdVertexBufferObject vao)
         {
-            throw new NotImplementedException();
+            if (mCache.VBO != vao.VBO)
+            {
+                mCache.VBO = vao.VBO;
+            }
         }
     }
 }

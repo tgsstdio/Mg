@@ -638,6 +638,10 @@ namespace TriangleDemo
             err = mConfiguration.Queue.QueueSubmit(submitInfos, fence);
             Debug.Assert(err == Result.SUCCESS);
 
+            // Mg.OpenGL
+            err = mConfiguration.Queue.QueueWaitIdle();
+            Debug.Assert(err == Result.SUCCESS);
+
             // Wait for the fence to signal that command buffer has finished executing
             err = mConfiguration.Device.WaitForFences(new[] { fence }, true, ulong.MaxValue);
             Debug.Assert(err == Result.SUCCESS);
@@ -721,7 +725,7 @@ namespace TriangleDemo
                         StageFlags = MgShaderStageFlagBits.VERTEX_BIT,
                         ImmutableSamplers = null,
                         DescriptorType = MgDescriptorType.UNIFORM_BUFFER,
-                        Binding = 0,
+                        Binding = 0,                         
                     }
                 },
             };
@@ -1033,7 +1037,7 @@ namespace TriangleDemo
                 // We use two attachments (color and depth) that are cleared at the start of the subpass and as such we need to set clear values for both
                 ClearValues = new MgClearValue[]
                 {
-                    new MgClearValue { Color = new MgClearColorValue( new MgColor4f(0.0f, 0.0f, 0.2f, 1.0f ) ) },
+                    MgClearValue.FromColorAndFormat(mSwapchains.Format, new MgColor4f(1f, 0f, 0f, 1f)),                    
                     new MgClearValue { DepthStencil = new MgClearDepthStencilValue( 1.0f, 0) },
                 },
             };

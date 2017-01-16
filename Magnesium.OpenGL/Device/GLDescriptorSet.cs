@@ -28,9 +28,16 @@ namespace Magnesium.OpenGL
 					Bindings [index] = new GLDescriptorBinding (bind.Location,
 						new GLImageDescriptor (mImageEntrypoint));
 				}
-				else if (bind.DescriptorType == MgDescriptorType.STORAGE_BUFFER || bind.DescriptorType == MgDescriptorType.STORAGE_BUFFER_DYNAMIC)
+				else if
+                (
+                    bind.DescriptorType == MgDescriptorType.STORAGE_BUFFER
+                    || bind.DescriptorType == MgDescriptorType.STORAGE_BUFFER_DYNAMIC 
+                    || bind.DescriptorType == MgDescriptorType.UNIFORM_BUFFER
+                    || bind.DescriptorType == MgDescriptorType.UNIFORM_BUFFER_DYNAMIC
+                )
 				{
-					Bindings [index] = new GLDescriptorBinding (bind.Location,
+					Bindings [index] = new GLDescriptorBinding (
+                        bind.Location,
 						new GLBufferDescriptor ());
 				}
 				++index;

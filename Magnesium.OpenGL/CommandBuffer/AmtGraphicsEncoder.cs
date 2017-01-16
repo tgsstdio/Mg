@@ -52,9 +52,9 @@ namespace Magnesium.OpenGL
         private AmtBeginRenderpassRecord mBoundRenderPass;
         public void BeginRenderPass(MgRenderPassBeginInfo pRenderPassBegin, MgSubpassContents contents)
         {
-            var beginInfo =  InitialiseRenderpassInfo(pRenderPassBegin);
+            mBoundRenderPass =  InitialiseRenderpassInfo(pRenderPassBegin);
 
-            var nextIndex = mBag.Renderpasses.Push(beginInfo);
+            var nextIndex = mBag.Renderpasses.Push(mBoundRenderPass);
 
             var instruction = new AmtEncodingInstruction
             {
@@ -96,35 +96,38 @@ namespace Magnesium.OpenGL
             {
                 var attachment = glPass.AttachmentFormats[i];
 
-                var clearValue = new GLClearValueArrayItem
-                {
-                    Attachment = attachment,
-                    Value = pass.ClearValues[i]
-                };
-
-                finalValues.Add(clearValue);
+                MgColor4f colorValue = new MgColor4f();
 
                 switch (attachment.AttachmentType)
                 {
                     case GLClearAttachmentType.COLOR_INT:
-                        clearValue.Color = ExtractColorI(attachment, pass.ClearValues[i].Color.Int32);
+                        colorValue = ExtractColorI(attachment, pass.ClearValues[i].Color.Int32);
                         combinedMask |= GLQueueClearBufferMask.Color;
                         break;
                     case GLClearAttachmentType.COLOR_UINT:
-                        clearValue.Color = ExtractColorUi(attachment, pass.ClearValues[i].Color.Uint32);
+                        colorValue = ExtractColorUi(attachment, pass.ClearValues[i].Color.Uint32);
                         combinedMask |= GLQueueClearBufferMask.Color;
                         break;
                     case GLClearAttachmentType.COLOR_FLOAT:
-                        clearValue.Color = pass.ClearValues[i].Color.Float32;
+                        colorValue = pass.ClearValues[i].Color.Float32;
                         combinedMask |= GLQueueClearBufferMask.Color;
                         break;
                     case GLClearAttachmentType.DEPTH_STENCIL:
-                        clearValue.Value = pass.ClearValues[i];
+                        //clearValue.Value = pass.ClearValues[i];
                         combinedMask |= GLQueueClearBufferMask.Depth;
                         break;
                     default:
                         break;
                 }
+
+                var clearValue = new GLClearValueArrayItem
+                {
+                    Attachment = attachment,
+                    Color = colorValue,
+                    Value = pass.ClearValues[i]
+                };
+
+                finalValues.Add(clearValue);
 
             }
 
@@ -600,7 +603,7 @@ namespace Magnesium.OpenGL
                 firstBinding = firstBinding,
                 pBuffers = pBuffers,
                 pOffsets = pOffsets,
-            };
+            };  
         }
 
         private GLCmdIndexBufferParameter mBoundIndexBuffer;
