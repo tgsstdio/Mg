@@ -3,8 +3,9 @@ namespace Magnesium.OpenGL
 {
 	public enum GLDescriptorBindingGroup : byte
 	{
-		Image = 0,
-		Buffer = 1
+		CombinedImageSampler = 1,
+		StorageBuffer = 2,
+		UniformBuffer = 3
 	}
 }
 

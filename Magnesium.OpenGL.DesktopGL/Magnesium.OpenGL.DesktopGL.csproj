@@ -31,6 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Device\GLFullFence.cs" />
+    <Compile Include="Device\GLNextDescriptorPool.cs" />
     <Compile Include="Driver\IBackbufferContext.cs" />
     <Compile Include="Driver\OpenTKBackbufferContext.cs" />
     <Compile Include="Entrypoint\FullGLBlitOperationEntrypoint.cs" />
@@ -79,7 +80,6 @@
     <Compile Include="Entrypoint\FullGLDescriptorPoolEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLImageDescriptorEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLSamplerEntrypoint.cs" />
-    <Compile Include="Device\GLDescriptorPool.cs" />
     <Compile Include="Entrypoint\DesktopGLImageFormatEntrypoint.cs" />
     <Compile Include="Driver\FullGLCmdClearEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLSemaphoreEntrypoint.cs" />
@@ -107,13 +107,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="OpenTK.dll.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Magnesium.OpenGL\Magnesium.OpenGL.csproj">
       <Project>{84924a0f-0d4c-4b0c-b16a-4f26dd838af2}</Project>
       <Name>Magnesium.OpenGL</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="OpenTK.dll.config" />
-    <None Include="packages.config" />
   </ItemGroup>
 </Project>

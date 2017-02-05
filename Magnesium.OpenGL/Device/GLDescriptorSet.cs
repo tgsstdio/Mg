@@ -25,7 +25,7 @@ namespace Magnesium.OpenGL
 			{
 				if (bind.DescriptorType == MgDescriptorType.SAMPLER || bind.DescriptorType == MgDescriptorType.COMBINED_IMAGE_SAMPLER)
 				{
-					Bindings [index] = new GLDescriptorBinding (bind.Location,
+					Bindings [index] = new GLDescriptorBinding (bind.Binding,
 						new GLImageDescriptor (mImageEntrypoint));
 				}
 				else if
@@ -37,7 +37,7 @@ namespace Magnesium.OpenGL
                 )
 				{
 					Bindings [index] = new GLDescriptorBinding (
-                        bind.Location,
+                        bind.Binding,
 						new GLBufferDescriptor ());
 				}
 				++index;

@@ -7,7 +7,7 @@ namespace Magnesium.OpenGL.DesktopGL
     {
         public void BindBufferRange(MgBufferUsageFlagBits usage, int index, int buffer, IntPtr offset, ulong size)
         {
-            GL.BindBufferRange();
+          //  GL.BindBufferRange();
         }
 
         public int GetMaximumNoOfSSBOBindings()

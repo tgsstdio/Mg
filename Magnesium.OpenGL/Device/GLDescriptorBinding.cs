@@ -4,21 +4,21 @@ namespace Magnesium.OpenGL
 {
 	public class GLDescriptorBinding
 	{
-		public GLDescriptorBinding (int location, GLImageDescriptor image)
+		public GLDescriptorBinding (uint location, GLImageDescriptor image)
 			: this(location)
 		{
 			Group = GLDescriptorBindingGroup.Image;
 			ImageDesc = image;
 		}
 
-		public GLDescriptorBinding (int location, GLBufferDescriptor buffer)
+		public GLDescriptorBinding (uint location, GLBufferDescriptor buffer)
 			: this(location)
 		{
 			Group = GLDescriptorBindingGroup.Buffer;
 			BufferDesc = buffer;
 		}
 
-		private GLDescriptorBinding(int location)
+		private GLDescriptorBinding(uint location)
 		{
 			Location = location;
 		}
@@ -37,7 +37,7 @@ namespace Magnesium.OpenGL
 			}
 		}
 
-		public int Location { get; private set;}
+		public uint Location { get; private set;}
 		public GLDescriptorBindingGroup Group { get; private set; }
 		public GLImageDescriptor ImageDesc  { get; private set;}
 		public GLBufferDescriptor BufferDesc { get; private set;}

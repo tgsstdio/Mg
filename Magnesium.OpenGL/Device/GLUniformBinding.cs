@@ -8,7 +8,7 @@
 			set;
 		}
 
-		public int Location { get; set; }
+		public uint Binding { get; set; }
         public MgShaderStageFlagBits StageFlags { get; internal set; }
     }
 }

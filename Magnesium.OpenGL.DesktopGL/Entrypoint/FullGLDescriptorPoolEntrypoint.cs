@@ -11,9 +11,9 @@
 			mImgDescriptor = entrypoint;
 		}
 
-		public IGLDescriptorPool CreatePool (MgDescriptorPoolCreateInfo createInfo)
+		public IGLNextDescriptorPool CreatePool (MgDescriptorPoolCreateInfo createInfo)
 		{
-			return new GLDescriptorPool (createInfo.MaxSets != 0 ? (int) createInfo.MaxSets : 100, mImgDescriptor);
+			return new GLNextDescriptorPool(createInfo, mImgDescriptor);
 		}
 
 		#endregion

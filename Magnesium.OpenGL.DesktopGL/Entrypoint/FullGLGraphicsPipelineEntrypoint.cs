@@ -38,10 +38,10 @@ namespace Magnesium.OpenGL.DesktopGL
             return (glinfoLogLength > 1);
         }
 
-        public bool CheckUniformLocation(int programId, int location)
+        public bool CheckUniformLocation(int programId, uint location)
         {
             int locationQuery;
-            GL.Ext.GetUniform(programId, location, out locationQuery);
+            GL.Ext.GetUniform(programId, (int) location, out locationQuery);
             mErrHandler.LogGLError("FullGLShaderModuleEntrypoint.CheckUniformLocation");
             return (locationQuery != -1);
         }

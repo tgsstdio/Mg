@@ -20,7 +20,10 @@ namespace Magnesium.OpenGL
 			IGLImageFormatEntrypoint imageFormat,
 			IGLGraphicsPipelineCompiler graphicsCompiler,
             IGLFenceEntrypoint fence,
-            IGLPipelineCacheLayoutEntrypoint layout
+            IGLPipelineCacheLayoutEntrypoint layout,
+            IGLCmdShaderProgramEntrypoint shaderProgram,
+            IGLDescriptorSetEntrypoint descriptorSet,
+            IGLUniformBlockEntrypoint uniformBlocks
         )
 		{
 			VBO = vbo;
@@ -38,6 +41,9 @@ namespace Magnesium.OpenGL
 			GraphicsCompiler = graphicsCompiler;
             Fence = fence;
             Layout = layout;
+            ShaderProgram = shaderProgram;
+            DescriptorSet = descriptorSet;
+            UniformBlocks = uniformBlocks;
 		}
 
 		#region IGLDeviceCapabilities implementation
@@ -118,6 +124,24 @@ namespace Magnesium.OpenGL
         public IGLPipelineCacheLayoutEntrypoint Layout {
             get;
             private set; }
+
+        public IGLCmdShaderProgramEntrypoint ShaderProgram
+        {
+            get;
+            private set;
+        }
+
+        public IGLUniformBlockEntrypoint UniformBlocks
+        {
+            get;
+            private set;
+        }
+
+        public IGLDescriptorSetEntrypoint DescriptorSet
+        {
+            get;
+            private set;
+        }
         #endregion
     }
 }

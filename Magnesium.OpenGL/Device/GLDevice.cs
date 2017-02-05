@@ -626,7 +626,7 @@ namespace Magnesium.OpenGL
 
 			foreach (var info in pCreateInfos)
 			{
-				var layout = info.Layout as GLPipelineLayout;
+				var layout = info.Layout as IGLPipelineLayout;
 				if (layout == null)
 				{
 					throw new ArgumentException ("pCreateInfos[].Layout");
@@ -649,32 +649,30 @@ namespace Magnesium.OpenGL
 
 				var programId = mEntrypoint.GraphicsCompiler.Compile (info);
 
-                var internalLayout = new AmtInternalPipelineLayout(programId, layout, mEntrypoint.Layout);
-
 				/// MAKE SURE ACTIVE UNIFORMS ARE AVAILABLE
 				int noOfActiveUniforms = mEntrypoint.GraphicsPipeline.GetActiveUniforms(programId);
 
                // var names = mEntrypoint.GraphicsPipeline.GetUniformBlocks(programId);
 
-				var uniqueLocations = new SortedDictionary<int, GLVariableBind> ();
+				var uniqueLocations = new SortedDictionary<uint, GLVariableBind> ();
 				foreach (var binding in layout.Bindings)
 				{
 					bool uniformFound = false;
 
 					if (noOfActiveUniforms > 0)
 					{
-						uniformFound = mEntrypoint.GraphicsPipeline.CheckUniformLocation (programId, binding.Location);
+						uniformFound = mEntrypoint.GraphicsPipeline.CheckUniformLocation (programId, binding.Binding);
 					}
 
 					// ONLY ACTIVE UNIFORMS
 					// FIXME : input attachment
 					var bind = new GLVariableBind{
 						IsActive = (noOfActiveUniforms > 0 && uniformFound), 
-						Location = binding.Location,
+						Location = binding.Binding,
 						DescriptorType = binding.DescriptorType };
 
 					// WILL THROW ERROR HERE IF COLLISION
-					uniqueLocations.Add(binding.Location, bind);
+					uniqueLocations.Add(binding.Binding, bind);
 				}
 
 				// ASSUME NO GAPS ARE SUPPLIED
@@ -698,6 +696,7 @@ namespace Magnesium.OpenGL
 			pPipelines = output.ToArray ();
 			return Result.SUCCESS;
 		}
+
 		public Result CreateComputePipelines (IMgPipelineCache pipelineCache, MgComputePipelineCreateInfo[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgPipeline[] pPipelines)
 		{
 			throw new NotImplementedException ();
@@ -725,7 +724,7 @@ namespace Magnesium.OpenGL
 				throw new NotSupportedException ("DESKTOPGL - SetLayouts must be <= 1");
 			}
 
-			pPipelineLayout = new GLPipelineLayout (pCreateInfo);
+			pPipelineLayout = new GLNextPipelineLayout (pCreateInfo);
 			return Result.SUCCESS;
 		}
 //		public void DestroyPipelineLayout (IMgPipelineLayout pipelineLayout, IMgAllocationCallbacks allocator)
@@ -777,146 +776,19 @@ namespace Magnesium.OpenGL
 		//private ConcurrentDictionary<int, GLDescriptorSet> mDescriptorSets = new ConcurrentDictionary<int, GLDescriptorSet>();
 		public Result AllocateDescriptorSets (MgDescriptorSetAllocateInfo pAllocateInfo, out IMgDescriptorSet[] pDescriptorSets)
 		{
-			if (pAllocateInfo == null)
-			{	
-				throw new ArgumentNullException ("pAllocateInfo");
-			}
-
-			var pool = pAllocateInfo.DescriptorPool as IGLDescriptorPool;
-			if (pool == null)
-			{
-				throw new ArgumentNullException ("pAllocateInfo.DescriptorPool");
-			}
-
-			var noOfSetsRequested = pAllocateInfo.SetLayouts.Length;
-			if (pool.NoOfSets < noOfSetsRequested)
-			{
-				throw new InvalidOperationException ();
-			}
-
-			pDescriptorSets = new GLDescriptorSet[noOfSetsRequested];
-
-			for (int i = 0; i < noOfSetsRequested; ++i)
-			{
-				var setLayout = pAllocateInfo.SetLayouts[i] as GLDescriptorSetLayout;
-
-				GLDescriptorSet dSet;
-				if (!pool.TryTake (out dSet))
-				{
-					throw new InvalidOperationException ();
-				}
-				// copy here
-				dSet.Populate (setLayout);
-				pDescriptorSets[i] = dSet;
-			}
-
-			return Result.SUCCESS;
+            return mEntrypoint.DescriptorSet.AllocateDescriptorSets(pAllocateInfo, out pDescriptorSets);
 		}
 
 		public Result FreeDescriptorSets (IMgDescriptorPool descriptorPool, IMgDescriptorSet[] pDescriptorSets)
 		{
-			if (descriptorPool == null)
-			{	
-				throw new ArgumentNullException ("descriptorPool");
-			}
-
-			var localPool = descriptorPool as IGLDescriptorPool;
-
-			foreach (var dSet in pDescriptorSets)
-			{
-				var localSet = dSet as GLDescriptorSet;
-				if (localSet != null)
-				{
-					localSet.Destroy ();
-					localPool.Add (localSet);
-				}
-			}
-			return Result.SUCCESS;
-
+            return mEntrypoint.DescriptorSet.FreeDescriptorSets(descriptorPool, pDescriptorSets);
 		}
 
 		public void UpdateDescriptorSets (MgWriteDescriptorSet[] pDescriptorWrites, MgCopyDescriptorSet[] pDescriptorCopies)
 		{
-			if (pDescriptorWrites != null)
-			{
-				foreach (var desc in pDescriptorWrites)
-				{
-					var localSet = desc.DstSet as GLDescriptorSet;
-					if (localSet == null)
-					{
-						throw new NotSupportedException ();
-					}
-
-					var x = desc.DstBinding; // SHOULD ALWAYS BE ZERO
-
-					int offset = (int)desc.DstArrayElement;
-					int count = (int)desc.DescriptorCount;
-
-					var lastIndex = localSet.Bindings.Length - 1;
-					var right = offset + count - 1;
-					if (right > lastIndex)
-					{
-						// VULKAN WOULD CONTINUE ONTO WRITE ADDITIONAL VALUES TO NEXT BINDING
-						// ONLY ONE SET OF BINDING USED
-						throw new IndexOutOfRangeException ();
-					}
-
-					switch (desc.DescriptorType)
-					{
-					//case MgDescriptorType.SAMPLER:
-					case MgDescriptorType.COMBINED_IMAGE_SAMPLER:
-					case MgDescriptorType.SAMPLED_IMAGE:
-
-						// HOPEFULLY DESCRIPTOR SETS ARE GROUPED BY COMMON TYPES
-						for (int i = 0; i < count; ++i)
-						{
-							MgDescriptorImageInfo info = desc.ImageInfo [i];						
-
-							var localSampler = info.Sampler as GLSampler;
-							var localView = info.ImageView as GLImageView;	
-
-							// Generate bindless texture handle 
-							// FIXME : messy as F***
-
-							var internalBinding = localSet.Bindings [offset + i];
-
-							if (internalBinding != null)
-							{
-								var texHandle = mEntrypoint.ImageDescriptor.CreateHandle (localView.TextureId, localSampler.SamplerId); 
-
-								var imageDesc = internalBinding.ImageDesc;
-								imageDesc.Replace (texHandle);
-							}
-						}					
-						break;
-					case MgDescriptorType.STORAGE_BUFFER:
-					case MgDescriptorType.STORAGE_BUFFER_DYNAMIC:
-                    case MgDescriptorType.UNIFORM_BUFFER:
-                    case MgDescriptorType.UNIFORM_BUFFER_DYNAMIC:
-                        // HOPEFULLY DESCRIPTOR SETS ARE GROUPED BY COMMON TYPES
-                        for (int i = 0; i < count; ++i)
-						{
-							var info = desc.BufferInfo [i];
-
-							var buf = info.Buffer as IGLBuffer;
-
-                            var isBufferFlags = MgBufferUsageFlagBits.STORAGE_BUFFER_BIT
-                                        | MgBufferUsageFlagBits.UNIFORM_BUFFER_BIT;
-
-                            if (buf != null && ((buf.Usage & isBufferFlags) == isBufferFlags))
-							{
-								var bufferDesc = localSet.Bindings [offset + i].BufferDesc;
-								bufferDesc.BufferId = buf.BufferId;
-							}
-						}
-						break;
-					default:
-						throw new NotSupportedException ("UpdateDescriptorSets");					
-					}
-
-				}
-			}
+            mEntrypoint.DescriptorSet.Update(pDescriptorWrites, pDescriptorCopies);
 		}
+
 		public Result CreateFramebuffer (MgFramebufferCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgFramebuffer pFramebuffer)
 		{
 			pFramebuffer = new GLFramebuffer ();
