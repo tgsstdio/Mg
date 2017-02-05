@@ -3,17 +3,17 @@ using System.Collections.Generic;
 
 namespace Magnesium.OpenGL
 {
-	public class GLNextDescriptorSetEntrypoint : IGLDescriptorSetEntrypoint
+	public class DefaultGLDescriptorSetEntrypoint : IGLDescriptorSetEntrypoint
 	{
         private readonly IGLImageDescriptorEntrypoint mImage;
-        public GLNextDescriptorSetEntrypoint(IGLImageDescriptorEntrypoint image)
+        public DefaultGLDescriptorSetEntrypoint(IGLImageDescriptorEntrypoint image)
         {
             mImage = image;
         }
 
 		#region AllocateDescriptorSets methods
 
-		public Result AllocateDescriptorSets(MgDescriptorSetAllocateInfo pAllocateInfo, out IMgDescriptorSet[] pDescriptorSets)
+		public Result Allocate(MgDescriptorSetAllocateInfo pAllocateInfo, out IMgDescriptorSet[] pDescriptorSets)
 		{
 			if (pAllocateInfo == null)
 				throw new ArgumentNullException(nameof(pAllocateInfo));
@@ -21,7 +21,7 @@ namespace Magnesium.OpenGL
 			var parentPool = (IGLNextDescriptorPool)pAllocateInfo.DescriptorPool;
 			pDescriptorSets = new IMgDescriptorSet[pAllocateInfo.DescriptorSetCount];
 
-			var maxNoOfResources = 0U;
+			var highestBinding = 0U;
 			var sortedResources = new List<GLDescriptorPoolResourceInfo>();
 			for (var i = 0; i < pAllocateInfo.DescriptorSetCount; i += 1)
 			{
@@ -30,7 +30,7 @@ namespace Magnesium.OpenGL
 				sortedResources.Clear();
 				foreach (var uniform in bSetLayout.Uniforms)
 				{
-					maxNoOfResources = Math.Max(maxNoOfResources, uniform.Binding);
+					highestBinding = Math.Max(highestBinding, uniform.Binding);
 					GLPoolResourceTicket ticket;
 					switch (uniform.DescriptorType)
 					{
@@ -94,7 +94,10 @@ namespace Magnesium.OpenGL
 					}
 				}
 
-				var resources = new GLDescriptorPoolResourceInfo[maxNoOfResources];
+                // COUNT 
+                var count = highestBinding + 1;
+
+                var resources = new GLDescriptorPoolResourceInfo[count];
 				foreach (var res in sortedResources)
 				{
 					resources[res.Binding] = res;
@@ -115,7 +118,7 @@ namespace Magnesium.OpenGL
 
 		#region FreeDescriptorSets methods
 
-		public Result FreeDescriptorSets(IMgDescriptorPool descriptorPool, IMgDescriptorSet[] pDescriptorSets)
+		public Result Free(IMgDescriptorPool descriptorPool, IMgDescriptorSet[] pDescriptorSets)
 		{
 			if (descriptorPool == null)
 			{

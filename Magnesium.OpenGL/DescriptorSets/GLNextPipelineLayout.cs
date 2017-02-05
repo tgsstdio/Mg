@@ -90,7 +90,7 @@ namespace Magnesium.OpenGL
 			{
 				g.First += startingOffset;
 				g.Last += startingOffset;
-				startingOffset += g.Last + 1;
+				startingOffset = g.Last + 1;
 			}
 		}
 

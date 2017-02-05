@@ -3,7 +3,7 @@
     public class GLUniformBlockGroupInfo
     {
 		public string Prefix { get;  set; }
-        public uint BindingIndex { get;  set; }
+        public uint FirstBinding { get;  set; }
         public uint Count { get; set; }
 		public uint ArrayStride { get; set; }
 		public uint HighestRow { get; set; }

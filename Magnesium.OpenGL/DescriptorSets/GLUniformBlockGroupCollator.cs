@@ -5,20 +5,27 @@ namespace Magnesium.OpenGL
 {
 	public class GLUniformBlockGroupCollator
 	{
-		readonly Dictionary<string, GLUniformBlockGroupInfo> mGroups;
+		readonly Dictionary<string, GLUniformBlockGroupInfo> mPrefixes;
+        public IDictionary<string, GLUniformBlockGroupInfo> Prefixes {
+            get
+            {
+                return mPrefixes;
+            }
+        }
 
 		public GLUniformBlockGroupCollator()
 		{
-			mGroups = new Dictionary<string, GLUniformBlockGroupInfo>();
+			mPrefixes = new Dictionary<string, GLUniformBlockGroupInfo>();
 		}
+
 		public void Add(GLUniformBlockInfo entry)
 		{
 			GLUniformBlockGroupInfo found;
-			if (mGroups.TryGetValue(entry.Prefix, out found))
+			if (mPrefixes.TryGetValue(entry.Prefix, out found))
 			{
 				if (entry.X == 0 && entry.Y == 0 && entry.Z == 0)
 				{
-					found.BindingIndex = entry.BindingIndex;
+					found.FirstBinding = entry.BindingIndex;
 				}
 
 				found.ArrayStride = Math.Max(found.ArrayStride, entry.X + 1);
@@ -31,24 +38,24 @@ namespace Magnesium.OpenGL
 				found = new GLUniformBlockGroupInfo
 				{
 					Prefix = entry.Prefix,
-					BindingIndex = entry.BindingIndex,
+					FirstBinding = entry.BindingIndex,
 					Count = 1,
 					ArrayStride = entry.X + 1,
 					HighestRow = entry.Y + 1,
 					HighestLayer = entry.Z + 1,
 				};
-				mGroups.Add(found.Prefix, found);
+				mPrefixes.Add(found.Prefix, found);
 			}
 		}
 
 		public SortedDictionary<uint, GLUniformBlockGroupInfo> Collate()
 		{
 			var sortedResults = new SortedDictionary<uint, GLUniformBlockGroupInfo>();
-			foreach (var blockGroup in mGroups.Values)
+			foreach (var blockGroup in mPrefixes.Values)
 			{
 				blockGroup.MatrixStride = (blockGroup.ArrayStride * Math.Max(blockGroup.HighestRow, 1));
 				blockGroup.CubeStride = (blockGroup.MatrixStride * Math.Max(blockGroup.HighestLayer, 1));
-				sortedResults.Add(blockGroup.BindingIndex, blockGroup);
+				sortedResults.Add(blockGroup.FirstBinding, blockGroup);
 			}
 
 			return sortedResults;

@@ -1,6 +1,6 @@
 ﻿namespace Magnesium.OpenGL
 {
-	public class GLUniformBlockNameParser : IGLUniformBlockNameParser
+	public class DefaultGLUniformBlockNameParser : IGLUniformBlockNameParser
 	{
 		public GLUniformBlockInfo Parse(string name)
 		{

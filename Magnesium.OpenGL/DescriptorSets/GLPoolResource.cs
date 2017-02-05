@@ -11,14 +11,14 @@ namespace Magnesium.OpenGL
 		{
 			Items = items;
 
-			if (count == 0)
-				throw new ArgumentOutOfRangeException(nameof(count) + " must be greater than zero");
+			//if (count == 0)
+			//	throw new ArgumentOutOfRangeException(nameof(count) + " must be greater than zero");
 
 			Count = count;
 			Head = new GLPoolResourceNode
 			{
 				First = 0,
-				Last = count - 1,
+				Last = (count > 0) ? (count - 1) : 0,
 				Count = count,
 				Next = null,
 			};
@@ -99,13 +99,6 @@ namespace Magnesium.OpenGL
 
 		public bool Free(GLPoolResourceTicket ticket)
 		{
-			// only tickets from same pool resource
-			// CAN MOVE THIS OUT
-			//if (!ReferenceEquals(this, parent))
-			//	return false;
-
-			// TODO? : spamming same ticket should have no effect (maybe)
-
 			if (Head == null)
 			{
 				Head = new GLPoolResourceNode

@@ -3,7 +3,7 @@ using System;
 
 namespace Magnesium.OpenGL.DesktopGL
 {
-    class FullGLPipelineCacheLayoutEntrypoint : IGLPipelineCacheLayoutEntrypoint
+    class FullGLPipelineCacheLayoutEntrypoint
     {
         public void BindBufferRange(MgBufferUsageFlagBits usage, int index, int buffer, IntPtr offset, ulong size)
         {

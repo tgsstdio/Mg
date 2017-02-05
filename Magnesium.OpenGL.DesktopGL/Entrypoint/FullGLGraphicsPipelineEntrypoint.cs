@@ -14,43 +14,52 @@ namespace Magnesium.OpenGL.DesktopGL
         public void AttachShaderToProgram(int programID, int shader)
         {
             GL.AttachShader(programID, shader);
+            mErrHandler.CheckGLError();
         }
 
         public void CompileProgram(int programID)
         {
             GL.LinkProgram(programID);
+            mErrHandler.CheckGLError();
         }
 
         public int CreateProgram()
         {
-            return GL.CreateProgram();
+            var program = GL.CreateProgram();
+            mErrHandler.CheckGLError();
+            return program;
         }
 
         public void DeleteProgram(int programID)
         {
             GL.DeleteProgram(programID);
+            mErrHandler.CheckGLError();
         }
 
         public bool HasCompilerMessages(int programID)
         {
             int glinfoLogLength = 0;
             GL.GetProgram(programID, GetProgramParameterName.InfoLogLength, out glinfoLogLength);
+            mErrHandler.CheckGLError();
             return (glinfoLogLength > 1);
         }
 
-        public bool CheckUniformLocation(int programId, uint location)
+        public bool CheckUniformLocation(int programId, int location)
         {
-            int locationQuery;
-            GL.Ext.GetUniform(programId, (int) location, out locationQuery);
-            mErrHandler.LogGLError("FullGLShaderModuleEntrypoint.CheckUniformLocation");
+            int locationQuery = -1;
+
+            string name = GL.GetActiveUniformName(programId, location);
+
+            GL.Ext.GetUniform(programId, location, out locationQuery);
+            mErrHandler.CheckGLError();
             return (locationQuery != -1);
         }
 
         public int GetActiveUniforms(int programId)
         {
-            int noOfActiveUniforms;
+            int noOfActiveUniforms = 0;
             GL.GetProgram(programId, GetProgramParameterName.ActiveUniforms, out noOfActiveUniforms);
-            mErrHandler.LogGLError("FullGLShaderModuleEntrypoint.GetActiveUniforms");
+            mErrHandler.CheckGLError();
             return noOfActiveUniforms;
         }
 

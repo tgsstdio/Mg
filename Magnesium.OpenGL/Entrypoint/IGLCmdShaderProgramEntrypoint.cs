@@ -10,7 +10,7 @@ namespace Magnesium.OpenGL
 
 		void BindStorageBuffer(uint binding, int bufferId, long offset, int size);
 
-		void SetUniformBlock(int programID, uint activeIndex, uint bindingPoint);
+		void SetUniformBlock(int programID, int activeIndex, uint bindingPoint);
 
 		void BindUniformBuffers(uint count, int[] buffers, IntPtr[] offsets, int[] sizes);
 

@@ -35,8 +35,10 @@
     <Compile Include="Driver\IBackbufferContext.cs" />
     <Compile Include="Driver\OpenTKBackbufferContext.cs" />
     <Compile Include="Entrypoint\FullGLBlitOperationEntrypoint.cs" />
+    <Compile Include="Entrypoint\FullGLCmdShaderProgramEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLFullFenceEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLPipelineCacheLayoutEntrypoint.cs" />
+    <Compile Include="Entrypoint\FullGLUniformBlockEntrypoint.cs" />
     <Compile Include="Entrypoint\NullMgGraphicsDeviceLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GLSLTextShader.cs" />

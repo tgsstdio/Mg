@@ -6,7 +6,7 @@ namespace Magnesium.OpenGL
 	{
 		int GetMaxNoOfBindingPoints();
 		int GetNoOfActiveUniformBlocks(int programId);
-		string GetActiveUniformBlockName(int programId, uint activeIndex);
-		GLActiveUniformBlockInfo GetActiveUniformBlockInfo(int programId, uint activeIndex);
-	}
+		string GetActiveUniformBlockName(int programId, int activeIndex);
+		GLActiveUniformBlockInfo GetActiveUniformBlockInfo(int programId, int activeIndex);
+    }
 }

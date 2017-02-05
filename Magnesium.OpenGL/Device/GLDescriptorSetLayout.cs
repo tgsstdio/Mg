@@ -1,29 +1,46 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Magnesium.OpenGL
 {
-	public class GLDescriptorSetLayout : IMgDescriptorSetLayout
-	{
+	public class GLDescriptorSetLayout : IGLDescriptorSetLayout
+    {
 		public GLDescriptorSetLayout (MgDescriptorSetLayoutCreateInfo pCreateInfo)
 		{
-			Uniforms = new List<GLUniformBinding>();
-
 			if (pCreateInfo.Bindings != null)
 			{
-				foreach (var binding in pCreateInfo.Bindings)
+                var highestBinding = 0U;
+                var uniforms = new List<GLUniformBinding>();
+
+                foreach (var binding in pCreateInfo.Bindings)
 				{
-					var uniform = new GLUniformBinding{                        
+                    highestBinding = Math.Max(binding.Binding, highestBinding);
+
+                    var uniform = new GLUniformBinding{                        
                         Binding = binding.Binding,
                         DescriptorType = binding.DescriptorType,
                         DescriptorCount = binding.DescriptorCount,
                         StageFlags = binding.StageFlags,
                     };
-					Uniforms.Add (uniform);
+					uniforms.Add (uniform);
 				}
-			}
+
+                var count = highestBinding + 1;
+
+                Uniforms = new GLUniformBinding[count];
+                foreach(var uni in uniforms)
+                {
+                    Uniforms[uni.Binding] = uni;
+                }
+            }
+            else
+            {
+                Uniforms = new GLUniformBinding[0];
+            }
+
 		}
 
-		public List<GLUniformBinding> Uniforms { get; private set; }
+		public GLUniformBinding[] Uniforms { get; private set; }
 
 		#region IMgDescriptorSetLayout implementation
 		private bool mIsDisposed = false;

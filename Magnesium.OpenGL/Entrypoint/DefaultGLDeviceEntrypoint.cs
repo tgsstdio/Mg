@@ -20,7 +20,6 @@ namespace Magnesium.OpenGL
 			IGLImageFormatEntrypoint imageFormat,
 			IGLGraphicsPipelineCompiler graphicsCompiler,
             IGLFenceEntrypoint fence,
-            IGLPipelineCacheLayoutEntrypoint layout,
             IGLCmdShaderProgramEntrypoint shaderProgram,
             IGLDescriptorSetEntrypoint descriptorSet,
             IGLUniformBlockEntrypoint uniformBlocks
@@ -40,7 +39,6 @@ namespace Magnesium.OpenGL
 			ImageFormat = imageFormat;
 			GraphicsCompiler = graphicsCompiler;
             Fence = fence;
-            Layout = layout;
             ShaderProgram = shaderProgram;
             DescriptorSet = descriptorSet;
             UniformBlocks = uniformBlocks;
@@ -120,10 +118,6 @@ namespace Magnesium.OpenGL
             get;
             private set;
         }
-
-        public IGLPipelineCacheLayoutEntrypoint Layout {
-            get;
-            private set; }
 
         public IGLCmdShaderProgramEntrypoint ShaderProgram
         {

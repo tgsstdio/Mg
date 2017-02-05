@@ -138,6 +138,13 @@ namespace TriangleDemo.DesktopGL
             container.Register<Magnesium.OpenGL.IGLFenceEntrypoint, Magnesium.OpenGL.DesktopGL.FullGLFullFenceEntrypoint>(new PerContainerLifetime());
             container.Register<Magnesium.OpenGL.IGLBlitOperationEntrypoint, Magnesium.OpenGL.DesktopGL.FullGLBlitOperationEntrypoint>(new PerContainerLifetime());
 
+            // DESCRIPTOR SET
+            container.Register<Magnesium.OpenGL.IGLUniformBlockEntrypoint, Magnesium.OpenGL.DesktopGL.FullGLUniformBlockEntrypoint>(new PerContainerLifetime());
+            container.Register<Magnesium.OpenGL.IGLUniformBlockNameParser, Magnesium.OpenGL.DefaultGLUniformBlockNameParser>(new PerContainerLifetime());
+            container.Register<Magnesium.OpenGL.IGLCmdShaderProgramEntrypoint, Magnesium.OpenGL.DesktopGL.FullGLCmdShaderProgramEntrypoint>(new PerContainerLifetime());
+            container.Register<Magnesium.OpenGL.IGLDescriptorSetEntrypoint, Magnesium.OpenGL.DefaultGLDescriptorSetEntrypoint>(new PerContainerLifetime());
+
+
             // Magnesium.OpenGL.DesktopGL INTERNALS
             container.Register<Magnesium.OpenGL.DesktopGL.IOpenTKSwapchainKHR, Magnesium.OpenGL.DesktopGL.GLSwapchainKHR>(new PerContainerLifetime());
             container.Register<Magnesium.OpenGL.DesktopGL.IGLDevicePlatform, Magnesium.OpenGL.DesktopGL.FullGLDevicePlatform>(new PerContainerLifetime());

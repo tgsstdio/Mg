@@ -19,8 +19,9 @@ namespace Magnesium.OpenGL.DesktopGL
 		{
 			MaxSets = createInfo.MaxSets;
 			mAvailableSets = new ConcurrentBag<IGLDescriptorSet>();
-			for (var i = 0U; i < MaxSets; i += 1)
+			for (var i = 1U; i <= MaxSets; i += 1)
 			{
+                // STARTING FROM 1 - 0 == (default) uint
 				mAvailableSets.Add(new GLNextDescriptorSet(i, this));
 			}
 			AllocatedSets = new Dictionary<uint, IGLDescriptorSet>();
@@ -99,8 +100,6 @@ namespace Magnesium.OpenGL.DesktopGL
 					img.Destroy();
 				}
 			}
-
-			throw new NotImplementedException();
 		}
 
 		public void ResetResource(GLDescriptorPoolResourceInfo resourceInfo)

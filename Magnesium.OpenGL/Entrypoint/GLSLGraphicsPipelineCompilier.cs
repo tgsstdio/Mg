@@ -8,22 +8,30 @@ namespace Magnesium.OpenGL
 {
 	public class GLSLGraphicsPipelineCompilier : IGLGraphicsPipelineCompiler
 	{
-		private IGLShaderModuleEntrypoint mShaderModuleEntrypoint;
-		private IGLGraphicsPipelineEntrypoint mProgramEntrypoint;
-		private IGLErrorHandler mErrHandler;
+		private readonly IGLShaderModuleEntrypoint mShaderModuleEntrypoint;
+		private readonly IGLGraphicsPipelineEntrypoint mProgramEntrypoint;
+		private readonly IGLErrorHandler mErrHandler;
+        private readonly IGLUniformBlockEntrypoint mUniformBlocks;
+        private readonly IGLUniformBlockNameParser mParser;
 
-		public GLSLGraphicsPipelineCompilier(
+        public GLSLGraphicsPipelineCompilier(
 			IGLShaderModuleEntrypoint shaderModule,
 			IGLGraphicsPipelineEntrypoint program,
-			IGLErrorHandler errHandler
+            IGLUniformBlockEntrypoint uniformBlocks,
+			IGLErrorHandler errHandler,
+            IGLUniformBlockNameParser parser
 		)
 		{
 			mShaderModuleEntrypoint = shaderModule;
 			mProgramEntrypoint = program;
 			mErrHandler = errHandler;
+            mUniformBlocks = uniformBlocks;
+            mParser = parser;
 		}
 
-		public int Compile(MgGraphicsPipelineCreateInfo info)
+        #region Compile
+
+        public int Compile(MgGraphicsPipelineCreateInfo info)
 		{		
 			var modules = new List<int>();
 			foreach (var stage in info.Stages)
@@ -336,6 +344,36 @@ namespace Magnesium.OpenGL
 				srcString.Substring(0, splitEndPos),
 				srcString.Substring(splitEndPos));
 		}
-	}
+
+
+        #endregion
+
+        #region Inspect
+
+        public GLUniformBlockEntry[] Inspect(int programId)
+        {
+            var count = mUniformBlocks.GetNoOfActiveUniformBlocks(programId);
+            var entries = new List<GLUniformBlockEntry>();
+            for (var i = 0; i < count; i += 1)
+            {
+                string blockName = mUniformBlocks.GetActiveUniformBlockName(programId, i);
+                var token = mParser.Parse(blockName);
+                var blockInfo = mUniformBlocks.GetActiveUniformBlockInfo(programId, i);
+                token.BindingIndex = blockInfo.BindingIndex;
+
+                var entry = new GLUniformBlockEntry
+                {
+                    BlockName = blockName,
+                    ActiveIndex = i,
+                    Stride = blockInfo.Stride,
+                    Token = token,
+                };
+                entries.Add(entry);
+            }
+            return entries.ToArray();
+        }
+
+        #endregion
+    }
 }
 
