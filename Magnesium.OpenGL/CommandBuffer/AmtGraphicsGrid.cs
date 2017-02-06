@@ -1,6 +1,8 @@
-﻿namespace Magnesium.OpenGL
+﻿using System;
+
+namespace Magnesium.OpenGL
 {
-    public class AmtGraphicsGrid
+    public class AmtGraphicsGrid : IDisposable
     {
         public AmtBeginRenderpassRecord[] Renderpasses { get; set; }
         public AmtBoundPipelineRecordInfo[] Pipelines { get; set; }
@@ -17,5 +19,25 @@
         public GLCmdInternalDrawIndexed[] DrawIndexeds { get; set; }
         public GLCmdInternalDrawIndirect[] DrawIndirects { get; set; }
         public GLCmdInternalDrawIndexedIndirect[] DrawIndexedIndirects { get; set; }
+
+        private bool mIsDisposed = false;
+        public void Dispose()
+        {
+            if (mIsDisposed)
+                return;
+
+            if (VAOs != null)
+            {
+                foreach (var vao in VAOs)
+                {
+                    if (vao != null)
+                    {
+                        vao.Dispose();
+                    }
+                }
+            }
+
+            mIsDisposed = true;
+        }
     }
 }

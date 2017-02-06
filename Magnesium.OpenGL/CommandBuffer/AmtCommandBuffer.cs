@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace Magnesium.OpenGL
 {
@@ -44,7 +45,7 @@ namespace Magnesium.OpenGL
 			mIsRecording = false;
 			mIsExecutable = true;
 
-			// TODO : add encoder spacing for different encoder instructions
+			// TODO : add encoder spacing for different encoder instructions                      
 			Record = mCommandEncoder.AsRecord();
 
 			return Result.SUCCESS;
@@ -52,8 +53,14 @@ namespace Magnesium.OpenGL
 
 		public void ResetAllData()
 		{
-			// TODO : Clear item bags unless CONTINUE has been passed in
-			mCommandEncoder.Clear();
+            // TODO : Clear item bags unless CONTINUE has been passed in
+            if (Record != null)
+            {
+                Debug.Assert(Record.GraphicsGrid != null);
+                Record.GraphicsGrid.Dispose();
+            }                       
+            mCommandEncoder.Clear();
+
 			Record = mCommandEncoder.AsRecord();
 		}
 
