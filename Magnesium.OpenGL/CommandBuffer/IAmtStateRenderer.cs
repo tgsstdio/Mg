@@ -2,10 +2,6 @@
 {
     public interface IAmtStateRenderer
     {
-        void SetDefault();
-        // void CheckProgram (GLQueueDrawItem nextState);
-        // void Render(CmdBufferInstructionSet[] items);
-
         void BeginRenderpass(AmtBeginRenderpassRecord record);
         void EndRenderpass();
         void BindPipeline(AmtBoundPipelineRecordInfo pipelineInfo);
@@ -23,6 +19,6 @@
         void DrawIndexed(GLCmdInternalDrawIndexed drawItem);
         void DrawIndexedIndirect(GLCmdInternalDrawIndexedIndirect drawItem);
         void DrawIndirect(GLCmdInternalDrawIndirect drawItem);
-        void BindVertexArrays(object vao);
+        void BindVertexArrays(GLCmdVertexBufferObject vao);
     }
 }

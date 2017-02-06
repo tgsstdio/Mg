@@ -147,8 +147,7 @@ namespace TriangleDemo.DesktopGL
 
             // Magnesium.OpenGL.DesktopGL INTERNALS
             container.Register<Magnesium.OpenGL.DesktopGL.IOpenTKSwapchainKHR, Magnesium.OpenGL.DesktopGL.GLSwapchainKHR>(new PerContainerLifetime());
-            container.Register<Magnesium.OpenGL.DesktopGL.IGLDevicePlatform, Magnesium.OpenGL.DesktopGL.FullGLDevicePlatform>(new PerContainerLifetime());
-            container.Register<Magnesium.OpenGL.DesktopGL.IBackbufferContext, Magnesium.OpenGL.DesktopGL.OpenTKBackbufferContext>(new PerContainerLifetime());
+            container.Register<Magnesium.OpenGL.DesktopGL.IGLBackbufferContext, Magnesium.OpenGL.DesktopGL.OpenTKBackbufferContext>(new PerContainerLifetime());
             container.Register<Magnesium.OpenGL.DesktopGL.IMgGraphicsDeviceLogger, Magnesium.OpenGL.DesktopGL.NullMgGraphicsDeviceLogger>(new PerContainerLifetime());
         }
     }

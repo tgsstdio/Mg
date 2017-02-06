@@ -1,7 +1,7 @@
 ﻿
 namespace Magnesium.OpenGL
 {
-	public class GLShaderModule : IMgShaderModule
+	internal class GLShaderModule : IMgShaderModule
 	{
 		readonly IGLShaderModuleEntrypoint mEntrypoint;		
 		public GLShaderModule (MgShaderModuleCreateInfo pCreateInfo, IGLShaderModuleEntrypoint entrypoint)

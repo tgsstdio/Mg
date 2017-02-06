@@ -3,7 +3,7 @@ using System;
 
 namespace Magnesium.OpenGL.DesktopGL
 {
-    public class GLFullFence : IGLFence
+    internal class GLFullFence : IGLFence
     {
         public int Index { get; set; }
         public IntPtr ObjectPtr { get; set; }

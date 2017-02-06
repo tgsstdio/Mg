@@ -2,7 +2,7 @@
 
 namespace Magnesium.OpenGL
 {
-	public class GLBindingPointOffsetInfo : IEquatable<GLBindingPointOffsetInfo>
+	internal class GLBindingPointOffsetInfo : IEquatable<GLBindingPointOffsetInfo>
 	{
 		public uint Binding { get; set; }
 		public uint First { get; set; }

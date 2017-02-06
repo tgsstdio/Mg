@@ -1,7 +1,7 @@
 ﻿using System;
 namespace Magnesium.OpenGL
 {
-	public class GLNextDescriptorSetBinder : IGLDescriptorSetBinder
+	internal class GLNextDescriptorSetBinder : IGLDescriptorSetBinder
 	{
 		public GLNextDescriptorSetBinder()
 		{

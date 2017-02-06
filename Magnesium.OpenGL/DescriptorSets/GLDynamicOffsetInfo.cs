@@ -2,7 +2,7 @@
 
 namespace Magnesium.OpenGL
 {
-	public class GLDynamicOffsetInfo : IEquatable<GLDynamicOffsetInfo>
+	internal class GLDynamicOffsetInfo : IEquatable<GLDynamicOffsetInfo>
 	{
 		public GLBufferRangeTarget Target { get; set; }
 		public uint DstIndex { get; set; }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Magnesium.OpenGL
 {
-	public class GLUniformBlockGroupCollator
+	internal class GLUniformBlockGroupCollator
 	{
 		readonly Dictionary<string, GLUniformBlockGroupInfo> mPrefixes;
         public IDictionary<string, GLUniformBlockGroupInfo> Prefixes {

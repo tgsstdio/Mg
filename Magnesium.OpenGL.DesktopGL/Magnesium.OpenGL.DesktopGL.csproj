@@ -32,7 +32,7 @@
   <ItemGroup>
     <Compile Include="Device\GLFullFence.cs" />
     <Compile Include="Device\GLNextDescriptorPool.cs" />
-    <Compile Include="Driver\IBackbufferContext.cs" />
+    <Compile Include="Driver\IGLBackbufferContext.cs" />
     <Compile Include="Driver\OpenTKBackbufferContext.cs" />
     <Compile Include="Entrypoint\FullGLBlitOperationEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLCmdShaderProgramEntrypoint.cs" />
@@ -73,8 +73,6 @@
     <Compile Include="Driver\Es20GLSpecificExtensionLookup.cs" />
     <Compile Include="Driver\Es20GLFramebufferHelper.cs" />
     <Compile Include="Driver\OpenTKGraphicsDevice.cs" />
-    <Compile Include="Driver\IGLDevicePlatform.cs" />
-    <Compile Include="Driver\FullGLDevicePlatform.cs" />
     <Compile Include="Driver\IMgGraphicsDeviceLogger.cs" />
     <Compile Include="Device\GLDeviceMemory.cs" />
     <Compile Include="Device\FullGLBuffer.cs" />

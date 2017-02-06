@@ -2,6 +2,7 @@
 
 namespace Magnesium.OpenGL
 {
+    // TODO : turn this class into internal class
 	public class GLImage : IMgImage
 	{
 		private readonly int mTextureId;

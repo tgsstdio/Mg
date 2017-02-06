@@ -2,7 +2,7 @@
 
 namespace Magnesium.OpenGL
 {
-	public class GLInternalCacheArrayMapper
+	internal class GLInternalCacheArrayMapper
 	{
 		private readonly IGLPipelineLayout mLayout;
 		private readonly SortedDictionary<uint, GLUniformBlockGroupInfo> mGroups;

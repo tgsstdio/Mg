@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace Magnesium.OpenGL
 {
-    public class AmtCommandBuffer : IGLCommandBuffer
+    internal class AmtCommandBuffer : IGLCommandBuffer
     {
 		private bool mIsRecording = false;
 		private bool mIsExecutable = false;

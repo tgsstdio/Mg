@@ -1,6 +1,6 @@
 ﻿namespace Magnesium.OpenGL
 {
-	public class GLProgramUniformBinder
+	internal class GLProgramUniformBinder
 	{
 		public GLProgramUniformBinder (int noOfBindings)
 		{

@@ -4,12 +4,12 @@ namespace Magnesium.OpenGL.DesktopGL
 {
 	public class GLSwapchainKHR : IOpenTKSwapchainKHR
 	{
-        private IBackbufferContext mBBContext;
+        private IGLBackbufferContext mBBContext;
 
         public uint Index { get; private set; }
 		public uint MaxNoOfImages {	get; private set; }
 
-        public GLSwapchainKHR(IBackbufferContext bbContext)
+        public GLSwapchainKHR(IGLBackbufferContext bbContext)
         {
             mBBContext = bbContext;
         }

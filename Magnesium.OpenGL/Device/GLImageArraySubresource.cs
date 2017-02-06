@@ -1,5 +1,6 @@
 ﻿namespace Magnesium.OpenGL
 {
+    // TODO : turn this class into internal
 	public class GLImageArraySubresource
 	{
 		public GLImageArraySubresource (uint index, GLImageLevelSubresource [] layers)

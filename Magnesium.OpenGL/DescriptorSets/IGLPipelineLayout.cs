@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Magnesium.OpenGL
 {
-    public interface IGLPipelineLayout : IMgPipelineLayout, IEquatable<IGLPipelineLayout>
+    internal interface IGLPipelineLayout : IMgPipelineLayout, IEquatable<IGLPipelineLayout>
     {
         GLUniformBinding[] Bindings { get; }
 

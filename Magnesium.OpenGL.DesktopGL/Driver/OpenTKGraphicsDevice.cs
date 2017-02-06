@@ -23,8 +23,6 @@ namespace Magnesium.OpenGL.DesktopGL
 
 		IGLExtensionLookup mExtensions;
 
-		IGLDevicePlatform mGLPlatform;
-
 		IMgGraphicsDeviceLogger mLogger;
 
 		IMgGraphicsConfiguration mGraphicsConfiguration;
@@ -38,17 +36,15 @@ namespace Magnesium.OpenGL.DesktopGL
             IMgGraphicsConfiguration configuration,
 			IGLFramebufferHelperSelector selector,
 			IGLExtensionLookup extensions,
-			IGLDevicePlatform glPlatform,
 			IMgGraphicsDeviceLogger logger,
 			IGLQueueRenderer queueRenderer,
-            IBackbufferContext bbContext
+            IGLBackbufferContext bbContext
 		)
 		{
 			mGraphicsConfiguration = configuration;
 			mView = new GLNullImageView ();
 			mWindow = window;
 			mExtensions = extensions;
-			mGLPlatform = glPlatform;
 			mLogger = logger;
 			mSelector = selector;
 			mQueueRenderer = queueRenderer;
@@ -128,12 +124,12 @@ namespace Magnesium.OpenGL.DesktopGL
 
 			mExtensions.Initialize ();
 			//mCapabilities.Initialize ();
-			mGLPlatform.Initialize ();
+			//mGLPlatform.Initialize ();
 			mSelector.Initialize();
 			mQueueRenderer.SetDefault ();
 		}
 
-		GLRenderPass mRenderpass;
+		IGLRenderPass mRenderpass;
 		void SetupRenderpass (MgGraphicsDeviceCreateInfo createInfo)
 		{
 			var attachmentDescriptions = new [] {
@@ -260,7 +256,7 @@ namespace Magnesium.OpenGL.DesktopGL
 		}
 
 		private bool mIsDisposed = false;
-        private IBackbufferContext mBBContext;
+        private IGLBackbufferContext mBBContext;
 
         protected virtual void Dispose(bool isDisposing)
 		{

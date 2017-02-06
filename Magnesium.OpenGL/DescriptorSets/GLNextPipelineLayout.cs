@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Magnesium.OpenGL
 {
-	public class GLNextPipelineLayout : IGLPipelineLayout
+	internal class GLNextPipelineLayout : IGLPipelineLayout
 	{
 		public GLUniformBinding[] Bindings { get; private set; }
 

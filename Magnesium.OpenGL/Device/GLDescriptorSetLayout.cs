@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Magnesium.OpenGL
 {
-	public class GLDescriptorSetLayout : IGLDescriptorSetLayout
+	internal class GLDescriptorSetLayout : IGLDescriptorSetLayout
     {
 		public GLDescriptorSetLayout (MgDescriptorSetLayoutCreateInfo pCreateInfo)
 		{

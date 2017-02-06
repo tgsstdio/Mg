@@ -8,6 +8,7 @@ namespace Magnesium.OpenGL
         // void CheckProgram (GLQueueDrawItem nextState);
         // void Render(CmdBufferInstructionSet[] items);
 
+        // TODO : hide these implementation details
         void BeginRenderpass(AmtBeginRenderpassRecord record);
         void EndRenderpass();
         void BindPipeline(AmtBoundPipelineRecordInfo pipelineInfo);

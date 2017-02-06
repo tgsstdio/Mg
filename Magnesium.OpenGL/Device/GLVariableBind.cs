@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace Magnesium.OpenGL
+﻿namespace Magnesium.OpenGL
 {
-	public struct GLVariableBind
+    internal struct GLVariableBind
 	{
 		public bool IsActive { get; set; }
 		public uint Location { get; set; }

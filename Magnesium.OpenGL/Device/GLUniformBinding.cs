@@ -1,6 +1,6 @@
 ﻿namespace Magnesium.OpenGL
 {
-	public struct GLUniformBinding
+	internal struct GLUniformBinding
 	{
         public uint DescriptorCount { get; internal set; }
         public MgDescriptorType DescriptorType {

@@ -57,7 +57,6 @@
     <Compile Include="CommandBuffer\AmtIncrementalChunkifier.cs" />
     <Compile Include="CommandBuffer\AmtPipelineStencilWriteInfo.cs" />
     <Compile Include="CommandBuffer\AmtQueueRenderer.cs" />
-    <Compile Include="CommandBuffer\AmtQueueSubmission.cs" />
     <Compile Include="CommandBuffer\AmtRecordInstruction.cs" />
     <Compile Include="CommandBuffer\AmtStateRenderer.cs" />
     <Compile Include="CommandBuffer\IAmtBlitEncoder.cs" />
@@ -103,6 +102,8 @@
     <Compile Include="Entrypoint\IGLBlitOperationEntrypoint.cs" />
     <Compile Include="Entrypoint\IGLFenceEntrypoint.cs" />
     <Compile Include="Entrypoint\IGLUniformBlockEntrypoint.cs" />
+    <Compile Include="PhysicalDevice\GLMemoryBufferExtensions.cs" />
+    <Compile Include="PhysicalDevice\GLMemoryBufferType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Driver\GLEntrypoint.cs" />
     <Compile Include="Queue\IGLQueue.cs" />

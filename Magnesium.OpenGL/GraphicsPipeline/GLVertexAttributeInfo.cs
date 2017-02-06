@@ -1,6 +1,6 @@
 ﻿namespace Magnesium.OpenGL
 {
-	public struct GLVertexAttributeInfo
+	internal struct GLVertexAttributeInfo
 	{
 		public GLVertexAttributeType PointerType { get; set; }
 		public int Size {get; set;}

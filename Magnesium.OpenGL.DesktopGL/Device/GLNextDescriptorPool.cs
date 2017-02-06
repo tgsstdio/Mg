@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Magnesium.OpenGL.DesktopGL
 {
-	public class GLNextDescriptorPool : IGLNextDescriptorPool
+	internal class GLNextDescriptorPool : IGLNextDescriptorPool
 	{
 		public uint MaxSets { get; set; }
 

@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace Magnesium.OpenGL
 {
-	public class GLSampler : IMgSampler
+	internal class GLSampler : IMgSampler
 	{
 		public int SamplerId { get; private set; }
 

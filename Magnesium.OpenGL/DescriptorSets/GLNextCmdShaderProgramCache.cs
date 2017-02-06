@@ -1,7 +1,7 @@
 ﻿using System;
 namespace Magnesium.OpenGL
 {
-	public class GLNextCmdShaderProgramCache : IGLNextCmdShaderProgramCache
+	internal class GLNextCmdShaderProgramCache : IGLNextCmdShaderProgramCache
     {
 		private readonly IGLCmdShaderProgramEntrypoint mEntrypoint;
 		private int mProgramID;

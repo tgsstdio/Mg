@@ -4,7 +4,7 @@ using System;
 
 namespace Magnesium.OpenGL.DesktopGL
 {
-    public interface IBackbufferContext : IDisposable
+    public interface IGLBackbufferContext : IDisposable
     {
         IGraphicsContext Context { get; }
         void SetupContext(IWindowInfo wnd, MgGraphicsDeviceCreateInfo createInfo);

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Magnesium.OpenGL
 {
-	public class GLGraphicsPipeline : IMgPipeline, IGLGraphicsPipeline
+	internal class GLGraphicsPipeline : IMgPipeline, IGLGraphicsPipeline
 	{
 		readonly IGLGraphicsPipelineEntrypoint mEntrypoint;
 

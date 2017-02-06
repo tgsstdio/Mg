@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace Magnesium.OpenGL
 {
-	public class GLDevice : IMgDevice
+	internal class GLDevice : IMgDevice
 	{
 		#region IMgDevice implementation
 		public PFN_vkVoidFunction GetDeviceProcAddr (string pName)

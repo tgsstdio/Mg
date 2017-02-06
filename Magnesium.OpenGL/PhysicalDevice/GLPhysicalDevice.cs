@@ -2,47 +2,7 @@ using System;
 
 namespace Magnesium.OpenGL
 {
-	public enum GLMemoryBufferType : uint 
-	{
-		SSBO = 0,
-		INDIRECT = 1,
-		VERTEX = 2, 
-		INDEX = 3,
-		IMAGE = 4,
-        TRANSFER_SRC = 5,
-        TRANSFER_DST = 6,
-        UNIFORM = 7,
-	}
-
-	public static class GLMemoryBufferExtensions 
-	{
-		public static uint GetMask(this GLMemoryBufferType bufferType)
-		{
-			switch(bufferType)
-			{
-			case GLMemoryBufferType.SSBO:
-				return 1 << 0;
-			case GLMemoryBufferType.INDIRECT:
-				return 1 << 1;
-			case GLMemoryBufferType.VERTEX:
-				return 1 << 2;
-			case GLMemoryBufferType.INDEX:
-				return 1 << 3;
-			case GLMemoryBufferType.IMAGE:
-				return 1 << 4;
-            case GLMemoryBufferType.TRANSFER_SRC:
-                return 1 << 5;
-            case GLMemoryBufferType.TRANSFER_DST:
-                return 1 << 6;
-            case GLMemoryBufferType.UNIFORM:
-                return 1 << 7;
-            default:
-				throw new NotSupportedException ();
-			}
-		}
-	}
-
-	public class GLPhysicalDevice : IMgPhysicalDevice
+	internal class GLPhysicalDevice : IMgPhysicalDevice
 	{
 		private readonly GLDevice mDevice;
 		public GLPhysicalDevice (IGLQueue queue, IGLDeviceEntrypoint entrypoint)

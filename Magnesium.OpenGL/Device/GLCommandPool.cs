@@ -3,7 +3,7 @@
 namespace Magnesium.OpenGL
 {
 	// RENDERER HERE
-	public class GLCommandPool : IMgCommandPool
+	internal class GLCommandPool : IMgCommandPool
 	{
 		public MgCommandPoolCreateFlagBits Flags { get; private set; }
 

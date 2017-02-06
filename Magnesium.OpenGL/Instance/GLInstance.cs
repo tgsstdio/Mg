@@ -2,7 +2,7 @@ using System;
 
 namespace Magnesium.OpenGL
 {
-	public class GLInstance : IMgInstance
+	internal class GLInstance : IMgInstance
 	{
 		public GLInstance (IGLQueue queue, IGLDeviceEntrypoint entrypoint)
 		{

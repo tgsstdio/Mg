@@ -1,6 +1,6 @@
 ﻿namespace Magnesium.OpenGL
 {
-    public class GLUniformBlockGroupInfo
+    internal class GLUniformBlockGroupInfo
     {
 		public string Prefix { get;  set; }
         public uint FirstBinding { get;  set; }
