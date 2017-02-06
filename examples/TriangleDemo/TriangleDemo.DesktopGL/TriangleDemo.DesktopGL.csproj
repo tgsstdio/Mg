@@ -91,9 +91,9 @@
       <Project>{84924a0f-0d4c-4b0c-b16a-4f26dd838af2}</Project>
       <Name>Magnesium.OpenGL</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TriangleDemo.Shared\TriangleDemo.csproj">
+    <ProjectReference Include="..\TriangleDemo.Shared\TriangleDemo.Shared.csproj">
       <Project>{7506c510-74b1-4eaf-8281-9dceefdbdb5d}</Project>
-      <Name>TriangleDemo</Name>
+      <Name>TriangleDemo.Shared</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
