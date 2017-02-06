@@ -19,10 +19,11 @@ namespace Magnesium.OpenGL
 				throw new ArgumentNullException(nameof(pAllocateInfo));
 
 			var parentPool = (IGLNextDescriptorPool)pAllocateInfo.DescriptorPool;
-			pDescriptorSets = new IMgDescriptorSet[pAllocateInfo.DescriptorSetCount];
 
 			var highestBinding = 0U;
 			var sortedResources = new List<GLDescriptorPoolResourceInfo>();
+
+            var output = new List<IMgDescriptorSet>();
 			for (var i = 0; i < pAllocateInfo.DescriptorSetCount; i += 1)
 			{
 				var bSetLayout = (IGLDescriptorSetLayout)pAllocateInfo.SetLayouts[i];
@@ -49,8 +50,9 @@ namespace Magnesium.OpenGL
 							}
 							else
 							{
-								// VK_ERROR_FRAGMENTED_POOL = -12
-								return Result.ERROR_OUT_OF_HOST_MEMORY;
+                                // VK_ERROR_FRAGMENTED_POOL = -12
+                                pDescriptorSets = null;
+                                return Result.ERROR_OUT_OF_HOST_MEMORY;
 							}
 							break;
 						case MgDescriptorType.STORAGE_BUFFER:
@@ -68,8 +70,9 @@ namespace Magnesium.OpenGL
 							}
 							else
 							{
-								// VK_ERROR_FRAGMENTED_POOL = -12
-								return Result.ERROR_OUT_OF_HOST_MEMORY;
+                                // VK_ERROR_FRAGMENTED_POOL = -12
+                                pDescriptorSets = null;
+                                return Result.ERROR_OUT_OF_HOST_MEMORY;
 							}
 							break;
 						case MgDescriptorType.UNIFORM_BUFFER:
@@ -87,8 +90,9 @@ namespace Magnesium.OpenGL
 							}
 							else
 							{
-								// VK_ERROR_FRAGMENTED_POOL = -12
-								return Result.ERROR_OUT_OF_HOST_MEMORY;
+                                // VK_ERROR_FRAGMENTED_POOL = -12
+                                pDescriptorSets = null;
+                                return Result.ERROR_OUT_OF_HOST_MEMORY;
 							}
 							break;
 					}
@@ -104,14 +108,22 @@ namespace Magnesium.OpenGL
 				}
 
 				IGLDescriptorSet item;
-				if (parentPool.TryTake(out item))
-				{
-					item.Initialise(resources);
-					parentPool.AllocatedSets.Add(item.Key, item);
-				}
+                if (parentPool.TryTake(out item))
+                {
+                    item.Initialise(resources);
+                    parentPool.AllocatedSets.Add(item.Key, item);
+                    output.Add(item);
+                }
+                else
+                {
+                    // TOO MANY DESCRIPTOR SETS FOR POOL
+                    pDescriptorSets = null;
+                    return Result.ERROR_OUT_OF_HOST_MEMORY;
+                }
 			}
 
-			return Result.SUCCESS;
+            pDescriptorSets = output.ToArray();                       
+            return Result.SUCCESS;
 		}
 
 		#endregion
@@ -163,8 +175,8 @@ namespace Magnesium.OpenGL
                 for (var i = 0; i < pDescriptorWrites.Length; i += 1)
                 {
                     var desc = pDescriptorWrites[i];
+
                     var localSet = (IGLDescriptorSet)desc.DstSet;
-                    var parentPool = localSet.Parent;
                     if (localSet == null)
                     {
                         throw new NotSupportedException();
@@ -174,6 +186,7 @@ namespace Magnesium.OpenGL
                     var first = ticket.Ticket.First + desc.DstArrayElement;
                     var count = Math.Min(desc.DescriptorCount, ticket.Ticket.Count - desc.DstArrayElement);
 
+                    var parentPool = localSet.Parent;
                     switch (desc.DescriptorType)
                     {
                         //case MgDescriptorType.SAMPLER:

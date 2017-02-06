@@ -96,7 +96,7 @@
     <Compile Include="DescriptorSets\IGLDescriptorSetLayout.cs" />
     <Compile Include="DescriptorSets\IGLNextDescriptorPool.cs" />
     <Compile Include="DescriptorSets\IGLPipelineLayout.cs" />
-    <Compile Include="DescriptorSets\IGLUniformBlockNameParser.cs" />
+    <Compile Include="Entrypoint\IGLUniformBlockNameParser.cs" />
     <Compile Include="Device\IGLCommandBuffer.cs" />
     <Compile Include="Device\IGLFence.cs" />
     <Compile Include="Entrypoint\GLActiveUniformBlockInfo.cs" />
