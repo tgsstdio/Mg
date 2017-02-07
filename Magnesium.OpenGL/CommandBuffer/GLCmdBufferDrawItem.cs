@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
 	/// <summary>
 	/// Targeted struct should be around 60 - 64 bits 

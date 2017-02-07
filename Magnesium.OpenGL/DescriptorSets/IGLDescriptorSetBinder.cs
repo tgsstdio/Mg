@@ -1,6 +1,6 @@
-﻿namespace Magnesium.OpenGL
+﻿namespace Magnesium.OpenGL.Internals
 {
-	internal interface IGLDescriptorSetBinder
+	public interface IGLDescriptorSetBinder
 	{
 		void Clear();
 		void Bind(MgPipelineBindPoint pipelineBindPoint, IMgPipelineLayout layout, uint firstSet,

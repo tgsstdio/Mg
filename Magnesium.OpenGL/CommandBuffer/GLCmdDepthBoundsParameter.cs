@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
 	[StructLayout(LayoutKind.Sequential, Size = 8)]
 	public struct GLCmdDepthBoundsParameter  : IEquatable<GLCmdDepthBoundsParameter>

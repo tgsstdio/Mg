@@ -138,7 +138,7 @@ namespace Magnesium
 				Offset = new MgOffset2D{ X = 0, Y = 0 },
 			};
 
-			// initialise viewport
+			// initialize viewport
 			CurrentViewport = new MgViewport {
 				Width = createInfo.Width,
 				Height = createInfo.Height,

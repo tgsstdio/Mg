@@ -1,8 +1,8 @@
 using System;
 
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
-	internal class GLPhysicalDevice : IMgPhysicalDevice
+	public class GLPhysicalDevice : IMgPhysicalDevice
 	{
 		private readonly GLDevice mDevice;
 		public GLPhysicalDevice (IGLQueue queue, IGLDeviceEntrypoint entrypoint)

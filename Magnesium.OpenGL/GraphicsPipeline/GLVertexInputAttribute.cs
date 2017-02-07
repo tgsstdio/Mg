@@ -1,5 +1,5 @@
 ﻿
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
 	public class GLVertexInputAttribute
 	{

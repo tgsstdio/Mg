@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
 	public class GLPoolResource<T> : IGLDescriptorPoolResource<T>
 	{

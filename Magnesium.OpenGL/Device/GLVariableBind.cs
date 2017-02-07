@@ -1,6 +1,6 @@
-﻿namespace Magnesium.OpenGL
+﻿namespace Magnesium.OpenGL.Internals
 {
-    internal struct GLVariableBind
+    public struct GLVariableBind
 	{
 		public bool IsActive { get; set; }
 		public uint Location { get; set; }

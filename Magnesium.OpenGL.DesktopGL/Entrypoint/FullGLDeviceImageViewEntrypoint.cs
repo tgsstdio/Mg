@@ -41,7 +41,7 @@ namespace Magnesium.OpenGL.DesktopGL
 		}
 
 		#region IGLImageViewFactory implementation
-		public int CreateImageView (GLImage image, MgImageViewCreateInfo pCreateInfo)
+		public int CreateImageView (IGLImage image, MgImageViewCreateInfo pCreateInfo)
 		{
 			var internalFormat = mImgFormat.GetGLFormat (pCreateInfo.Format, true);
 

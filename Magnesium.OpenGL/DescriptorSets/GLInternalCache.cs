@@ -1,6 +1,6 @@
-﻿namespace Magnesium.OpenGL
+﻿namespace Magnesium.OpenGL.Internals
 {
-	internal class GLInternalCache
+	public class GLInternalCache
 	{
 		//public int[] Strides { get; private set; }
 		public GLInternalCacheBlockBinding[] BlockBindings { get; private set; }

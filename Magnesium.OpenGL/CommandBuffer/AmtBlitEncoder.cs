@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
     public class AmtBlitEncoder : IAmtBlitEncoder
     {

@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
-	internal class GLDynamicOffsetInfo : IEquatable<GLDynamicOffsetInfo>
+	public class GLDynamicOffsetInfo : IEquatable<GLDynamicOffsetInfo>
 	{
 		public GLBufferRangeTarget Target { get; set; }
 		public uint DstIndex { get; set; }

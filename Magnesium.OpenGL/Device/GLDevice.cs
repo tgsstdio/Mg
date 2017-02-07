@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Diagnostics;
 
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
-	internal class GLDevice : IMgDevice
+    public class GLDevice : IMgDevice
 	{
 		#region IMgDevice implementation
 		public PFN_vkVoidFunction GetDeviceProcAddr (string pName)
@@ -138,7 +137,7 @@ namespace Magnesium.OpenGL
                 throw new ArgumentNullException(nameof(image));
             }
 
-			var texture = image as GLImage;
+			var texture = (IGLImage) image;
 
 			uint imageSize = 0;
 
@@ -474,7 +473,7 @@ namespace Magnesium.OpenGL
 
 		public void GetImageSubresourceLayout (IMgImage image, MgImageSubresource pSubresource, out MgSubresourceLayout pLayout)
 		{
-			var internalImage = image as GLImage;
+			var internalImage = (IGLImage) image;
 
 			if (internalImage != null
 				&& pSubresource.ArrayLayer < internalImage.ArrayLayers.Length 
@@ -500,7 +499,7 @@ namespace Magnesium.OpenGL
 				throw new ArgumentNullException ("pCreateInfo.Image", "pCreateInfo.Image is null");
 			}
 
-			var originalImage = pCreateInfo.Image as GLImage;
+			var originalImage = (IGLImage) pCreateInfo.Image;
 
 			if (originalImage == null)
 			{

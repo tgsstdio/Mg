@@ -1,6 +1,6 @@
-﻿namespace Magnesium.OpenGL
+﻿namespace Magnesium.OpenGL.Internals
 {
-    internal interface IGLDescriptorSetLayout : IMgDescriptorSetLayout
+    public interface IGLDescriptorSetLayout : IMgDescriptorSetLayout
     {
         GLUniformBinding[] Uniforms { get; }
     }

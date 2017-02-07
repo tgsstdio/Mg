@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
-	// RENDERER HERE
-	internal class GLCommandPool : IMgCommandPool
+	public class GLCommandPool : IMgCommandPool
 	{
 		public MgCommandPoolCreateFlagBits Flags { get; private set; }
 

@@ -7,7 +7,7 @@ namespace Magnesium.OpenGL
 		IGLNextDescriptorPool Parent { get; }
 		GLDescriptorPoolResourceInfo[] Resources { get;  }
 
-		void Initialise(GLDescriptorPoolResourceInfo[] resources);
+		void Initialize(GLDescriptorPoolResourceInfo[] resources);
 		bool IsValidDescriptorSet { get; }
 		void Invalidate();
 	}

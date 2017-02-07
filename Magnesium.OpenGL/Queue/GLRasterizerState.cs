@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace Magnesium.OpenGL
 {
 	[StructLayout(LayoutKind.Sequential)]
-	public struct GLQueueRendererRasterizerState : IEquatable<GLQueueRendererRasterizerState>
+	public struct GLRasterizerState : IEquatable<GLRasterizerState>
 	{
 		public GLGraphicsPipelineFlagBits Flags { get; set; }
 		public GLCmdDepthBiasParameter DepthBias { get; set; }
@@ -12,7 +12,7 @@ namespace Magnesium.OpenGL
 
 		#region IEquatable implementation
 
-		public bool Equals (GLQueueRendererRasterizerState other)
+		public bool Equals (GLRasterizerState other)
 		{
 			return ((Flags & other.Flags) == Flags)
 				&& Math.Abs (this.DepthBias.DepthBiasConstantFactor - other.DepthBias.DepthBiasConstantFactor) <= float.Epsilon

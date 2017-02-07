@@ -1,7 +1,9 @@
-﻿namespace Magnesium.OpenGL
+﻿namespace Magnesium.OpenGL.Internals
 {
     public interface IAmtStateRenderer
     {
+        // TODO : hide these implementation details
+        void Initialize();
         void BeginRenderpass(AmtBeginRenderpassRecord record);
         void EndRenderpass();
         void BindPipeline(AmtBoundPipelineRecordInfo pipelineInfo);

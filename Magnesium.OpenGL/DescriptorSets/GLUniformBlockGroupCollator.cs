@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
-	internal class GLUniformBlockGroupCollator
+	public class GLUniformBlockGroupCollator
 	{
 		readonly Dictionary<string, GLUniformBlockGroupInfo> mPrefixes;
         public IDictionary<string, GLUniformBlockGroupInfo> Prefixes {

@@ -2,7 +2,7 @@
 
 namespace Magnesium.OpenGL
 {
-	public struct GLQueueRendererClearValueState : IEquatable<GLQueueRendererClearValueState>
+	public struct GLClearValueState : IEquatable<GLClearValueState>
 	{
 		public MgColor4f ClearColor { get; set; }
 		public float DepthValue { get; set; }
@@ -10,7 +10,7 @@ namespace Magnesium.OpenGL
 
 		#region IEquatable implementation
 
-		public bool Equals (GLQueueRendererClearValueState other)
+		public bool Equals (GLClearValueState other)
 		{
 			if (StencilValue != other.StencilValue)
 			{

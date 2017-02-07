@@ -1,8 +1,8 @@
 using System;
 
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
-	internal class GLInstance : IMgInstance
+	public class GLInstance : IMgInstance
 	{
 		public GLInstance (IGLQueue queue, IGLDeviceEntrypoint entrypoint)
 		{

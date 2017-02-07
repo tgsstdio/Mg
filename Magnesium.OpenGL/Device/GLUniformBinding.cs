@@ -1,15 +1,15 @@
-﻿namespace Magnesium.OpenGL
+﻿namespace Magnesium.OpenGL.Internals
 {
-	internal struct GLUniformBinding
+	public struct GLUniformBinding
 	{
-        public uint DescriptorCount { get; internal set; }
+        public uint DescriptorCount { get; set; }
         public MgDescriptorType DescriptorType {
 			get;
 			set;
 		}
 
 		public uint Binding { get; set; }
-        public MgShaderStageFlagBits StageFlags { get; internal set; }
+        public MgShaderStageFlagBits StageFlags { get; set; }
     }
 }
 

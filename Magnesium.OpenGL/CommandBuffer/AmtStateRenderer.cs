@@ -2,9 +2,9 @@
 using Magnesium;
 using System.Diagnostics;
 
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
-    public class AmtStateRenderer : IGLQueueRenderer
+    public class AmtStateRenderer : IAmtStateRenderer
     {
         private readonly IGLCmdBlendEntrypoint mBlend;
         private readonly IGLCmdStencilEntrypoint mStencil;
@@ -14,7 +14,7 @@ namespace Magnesium.OpenGL
         private readonly IGLCmdScissorsEntrypoint mScissor;
         private readonly IGLCmdDrawEntrypoint mRender;
         private readonly IGLErrorHandler mErrHandler;
-        private readonly IGLCmdClearEntrypoint mClear;
+        private readonly IGLCmdClearEntrypoint mClear; 
 
         public AmtStateRenderer(
             IGLCmdBlendEntrypoint blend,
@@ -41,7 +41,7 @@ namespace Magnesium.OpenGL
 
         #region BeginRenderPass methods
 
-        GLQueueRendererClearValueState mPastClearValues;
+        GLClearValueState mPastClearValues;
         public void BeginRenderpass(AmtBeginRenderpassRecord pass)
         {
             // Clear color plus attachment binding
@@ -480,7 +480,7 @@ namespace Magnesium.OpenGL
 
         #region SetupRasterizationSettings methods
 
-        public GLQueueRendererRasterizerState mPastRasterization;
+        public GLRasterizerState mPastRasterization;
         private void SetupRasterizationSettings(IGLGraphicsPipeline pipeline)
         {
             var currentRasterization = pipeline.Flags;
@@ -732,7 +732,7 @@ namespace Magnesium.OpenGL
 
         #endregion
 
-		public void SetDefault()
+		public void Initialize()
 		{			
 			const int NO_OF_COLOR_ATTACHMENTS = 4;
 			mPastColorBlendEnums = mBlend.Initialize (NO_OF_COLOR_ATTACHMENTS);
@@ -790,43 +790,6 @@ namespace Magnesium.OpenGL
         {
             mRender.DrawIndexedIndirect(drawItem.Topology, drawItem.IndexType, drawItem.Indirect, drawItem.DrawCount, drawItem.Stride);
         }
-
-//        public void CheckProgram(CmdBufferInstructionSet instructionSet, GLCmdBufferDrawItem drawItem)
-//		{
-//			// bind program
-//			if (mCache.ProgramID != drawItem.ProgramID)
-//			{
-//				mCache.ProgramID = drawItem.ProgramID;
-//				mCache.VBO = drawItem.VBO;
-//				mCache.DescriptorSet = instructionSet.DescriptorSets [drawItem.DescriptorSet];
-//				mCache.BindDescriptorSet ();
-//			}
-//			else
-//			{
-//				mCache.VBO = drawItem.VBO;
-
-//				if (mCache.DescriptorSetIndex != drawItem.DescriptorSet)
-//				{
-//					// TODO : FIX ME
-//					mCache.DescriptorSet = instructionSet.DescriptorSets [drawItem.DescriptorSet];
-
-//					if (mCache.DescriptorSet != null)
-//					{
-//						mCache.BindDescriptorSet ();
-//					}
-//				}
-//			}
-
-//			// bind constant buffers
-////			if (currentProgram.GetBufferMask () != nextState.BufferMask)
-////			{
-////				currentProgram.BindMask (mBuffers);
-////			}
-//			// bind uniforms
-
-
-
-//		}
 
         public void BindVertexArrays(GLCmdVertexBufferObject vao)
         {

@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
-	internal class GLNextPipelineLayout : IGLPipelineLayout
+	public class GLNextPipelineLayout : IGLPipelineLayout
 	{
 		public GLUniformBinding[] Bindings { get; private set; }
 

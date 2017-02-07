@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
-	internal class GLBindingPointOffsetInfo : IEquatable<GLBindingPointOffsetInfo>
+	public class GLBindingPointOffsetInfo : IEquatable<GLBindingPointOffsetInfo>
 	{
 		public uint Binding { get; set; }
 		public uint First { get; set; }

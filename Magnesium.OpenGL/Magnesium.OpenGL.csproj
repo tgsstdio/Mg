@@ -29,6 +29,40 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <Optimize>true</Optimize>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <Optimize>true</Optimize>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="CommandBuffer\AmtBeginRenderpassRecord.cs" />
     <Compile Include="CommandBuffer\AmtBlitBag.cs" />
@@ -63,6 +97,7 @@
     <Compile Include="CommandBuffer\IAmtComputeEncoder.cs" />
     <Compile Include="CommandBuffer\IAmtEncoderContextSorter.cs" />
     <Compile Include="CommandBuffer\IAmtGraphicsEncoder.cs" />
+    <Compile Include="CommandBuffer\IAmtStateRenderer.cs" />
     <Compile Include="DescriptorSets\GLBindingPointOffsetInfo.cs" />
     <Compile Include="DescriptorSets\GLBufferDescriptor.cs" />
     <Compile Include="DescriptorSets\GLBufferRangeTarget.cs" />
@@ -74,6 +109,7 @@
     <Compile Include="DescriptorSets\GLInternalCacheBlockBinding.cs" />
     <Compile Include="DescriptorSets\GLNextCmdShaderProgramCache.cs" />
     <Compile Include="DescriptorSets\GLNextDescriptorSet.cs" />
+    <Compile Include="Device\IGLImage.cs" />
     <Compile Include="Entrypoint\DefaultGLDescriptorSetEntrypoint.cs" />
     <Compile Include="DescriptorSets\GLNextDescriptorSetBinder.cs" />
     <Compile Include="DescriptorSets\GLNextPipelineLayout.cs" />
@@ -141,8 +177,6 @@
     <Compile Include="Device\GLCommandPool.cs" />
     <Compile Include="Device\GLRenderPass.cs" />
     <Compile Include="CommandBuffer\GLCmdComputeCommand.cs" />
-    <Compile Include="CommandBuffer\GLCmdRenderPassCommand.cs" />
-    <Compile Include="CommandBuffer\GLCmdDrawCommand.cs" />
     <Compile Include="CommandBuffer\GLCmdInternalDraw.cs" />
     <Compile Include="CommandBuffer\GLCmdInternalDrawIndexed.cs" />
     <Compile Include="CommandBuffer\GLCmdInternalDrawIndexedIndirect.cs" />
@@ -172,10 +206,8 @@
     <Compile Include="CommandBuffer\GLCmdDepthBiasParameter.cs" />
     <Compile Include="CommandBuffer\GLCmdDepthBoundsParameter.cs" />
     <Compile Include="CommandBuffer\GLCmdVertexBufferObject.cs" />
-    <Compile Include="CommandBuffer\GLCmdBufferDrawItem.cs" />
     <Compile Include="CommandBuffer\GLCmdBufferPipelineItem.cs" />
     <Compile Include="CommandBuffer\GLCmdClearValuesParameter.cs" />
-    <Compile Include="CommandBuffer\GLCommandBufferFlagBits.cs" />
     <Compile Include="CommandBuffer\GLClearValueArrayItem.cs" />
     <Compile Include="CommandBuffer\CmdImageInstructionSet.cs" />
     <Compile Include="CommandBuffer\GLCmdTexImageData.cs" />
@@ -196,10 +228,10 @@
     <Compile Include="Entrypoint\IGLCmdDepthEntrypoint.cs" />
     <Compile Include="Entrypoint\IGLCmdShaderProgramCache.cs" />
     <Compile Include="Queue\GLQueueRendererStencilState.cs" />
-    <Compile Include="Queue\GLQueueRendererRasterizerState.cs" />
+    <Compile Include="Queue\GLRasterizerState.cs" />
     <Compile Include="Entrypoint\IGLErrorHandler.cs" />
     <Compile Include="Queue\GLQueueClearBufferMask.cs" />
-    <Compile Include="Queue\GLQueueRendererClearValueState.cs" />
+    <Compile Include="Queue\GLClearValueState.cs" />
     <Compile Include="Entrypoint\IGLFramebufferHelperSelector.cs" />
     <Compile Include="Entrypoint\IGLFramebufferSupport.cs" />
     <Compile Include="Entrypoint\IGLFramebufferHelper.cs" />

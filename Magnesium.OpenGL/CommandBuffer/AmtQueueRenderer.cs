@@ -1,18 +1,54 @@
-﻿using System;
+﻿using Magnesium.OpenGL.Internals;
+using System;
 
 namespace Magnesium.OpenGL
 {
-	public class AmtQueueRenderer
+	public class AmtQueueRenderer : IGLQueueRenderer
 	{
-        private readonly IGLQueueRenderer mRenderer;
         private readonly IGLBlitOperationEntrypoint mBlit;
-        public AmtQueueRenderer(IGLQueueRenderer renderer, IGLBlitOperationEntrypoint blit)
-		{
-            mRenderer = renderer;
-            mBlit = blit;
-		}
+        private readonly AmtStateRenderer mRenderer;
+        public AmtQueueRenderer
+        (
+            IGLBlitOperationEntrypoint blit,
 
-		public void Render(IGLCommandBuffer buffer)
+            // for hiding implementation details of state renderer
+            IGLCmdBlendEntrypoint blend,
+            IGLCmdStencilEntrypoint stencil,
+            IGLCmdRasterizationEntrypoint raster,
+            IGLCmdDepthEntrypoint depth,
+            IGLCmdShaderProgramCache cache,
+            IGLCmdScissorsEntrypoint scissor,
+            IGLCmdDrawEntrypoint render,
+            IGLCmdClearEntrypoint clear,
+            IGLErrorHandler errHandler
+        )
+		{
+            mBlit = blit;
+
+            // for hiding implementation details of state renderer
+            mRenderer = new AmtStateRenderer
+            (
+                blend
+                ,stencil
+                ,raster
+                ,depth
+                ,cache
+                ,scissor
+                ,render
+                ,clear
+                ,errHandler
+            );
+
+        }
+
+        public void Initialize()
+        {
+            mRenderer.Initialize();
+        }
+
+        #region Render methods
+
+        public void Render(IGLCommandBuffer buffer)
 		{
 			if (buffer.IsQueueReady)
 			{
@@ -49,7 +85,7 @@ namespace Magnesium.OpenGL
 			}			
         }
 
-		static AmtCommandRecording GenerateRecording(IGLCommandBuffer buffer, IGLQueueRenderer renderer)
+		static AmtCommandRecording GenerateRecording(IGLCommandBuffer buffer, AmtStateRenderer renderer)
 		{
 			return new AmtCommandRecording
 			{
@@ -68,6 +104,8 @@ namespace Magnesium.OpenGL
 				},
 			};
 		}
-	}
+
+        #endregion
+    }
 
 }

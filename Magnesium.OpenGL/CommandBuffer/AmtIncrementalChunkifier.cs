@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Magnesium.OpenGL.Internals;
+using System.Collections.Generic;
 
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
     public class AmtIncrementalChunkifier : IAmtEncoderContextSorter
     {

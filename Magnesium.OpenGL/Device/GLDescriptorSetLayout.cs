@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
-	internal class GLDescriptorSetLayout : IGLDescriptorSetLayout
+	public class GLDescriptorSetLayout : IGLDescriptorSetLayout
     {
 		public GLDescriptorSetLayout (MgDescriptorSetLayoutCreateInfo pCreateInfo)
 		{

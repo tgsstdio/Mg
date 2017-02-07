@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
-    internal class AmtCommandBuffer : IGLCommandBuffer
+    public class AmtCommandBuffer : IGLCommandBuffer
     {
 		private bool mIsRecording = false;
 		private bool mIsExecutable = false;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Magnesium.OpenGL.Internals;
+using System;
 
 namespace Magnesium.OpenGL
 {

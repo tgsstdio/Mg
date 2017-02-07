@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
-	internal class GLGraphicsPipeline : IMgPipeline, IGLGraphicsPipeline
+	public class GLGraphicsPipeline : IMgPipeline, IGLGraphicsPipeline
 	{
 		readonly IGLGraphicsPipelineEntrypoint mEntrypoint;
 

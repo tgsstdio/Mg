@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace Magnesium.OpenGL
+﻿namespace Magnesium.OpenGL.Internals
 {
-	public class GLCmdIndexBufferParameter
+    public class GLCmdIndexBufferParameter
 	{
 		public MgIndexType indexType;
 		public ulong offset;

@@ -1,5 +1,5 @@
 ﻿using System;
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
 	[Flags]
 	public enum AmtEncoderCategory : byte

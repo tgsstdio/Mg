@@ -1,4 +1,4 @@
-﻿namespace Magnesium.OpenGL
+﻿namespace Magnesium.OpenGL.Internals
 {
 	public class GLNextDescriptorSet : IGLDescriptorSet
 	{
@@ -13,7 +13,7 @@
 			IsValidDescriptorSet = false;
 		}
 
-		public void Initialise(GLDescriptorPoolResourceInfo[] resources)
+		public void Initialize(GLDescriptorPoolResourceInfo[] resources)
 		{
 			Resources = resources;
 			IsValidDescriptorSet = true;

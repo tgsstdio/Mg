@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
-    internal interface IGLPipelineLayout : IMgPipelineLayout, IEquatable<IGLPipelineLayout>
+    public interface IGLPipelineLayout : IMgPipelineLayout, IEquatable<IGLPipelineLayout>
     {
         GLUniformBinding[] Bindings { get; }
 

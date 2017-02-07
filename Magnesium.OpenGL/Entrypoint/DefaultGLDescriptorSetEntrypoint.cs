@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Magnesium.OpenGL.Internals;
+using System;
 using System.Collections.Generic;
 
 namespace Magnesium.OpenGL
@@ -110,7 +111,7 @@ namespace Magnesium.OpenGL
 				IGLDescriptorSet item;
                 if (parentPool.TryTake(out item))
                 {
-                    item.Initialise(resources);
+                    item.Initialize(resources);
                     parentPool.AllocatedSets.Add(item.Key, item);
                     output.Add(item);
                 }

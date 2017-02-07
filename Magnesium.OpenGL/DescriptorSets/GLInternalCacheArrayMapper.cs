@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
-	internal class GLInternalCacheArrayMapper
+	public class GLInternalCacheArrayMapper
 	{
 		private readonly IGLPipelineLayout mLayout;
 		private readonly SortedDictionary<uint, GLUniformBlockGroupInfo> mGroups;

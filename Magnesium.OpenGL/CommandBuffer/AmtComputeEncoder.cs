@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
-    internal class AmtComputeEncoder : IAmtComputeEncoder
+    public class AmtComputeEncoder : IAmtComputeEncoder
     {
         public AmtComputeEncoder()
         {

@@ -6,9 +6,9 @@ namespace Magnesium.OpenGL.DesktopGL
 	{
 		#region ICmdClearCapabilities implementation
 
-		public GLQueueRendererClearValueState Initialize ()
+		public GLClearValueState Initialize ()
 		{
-			var result = new GLQueueRendererClearValueState {
+			var result = new GLClearValueState {
 				ClearColor = new MgColor4f(0f, 0f, 0f, 0f),
 				DepthValue = 1f,
 				StencilValue = 0,

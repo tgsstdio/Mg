@@ -1,6 +1,6 @@
-﻿namespace Magnesium.OpenGL
+﻿namespace Magnesium.OpenGL.Internals
 {
-	internal class GLImageView : IMgImageView
+	public class GLImageView : IMgImageView
 	{
 		public int TextureId { get; private set; }
 

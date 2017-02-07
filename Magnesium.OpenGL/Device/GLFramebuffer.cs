@@ -1,7 +1,7 @@
 
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
-	internal class GLFramebuffer : IMgFramebuffer
+	public class GLFramebuffer : IMgFramebuffer
 	{
 		#region IMgFramebuffer implementation
 		public void DestroyFramebuffer (IMgDevice device, IMgAllocationCallbacks allocator)

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
     public class AmtGraphicsEncoder : IAmtGraphicsEncoder
     {
@@ -52,7 +52,7 @@ namespace Magnesium.OpenGL
         private AmtBeginRenderpassRecord mBoundRenderPass;
         public void BeginRenderPass(MgRenderPassBeginInfo pRenderPassBegin, MgSubpassContents contents)
         {
-            mBoundRenderPass =  InitialiseRenderpassInfo(pRenderPassBegin);
+            mBoundRenderPass =  InitializeRenderpassInfo(pRenderPassBegin);
 
             var nextIndex = mBag.Renderpasses.Push(mBoundRenderPass);
 
@@ -78,7 +78,7 @@ namespace Magnesium.OpenGL
             renderer.BeginRenderpass(passInfo);
         }
 
-        AmtBeginRenderpassRecord InitialiseRenderpassInfo(MgRenderPassBeginInfo pass)
+        AmtBeginRenderpassRecord InitializeRenderpassInfo(MgRenderPassBeginInfo pass)
         {
             Debug.Assert(pass != null);
 
@@ -212,7 +212,7 @@ namespace Magnesium.OpenGL
 
             mCurrentPipeline = glPipeline;
 
-            var pipelineInfo = InitialisePipelineInfo(); 
+            var pipelineInfo = InitializePipelineInfo(); 
             var nextIndex = mBag.Pipelines.Push(pipelineInfo);
 
             var instruction = new AmtEncodingInstruction
@@ -228,7 +228,7 @@ namespace Magnesium.OpenGL
             }
         }
 
-        private AmtBoundPipelineRecordInfo InitialisePipelineInfo()
+        private AmtBoundPipelineRecordInfo InitializePipelineInfo()
         {
             // ONLY if pipeline ATTACHED and dynamic state has been set
             var frontReference = mCurrentPipeline.Front.Reference;
