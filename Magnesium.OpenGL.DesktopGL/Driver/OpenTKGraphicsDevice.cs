@@ -29,7 +29,7 @@ namespace Magnesium.OpenGL.DesktopGL
 
 		IGLFramebufferHelperSelector mSelector;
 
-		IGLQueueRenderer mQueueRenderer;
+		IGLRenderer mQueueRenderer;
 
 		public OpenTKGraphicsDevice (
 			INativeWindow window,
@@ -37,7 +37,7 @@ namespace Magnesium.OpenGL.DesktopGL
 			IGLFramebufferHelperSelector selector,
 			IGLExtensionLookup extensions,
 			IMgGraphicsDeviceLogger logger,
-			IGLQueueRenderer queueRenderer,
+			IGLRenderer queueRenderer,
             IGLBackbufferContext bbContext
 		)
 		{

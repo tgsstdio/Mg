@@ -1,4 +1,6 @@
-﻿namespace Magnesium.OpenGL.Internals
+﻿using Magnesium.OpenGL.Internals;
+
+namespace Magnesium.OpenGL
 {
     public interface IAmtStateRenderer
     {

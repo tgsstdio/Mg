@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Magnesium.OpenGL.Internals
+﻿namespace Magnesium.OpenGL.Internals
 {
     public interface IGLCommandBuffer : IMgCommandBuffer
     {

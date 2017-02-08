@@ -102,9 +102,10 @@ namespace TriangleDemo.DesktopGL
 
             // Magnesium.OpenGL INTERNALS
             container.Register<Magnesium.OpenGL.IGLGraphicsPipelineCompiler, Magnesium.OpenGL.GLSLGraphicsPipelineCompilier>(new PerContainerLifetime());
-            container.Register<Magnesium.OpenGL.IGLQueue, Magnesium.OpenGL.GLQueue>(new PerContainerLifetime());
-            container.Register<Magnesium.OpenGL.IGLQueueRenderer, Magnesium.OpenGL.AmtQueueRenderer>(new PerContainerLifetime());
-            container.Register<Magnesium.OpenGL.AmtQueueRenderer>(new PerContainerLifetime());
+            container.Register<Magnesium.OpenGL.IGLQueue, Magnesium.OpenGL.AmtQueue>(new PerContainerLifetime());
+            container.Register<Magnesium.OpenGL.IGLRenderer, Magnesium.OpenGL.AmtGLRenderer>(new PerContainerLifetime());
+            
+            container.Register<Magnesium.OpenGL.IAmtStateRenderer, Magnesium.OpenGL.AmtStateRenderer>(new PerContainerLifetime());
             container.Register<Magnesium.OpenGL.IGLDeviceEntrypoint, Magnesium.OpenGL.DefaultGLDeviceEntrypoint>(new PerContainerLifetime());
 
             // WINDOW 

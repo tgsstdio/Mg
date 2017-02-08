@@ -1,8 +1,7 @@
 ﻿using System;
-using Magnesium;
-using System.Diagnostics;
+using Magnesium.OpenGL.Internals;
 
-namespace Magnesium.OpenGL.Internals
+namespace Magnesium.OpenGL
 {
     public class AmtStateRenderer : IAmtStateRenderer
     {
