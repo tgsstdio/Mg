@@ -23,9 +23,11 @@ Quick Links
 Magnesium and its implementations uses [Semantic Versioning v2.0.0](http://semver.org/) for versioning assemblies
 
 ### Version 6.0.0
- - Magnesium.OpenGL v6.0.0 - 13 Jan 2017
- - Magnesium.OpenGL.DesktopGL v6.0.0 - 13 Jan 2017
+ - Magnesium.OpenGL v6.0.0 - 8 Feb 2017
+ - Magnesium.OpenGL.DesktopGL v6.0.0 - 8 Feb 2017
 	- w.r.t Magnesium v5.0.4
+	- Implemented GLFullFence of IMgFence interface
+	- Implemented CopyBuffers into CommandBuffers
 
 ### Version 5.0.0
  - Removing descriptor pool from IMgQueueInfo.CreatePartition because MgDescriptorPools should be explicitly set based on usage

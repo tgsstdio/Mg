@@ -7,8 +7,8 @@
     <ProjectGuid>{45070203-25C7-4981-A5BA-7DE38958E06C}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TriangleDemo</RootNamespace>
-    <AssemblyName>TriangleDemo</AssemblyName>
+    <RootNamespace>TriangleDemo.Vulkan</RootNamespace>
+    <AssemblyName>TriangleDemo.Vulkan</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

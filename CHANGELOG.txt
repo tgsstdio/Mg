@@ -1,8 +1,10 @@
-Magnesium.OpenGL v5.1.1 - 5 Jan 2017
+Magnesium.OpenGL v5.1.1 - 8 Feb 2017
 	- Added IMgFence/IGLFence implementation
+	- Implemented CopyBuffers into CommandBuffers
 	
-Magnesium.OpenGL.DesktopGL v5.1.1 - 5 Jan 2017
+Magnesium.OpenGL.DesktopGL v5.1.1 - 8 Feb 2017
 	- Implemented GLFullFence of IMgFence interface
+	- Implemented CopyBuffers into CommandBuffers
 
 Magnesium.Ktx v1.0.0 - 24 Dec 2016
 	- Loads Khronos .ktx image files

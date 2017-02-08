@@ -3,7 +3,7 @@ using Magnesium;
 using OpenTK;
 using System;
 
-namespace TriangleDemo
+namespace TriangleDemo.Vulkan
 {
     class Program
     {

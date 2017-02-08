@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace TriangleDemo
+namespace TriangleDemo.Vulkan
 {
     public class SPIRVTriangleShaderPath : ITriangleDemoShaderPath
     {           
