@@ -4,6 +4,6 @@
     {
         void ResetAllData();
         bool IsQueueReady { get; }
-        AmtCommandBufferRecord Record { get; }
+        GLCmdCommandBufferRecord Record { get; }
     }
 }

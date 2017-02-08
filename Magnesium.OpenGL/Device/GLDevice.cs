@@ -733,14 +733,14 @@ namespace Magnesium.OpenGL.Internals
 			for (uint i = 0; i < pAllocateInfo.CommandBufferCount; ++i)
 			{
                 // TODO : for now
-                var sorter = new AmtIncrementalChunkifier();
-                var graphics = new AmtGraphicsEncoder(sorter, new AmtGraphicsBag(), mEntrypoint.VBO);
-                var compute = new AmtComputeEncoder();
-                var blit = new AmtBlitEncoder(sorter, new AmtBlitBag());
-                var encoder = new AmtCommandEncoder(sorter, graphics, compute, blit);
+                var sorter = new GLCmdIncrementalContextSorter();
+                var graphics = new GLCmdGraphicsEncoder(sorter, new GLCmdGraphicsBag(), mEntrypoint.VBO);
+                var compute = new GLCmdComputeEncoder();
+                var blit = new GLCmdBlitEncoder(sorter, new GLCmdBlitBag());
+                var encoder = new GLCmdCommandEncoder(sorter, graphics, compute, blit);
 
 
-				var buffer = new AmtCommandBuffer(true, encoder);
+				var buffer = new GLCmdCommandBuffer(true, encoder);
 				cmdPool.Buffers.Add (buffer);
 				pCommandBuffers [i] = buffer;
 			}
