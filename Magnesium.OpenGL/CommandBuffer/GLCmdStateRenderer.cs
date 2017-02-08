@@ -9,7 +9,7 @@ namespace Magnesium.OpenGL
         private readonly IGLCmdStencilEntrypoint mStencil;
         private readonly IGLCmdRasterizationEntrypoint mRaster;
         private readonly IGLCmdDepthEntrypoint mDepth;
-        private readonly IGLCmdShaderProgramCache mCache;
+        private readonly IGLNextCmdShaderProgramCache mCache;
         private readonly IGLCmdScissorsEntrypoint mScissor;
         private readonly IGLCmdDrawEntrypoint mRender;
         private readonly IGLErrorHandler mErrHandler;
@@ -20,7 +20,7 @@ namespace Magnesium.OpenGL
             IGLCmdStencilEntrypoint stencil,
             IGLCmdRasterizationEntrypoint raster,
             IGLCmdDepthEntrypoint depth,
-            IGLCmdShaderProgramCache cache,
+            IGLNextCmdShaderProgramCache cache,
             IGLCmdScissorsEntrypoint scissor,
             IGLCmdDrawEntrypoint render,
             IGLCmdClearEntrypoint clear,
@@ -123,10 +123,7 @@ namespace Magnesium.OpenGL
             // Static pipeline stuff such as depth test enabled
             var pipeline = pipelineInfo.Pipeline;
 
-            if (mCache.ProgramID != pipeline.ProgramID)
-            {
-                mCache.ProgramID = pipeline.ProgramID;
-            }
+            mCache.SetProgramID(MgPipelineBindPoint.GRAPHICS, pipeline.ProgramID, pipeline.InternalCache, pipeline.Layout);              
 
             SetupBlendSettings(pipeline);
             SetupDepthSettings(pipeline);
@@ -792,10 +789,12 @@ namespace Magnesium.OpenGL
 
         public void BindVertexArrays(GLCmdVertexBufferObject vao)
         {
-            if (mCache.VBO != vao.VBO)
-            {
-                mCache.VBO = vao.VBO;
-            }
+            mCache.SetVAO(vao.VBO);
+        }
+
+        public void BindDescriptorSets(GLCmdDescriptorSetParameter ds)
+        {
+            mCache.SetDescriptorSets(ds);
         }
     }
 }

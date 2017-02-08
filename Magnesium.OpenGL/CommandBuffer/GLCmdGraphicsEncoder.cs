@@ -8,6 +8,7 @@ namespace Magnesium.OpenGL.Internals
     {
         private readonly IGLCmdEncoderContextSorter mInstructions;
         private readonly IGLCmdVBOEntrypoint mVBO;
+        private IGLDescriptorSetBinder mDSBinder;
 
         // NOT SURE IF THIS IS NEEDED IN HERE
         //public CmdBufferInstructionSet InstructionSet { get; private set; }
@@ -17,12 +18,14 @@ namespace Magnesium.OpenGL.Internals
         (
             IGLCmdEncoderContextSorter instructions,
             GLCmdGraphicsBag bag,
-            IGLCmdVBOEntrypoint vbo
+            IGLCmdVBOEntrypoint vbo,
+            IGLDescriptorSetBinder dsBinder
         )
         {
             mInstructions = instructions;
             mBag = bag;
             mVBO = vbo;
+            mDSBinder = dsBinder;
         }
 
         public GLCmdGraphicsGrid AsGrid()
@@ -43,7 +46,8 @@ namespace Magnesium.OpenGL.Internals
                 DrawIndirects = mBag.DrawIndirects.ToArray(),
                 Draws = mBag.Draws.ToArray(),
                 StencilFunctions = mBag.StencilFunctions.ToArray(),
-                VAOs = mBag.VAOs.ToArray(),   
+                VAOs = mBag.VAOs.ToArray(),
+                DescriptorSets = mBag.DescriptorSets.ToArray(),                
             };
         }
 
@@ -72,7 +76,10 @@ namespace Magnesium.OpenGL.Internals
             Debug.Assert(context != null);
             var grid = context.Grid;
             Debug.Assert(grid != null);
-            var passInfo = grid.Renderpasses[arg2];
+            var items = grid.Renderpasses;
+            Debug.Assert(items != null);
+            var passInfo = items[arg2];
+            Debug.Assert(passInfo != null);
             var renderer = context.StateRenderer;
             Debug.Assert(renderer != null);
             renderer.BeginRenderpass(passInfo);
@@ -170,33 +177,63 @@ namespace Magnesium.OpenGL.Internals
 
         public void BindDescriptorSets(IMgPipelineLayout layout, uint firstSet, uint descriptorSetCount, IMgDescriptorSet[] pDescriptorSets, uint[] pDynamicOffsets)
         {
-            if (layout == null)
-                throw new ArgumentNullException(nameof(layout));
+            mDSBinder.Bind(MgPipelineBindPoint.GRAPHICS, layout, firstSet, descriptorSetCount, pDescriptorSets, pDynamicOffsets);
 
-            // TODO: TRANSFORM into more GL specific code
-            var parameter = new GLCmdDescriptorSetParameter();
-            parameter.Bindpoint = MgPipelineBindPoint.GRAPHICS;
-            parameter.Layout = layout;
-            parameter.FirstSet = firstSet;
-            parameter.DynamicOffsets = pDynamicOffsets;
-            parameter.DescriptorSets = pDescriptorSets;
-
-            //mRepository.DescriptorSets.Add(parameter);
-            //var nextIndex = (uint) mRepository.DescriptorSets.LastIndex().Value;
-
-            //var instruction = new AmtEncodingInstruction
-            //{
-            //    Category = AmtEncoderCategory.Graphics,
-            //    Index = nextIndex,
-            //    Operation = CmdBindDescriptorSets,
-            //};
-
-            //mInstructions.Add(instruction);
+            if (mDSBinder.IsInvalid)
+            {
+                InvalidateDescriptorSets();
+            }
         }
 
-        private static void CmdBindDescriptorSets(GLCmdCommandRecording arg1, uint arg2)
+        private void InvalidateDescriptorSets()
         {
-            throw new NotImplementedException();   
+            mPastDescriptorSet = null;
+        }
+
+        private GLCmdDescriptorSetParameter mPastDescriptorSet;
+        private void PushBackDescriptorSetIfRequired()
+        {
+            if (mCurrentPipeline == null)
+                return;
+
+            Debug.Assert(mDSBinder != null);
+
+            if (mPastDescriptorSet == null)
+            {
+                mPastDescriptorSet = new GLCmdDescriptorSetParameter
+                {
+                    Bindpoint = MgPipelineBindPoint.GRAPHICS,    
+                    Layout = mDSBinder.BoundPipelineLayout,  
+                    DescriptorSet = mDSBinder.BoundDescriptorSet,              
+                    DynamicOffsets = mDSBinder.BoundDynamicOffsets,
+                };
+
+                var nextIndex = mBag.DescriptorSets.Push(mPastDescriptorSet);
+
+                mInstructions.Add(new GLCmdEncodingInstruction
+                {
+                    Category = GLCmdEncoderCategory.Graphics,
+                    Index = nextIndex,
+                    Operation = CmdBindDescriptorSets,
+                });
+            }
+        }
+
+        private void CmdBindDescriptorSets(GLCmdCommandRecording arg1, uint arg2)
+        {
+            var context = arg1.Graphics;
+            Debug.Assert(context != null);
+            var grid = context.Grid;
+            Debug.Assert(grid != null);
+            var items = grid.DescriptorSets;
+            Debug.Assert(items != null);
+            var ds = items[arg2];
+            var renderer = context.StateRenderer;
+            Debug.Assert(renderer != null);
+            Debug.Assert(ds.DescriptorSet != null);
+            Debug.Assert(ds.DynamicOffsets != null);
+            //Debug.Assert(ds.Layout != null);
+            renderer.BindDescriptorSets(ds);
         }
 
         #endregion
@@ -396,7 +433,9 @@ namespace Magnesium.OpenGL.Internals
             Debug.Assert(context != null);
             var grid = context.Grid;
             Debug.Assert(grid != null);
-            var pipelineInfo = grid.Pipelines[arg2];
+            var items = grid.Pipelines;
+            Debug.Assert(items != null);
+            var pipelineInfo = items[arg2];
             var renderer = context.StateRenderer;
             Debug.Assert(renderer != null);
             renderer.BindPipeline(pipelineInfo);
@@ -425,14 +464,8 @@ namespace Magnesium.OpenGL.Internals
             InvalidateBackStencil();
             InvalidateFrontStencil();
 
-            //if (InstructionSet != null)
-            //{
-            //    foreach (var vbo in InstructionSet.VBOs)
-            //    {
-            //        vbo.Dispose();
-            //    }
-            //    InstructionSet = null;
-            //}
+            InvalidateDescriptorSets();
+            mDSBinder.Clear();
         }
 
         bool StoreDrawCommand()
@@ -455,6 +488,9 @@ namespace Magnesium.OpenGL.Internals
 
             // if back stencil is missing, generate new one
             PushBackStencilIfRequired();
+
+            // if descriptor sets is missing, generate new one
+            PushBackDescriptorSetIfRequired();
 
             return true;            
         }
@@ -491,7 +527,9 @@ namespace Magnesium.OpenGL.Internals
             Debug.Assert(context != null);
             var grid = context.Grid;
             Debug.Assert(grid != null);
-            var func = grid.StencilFunctions[arg2];
+            var items = grid.StencilFunctions;
+            Debug.Assert(items != null);
+            var func = items[arg2];
             var renderer = context.StateRenderer;
             Debug.Assert(renderer != null);
             renderer.UpdateBackStencil(func);
@@ -534,7 +572,9 @@ namespace Magnesium.OpenGL.Internals
             Debug.Assert(context != null);
             var grid = context.Grid;
             Debug.Assert(grid != null);
-            var func = grid.StencilFunctions[arg2];
+            var items = grid.StencilFunctions;
+            Debug.Assert(items != null);
+            var func = items[arg2];
             var renderer = context.StateRenderer;
             Debug.Assert(renderer != null);
             renderer.UpdateFrontStencil(func);
@@ -586,7 +626,9 @@ namespace Magnesium.OpenGL.Internals
             Debug.Assert(context != null);
             var grid = context.Grid;
             Debug.Assert(grid != null);
-            var vao = grid.VAOs[arg2];
+            var items = grid.VAOs;
+            Debug.Assert(items != null);
+            var vao = items[arg2];
             var renderer = context.StateRenderer;
             Debug.Assert(renderer != null);
             renderer.BindVertexArrays(vao);
@@ -624,7 +666,7 @@ namespace Magnesium.OpenGL.Internals
         {
             var vertexData = mBoundVertexBuffer;
             var noOfBindings = mCurrentPipeline.VertexInput.Bindings.Length;
-            var bufferIds = new int[noOfBindings];
+            var bufferIds = new uint[noOfBindings];
             var offsets = new long[noOfBindings];
 
             for (uint i = 0; i < vertexData.pBuffers.Length; ++i)
@@ -644,7 +686,7 @@ namespace Magnesium.OpenGL.Internals
                 }
             }
 
-            int vbo = mVBO.GenerateVBO();
+            var vbo = mVBO.GenerateVBO();
             foreach (var attribute in mCurrentPipeline.VertexInput.Attributes)
             {
                 var bufferId = bufferIds[attribute.Binding];
@@ -728,7 +770,9 @@ namespace Magnesium.OpenGL.Internals
             Debug.Assert(context != null);
             var grid = context.Grid;
             Debug.Assert(grid != null);
-            var draw = grid.Draws[arg2];
+            var items = grid.Draws;
+            Debug.Assert(items != null);
+            var draw = items[arg2];
             var renderer = context.StateRenderer;
             Debug.Assert(renderer != null);
             renderer.Draw(draw);
@@ -781,7 +825,9 @@ namespace Magnesium.OpenGL.Internals
             Debug.Assert(context != null);
             var grid = context.Grid;
             Debug.Assert(grid != null);
-            var draw = grid.DrawIndexeds[arg2];
+            var items = grid.DrawIndexeds;
+            Debug.Assert(items != null);
+            var draw = items[arg2];
             var renderer = context.StateRenderer;
             Debug.Assert(renderer != null);
             renderer.DrawIndexed(draw);
@@ -864,7 +910,9 @@ namespace Magnesium.OpenGL.Internals
             Debug.Assert(context != null);
             var grid = context.Grid;
             Debug.Assert(grid != null);
-            var draw = grid.DrawIndexedIndirects[arg2];
+            var items = grid.DrawIndexedIndirects;
+            Debug.Assert(items != null);
+            var draw = items[arg2];
             var renderer = context.StateRenderer;
             Debug.Assert(renderer != null);
             renderer.DrawIndexedIndirect(draw);
@@ -938,7 +986,9 @@ namespace Magnesium.OpenGL.Internals
             Debug.Assert(context != null);
             var grid = context.Grid;
             Debug.Assert(grid != null);
-            var draw = grid.DrawIndirects[arg2];
+            var items = grid.DrawIndirects;
+            Debug.Assert(items != null);
+            var draw = items[arg2];
             var renderer = context.StateRenderer;
             Debug.Assert(renderer != null);
             renderer.DrawIndirect(draw);
@@ -997,7 +1047,9 @@ namespace Magnesium.OpenGL.Internals
             Debug.Assert(context != null);
             var grid = context.Grid;
             Debug.Assert(grid != null);
-            var blends = grid.BlendConstants[arg2];
+            var items = grid.BlendConstants;
+            Debug.Assert(items != null);
+            var blends = items[arg2];
             var renderer = context.StateRenderer;
             Debug.Assert(renderer != null);
             renderer.UpdateBlendConstants(blends);
@@ -1398,7 +1450,9 @@ namespace Magnesium.OpenGL.Internals
             Debug.Assert(context != null);
             var grid = context.Grid;
             Debug.Assert(grid != null);
-            var writeInfo = grid.StencilWrites[arg2];
+            var items = grid.StencilWrites;
+            Debug.Assert(items != null);
+            var writeInfo = items[arg2];
             var renderer = context.StateRenderer;
             Debug.Assert(renderer != null);
             renderer.UpdateStencilWriteMask(writeInfo);
@@ -1450,7 +1504,9 @@ namespace Magnesium.OpenGL.Internals
             Debug.Assert(context != null);
             var grid = context.Grid;
             Debug.Assert(grid != null);
-            var viewports = grid.Viewports[arg2];
+            var items = grid.Viewports;
+            Debug.Assert(items != null);
+            var viewports = items[arg2];
             var renderer = context.StateRenderer;
             Debug.Assert(renderer != null);
             renderer.UpdateViewports(viewports);

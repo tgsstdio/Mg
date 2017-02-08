@@ -14,7 +14,8 @@ namespace Magnesium.OpenGL.Internals
 
 		public void Clear()
 		{
-			BoundPipelineLayout = null;
+            IsInvalid = false;
+            BoundPipelineLayout = null;
 			BoundDynamicOffsets = null;
 			BoundDescriptorSet = null;
 		}
@@ -36,13 +37,13 @@ namespace Magnesium.OpenGL.Internals
 
 			if (firstSet != 0)
 			{
-				throw new InvalidOperationException("Mg.GL : only descriptor set 0 can be bound.");
+				throw new ArgumentException("Mg.GL : only descriptor set 0 can be bound.");
 			}
 
 			var bLayout = (IGLPipelineLayout)layout;
 
 			IsInvalid = false;
-			if (!BoundPipelineLayout.Equals(bLayout))
+            if (!bLayout.Equals(BoundPipelineLayout))
 			{
 				BoundPipelineLayout = bLayout;
 				IsInvalid = true;
@@ -53,7 +54,7 @@ namespace Magnesium.OpenGL.Internals
 
 			var bDescSet = (IGLDescriptorSet)pDescriptorSets[0];
 			// EXACT DSET ONLY
-			if (!BoundDescriptorSet.Equals(bDescSet))
+			if (!bDescSet.Equals(BoundDescriptorSet))
 			{
 				BoundDescriptorSet = bDescSet;
 				IsInvalid = true;
@@ -66,6 +67,7 @@ namespace Magnesium.OpenGL.Internals
 
 			if (pDynamicOffsets == null)
 			{
+                // SHOULD BE ALL ZEROS
 				BoundDynamicOffsets = new uint[BoundPipelineLayout.NoOfExpectedDynamicOffsets];
 				needsChange = true;
 			}

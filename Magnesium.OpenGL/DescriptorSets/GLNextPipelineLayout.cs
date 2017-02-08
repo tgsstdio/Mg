@@ -6,8 +6,8 @@ namespace Magnesium.OpenGL.Internals
 	{
 		public GLUniformBinding[] Bindings { get; private set; }
 
-		public uint NoOfBindingPoints { get; private set; }
-		public IDictionary<uint, GLBindingPointOffsetInfo> Ranges { get; private set; }
+		public int NoOfBindingPoints { get; private set; }
+		public IDictionary<int, GLBindingPointOffsetInfo> Ranges { get; private set; }
 
 		public uint NoOfStorageBuffers { get; private set; }
 		public uint NoOfExpectedDynamicOffsets { get; private set; }
@@ -26,11 +26,11 @@ namespace Magnesium.OpenGL.Internals
 				Bindings = new GLUniformBinding[0];
 			}
 
-			NoOfBindingPoints = 0U;
-			NoOfStorageBuffers = 0U;
-			NoOfExpectedDynamicOffsets = 0U;
+			NoOfBindingPoints = 0;
+			NoOfStorageBuffers = 0;
+			NoOfExpectedDynamicOffsets = 0;
 
-			Ranges = new SortedDictionary<uint, GLBindingPointOffsetInfo>();
+			Ranges = new SortedDictionary<int, GLBindingPointOffsetInfo>();
 			OffsetDestinations = ExtractBindingsInformation();
 			SetupOffsetRangesByBindings();
 		}
@@ -44,13 +44,13 @@ namespace Magnesium.OpenGL.Internals
 				if (desc.DescriptorType == MgDescriptorType.UNIFORM_BUFFER
 					|| desc.DescriptorType == MgDescriptorType.UNIFORM_BUFFER_DYNAMIC)
 				{
-					NoOfBindingPoints += desc.DescriptorCount;
-					Ranges.Add(desc.Binding,
+					NoOfBindingPoints += (int) desc.DescriptorCount;
+					Ranges.Add((int) desc.Binding,
 						   new GLBindingPointOffsetInfo
 						   {
 							   Binding = desc.Binding,
-							   First = 0U,
-							   Last = desc.DescriptorCount - 1
+							   First = 0,
+							   Last = (int) desc.DescriptorCount - 1
 						   });
 
 					if (desc.DescriptorType == MgDescriptorType.UNIFORM_BUFFER_DYNAMIC)
@@ -85,7 +85,7 @@ namespace Magnesium.OpenGL.Internals
 
 		void SetupOffsetRangesByBindings()
 		{
-			var startingOffset = 0U;
+			var startingOffset = 0;
 			foreach (var g in Ranges.Values)
 			{
 				g.First += startingOffset;

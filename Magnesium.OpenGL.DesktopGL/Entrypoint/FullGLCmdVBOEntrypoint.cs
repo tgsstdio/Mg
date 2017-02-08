@@ -14,20 +14,20 @@ namespace Magnesium.OpenGL.DesktopGL
 
 		#region ICmdVBOEntrypoint implementation
 
-		public void BindIndexBuffer (int vbo, int bufferId)
+		public void BindIndexBuffer (uint vbo, uint bufferId)
 		{
 			GL.VertexArrayElementBuffer (vbo, bufferId);
             mErrHandler.LogGLError(nameof(BindIndexBuffer));
 		}
 
-		public void BindDoubleVertexAttribute (int vbo, int location, int size, GLVertexAttributeType pointerType, int offset)
+		public void BindDoubleVertexAttribute (uint vbo, uint location, int size, GLVertexAttributeType pointerType, uint offset)
 		{
 			GL.Ext.EnableVertexArrayAttrib (vbo, location);
 			GL.VertexArrayAttribLFormat (vbo, location, size, (All)GetVertexAttribType(pointerType), offset);
             mErrHandler.LogGLError(nameof(BindDoubleVertexAttribute));
         }
 
-		public void BindIntVertexAttribute (int vbo, int location, int size, GLVertexAttributeType pointerType, int offset)
+		public void BindIntVertexAttribute (uint vbo, uint location, int size, GLVertexAttributeType pointerType, uint offset)
 		{
 			GL.Ext.EnableVertexArrayAttrib (vbo, location);
 			GL.VertexArrayAttribIFormat (vbo, location, size, GetVertexAttribType(pointerType), offset);
@@ -72,7 +72,7 @@ namespace Magnesium.OpenGL.DesktopGL
 			}
 		}
 
-		public void BindFloatVertexAttribute (int vbo, int location, int size, GLVertexAttributeType pointerType, bool isNormalized, int offset)
+		public void BindFloatVertexAttribute (uint vbo, uint location, int size, GLVertexAttributeType pointerType, bool isNormalized, uint offset)
 		{
 			GL.Ext.EnableVertexArrayAttrib (vbo, location);
             mErrHandler.LogGLError(nameof(BindFloatVertexAttribute) + ".EnableVertexArrayAttrib");
@@ -81,24 +81,24 @@ namespace Magnesium.OpenGL.DesktopGL
             mErrHandler.LogGLError(nameof(BindFloatVertexAttribute) + ".VertexArrayAttribFormat");
 		}
 
-		public void SetupVertexAttributeDivisor (int vbo, int location, int divisor)
+		public void SetupVertexAttributeDivisor (uint vbo, uint location, uint divisor)
 		{
 			GL.VertexArrayBindingDivisor (vbo, location, divisor);
             mErrHandler.LogGLError(nameof(SetupVertexAttributeDivisor));
 		}
 
-		public int GenerateVBO ()
+		public uint GenerateVBO ()
 		{
-			var result = new int[1];
+			var result = new uint[1];
 			GL.CreateVertexArrays (1, result);
             mErrHandler.LogGLError(nameof(GenerateVBO));
 			Debug.Assert (GL.IsVertexArray (result [0]));
 			return result [0];
 		}
 
-		public void DeleteVBO (int vbo)
+		public void DeleteVBO (uint vbo)
 		{
-			int[] result = new int[1];
+			var result = new uint[1];
 			result [0] = vbo;
 
 			//Debug.Assert (GL.IsVertexArray (vbo));
@@ -107,7 +107,7 @@ namespace Magnesium.OpenGL.DesktopGL
             mErrHandler.LogGLError(nameof(DeleteVBO));
         }
 
-		public void AssociateBufferToLocation (int vbo, int location, int bufferId, long offsets, uint stride)
+		public void AssociateBufferToLocation (uint vbo, uint location, uint bufferId, long offsets, uint stride)
 		{
 			if (stride >= (uint)int.MaxValue)
 			{

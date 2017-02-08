@@ -4,10 +4,10 @@ namespace Magnesium.OpenGL.Internals
 {
 	public class GLCmdVertexBufferObject : IDisposable
 	{
-		public int VBO { get; private set; }
+		public uint VBO { get; private set; }
 		private readonly IGLCmdVBOEntrypoint mFactory;
 
-		public GLCmdVertexBufferObject(int vbo, IGLCmdVBOEntrypoint factory)
+		public GLCmdVertexBufferObject(uint vbo, IGLCmdVBOEntrypoint factory)
         {
 			VBO = vbo;
 			mFactory = factory;

@@ -5,7 +5,7 @@ namespace Magnesium.OpenGL.Internals
 	public class GLInternalCacheArrayMapper
 	{
 		private readonly IGLPipelineLayout mLayout;
-		private readonly SortedDictionary<uint, GLUniformBlockGroupInfo> mGroups;
+		private readonly SortedDictionary<int, GLUniformBlockGroupInfo> mGroups;
         private readonly GLUniformBlockGroupCollator mCollator;
 
         public GLInternalCacheArrayMapper(IGLPipelineLayout layout, GLUniformBlockEntry[] blockEntries)
@@ -35,9 +35,9 @@ namespace Magnesium.OpenGL.Internals
             }
         }
 
-        public uint CalculateArrayIndex(GLUniformBlockEntry entry)
+        public int CalculateArrayIndex(GLUniformBlockEntry entry)
 		{
-			uint bindingPoint = 0U;
+			int bindingPoint = 0;
 
 			var mapGroup = mGroups[entry.FirstBinding];
 

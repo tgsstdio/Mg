@@ -1,37 +1,38 @@
 ﻿using System;
+using OpenTK.Graphics.OpenGL4;
 
 namespace Magnesium.OpenGL.DesktopGL
 {
     public class FullGLCmdShaderProgramEntrypoint : IGLCmdShaderProgramEntrypoint
     {
-        public void BindCombinedImageSampler(int programID, uint binding, ulong value)
+        public void BindCombinedImageSampler(int programID, int binding, long value)
         {
-            throw new NotImplementedException();
+            GL.Arb.ProgramUniformHandle(programID, binding, value);
         }
 
         public void BindProgram(int programID)
         {
-            throw new NotImplementedException();
+            GL.UseProgram(programID);
         }
 
-        public void BindStorageBuffer(uint binding, int bufferId, long offset, int size)
+        public void BindStorageBuffer(uint binding, uint bufferId, IntPtr offset, IntPtr size)
         {
-            throw new NotImplementedException();
+            GL.BindBufferRange(BufferRangeTarget.ShaderStorageBuffer, binding, bufferId, offset, size);
         }
 
-        public void BindUniformBuffers(uint count, int[] buffers, IntPtr[] offsets, int[] sizes)
+        public void BindUniformBuffers(int count, uint[] buffers, IntPtr[] offsets, IntPtr[] sizes)
         {
-            throw new NotImplementedException();
+            GL.BindBuffersRange(BufferRangeTarget.UniformBuffer, 0, count, buffers, offsets, sizes);
         }
 
-        public void BindVAO(int vao)
+        public void BindVAO(uint vao)
         {
-            throw new NotImplementedException();
+            GL.BindVertexArray(vao);
         }
 
-        public void SetUniformBlock(int programID, int activeIndex, uint bindingPoint)
+        public void SetUniformBlock(int programID, int activeIndex, int bindingPoint)
         {
-            throw new NotImplementedException();
+            GL.UniformBlockBinding(programID, activeIndex, bindingPoint);
         }
     }
 }

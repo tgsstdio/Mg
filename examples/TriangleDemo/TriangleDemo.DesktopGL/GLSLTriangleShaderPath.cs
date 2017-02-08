@@ -12,7 +12,7 @@ namespace TriangleDemo.DesktopGL
 
         public Stream OpenVertexShader()
         {
-            return System.IO.File.OpenRead("shaders/triangle3.vert");
+            return System.IO.File.OpenRead("shaders/triangle.vert");
         }
     }
 }

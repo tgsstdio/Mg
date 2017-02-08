@@ -7,8 +7,8 @@ namespace Magnesium.OpenGL.Internals
     {
         GLUniformBinding[] Bindings { get; }
 
-		uint NoOfBindingPoints { get; }
-		IDictionary<uint, GLBindingPointOffsetInfo> Ranges { get; }
+		int NoOfBindingPoints { get; }
+		IDictionary<int, GLBindingPointOffsetInfo> Ranges { get; }
 
 		uint NoOfStorageBuffers { get; }
 		uint NoOfExpectedDynamicOffsets { get; }

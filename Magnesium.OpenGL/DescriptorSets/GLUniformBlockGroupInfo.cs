@@ -3,12 +3,12 @@
     public class GLUniformBlockGroupInfo
     {
 		public string Prefix { get;  set; }
-        public uint FirstBinding { get;  set; }
-        public uint Count { get; set; }
-		public uint ArrayStride { get; set; }
-		public uint HighestRow { get; set; }
-		public uint MatrixStride { get; set; }
-		public uint HighestLayer { get; set; }
-		public uint CubeStride { get; set; }
+        public int FirstBinding { get;  set; }
+        public int Count { get; set; }
+		public int ArrayStride { get; set; }
+		public int HighestRow { get; set; }
+		public int MatrixStride { get; set; }
+		public int HighestLayer { get; set; }
+		public int CubeStride { get; set; }
     }
 }

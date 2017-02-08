@@ -69,7 +69,7 @@ namespace Magnesium.OpenGL.DesktopGL
 
 		// INDEX, 
 		public BufferTarget Target { get; private set;}
-		public int BufferId { get; private set; }
+		public uint BufferId { get; private set; }
 		public ulong RequestedSize { get; set; }
         public bool IsBufferType { get; private set; }
 

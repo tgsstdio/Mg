@@ -9,7 +9,7 @@ namespace Magnesium.OpenGL
 
 		IntPtr Source { get; }
 		ulong RequestedSize { get; }
-		int BufferId { get; }
+		uint BufferId { get; }
 	}
 
 }

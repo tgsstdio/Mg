@@ -59,7 +59,7 @@ namespace Magnesium.OpenGL.DesktopGL
 						Debug.WriteLineIf (error != ErrorCode.NoError, "GLDeviceMemory (PREVIOUS) : " + error);
 					}
 
-					var buffers = new int[1];
+					var buffers = new uint[1];
 					// ARB_direct_state_access
 					// Allows buffer objects to be initialised without binding them
 					GL.CreateBuffers (1, buffers);
@@ -88,7 +88,7 @@ namespace Magnesium.OpenGL.DesktopGL
 
 		readonly GLMemoryBufferType mBufferType;
 		readonly int mBufferSize;
-		readonly int mBufferId;
+		readonly uint mBufferId;
 		readonly IntPtr mHandle;
 
 		public GLMemoryBufferType BufferType {
@@ -103,7 +103,7 @@ namespace Magnesium.OpenGL.DesktopGL
 			}
 		}
 
-		public int BufferId {
+		public uint BufferId {
 			get {
 				return mBufferId;
 			}

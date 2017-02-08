@@ -6,14 +6,14 @@ namespace Magnesium.OpenGL
 	{
 		void BindProgram(int programID);
 
-		void BindVAO(int vao);
+		void BindVAO(uint vao);
 
-		void BindStorageBuffer(uint binding, int bufferId, long offset, int size);
+		void BindStorageBuffer(uint binding, uint bufferId, IntPtr offset, IntPtr size);
 
-		void SetUniformBlock(int programID, int activeIndex, uint bindingPoint);
+		void SetUniformBlock(int programID, int activeIndex, int bindingPoint);
 
-		void BindUniformBuffers(uint count, int[] buffers, IntPtr[] offsets, int[] sizes);
+		void BindUniformBuffers(int count, uint[] buffers, IntPtr[] offsets, IntPtr[] sizes);
 
-		void BindCombinedImageSampler(int programID, uint binding, ulong value);
+		void BindCombinedImageSampler(int programID, int binding, long value);
 	}
 }

@@ -19,6 +19,7 @@ namespace Magnesium.OpenGL.Internals
         public GLCmdInternalDrawIndexed[] DrawIndexeds { get; set; }
         public GLCmdInternalDrawIndirect[] DrawIndirects { get; set; }
         public GLCmdInternalDrawIndexedIndirect[] DrawIndexedIndirects { get; set; }
+        public GLCmdDescriptorSetParameter[] DescriptorSets { get; set; }
 
         private bool mIsDisposed = false;
         public void Dispose()

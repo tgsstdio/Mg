@@ -12,22 +12,22 @@
 				prefix = tokens[0];
 			}
 
-			uint x = 0;
+			int x = 0;
 			if (tokens.Length >= 2)
 			{
-				x = uint.Parse(tokens[1]);
+				x = int.Parse(tokens[1]);
 			}
 
-			uint y = 0;
+			int y = 0;
 			if (tokens.Length >= 3)
 			{
-				y = uint.Parse(tokens[2]);
+				y = int.Parse(tokens[2]);
 			}
 
-			uint z = 0;
+			int z = 0;
 			if (tokens.Length >= 4)
 			{
-				z = uint.Parse(tokens[3]);
+				z = int.Parse(tokens[3]);
 			}
 
 			return new GLUniformBlockInfo

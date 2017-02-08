@@ -3,20 +3,33 @@ using System.Collections.Generic;
 
 namespace Magnesium.OpenGL.Internals
 {
-	public class GLGraphicsPipeline : IMgPipeline, IGLGraphicsPipeline
+	public class GLGraphicsPipeline : IGLGraphicsPipeline
 	{
 		readonly IGLGraphicsPipelineEntrypoint mEntrypoint;
 
-		public GLGraphicsPipeline (
+        public GLInternalCache InternalCache
+        {
+            get;
+            private set;
+        }
+
+        public IGLPipelineLayout Layout
+        {
+            get;
+            private set;
+        }
+
+        public GLGraphicsPipeline (
 			IGLGraphicsPipelineEntrypoint entrypoint,
 			int programId,
 			MgGraphicsPipelineCreateInfo info,
-			GLProgramUniformBinder uniforms
-		)
+            GLInternalCache internalCache,
+            IGLPipelineLayout layout
+        )
 		{
 			mEntrypoint = entrypoint;
 
-			if (info.VertexInputState == null)
+            if (info.VertexInputState == null)
 			{
 				throw new ArgumentNullException ("info.VertexInputState");
 			}
@@ -32,9 +45,10 @@ namespace Magnesium.OpenGL.Internals
 			}
 
 			ProgramID = programId;
-			UniformBinder = uniforms;
+            InternalCache = internalCache;
+            Layout = layout;
 
-			PopulateVertexDefinition (info.VertexInputState);
+            PopulateVertexDefinition (info.VertexInputState);
 
 			PopulatePipelineConstants (info.RasterizationState);
 
@@ -548,13 +562,7 @@ namespace Magnesium.OpenGL.Internals
 
 				var elementInfo = GetAttributeFormat(description.Format);
 
-				var divisor = (binding.InputRate == MgVertexInputRate.INSTANCE) ? 1 : 0;
-
-				if (description.Location > int.MaxValue)
-					throw new ArgumentOutOfRangeException ("description.Location[i]", "description.Location > int.MaxValue");
-
-				if (description.Offset > int.MaxValue)
-					throw new ArgumentOutOfRangeException ("description.Offset[i]", "description.Offset > int.MaxValue");
+				var divisor = (binding.InputRate == MgVertexInputRate.INSTANCE) ? 1U : 0U;
 
 				if ( binding.Stride > int.MaxValue)
 					throw new ArgumentOutOfRangeException ("binding.Stride[i]", "binding.Stride > int.MaxValue");
@@ -562,8 +570,8 @@ namespace Magnesium.OpenGL.Internals
 				var attribute = new GLVertexInputAttribute{ 
 					Binding = description.Binding,
 
-					Location = (int) description.Location,
-					Offset = (int) description.Offset,
+					Location = description.Location,
+					Offset = description.Offset,
 					Stride = (int) binding.Stride,
 
 					Divisor = divisor,
@@ -873,13 +881,8 @@ namespace Magnesium.OpenGL.Internals
 		
 		#endregion
 
-		public GLProgramUniformBinder UniformBinder {
-			get;
-			private set;
-		}
-
-		#region IMgPipeline implementation
-		private bool mIsDisposed = false;
+        #region IMgPipeline implementation
+        private bool mIsDisposed = false;
 		public void DestroyPipeline (IMgDevice device, IMgAllocationCallbacks allocator)
 		{
 			if (mIsDisposed)
