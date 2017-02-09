@@ -7,11 +7,6 @@ namespace Magnesium.OpenGL
 			set;
 		}
 
-		GLCmdDescriptorSetParameter DescriptorSet {
-			get;
-			set;
-		}
-
 		int ProgramID { get; set; }
 		int VBO { get; set; }
 

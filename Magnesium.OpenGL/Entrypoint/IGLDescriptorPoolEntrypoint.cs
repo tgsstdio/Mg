@@ -2,7 +2,7 @@
 {
 	public interface IGLDescriptorPoolEntrypoint
 	{
-		IGLDescriptorPool CreatePool(MgDescriptorPoolCreateInfo createInfo);
+		IGLNextDescriptorPool CreatePool(MgDescriptorPoolCreateInfo createInfo);
 	}
 }
 

@@ -1,33 +1,35 @@
 
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
 	public class GLCmdInternalDrawIndexed
 	{
-		public uint firstInstance {
+		public uint FirstInstance {
 			get;
 			set;
 		}
 
-		public int vertexOffset {
+		public int VertexOffset {
 			get;
 			set;
 		}
 
-		public uint firstIndex {
+		public uint FirstIndex {
 			get;
 			set;
 		}
 
-		public uint instanceCount {
+		public uint InstanceCount {
 			get;
 			set;
 		}
 
-		public uint indexCount {
+		public uint IndexCount {
 			get;
 			set;
 		}
-	}
+        public MgPrimitiveTopology Topology { get; internal set; }
+        public MgIndexType IndexType { get; internal set; }
+    }
 
 }
 

@@ -46,11 +46,6 @@ namespace Magnesium.OpenGL.DesktopGL
 			set;
 		}
 
-		public GLCmdDescriptorSetParameter DescriptorSet {
-			get;
-			set;
-		}
-
 		#endregion
 
 		public void BindDescriptorSet ()

@@ -10,10 +10,10 @@ namespace Magnesium.OpenGL
 		void EnableStencilBuffer();
 		void DisableStencilBuffer();
 		bool IsStencilBufferEnabled { get; }
-		void SetStencilWriteMask(int mask);
+		void SetStencilWriteMask(MgStencilFaceFlagBits face, uint mask);
 
-		void SetFrontFaceCullStencilFunction (MgCompareOp func, int referenceStencil, int stencilMask);
-		void SetBackFaceCullStencilFunction(MgCompareOp func, int referenceStencil, int stencilMask);
+		void SetFrontFaceCullStencilFunction (MgCompareOp func, int referenceStencil, uint compare);
+		void SetBackFaceCullStencilFunction(MgCompareOp func, int referenceStencil, uint compare);
 
 		void SetFrontFaceStencilOperation(
 			MgStencilOp stencilFail,
@@ -28,7 +28,7 @@ namespace Magnesium.OpenGL
 		void SetStencilFunction(
 			MgCompareOp stencilFunction,
 			int referenceStencil,
-			int stencilMask);
+			uint compare);
 
 		void SetStencilOperation(
 			MgStencilOp stencilFail,

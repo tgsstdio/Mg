@@ -4,10 +4,12 @@ namespace Magnesium.OpenGL
 {
 	public interface IGLBuffer : IMgBuffer
 	{
-		GLMemoryBufferType BufferType { get; }
+		bool IsBufferType { get; }
+        MgBufferUsageFlagBits Usage { get; }
+
 		IntPtr Source { get; }
 		ulong RequestedSize { get; }
-		int BufferId { get; }
+		uint BufferId { get; }
 	}
 
 }

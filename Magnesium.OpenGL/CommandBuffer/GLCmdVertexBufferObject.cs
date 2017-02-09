@@ -1,30 +1,16 @@
 ﻿using System;
 
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
 	public class GLCmdVertexBufferObject : IDisposable
 	{
-		public int VBO { get; private set; }
-		private int mVertexBuffer;
-		private int? mIndexBuffer;
+		public uint VBO { get; private set; }
 		private readonly IGLCmdVBOEntrypoint mFactory;
 
-		public GLCmdVertexBufferObject (int vbo, int vertexBuffer, int? indexBuffer, IGLCmdVBOEntrypoint factory)
-		{
+		public GLCmdVertexBufferObject(uint vbo, IGLCmdVBOEntrypoint factory)
+        {
 			VBO = vbo;
-			mVertexBuffer = vertexBuffer;
-			mIndexBuffer = indexBuffer;
 			mFactory = factory;
-		}
-
-		public bool Matches(int vertexBuffer)
-		{
-			return (mVertexBuffer == vertexBuffer);								
-		}
-
-		public bool Matches(int vertexBuffer, int indexBuffer)
-		{
-			return (mVertexBuffer == vertexBuffer && mIndexBuffer.HasValue && mIndexBuffer.Value == indexBuffer);	
 		}
 
 		#region IDisposable implementation
@@ -47,7 +33,7 @@ namespace Magnesium.OpenGL
 				return;
 
 			if (mFactory != null && VBO != 0)
-				//mFactory.DeleteVBO(VBO);
+				mFactory.DeleteVBO(VBO);
 
 			mDisposed = true;
 		}

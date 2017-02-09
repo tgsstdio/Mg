@@ -4,9 +4,10 @@ using System.Diagnostics;
 
 namespace Magnesium.OpenGL.DesktopGL
 {
-	using GLStencilFunction = OpenTK.Graphics.OpenGL.StencilFunction;
+    using System;
+    using GLStencilFunction = OpenTK.Graphics.OpenGL.StencilFunction;
 
-	public class FullGLCmdStencilEntrypoint : IGLCmdStencilEntrypoint
+    public class FullGLCmdStencilEntrypoint : IGLCmdStencilEntrypoint
 	{
 		#region IDepthStencilCapabilities implementation
 
@@ -30,13 +31,13 @@ namespace Magnesium.OpenGL.DesktopGL
 				Flags = 0, // !QueueDrawItemBitFlags.StencilEnabled | !QueueDrawItemBitFlags.TwoSidedStencilMode
 				Front = new GLGraphicsPipelineStencilMasks
 				{
-					WriteMask = ~0,
+					WriteMask = ~0U,
 					Reference = ~0,
 					CompareMask = int.MaxValue,
 				},
 				Back = new GLGraphicsPipelineStencilMasks
 				{
-					WriteMask = ~0,
+					WriteMask = ~0U,
 					Reference = ~0,
 					CompareMask = int.MaxValue,
 				},
@@ -44,8 +45,9 @@ namespace Magnesium.OpenGL.DesktopGL
 			};
 
 			DisableStencilBuffer ();
-			SetStencilWriteMask (initialValue.Front.WriteMask);
-			SetStencilFunction (initialValue.Enums.FrontStencilFunction, initialValue.Front.Reference, initialValue.Front.CompareMask);
+			SetStencilWriteMask(MgStencilFaceFlagBits.FRONT_BIT, initialValue.Front.WriteMask);
+            SetStencilWriteMask(MgStencilFaceFlagBits.BACK_BIT, initialValue.Back.WriteMask);
+            SetStencilFunction (initialValue.Enums.FrontStencilFunction, initialValue.Front.Reference, initialValue.Front.CompareMask);
 			SetStencilOperation (initialValue.Enums.FrontStencilFail, initialValue.Enums.FrontDepthBufferFail, initialValue.Enums.FrontStencilPass);
 
 			return initialValue;
@@ -86,9 +88,25 @@ namespace Magnesium.OpenGL.DesktopGL
 			}
 		}
 
-		public void SetStencilWriteMask(int mask)
+		public void SetStencilWriteMask(MgStencilFaceFlagBits face, uint mask)
 		{
-			GL.StencilMask(mask);
+            var glFaces = (StencilFace) 0;
+            switch(face)
+            {
+                case MgStencilFaceFlagBits.BACK_BIT:
+                    glFaces = StencilFace.Back;
+                    break;
+                case MgStencilFaceFlagBits.FRONT_BIT:
+                    glFaces = StencilFace.Front;
+                    break;
+                case MgStencilFaceFlagBits.FRONT_AND_BACK:
+                    glFaces = StencilFace.FrontAndBack;
+                    break;
+                default:
+                    throw new NotSupportedException();
+            }
+
+			GL.StencilMaskSeparate(glFaces, mask);
 
 			{
 				var error = GL.GetError ();
@@ -99,14 +117,14 @@ namespace Magnesium.OpenGL.DesktopGL
 			}
 		}
 
-		public void SetFrontFaceCullStencilFunction (MgCompareOp func, int referenceStencil, int stencilMask)
+		public void SetFrontFaceCullStencilFunction (MgCompareOp func, int referenceStencil, uint compare)
 		{
 			var cullFaceModeFront = StencilFace.Front;
 			GL.StencilFuncSeparate (
 				cullFaceModeFront,
 				GetStencilFunc (func),
 				referenceStencil,
-				stencilMask);
+				compare);
 
 			{
 				var error = GL.GetError ();
@@ -117,14 +135,14 @@ namespace Magnesium.OpenGL.DesktopGL
 			}
 		}
 
-		public void SetBackFaceCullStencilFunction(MgCompareOp func, int referenceStencil, int stencilMask)
+		public void SetBackFaceCullStencilFunction(MgCompareOp func, int referenceStencil, uint compare)
 		{
 			var cullFaceModeBack = StencilFace.Back;					
 			GL.StencilFuncSeparate (
 				cullFaceModeBack,
 				GetStencilFunc (func),
 				referenceStencil,
-				stencilMask);
+				compare);
 
 			{
 				var error = GL.GetError ();
@@ -135,7 +153,7 @@ namespace Magnesium.OpenGL.DesktopGL
 			}
 		}
 
-		private static GLStencilFunction GetStencilFunc(MgCompareOp function)
+        private static GLStencilFunction GetStencilFunc(MgCompareOp function)
 		{
 			switch (function)
 			{
@@ -193,12 +211,12 @@ namespace Magnesium.OpenGL.DesktopGL
 		public void SetStencilFunction(
 			MgCompareOp stencilFunction,
 			int referenceStencil,
-			int stencilMask)
+			uint compare)
 		{
 			GL.StencilFunc(
 				GetStencilFunc (stencilFunction),
 				referenceStencil,
-				stencilMask);
+				compare);
 
 			{
 				var error = GL.GetError ();

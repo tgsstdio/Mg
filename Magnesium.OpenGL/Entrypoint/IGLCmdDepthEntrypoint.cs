@@ -16,6 +16,7 @@ namespace Magnesium.OpenGL
 		void SetDepthMask (bool isMaskOn);
 
 		void SetClipControl(bool usingLowerLeftCorner, bool zeroToOneRange);
-	}
+        void SetDepthBounds(float min, float max);
+    }
 }
 

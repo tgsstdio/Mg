@@ -19,20 +19,28 @@ namespace Magnesium.OpenGL.DesktopGL
 				return BufferTarget.ArrayBuffer;
 			case GLMemoryBufferType.INDIRECT:
 				return BufferTarget.DrawIndirectBuffer;
-			default:
+            case GLMemoryBufferType.TRANSFER_SRC:
+                return BufferTarget.CopyReadBuffer;
+            case GLMemoryBufferType.TRANSFER_DST:
+                return BufferTarget.CopyWriteBuffer;
+            case GLMemoryBufferType.UNIFORM:
+                return BufferTarget.UniformBuffer;
+            default:
 				throw new NotSupportedException ();
 			}
 		}
 
 		private readonly bool mIsHostCached;
-		public GLDeviceMemory (MgMemoryAllocateInfo pAllocateInfo)
-		{	
-			mBufferType = (GLMemoryBufferType)pAllocateInfo.MemoryTypeIndex;
+        private IGLErrorHandler mErrHandler;
+		public GLDeviceMemory (MgMemoryAllocateInfo pAllocateInfo, IGLErrorHandler errHandler)
+		{
+            mErrHandler = errHandler;
+            mBufferType = (GLMemoryBufferType)pAllocateInfo.MemoryTypeIndex;
 			mIsHostCached = (mBufferType == GLMemoryBufferType.INDIRECT || mBufferType== GLMemoryBufferType.IMAGE);
 
-			if (pAllocateInfo.AllocationSize >= (ulong)int.MaxValue)
+			if (pAllocateInfo.AllocationSize > (ulong)int.MaxValue)
 			{
-				throw new InvalidCastException ("pAllocateInfo.AllocationSize");
+				throw new ArgumentOutOfRangeException ("pAllocateInfo.AllocationSize > int.MaxValue");
 			}
 
 			mBufferSize = (int) pAllocateInfo.AllocationSize;
@@ -48,41 +56,29 @@ namespace Magnesium.OpenGL.DesktopGL
 			{
 				if (mBufferTarget.HasValue)
 				{
-					{
-						var error = GL.GetError ();
-						Debug.WriteLineIf (error != ErrorCode.NoError, "GLDeviceMemory (PREVIOUS) : " + error);
-					}
-
-					var buffers = new int[1];
+					var buffers = new uint[1];
 					// ARB_direct_state_access
 					// Allows buffer objects to be initialised without binding them
 					GL.CreateBuffers (1, buffers);
 
-					{
-						var error = GL.GetError ();
-						Debug.WriteLineIf (error != ErrorCode.NoError, "GL.CreateBuffers : " + error);
-					}
+                    mErrHandler.LogGLError("GL.CreateBuffers");
 					mBufferId = buffers[0];
 
-					//GL.BindBuffer (mBufferTarget.Value, BufferId);
+                    // TODO : update flags based on buffer request
 					BufferStorageFlags flags = BufferStorageFlags.MapWriteBit | BufferStorageFlags.MapPersistentBit | BufferStorageFlags.MapCoherentBit;
 					GL.NamedBufferStorage (mBufferId, mBufferSize, IntPtr.Zero, flags);
+                    mErrHandler.LogGLError("GL.NamedBufferStorage");
 
-					{
-						var error = GL.GetError ();
-						Debug.WriteLineIf (error != ErrorCode.NoError, "GL.NamedBufferStorage : " + error);
-					}					 
-
-//					BufferAccessMask rangeFlags = BufferAccessMask.MapWriteBit | BufferAccessMask.MapPersistentBit | BufferAccessMask.MapCoherentBit;
-//					Handle = GL.MapNamedBufferRange (buffers[0], (IntPtr)0, BufferSize, rangeFlags);
-				}
+                    //					BufferAccessMask rangeFlags = BufferAccessMask.MapWriteBit | BufferAccessMask.MapPersistentBit | BufferAccessMask.MapCoherentBit;
+                    //					Handle = GL.MapNamedBufferRange (buffers[0], (IntPtr)0, BufferSize, rangeFlags);
+                }
 			}
 		}
 		private BufferTarget? mBufferTarget;
 
 		readonly GLMemoryBufferType mBufferType;
 		readonly int mBufferSize;
-		readonly int mBufferId;
+		readonly uint mBufferId;
 		readonly IntPtr mHandle;
 
 		public GLMemoryBufferType BufferType {
@@ -97,7 +93,7 @@ namespace Magnesium.OpenGL.DesktopGL
 			}
 		}
 
-		public int BufferId {
+		public uint BufferId {
 			get {
 				return mBufferId;
 			}
@@ -133,9 +129,9 @@ namespace Magnesium.OpenGL.DesktopGL
 		{
 			if (mIsHostCached)
 			{	
-				if (offset >= (ulong)Int32.MaxValue)
+				if (offset > (ulong)Int32.MaxValue)
 				{
-					throw new InvalidCastException ("offset >= Int32.MaxValue");
+					throw new ArgumentOutOfRangeException("offset >= Int32.MaxValue");
 				}
 		
 				var handleOffset = (Int32)offset;
@@ -147,31 +143,27 @@ namespace Magnesium.OpenGL.DesktopGL
 			{
 				if (offset >= (ulong)Int64.MaxValue)
 				{
-					throw new InvalidCastException ("offset >= Int64.MaxValue");
+					throw new ArgumentOutOfRangeException("offset >= Int64.MaxValue");
 				}
 
 				if (size >= (ulong)int.MaxValue)
 				{
-					throw new InvalidCastException ("size >= Int64.MaxValue");
+					throw new ArgumentOutOfRangeException("size >= Int64.MaxValue");
 				}
 
 				var handleOffset = (IntPtr)((Int64)offset);
 				var handleSize = (int) size;
 
-				var error = GL.GetError ();
-				Debug.WriteLineIf (error != ErrorCode.NoError, "MapMemory (BEFORE)  : " + error);
-
 				// TODO: flags translate 
 				BufferAccessMask rangeFlags = BufferAccessMask.MapWriteBit | BufferAccessMask.MapPersistentBit | BufferAccessMask.MapCoherentBit;
 				ppData = GL.MapNamedBufferRange (mBufferId, IntPtr.Zero, handleSize, rangeFlags);
 
-				error = GL.GetError ();
-				Debug.WriteLineIf (error != ErrorCode.NoError, "MapMemory (MapNamedBufferRange)  : " + error);
+                mErrHandler.LogGLError("GL.MapNamedBufferRange");
 
-				//ppData = GL.Ext.MapNamedBufferRange(BufferId, handleOffset, handleSize, BufferAccessMask.MapWriteBit | BufferAccessMask.MapCoherentBit);
+                //ppData = GL.Ext.MapNamedBufferRange(BufferId, handleOffset, handleSize, BufferAccessMask.MapWriteBit | BufferAccessMask.MapCoherentBit);
 
 
-				mIsMapped = true;
+                mIsMapped = true;
 				return Result.SUCCESS;
 			}
 
@@ -183,16 +175,8 @@ namespace Magnesium.OpenGL.DesktopGL
 			{	
 				bool isValid = GL.Ext.UnmapNamedBuffer (mBufferId);
 
-				Debug.WriteLineIf (!isValid, "DeviceMemory is invalid");
-
-				var error = GL.GetError ();
-				Debug.WriteLineIf (error != ErrorCode.NoError, "UnmapNamedBuffer : " + error);
-			}
-//			else if (mIsHostCached && BufferType == GLMemoryBufferType.IMAGE)
-//			{
-//
-//			}
-
+                mErrHandler.LogGLError("GL.Ext.UnmapNamedBuffer");
+            }
 			mIsMapped = false;
 		}
 

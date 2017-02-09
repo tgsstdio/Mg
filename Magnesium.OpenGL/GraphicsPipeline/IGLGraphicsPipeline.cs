@@ -1,10 +1,13 @@
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
-	public interface IGLGraphicsPipeline
-	{
+	public interface IGLGraphicsPipeline : IMgPipeline
+    {
 		int ProgramID {
 			get;
 		}
+
+        GLInternalCache InternalCache { get; }
+        IGLPipelineLayout Layout { get; }
 
 		GLGraphicsPipelineDynamicStateFlagBits DynamicsStates { get; }
 		GLGraphicsPipelineBlendColorState ColorBlendEnums { get; }

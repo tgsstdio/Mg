@@ -4,6 +4,7 @@ using System;
 
 namespace Magnesium.OpenGL
 {
+    // TODO : turn this into internal class
 	public class GLRenderPass : IGLRenderPass
 	{
 		static GLClearAttachmentType GetAttachmentType (MgFormat format)

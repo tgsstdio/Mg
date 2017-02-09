@@ -110,9 +110,9 @@ namespace Magnesium.OpenGL.DesktopGL
 			mErrHandler.LogGLError("DisableCulling");
 		}
 
-		public GLQueueRendererRasterizerState Initialize ()
+		public GLRasterizerState Initialize ()
 		{
-			var initialValue = new GLQueueRendererRasterizerState {
+			var initialValue = new GLRasterizerState {
 				Flags = 
 					GLGraphicsPipelineFlagBits.ScissorTestEnabled 
 					| GLGraphicsPipelineFlagBits.CullBackFaces 

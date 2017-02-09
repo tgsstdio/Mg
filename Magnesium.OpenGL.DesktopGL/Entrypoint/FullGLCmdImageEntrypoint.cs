@@ -92,7 +92,7 @@ namespace Magnesium.OpenGL.DesktopGL
 
 		#region IGLCmdImageCapabilities implementation
 
-		public void PerformOperation (CmdImageInstructionSet instructionSet)
+		public void PerformOperation (GLCmdImageInstructionSet instructionSet)
 		{
 			const int DEFAULT_UNPACK_ALIGNMENT = 4;
 

@@ -1,25 +1,25 @@
-using System;
-
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
-	public class GLCmdInternalDraw
+    public class GLCmdInternalDraw
 	{
-		public uint firstInstance {
+        public MgPrimitiveTopology Topology { get; set; }
+
+        public uint FirstInstance {
 			get;
 			set;
 		}
 
-		public uint firstVertex {
+		public uint FirstVertex {
 			get;
 			set;
 		}
 
-		public uint instanceCount {
+		public uint InstanceCount {
 			get;
 			set;
 		}
 
-		public uint vertexCount {
+		public uint VertexCount {
 			get;
 			set;
 		}

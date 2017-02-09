@@ -6,7 +6,7 @@ namespace Magnesium.OpenGL
 	{
 		GLMemoryBufferType BufferType { get; }
 		int BufferSize { get; }
-		int BufferId { get; }
+		uint BufferId { get; }
 		IntPtr Handle { get; }
 	}
 }

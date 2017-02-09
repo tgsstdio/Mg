@@ -1,25 +1,19 @@
-﻿using System;
-
-namespace Magnesium.OpenGL
+﻿namespace Magnesium.OpenGL.Internals
 {
-	public class GLCmdDescriptorSetParameter
+    public class GLCmdDescriptorSetParameter
 	{
-		public uint FirstSet {
+		public IGLDescriptorSet DescriptorSet {
 			get;
 			set;
 		}
 
-		public IMgDescriptorSet[] DescriptorSets {
-			get;
-			set;
-		}
-
-		public IMgPipelineLayout Layout {
+		public IGLPipelineLayout Layout {
 			get;
 			set;
 		}
 
 		public uint[] DynamicOffsets { get; set; }
+
 		public MgPipelineBindPoint Bindpoint { get; set; }
 	}
 }

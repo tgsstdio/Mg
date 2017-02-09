@@ -19,6 +19,6 @@ namespace Magnesium.OpenGL
 		bool CheckUniformLocation (int programId, int location);
 
 		int GetActiveUniforms (int programId);
-	}
+    }
 }
 
