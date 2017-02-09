@@ -110,6 +110,7 @@ All Magnesium demos can be found in the examples folder
  - KtxReader (Cross-Platform)
  	- Opens a .ktx for testing
  - TriangleDemo (Windows, OpenTK)
+	- Shared application code running on Vulkan and OpenGL 
  	- IOC library used - [LightInject](http://www.lightinject.net/)
 	- Simple Vulkan triangle demo based on [Sascha Willems](https://github.com/SaschaWillems)'s [triangle demo](https://github.com/SaschaWillems/Vulkan/blob/master/triangle/triangle.cpp)
  - TextureDemo (Windows, OpenTK)
