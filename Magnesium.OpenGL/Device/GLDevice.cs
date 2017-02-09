@@ -541,97 +541,107 @@ namespace Magnesium.OpenGL.Internals
 			var output = new List<IMgPipeline> ();
 
 			foreach (var info in pCreateInfos)
-			{
-				var bLayout = info.Layout as IGLPipelineLayout;
-				if (bLayout == null)
-				{
-					throw new ArgumentException ("pCreateInfos[].Layout");
-				}
+            {
+                var bLayout = (IGLPipelineLayout)info.Layout;
+                if (bLayout == null)
+                {
+                    throw new ArgumentException("pCreateInfos[].Layout");
+                }
 
-				if (info.VertexInputState == null)
-				{
-					throw new ArgumentNullException ("pCreateInfos[].VertexInputState");
-				}
+                if (info.VertexInputState == null)
+                {
+                    throw new ArgumentNullException("pCreateInfos[].VertexInputState");
+                }
 
-				if (info.InputAssemblyState == null)
-				{
-					throw new ArgumentNullException ("pCreateInfos[].InputAssemblyState");
-				}
+                if (info.InputAssemblyState == null)
+                {
+                    throw new ArgumentNullException("pCreateInfos[].InputAssemblyState");
+                }
 
-				if (info.RasterizationState == null)
-				{
-					throw new ArgumentNullException ("pCreateInfos[].RasterizationState");
-				}
+                if (info.RasterizationState == null)
+                {
+                    throw new ArgumentNullException("pCreateInfos[].RasterizationState");
+                }
 
-				var programId = mEntrypoint.GraphicsCompiler.Compile (info);
+                var programId = mEntrypoint.GraphicsCompiler.Compile(info);
 
                 var blocks = mEntrypoint.GraphicsCompiler.Inspect(programId);
                 var arrayMapper = new GLInternalCacheArrayMapper(bLayout, blocks);
-                var cache = new GLInternalCache(bLayout, blocks, arrayMapper);
+                var internalCache = new GLInternalCache(bLayout, blocks, arrayMapper);
 
                 /// MAKE SURE ACTIVE UNIFORMS ARE AVAILABLE
-                int noOfActiveUniforms = mEntrypoint.GraphicsPipeline.GetActiveUniforms(programId);
+                //int noOfActiveUniforms = mEntrypoint.GraphicsPipeline.GetActiveUniforms(programId);
 
-               // var names = mEntrypoint.GraphicsPipeline.GetUniformBlocks(programId);
+                // var names = mEntrypoint.GraphicsPipeline.GetUniformBlocks(programId);
 
-				var uniqueLocations = new SortedDictionary<uint, GLVariableBind> ();
+                //var binder = ConstructBinder(bLayout, programId, noOfActiveUniforms);
 
-                var notUniformBlock = ~(MgDescriptorType.UNIFORM_BUFFER | MgDescriptorType.UNIFORM_BUFFER_DYNAMIC);
+                var pipeline = new GLGraphicsPipeline(
+                    mEntrypoint.GraphicsPipeline,
+                    programId,
+                    info,
+                    internalCache,
+                    bLayout
+                );
 
-                foreach (var binding in bLayout.Bindings)
-				{
-					bool uniformFound = false;
+                // TODO : BASE PIPELINE / CHILD
 
-
-					if (noOfActiveUniforms > 0)
-					{
-                        if (binding.Binding > int.MaxValue)
-                        {
-                            throw new ArgumentOutOfRangeException("Mg.GL: binding.Binding is > int.MaxValue");
-                        }
-
-                        // NOT SURE IF THIS IS STILL WORTH CHECKING
-                        if ((binding.DescriptorType & notUniformBlock) > 0)
-                        {
-                            int location = (int)binding.Binding;
-                            uniformFound = mEntrypoint.GraphicsPipeline.CheckUniformLocation(programId, location);
-                        }
-					}
-
-					// ONLY ACTIVE UNIFORMS
-					// FIXME : input attachment
-					var bind = new GLVariableBind{
-						IsActive = (noOfActiveUniforms > 0 && uniformFound), 
-						Location = binding.Binding,
-						DescriptorType = binding.DescriptorType };
-
-					// WILL THROW ERROR HERE IF COLLISION
-					uniqueLocations.Add(binding.Binding, bind);
-				}
-
-				// ASSUME NO GAPS ARE SUPPLIED
-				var uniformBinder = new GLProgramUniformBinder (uniqueLocations.Values.Count);
-				foreach (var bind in uniqueLocations.Values)
-				{
-					uniformBinder.Bindings[bind.Location] = bind;
-				}
-
-				var pipeline = new GLGraphicsPipeline (
-					mEntrypoint.GraphicsPipeline,
-					programId,
-					info,
-					uniformBinder
-				);
-
-				// TODO : BASE PIPELINE / CHILD
-
-				output.Add (pipeline);
-			}
-			pPipelines = output.ToArray ();
+                output.Add(pipeline);
+            }
+            pPipelines = output.ToArray ();
 			return Result.SUCCESS;
 		}
 
-		public Result CreateComputePipelines (IMgPipelineCache pipelineCache, MgComputePipelineCreateInfo[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgPipeline[] pPipelines)
+        //private GLProgramUniformBinder ConstructBinder(IGLPipelineLayout bLayout, int programId)
+        //{
+        //
+        //    int noOfActiveUniforms = mEntrypoint.GraphicsPipeline.GetActiveUniforms(programId);
+        //    var notUniformBlock = ~(MgDescriptorType.UNIFORM_BUFFER | MgDescriptorType.UNIFORM_BUFFER_DYNAMIC);
+        //    var uniqueLocations = new SortedDictionary<uint, GLVariableBind>();
+
+        //    foreach (var binding in bLayout.Bindings)
+        //    {
+        //        bool uniformFound = false;
+
+
+        //        if (noOfActiveUniforms > 0)
+        //        {
+        //            if (binding.Binding > int.MaxValue)
+        //            {
+        //                throw new ArgumentOutOfRangeException("Mg.GL: binding.Binding is > int.MaxValue");
+        //            }
+
+        //            // NOT SURE IF THIS IS STILL WORTH CHECKING
+        //            if ((binding.DescriptorType & notUniformBlock) > 0)
+        //            {
+        //                int location = (int)binding.Binding;
+        //                uniformFound = mEntrypoint.GraphicsPipeline.CheckUniformLocation(programId, location);
+        //            }
+        //        }
+
+        //        // ONLY ACTIVE UNIFORMS
+        //        // FIXME : input attachment
+        //        var bind = new GLVariableBind
+        //        {
+        //            IsActive = (noOfActiveUniforms > 0 && uniformFound),
+        //            Location = binding.Binding,
+        //            DescriptorType = binding.DescriptorType
+        //        };
+
+        //        // WILL THROW ERROR HERE IF COLLISION
+        //        uniqueLocations.Add(binding.Binding, bind);
+        //    }
+
+        //    // ASSUME NO GAPS ARE SUPPLIED
+        //    var uniformBinder = new GLProgramUniformBinder(uniqueLocations.Values.Count);
+        //    foreach (var bind in uniqueLocations.Values)
+        //    {
+        //        uniformBinder.Bindings[bind.Location] = bind;
+        //    }
+        //    return uniformBinder;
+        //}
+
+        public Result CreateComputePipelines (IMgPipelineCache pipelineCache, MgComputePipelineCreateInfo[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgPipeline[] pPipelines)
 		{
 			throw new NotImplementedException ();
 		}
@@ -734,7 +744,8 @@ namespace Magnesium.OpenGL.Internals
 			{
                 // TODO : for now
                 var sorter = new GLCmdIncrementalContextSorter();
-                var graphics = new GLCmdGraphicsEncoder(sorter, new GLCmdGraphicsBag(), mEntrypoint.VBO);
+                var dsBinder = new GLNextDescriptorSetBinder();
+                var graphics = new GLCmdGraphicsEncoder(sorter, new GLCmdGraphicsBag(), mEntrypoint.VBO, dsBinder);
                 var compute = new GLCmdComputeEncoder();
                 var blit = new GLCmdBlitEncoder(sorter, new GLCmdBlitBag());
                 var encoder = new GLCmdCommandEncoder(sorter, graphics, compute, blit);

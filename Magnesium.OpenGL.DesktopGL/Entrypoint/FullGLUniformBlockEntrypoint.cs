@@ -46,7 +46,7 @@ namespace Magnesium.OpenGL.DesktopGL
 
             return new GLActiveUniformBlockInfo
             {
-                BindingIndex = (uint) props[0],
+                BindingIndex = props[0],
                 Stride = props[1],             
                 Stage = stage,
             };

@@ -18,7 +18,7 @@ namespace Magnesium.OpenGL.UnitTests
 			set;
 		}
 
-		public uint NoOfBindingPoints
+		public int NoOfBindingPoints
 		{
 			get;
 			set;
@@ -36,13 +36,14 @@ namespace Magnesium.OpenGL.UnitTests
 			set;
 		}
 
-		public IDictionary<uint, GLBindingPointOffsetInfo> Ranges
-		{
-			get;
-			set;
-		}
 
-		public void DestroyPipelineLayout(IMgDevice device, IMgAllocationCallbacks allocator)
+        public IDictionary<int, GLBindingPointOffsetInfo> Ranges
+        {
+            get;
+            set;
+        }
+
+        public void DestroyPipelineLayout(IMgDevice device, IMgAllocationCallbacks allocator)
 		{
 			throw new NotImplementedException();
 		}

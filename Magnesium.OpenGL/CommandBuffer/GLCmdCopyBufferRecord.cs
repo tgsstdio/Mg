@@ -2,8 +2,8 @@
 {
     public class GLCmdCopyBufferRecord
     {
-        public int Destination { get; internal set; }
+        public uint Destination { get; internal set; }
         public GLCmdCopyBufferRegionRecord[] Regions { get; internal set; }
-        public int Source { get; internal set; }
+        public uint Source { get; internal set; }
     }
 }

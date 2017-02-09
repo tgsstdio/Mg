@@ -2,8 +2,8 @@ namespace Magnesium.OpenGL
 {
 	public interface IGLImageDescriptorEntrypoint
 	{
-		ulong CreateHandle (int textureId, int samplerId);
-		void ReleaseHandle(ulong handle);
+		long CreateHandle (int textureId, int samplerId);
+		void ReleaseHandle(long handle);
 	}
 
 }

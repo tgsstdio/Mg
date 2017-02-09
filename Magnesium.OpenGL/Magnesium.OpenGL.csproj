@@ -98,6 +98,7 @@
     <Compile Include="CommandBuffer\IGLCmdEncoderContextSorter.cs" />
     <Compile Include="CommandBuffer\IGLCmdGraphicsEncoder.cs" />
     <Compile Include="CommandBuffer\IGLCmdStateRenderer.cs" />
+    <Compile Include="DescriptorSets\GLNextCmdShaderProgramCache.cs" />
     <Compile Include="DescriptorSets\GLBindingPointOffsetInfo.cs" />
     <Compile Include="DescriptorSets\GLBufferDescriptor.cs" />
     <Compile Include="DescriptorSets\GLBufferRangeTarget.cs" />
@@ -107,7 +108,6 @@
     <Compile Include="DescriptorSets\GLInternalCache.cs" />
     <Compile Include="DescriptorSets\GLInternalCacheArrayMapper.cs" />
     <Compile Include="DescriptorSets\GLInternalCacheBlockBinding.cs" />
-    <Compile Include="DescriptorSets\GLNextCmdShaderProgramCache.cs" />
     <Compile Include="DescriptorSets\GLNextDescriptorSet.cs" />
     <Compile Include="Device\IGLImage.cs" />
     <Compile Include="Entrypoint\DefaultGLDescriptorSetEntrypoint.cs" />

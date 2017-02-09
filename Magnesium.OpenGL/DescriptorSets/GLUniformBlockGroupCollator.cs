@@ -48,9 +48,9 @@ namespace Magnesium.OpenGL.Internals
 			}
 		}
 
-		public SortedDictionary<uint, GLUniformBlockGroupInfo> Collate()
+		public SortedDictionary<int, GLUniformBlockGroupInfo> Collate()
 		{
-			var sortedResults = new SortedDictionary<uint, GLUniformBlockGroupInfo>();
+			var sortedResults = new SortedDictionary<int, GLUniformBlockGroupInfo>();
 			foreach (var blockGroup in mPrefixes.Values)
 			{
 				blockGroup.MatrixStride = (blockGroup.ArrayStride * Math.Max(blockGroup.HighestRow, 1));

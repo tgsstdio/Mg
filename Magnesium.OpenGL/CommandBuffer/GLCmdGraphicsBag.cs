@@ -17,6 +17,7 @@
         public GLCmdEncoderItemCollection<GLCmdInternalDrawIndexed> DrawIndexeds { get; internal set; }
         public GLCmdEncoderItemCollection<GLCmdInternalDrawIndirect> DrawIndirects { get; internal set; }
         public GLCmdEncoderItemCollection<GLCmdInternalDrawIndexedIndirect> DrawIndexedIndirects { get; internal set; }
+        public GLCmdEncoderItemCollection<GLCmdDescriptorSetParameter> DescriptorSets { get; internal set; }
 
         public GLCmdGraphicsBag()
         {
@@ -35,6 +36,7 @@
             DrawIndexeds = new GLCmdEncoderItemCollection<GLCmdInternalDrawIndexed>();
             DrawIndirects = new GLCmdEncoderItemCollection<GLCmdInternalDrawIndirect>();
             DrawIndexedIndirects = new GLCmdEncoderItemCollection<GLCmdInternalDrawIndexedIndirect>();
+            DescriptorSets = new GLCmdEncoderItemCollection<GLCmdDescriptorSetParameter>();
         }
 
         public void Clear()
@@ -54,6 +56,7 @@
             DrawIndexeds.Clear();
             DrawIndirects.Clear();
             DrawIndexedIndirects.Clear();
+            DescriptorSets.Clear();
         }
     }
 }
