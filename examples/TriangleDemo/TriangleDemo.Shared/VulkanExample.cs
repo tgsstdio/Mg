@@ -1037,7 +1037,7 @@ namespace TriangleDemo
                 // We use two attachments (color and depth) that are cleared at the start of the subpass and as such we need to set clear values for both
                 ClearValues = new MgClearValue[]
                 {
-                    MgClearValue.FromColorAndFormat(mSwapchains.Format, new MgColor4f(1f, 0f, 0f, 1f)),                    
+                    MgClearValue.FromColorAndFormat(mSwapchains.Format, new MgColor4f(0f, 0f, 0f, 0f)),                    
                     new MgClearValue { DepthStencil = new MgClearDepthStencilValue( 1.0f, 0) },
                 },
             };

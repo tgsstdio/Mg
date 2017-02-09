@@ -60,6 +60,7 @@ namespace Magnesium.OpenGL.DesktopGL
                 | MgBufferUsageFlagBits.TRANSFER_DST_BIT
                 | MgBufferUsageFlagBits.TRANSFER_SRC_BIT
                 | MgBufferUsageFlagBits.INDEX_BUFFER_BIT
+                | MgBufferUsageFlagBits.UNIFORM_BUFFER_BIT
                 | MgBufferUsageFlagBits.VERTEX_BUFFER_BIT;
 
             return ((info.Usage & isBufferFlags) != 0);

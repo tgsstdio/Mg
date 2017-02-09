@@ -261,7 +261,7 @@ namespace Magnesium.OpenGL
                     var info = desc.BufferInfo[j];
                     var buf = (IGLBuffer)info.Buffer;
 
-                    var isBufferFlags = MgBufferUsageFlagBits.STORAGE_BUFFER_BIT;
+                    var isBufferFlags = MgBufferUsageFlagBits.UNIFORM_BUFFER_BIT;
 
                     if (buf != null && ((buf.Usage & isBufferFlags) == isBufferFlags))
                     {
