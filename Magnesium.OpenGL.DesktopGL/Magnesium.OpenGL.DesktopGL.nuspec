@@ -9,7 +9,7 @@
     <projectUrl>https://github.com/tgsstdio/Mg</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>OpenGL polyfill implementation of Vulkan 1.0 library using OpenGL and OpenTK</description>
-    <releaseNotes>Implemented CopyBuffers into CommandBuffers</releaseNotes>
+    <releaseNotes>Implemented descriptor sets functionality, Added IMgFence/IGLFence implementation, Implemented CopyBuffers into CommandBuffers</releaseNotes>
     <copyright>Copyright 2016 David Young</copyright>
     <tags>graphics vulkan OpenGL</tags>
 	<dependencies>
