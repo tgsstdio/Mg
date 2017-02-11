@@ -51,10 +51,15 @@
     <Compile Include="Class1.cs" />
     <Compile Include="CollatorTest.cs" />
     <Compile Include="FreePoolResourcesTest.cs" />
+    <Compile Include="MockGLCmdShaderProgramEntrypoint.cs" />
     <Compile Include="MockGLCommandBuffer.cs" />
+    <Compile Include="MockGLDescriptorPool.cs" />
+    <Compile Include="MockGLDescriptorPoolResource.cs" />
+    <Compile Include="MockGLDescriptorSet.cs" />
     <Compile Include="MockGLDescriptorSetLayout.cs" />
     <Compile Include="MockGLPipelineLayout.cs" />
     <Compile Include="MockGLStaticBufferResource.cs" />
+    <Compile Include="NullDescriptorSetBinding.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
