@@ -230,9 +230,7 @@ namespace Magnesium.OpenGL.Internals
             var ds = items[arg2];
             var renderer = context.StateRenderer;
             Debug.Assert(renderer != null);
-            Debug.Assert(ds.DescriptorSet != null);
-            Debug.Assert(ds.DynamicOffsets != null);
-            //Debug.Assert(ds.Layout != null);
+            // NO NEED FOR removed assert checks for ds.DescriptorSet, ds.DynamicOffsets, ds.Layout as nulls/empty sets are allowed
             renderer.BindDescriptorSets(ds);
         }
 

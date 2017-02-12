@@ -1,5 +1,7 @@
 ﻿using Magnesium.OpenGL.Internals;
 using System;
+using System.Diagnostics;
+
 namespace Magnesium.OpenGL
 {
 	public class GLNextCmdShaderProgramCache : IGLNextCmdShaderProgramCache
@@ -16,6 +18,11 @@ namespace Magnesium.OpenGL
 
             const int NO_OF_DESCRIPTOR_SETS = 2;
             mBoundDescriptorSets = new GLCmdDescriptorSetParameter[NO_OF_DESCRIPTOR_SETS];
+
+            mNoOfBindingPoints = 0;
+            mUniformBuffers = new uint[0];
+            mUniformOffsets = new IntPtr[0];
+            mUniformSizes = new IntPtr[0];
         }
 
 		public int ProgramID
@@ -98,40 +105,59 @@ namespace Magnesium.OpenGL
         }
 
         //private uint[] mDynamicOffsets;
-		void BindDescriptorSets(GLCmdDescriptorSetParameter param)
+		public void BindDescriptorSets(GLCmdDescriptorSetParameter param)
 		{
             if (param != null)
             {
                 var ds = param.DescriptorSet;
 
-                uint index = 0U;
-                foreach (var resource in param.DescriptorSet.Resources)
+                if (ds != null && ds.IsValidDescriptorSet)
                 {
-                    if (resource != null)
+                    uint index = 0U;
+                    foreach (var resource in ds.Resources)
                     {
-                        if (resource.GroupType == GLDescriptorBindingGroup.StorageBuffer)
+                        if (resource != null)
                         {
-                            index = BindStorageBuffer(ds, resource, param.DynamicOffsets, index);
-                        }
-                        else if (resource.GroupType == GLDescriptorBindingGroup.UniformBuffer)
-                        {
-                            index = BindUniformBuffer(ds, resource, param.DynamicOffsets, index);
-                        }
-                        else if (resource.GroupType == GLDescriptorBindingGroup.CombinedImageSampler)
-                        {
-                            BindCombinedSampler(ds, resource);
+                            if (resource.GroupType == GLDescriptorBindingGroup.StorageBuffer)
+                            {
+                                index = BindStorageBuffer(ds, resource, param.DynamicOffsets, index);
+                            }
+                            else if (resource.GroupType == GLDescriptorBindingGroup.UniformBuffer)
+                            {
+                                index = BindUniformBuffer(ds, resource, param.DynamicOffsets, index);
+                            }
+                            else if (resource.GroupType == GLDescriptorBindingGroup.CombinedImageSampler)
+                            {
+                                BindCombinedSampler(ds, resource);
+                            }
                         }
                     }
+                }
+                else
+                {
+                    ResetExistingUniformBuffers();
                 }
 
                 RebindAllUniformBuffers();
             }
 		}
 
-		void BindCombinedSampler(IGLDescriptorSet ds, GLDescriptorPoolResourceInfo resource)
+        private void ResetExistingUniformBuffers()
+        {
+            for (var i = 0; i < mNoOfBindingPoints; i += 1)
+            {
+                mUniformBuffers[i] = 0;
+                mUniformOffsets[i] = IntPtr.Zero;
+                mUniformSizes[i] = IntPtr.Zero;
+            }
+        }
+
+        void BindCombinedSampler(IGLDescriptorSet ds, GLDescriptorPoolResourceInfo resource)
 		{
 			IGLNextDescriptorPool parentPool = ds.Parent;
-			for (var i = resource.Ticket.First; i <= resource.Ticket.Last; i += 1)
+            Debug.Assert(parentPool != null);
+
+            for (var i = resource.Ticket.First; i <= resource.Ticket.Last; i += 1)
 			{
 				var image = parentPool.CombinedImageSamplers.Items[i];
 
@@ -145,10 +171,12 @@ namespace Magnesium.OpenGL
 		uint BindStorageBuffer(IGLDescriptorSet ds, GLDescriptorPoolResourceInfo resource, uint[] dynamicOffsets, uint offsetIndex)
 		{
             IGLNextDescriptorPool parentPool = ds.Parent;
+            Debug.Assert(parentPool != null);
+
 			// BIND SSBOS
-			if (resource.DescriptorCount >= 1)
+			if (resource.DescriptorCount > 1)
 			{
-				throw new PlatformNotSupportedException();
+				throw new InvalidOperationException("Mg.GL : only one storage buffer per a binding allowed.");
 			}
 
 			for (var i = resource.Ticket.First; i <= resource.Ticket.Last; i += 1)
@@ -197,9 +225,10 @@ namespace Magnesium.OpenGL
 			if (BoundPipelineLayout != null)
 			{
                 IGLNextDescriptorPool parentPool = ds.Parent;
+                Debug.Assert(parentPool != null);
 
-				// for each active uniform block
-				var uniformGroup = BoundPipelineLayout.Ranges[(int) resource.Binding];
+                // for each active uniform block
+                var uniformGroup = BoundPipelineLayout.Ranges[(int) resource.Binding];
 
 				var srcIndex = resource.Ticket.First;
 				var dstIndex = uniformGroup.First;
