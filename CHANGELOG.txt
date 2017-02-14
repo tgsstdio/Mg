@@ -1,3 +1,6 @@
+Magnesium.Metal v6.0.0 - 15 Feb 2017
+ - Implemented fence & semaphores
+
 Magnesium.OpenGL v6.0.0 - 8 Feb 2017
 	- Implemented descriptor sets functionality
 	- Added IMgFence/IGLFence implementation

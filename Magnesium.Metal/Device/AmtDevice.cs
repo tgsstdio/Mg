@@ -10,13 +10,16 @@ namespace Magnesium.Metal
 	{
 		private IMTLDevice mDevice; 
 		private IAmtDeviceQuery mQuery;
-		private IAmtMetalLibraryLoader mGenerator;
 		private AmtQueue mQueue;
-		public AmtDevice(IMTLDevice systemDefault, IAmtDeviceQuery mQuery, IAmtMetalLibraryLoader generator, AmtQueue queue)
+		private IAmtDeviceEntrypoint mEntrypoint;
+		public AmtDevice(IMTLDevice systemDefault,
+		                 IAmtDeviceQuery query,
+		                 IAmtDeviceEntrypoint entrypoint,
+		                 AmtQueue queue)
 		{
-			this.mDevice = systemDefault;
-			this.mQuery = mQuery;
-			this.mGenerator = generator;
+			mDevice = systemDefault;
+			mQuery = query;
+			mEntrypoint = entrypoint;
 			mQueue = queue;
 		}
 
@@ -177,7 +180,8 @@ namespace Magnesium.Metal
 
 		public Result CreateFence(MgFenceCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgFence fence)
 		{
-			throw new NotImplementedException();
+			fence = mEntrypoint.Fence.CreateFence();
+			return Result.SUCCESS;
 		}
 
 		public Result CreateFramebuffer(MgFramebufferCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgFramebuffer pFramebuffer)
@@ -196,7 +200,7 @@ namespace Magnesium.Metal
 
 			foreach (var info in pCreateInfos)
 			{
-				var pipeline = new AmtGraphicsPipeline(mGenerator, mDevice, info);
+				var pipeline = new AmtGraphicsPipeline(mEntrypoint.LibraryLoader, mDevice, info);
 				output.Add(pipeline);
 
 			}
@@ -326,7 +330,8 @@ namespace Magnesium.Metal
 
 		public Result CreateSemaphore(MgSemaphoreCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgSemaphore pSemaphore)
 		{
-			throw new NotImplementedException();
+			pSemaphore = mEntrypoint.Semaphore.CreateSemaphore();
+			return Result.SUCCESS;
 		}
 
 		public Result CreateShaderModule(MgShaderModuleCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgShaderModule pShaderModule)

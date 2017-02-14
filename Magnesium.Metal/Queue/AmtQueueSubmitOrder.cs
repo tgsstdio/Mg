@@ -6,7 +6,7 @@ namespace Magnesium.Metal
 	{
 		public long Key;
 		public ConcurrentDictionary<long, AmtSemaphore> Submissions { get; set; }
-		public IAmtQueueFence Fence { get; set; }
+		public IAmtFence Fence { get; set; }
 	}
 }
 

@@ -55,7 +55,7 @@ namespace Magnesium.Metal
 
 		Result CompleteAllPreviousSubmissions (IMgFence fence)
 		{
-			var internalFence = fence as IAmtQueueFence;
+			var internalFence = fence as IAmtFence;
 			if (internalFence != null)
 			{
 				var result = QueueWaitIdle ();
@@ -110,7 +110,7 @@ namespace Magnesium.Metal
 					var order = new AmtQueueSubmitOrder ();
 					order.Key = mOrderKey;
 					order.Submissions = new ConcurrentDictionary<long, AmtSemaphore> ();
-					order.Fence = fence as IAmtQueueFence;
+					order.Fence = fence as IAmtFence;
 					foreach (var sub in children)
 					{
 						order.Submissions.TryAdd (sub.Key, sub.OrderFence);

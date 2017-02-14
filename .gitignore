@@ -83,6 +83,7 @@ examples/*/.vs/*
 examples/*/[Pp]ackages/*
 examples/*/*/[Bb]in/*
 examples/*/*/[Oo]bj/*
+examples/*/*/[Pp]ackages/*
 
 tests/*/[Pp]ackages/*
 tests/*/[Bb]in/*

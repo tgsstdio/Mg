@@ -9,13 +9,15 @@ namespace Magnesium.Metal
 
 		private IMTLDevice mLocalDevice;
 
-		private IAmtMetalLibraryLoader mGenerator;
-
-		public AmtEntrypoint(IAmtDeviceQuery query, IAmtMetalLibraryLoader generator, IMTLDevice localDevice)
+		private IAmtDeviceEntrypoint mDeviceEntrypoint;
+		public AmtEntrypoint(
+			IMTLDevice localDevice, 
+			IAmtDeviceQuery query, 
+			IAmtDeviceEntrypoint device)
 		{
 			mQuery = query;
 			mLocalDevice = localDevice;
-			mGenerator = generator;
+			mDeviceEntrypoint = device;
 		}
 
 		public IMgAllocationCallbacks CreateAllocationCallbacks()
@@ -30,7 +32,7 @@ namespace Magnesium.Metal
 
 			var queueRenderer = new AmtQueueRenderer(presentQueue);
 			var queue = new AmtQueue(queueRenderer, semaphore, presentQueue);
-			var device = new AmtDevice(mLocalDevice, mQuery, mGenerator, queue);
+			var device = new AmtDevice(mLocalDevice, mQuery, mDeviceEntrypoint, queue);
 			var physicalDevice = new AmtPhysicalDevice(device);
 			instance = new AmtInstance(physicalDevice);
 
