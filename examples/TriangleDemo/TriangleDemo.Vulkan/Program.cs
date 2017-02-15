@@ -39,6 +39,13 @@ namespace TriangleDemo.Vulkan
                     container.Register<Magnesium.IMgPresentationLayer, Magnesium.MgPresentationLayer>(new PerScopeLifetime());
                     container.Register<Magnesium.IMgSwapchainCollection, Magnesium.MgSwapchainCollection>(new PerScopeLifetime());
 
+                    var displayInfo = new GLTriangleDemoDisplayInfo
+                    {
+                        Color = MgFormat.R8G8B8A8_UINT,
+                        Depth = MgFormat.D24_UNORM_S8_UINT
+                    };
+
+                    container.RegisterInstance<TriangleDemo.ITriangleDemoDisplayInfo>(displayInfo);
 
                     using (var scope = container.BeginScope())
                     {

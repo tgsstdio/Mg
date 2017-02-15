@@ -70,6 +70,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="GLTriangleDemoDisplayInfo.cs" />
     <Compile Include="ITriangleShaderPath.cs" />
     <Compile Include="Matrix4.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
