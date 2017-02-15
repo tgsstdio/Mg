@@ -55,7 +55,7 @@ namespace Magnesium.Metal
 			InitializationInputAssembly(info.InputAssemblyState);
 			InitializeColorBlending(info.ColorBlendState);
 			InitializeDynamicStates(info.DynamicState);
-			InitializeResources(info.VertexInputState);
+			//InitializeResources(info.VertexInputState);
 			InitializeViewportAndScissor(info.ViewportState);
 			InitializeMultisampleInfo(info.MultisampleState);
 
@@ -187,43 +187,43 @@ namespace Magnesium.Metal
 
 		public AmtRenderPass RenderPass { get; internal set;}
 
-		public AmtPipelineLayoutBufferBinding[] VertexBufferBindings { get; private set; }
+		//public AmtPipelineLayoutBufferBinding[] VertexBufferBindings { get; private set; }
 
-		void InitializeResources(MgPipelineVertexInputStateCreateInfo vertexInputState)
-		{
+		//void InitializeResources(MgPipelineVertexInputStateCreateInfo vertexInputState)
+		//{
 
-			// Vertex data is made up of 
-			// vertex buffers in vertex input state
+		//	// Vertex data is made up of 
+		//	// vertex buffers in vertex input state
 
-			var slots = new SortedList<uint, AmtPipelineLayoutBufferBinding>();
+		//	var slots = new SortedList<uint, AmtPipelineLayoutBufferBinding>();
 
-			var bindingOffset = 0U;
-			foreach (var definition in vertexInputState.VertexBindingDescriptions)
-			{
-				slots.Add(definition.Binding, new AmtPipelineLayoutBufferBinding
-				{
-					Binding = definition.Binding,
-					DescriptorCount = 1,
-					Category = AmtPipelineLayoutBufferBindingCategory.VertexBuffer,
-				});
-				++bindingOffset;
-			}
+		//	var bindingOffset = 0U;
+		//	foreach (var definition in vertexInputState.VertexBindingDescriptions)
+		//	{
+		//		slots.Add(definition.Binding, new AmtPipelineLayoutBufferBinding
+		//		{
+		//			Binding = definition.Binding,
+		//			DescriptorCount = 1,
+		//			Category = AmtPipelineLayoutBufferBindingCategory.VertexBuffer,
+		//		});
+		//		++bindingOffset;
+		//	}
 
-			var combinedBuffers = new List<AmtPipelineLayoutBufferBinding>();
-			combinedBuffers.AddRange(slots.Values);
-			combinedBuffers.AddRange(Layout.VertexStage.VertexBuffers);
+		//	var combinedBuffers = new List<AmtPipelineLayoutBufferBinding>();
+		//	combinedBuffers.AddRange(slots.Values);
+		//	combinedBuffers.AddRange(Layout.VertexStage.VertexBuffers);
 
-			VertexBufferBindings = combinedBuffers.ToArray();
+		//	VertexBufferBindings = combinedBuffers.ToArray();
 
-			// then buffer, uniform, ssbo, ssbo dynamics sorted by binding
+		//	// then buffer, uniform, ssbo, ssbo dynamics sorted by binding
 
 
-			// Next is samples and textures (with the same positional order no) sorted by binding 
+		//	// Next is samples and textures (with the same positional order no) sorted by binding 
 
-			// Fragment 
+		//	// Fragment 
 
-			// Next is samples and textures (with the same positional order no) sorted by binding 
-		}
+		//	// Next is samples and textures (with the same positional order no) sorted by binding 
+		//}
 
 
 
@@ -599,6 +599,7 @@ namespace Magnesium.Metal
 					};
 				}
 
+				NoOfVertexInputBuffers = (nuint) noOfBindings;
 			}
 
 			{
@@ -619,6 +620,8 @@ namespace Magnesium.Metal
 				}
 			}
 		}
+
+		public nuint NoOfVertexInputBuffers { get; internal set; }
 
 		public MTLVertexDescriptor GetVertexDescriptor()
 		{

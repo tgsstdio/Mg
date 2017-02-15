@@ -5,28 +5,28 @@ namespace Magnesium.Metal
 {
 	public class AmtSemaphore : IMgSemaphore
 	{
-		private volatile bool mIsSignalled;
-		public bool IsSignalled
+		private volatile bool mIsAlreadySignalled;
+		public bool IsAlreadySignalled
 		{
 			get
 			{
-				return mIsSignalled;
+				return mIsAlreadySignalled;
 			}
 		}
 
 		public AmtSemaphore()
 		{
-			mIsSignalled = false;
+			mIsAlreadySignalled = true;
 		}
 
 		internal void Reset()
 		{
-			mIsSignalled = false;
+			mIsAlreadySignalled = false;
 		}
 
 		internal void Signal()
 		{
-			mIsSignalled = true;
+			mIsAlreadySignalled = true;
 		}
 
 		public void DestroySemaphore(IMgDevice device, IMgAllocationCallbacks allocator)

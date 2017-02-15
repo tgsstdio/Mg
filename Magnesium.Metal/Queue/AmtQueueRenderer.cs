@@ -59,13 +59,11 @@ namespace Magnesium.Metal
 			}
 		}
 
-		static void SignalFenceWhenCompleted(AmtSemaphore fence, IMTLCommandBuffer cb)
+		static void SignalFenceWhenCompleted(IAmtFence fence, IMTLCommandBuffer cb)
 		{
 			// SIGNAL ORDER.FENCE
 			if (fence != null)
 			{
-				fence.Reset();
-
 				cb.AddCompletedHandler(
 					(b) =>
 					{
@@ -80,15 +78,18 @@ namespace Magnesium.Metal
 			// SIGNAL SEMAPHORE
 			foreach (var signal in signals)
 			{
-				signal.Reset();
-				// APPLY HANDLER TO COMMAND BUFFER
+				if (signal != null)
+				{
+					signal.Reset();
+					// APPLY HANDLER TO COMMAND BUFFER
 
-				cb.AddCompletedHandler(
-					(b) =>
-					{
-						signal.Signal();
-					}
-				);
+					cb.AddCompletedHandler(
+						(b) =>
+						{
+							signal.Signal();
+						}
+					);
+				}
 			}
 		}
 

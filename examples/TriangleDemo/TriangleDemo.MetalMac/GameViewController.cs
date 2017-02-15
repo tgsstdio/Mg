@@ -58,7 +58,7 @@ namespace TriangleDemo.MetalMac
 			if (InitialiseMg(out mApplication))
 			{
 				Debug.Assert(mApplication != null);
-				mApplication.RenderLoop();
+				//mApplication.RenderLoop();
 			}
 			else {
 				//Console.WriteLine("Metal is not supported on this device");
@@ -195,9 +195,16 @@ namespace TriangleDemo.MetalMac
 
 		public void Draw(MTKView view)
 		{
-			if (mApplication != null)
+			try
 			{
-				mApplication.RenderLoop();
+				if (mApplication != null)
+				{
+					mApplication.RenderLoop();
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.Message);
 			}
 		}
 	}

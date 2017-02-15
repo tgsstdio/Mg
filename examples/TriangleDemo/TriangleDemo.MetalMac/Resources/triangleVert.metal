@@ -1,4 +1,4 @@
-﻿#include <metal_stdlib>
+#include <metal_stdlib>
 #include <simd/simd.h>
 
 using namespace metal;
@@ -18,14 +18,17 @@ typedef struct
 
 typedef struct {
     float4 position [[position]];
-    half4  color;
+    half4 color;
 } ColorInOut;
 
 vertex ColorInOut vertFunc(vertex_t vao [[stage_in]],
                            constant UBO& ubo [[buffer(1)]])
 {
     ColorInOut out;
-    out.color = half4(vao.inColor);
-    out.position = ubo.projectionMatrix * ubo.viewMatrix * ubo.modelMatrix * float4(vao.inPos, 1.0);
+    half4 vertexColor = half4(vao.inColor.r, vao.inColor.g, vao.inColor.b, 1.0);
+    out.color = vertexColor;
+    out.position = ubo.projectionMatrix * ubo.viewMatrix * ubo.modelMatrix * float4(vao.inPos.xyz, 1.0);
     out.position.y *= -1.0;
+    
+    return out;
 }

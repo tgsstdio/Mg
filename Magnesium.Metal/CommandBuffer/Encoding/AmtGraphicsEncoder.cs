@@ -290,6 +290,8 @@ namespace Magnesium.Metal
 			if (mCurrentRenderPass != null)
 			{
 				mInstructions.Add(mBoundPipeline);
+
+				RebindBoundDescriptorSet();
 			}
 
 		}
@@ -531,7 +533,9 @@ namespace Magnesium.Metal
 			Debug.Assert(stage != null, nameof(stage) + " is null");
 			Debug.Assert(stage.Encoder != null, nameof(stage.Encoder) + " is null");
 			Debug.Assert(stage.Grid != null, nameof(stage.Grid) + " is null");
-			var item = stage.Grid.Viewports[index];
+			var items = stage.Grid.Viewports;
+			Debug.Assert(items != null, nameof(stage.Grid.Viewports) + " is null");
+			var item = items[index];
 			stage.Encoder.SetViewport(item);
 		}
 
@@ -680,6 +684,8 @@ namespace Magnesium.Metal
 			mBoundVertexBuffer = null;
 			mBoundPipeline = null;
 			mBoundDepthStencil = null;
+			mBoundDescriptorSet = null;
+			mDynamicOffsets = null;
 		}
 
 		#region SetScissor methods
@@ -1209,13 +1215,14 @@ namespace Magnesium.Metal
 				StencilReferences = mBag.StencilReferences.ToArray(),
 				VertexBuffers = mBag.VertexBuffers.ToArray(),
 				DescriptorSetBindings = mBag.DescriptorSets.ToArray(),
+				Viewports = mBag.Viewports.ToArray(),
 			};
 		}
 
 		#region BindDescriptorSets methods
 
 		//private AmtPipelineLayout mLayout;
-		private AmtDescriptorSet[] mDescriptorSets;
+		private AmtDescriptorSet mBoundDescriptorSet;
 		private uint[] mDynamicOffsets;
 		public void BindDescriptorSets(IMgPipelineLayout layout,
 		                               uint firstSet, 
@@ -1226,58 +1233,54 @@ namespace Magnesium.Metal
 			if (layout == null)
 				throw new ArgumentNullException(nameof(layout));
 
-			var bLayout = (AmtPipelineLayout)layout;
-
 			// LATE BINDING
-			//mLayout = bLayout;
-			mDescriptorSets = new AmtDescriptorSet[descriptorSetCount];
-
-			for (var i = 0; i < descriptorSetCount; ++i)
-			{
-				var offset = i + firstSet;
-				mDescriptorSets[offset] = (AmtDescriptorSet)pDescriptorSets[offset];
-			}
+			// CAN ONLY PROCESS ONE DESCRIPTOR SET 
+			const int FIRST_SET = 0;
+			mBoundDescriptorSet = (AmtDescriptorSet) pDescriptorSets[FIRST_SET];
 			mDynamicOffsets = pDynamicOffsets;
 
-			if (mCurrentPipeline != null)
-				
+			// TODO : need to handle late binding of pipeline
+			if (mCurrentRenderPass != null)
 			{
-				RecordBindDescriptorSets();	
+				RebindBoundDescriptorSet();	
 			}
 		}
 
-		void RecordBindDescriptorSets()
+		void RebindBoundDescriptorSet()
 		{
-
-
-			// ASSUME IT IS ALWAYS ONE DESCRIPTOR SET ALLOWED
-			//for (var i = 0; i < descriptorSetCount; ++i)
-			//{
-			const int FIRST_SET = 0;
-			var currentSet = mDescriptorSets[FIRST_SET];
-			var item = new AmtCmdBindDescriptorSetsRecord
+			if (mBoundDescriptorSet != null && mCurrentPipeline != null)
 			{
-				// CANNOT WORK OUT VERTEX OFFSET UNLESS A PIPELINE IS BOUND
-				VertexIndexOffset = (nuint)mCurrentPipeline.Layouts.Length,
-				VertexStage = ExtractStageBinding(currentSet.Vertex),
-				FragmentStage = ExtractStageBinding(currentSet.Fragment),
-			};
+				// ASSUME IT IS ALWAYS ONE DESCRIPTOR SET ALLOWED
+				//for (var i = 0; i < descriptorSetCount; ++i)
+				//{
 
-			var nextIndex = mBag.DescriptorSets.Push(item);
+				var currentSet = mBoundDescriptorSet;
+				var item = new AmtCmdBindDescriptorSetsRecord
+				{
+					VertexIndexOffset = mCurrentPipeline.NoOfVertexInputBuffers,
+					VertexStage = ExtractStageBinding(currentSet.Vertex),
+					FragmentStage = ExtractStageBinding(currentSet.Fragment),
+				};
 
-			var instruction = new AmtEncodingInstruction
-			{
-				Category = AmtEncoderCategory.Graphics,
-				Index = nextIndex,
-				Operation = CmdBindDescriptorSets,
-			};
+				var nextIndex = mBag.DescriptorSets.Push(item);
 
-			//}
-			// TODO : dynamic offsets
-			// TODO : late binding i.e. 
-			// CmdBindDescriptorSet
-			// CmdBindPipeline
-			mInstructions.Add(instruction);
+				var instruction = new AmtEncodingInstruction
+				{
+					Category = AmtEncoderCategory.Graphics,
+					Index = nextIndex,
+					Operation = CmdBindDescriptorSets,
+				};
+
+				//}
+				// TODO : dynamic offsets
+				// TODO : late binding i.e. 
+				// CmdBindDescriptorSet
+				// CmdBindPipeline
+				//if (mCurrentRenderPass != null)
+				///{
+				mInstructions.Add(instruction);
+				//}
+			}
 		}
 
 		private AmtCmdBindDescriptorSetsStageRecord ExtractStageBinding(AmtDescriptorSetBindingMap stage)

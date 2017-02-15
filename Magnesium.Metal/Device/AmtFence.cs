@@ -1,35 +1,36 @@
-﻿using System;
+﻿using System.Threading;
+
 namespace Magnesium.Metal
 {
 	public class AmtFence : IAmtFence
 	{
-		private bool mAlreadySignalled;
+		private int mSignals;
 		public AmtFence()
 		{
-			mAlreadySignalled = true;
+			mSignals = 0;
 		}
 
 		public bool AlreadySignalled
 		{
 			get
 			{
-				return mAlreadySignalled;
+				return mSignals <= 0;
 			}
 		}
 
 		public void DestroyFence(IMgDevice device, IMgAllocationCallbacks allocator)
 		{
-			
+
 		}
 
-		public void Reset()
+		public void Reset(int count)
 		{
-			mAlreadySignalled = false;
+			mSignals = count;
 		}
 
 		public void Signal()
 		{
-			mAlreadySignalled = true;
+			Interlocked.Decrement(ref mSignals);
 		}
 	}
 }

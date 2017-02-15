@@ -2,7 +2,7 @@
 {
 	public interface IAmtFence : IMgFence
 	{
-		void Reset();
+		void Reset(int count);
 		void Signal();
 		bool AlreadySignalled { get; }
 	}
