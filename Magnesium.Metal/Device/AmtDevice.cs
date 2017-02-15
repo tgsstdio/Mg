@@ -10,13 +10,16 @@ namespace Magnesium.Metal
 	{
 		private IMTLDevice mDevice; 
 		private IAmtDeviceQuery mQuery;
-		private IAmtMetalLibraryLoader mGenerator;
 		private AmtQueue mQueue;
-		public AmtDevice(IMTLDevice systemDefault, IAmtDeviceQuery mQuery, IAmtMetalLibraryLoader generator, AmtQueue queue)
+		private IAmtDeviceEntrypoint mEntrypoint;
+		public AmtDevice(IMTLDevice systemDefault,
+		                 IAmtDeviceQuery query,
+		                 IAmtDeviceEntrypoint entrypoint,
+		                 AmtQueue queue)
 		{
-			this.mDevice = systemDefault;
-			this.mQuery = mQuery;
-			this.mGenerator = generator;
+			mDevice = systemDefault;
+			mQuery = query;
+			mEntrypoint = entrypoint;
 			mQueue = queue;
 		}
 
@@ -177,7 +180,8 @@ namespace Magnesium.Metal
 
 		public Result CreateFence(MgFenceCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgFence fence)
 		{
-			throw new NotImplementedException();
+			fence = mEntrypoint.Fence.CreateFence();
+			return Result.SUCCESS;
 		}
 
 		public Result CreateFramebuffer(MgFramebufferCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgFramebuffer pFramebuffer)
@@ -196,7 +200,7 @@ namespace Magnesium.Metal
 
 			foreach (var info in pCreateInfos)
 			{
-				var pipeline = new AmtGraphicsPipeline(mGenerator, mDevice, info);
+				var pipeline = new AmtGraphicsPipeline(mEntrypoint.LibraryLoader, mDevice, info);
 				output.Add(pipeline);
 
 			}
@@ -326,7 +330,8 @@ namespace Magnesium.Metal
 
 		public Result CreateSemaphore(MgSemaphoreCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgSemaphore pSemaphore)
 		{
-			throw new NotImplementedException();
+			pSemaphore = mEntrypoint.Semaphore.CreateSemaphore();
+			return Result.SUCCESS;
 		}
 
 		public Result CreateShaderModule(MgShaderModuleCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgShaderModule pShaderModule)
@@ -472,7 +477,16 @@ namespace Magnesium.Metal
 
 		public Result ResetFences(IMgFence[] pFences)
 		{
-			throw new NotImplementedException();
+			foreach (var fence in pFences)
+			{
+				var bFence = (IAmtFence)fence;
+				if (bFence != null)
+				{
+					bFence.Reset(0);
+				}
+			}
+
+			return Result.SUCCESS;
 		}
 
 		public void UpdateDescriptorSets(MgWriteDescriptorSet[] pDescriptorWrites, MgCopyDescriptorSet[] pDescriptorCopies)
@@ -581,7 +595,51 @@ namespace Magnesium.Metal
 
 		public Result WaitForFences(IMgFence[] pFences, bool waitAll, ulong timeout)
 		{
-			throw new NotImplementedException();
+			var fences = new List<IAmtFence>();
+			var noOfFencesRequired = 0;
+			if (waitAll)
+			{
+				foreach (var fence in pFences)
+				{
+					var bFence = (IAmtFence)fence;
+					if (bFence != null)
+					{
+						fences.Add(bFence);;
+					}
+				}
+				noOfFencesRequired = fences.Count;
+			}
+			else
+			{
+				noOfFencesRequired = 1;
+			}
+
+			var timer = new Stopwatch();
+			var elapsedInNanoSecs = 0UL;
+
+			do
+			{
+				var noOfFencesCompleted = 0;
+				timer.Start();
+				foreach (var fence in fences)
+				{
+					if (fence.AlreadySignalled)
+					{
+						noOfFencesCompleted += 1;
+					}
+				}
+				timer.Stop();
+
+			 	elapsedInNanoSecs = (ulong)((timer.ElapsedTicks * 1000000000) / Stopwatch.Frequency);
+
+				if (noOfFencesCompleted >= noOfFencesRequired)
+				{
+					return Result.SUCCESS;
+				}
+			}
+			while (elapsedInNanoSecs < timeout);
+
+			return Result.TIMEOUT;
 		}
 	}
 }

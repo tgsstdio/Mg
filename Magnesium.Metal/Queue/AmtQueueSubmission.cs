@@ -56,7 +56,7 @@ namespace Magnesium.Metal
 		public AmtCommandBuffer[] CommandBuffers { get; private set; }
 
 		public AmtSemaphore[] Signals { get; private set; }
-		public AmtSemaphore OrderFence { get; set; }
+		public IAmtFence OrderFence { get; set; }
 		public AmtQueueSwapchainInfo[] Swapchains { get; set; }
 	}
 }

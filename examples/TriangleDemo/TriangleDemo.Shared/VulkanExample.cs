@@ -99,8 +99,11 @@ namespace TriangleDemo
         private IMgCommandBuffer mPostPresentCmdBuffer;
         private IMgPresentationLayer mPresentationLayer;
 
+		private ITriangleDemoDisplayInfo mDisplayQuery;
+
         public VulkanExample
         (
+			ITriangleDemoDisplayInfo displayQuery,
             IMgGraphicsConfiguration configuration,
             IMgSwapchainCollection swapchains,
             IMgGraphicsDevice graphicsDevice,
@@ -108,10 +111,12 @@ namespace TriangleDemo
             ITriangleDemoShaderPath shaderPath
         )
         {
+			mDisplayQuery = displayQuery;
             mConfiguration = configuration;
             mSwapchains = swapchains;
             mGraphicsDevice = graphicsDevice;
             mPresentationLayer = presentationLayer;
+			Debug.Assert(mPresentationLayer != null);
             mTrianglePath = shaderPath;
 
             mWidth = 1280U;
@@ -143,14 +148,16 @@ namespace TriangleDemo
                 CommandPool = mConfiguration.Partition.CommandPool,
                 Level = MgCommandBufferLevel.PRIMARY,
             };
-
+			Debug.WriteLine("HELLO");
             mConfiguration.Device.AllocateCommandBuffers(pAllocateInfo, buffers);
 
             var createInfo = new MgGraphicsDeviceCreateInfo
             {
                 Samples = MgSampleCountFlagBits.COUNT_1_BIT,
-                Color = MgFormat.R8G8B8A8_UINT,
-                DepthStencil = MgFormat.D24_UNORM_S8_UINT,
+				// USUALLY MgFormat.R8G8B8A8_UINT,
+				Color =  mDisplayQuery.Color,
+				// USUALLY MgFormat.D24_UNORM_S8_UINT
+                DepthStencil = mDisplayQuery.Depth,
                 Width = mWidth,
                 Height = mHeight,
             };
@@ -1037,7 +1044,7 @@ namespace TriangleDemo
                 // We use two attachments (color and depth) that are cleared at the start of the subpass and as such we need to set clear values for both
                 ClearValues = new MgClearValue[]
                 {
-                    MgClearValue.FromColorAndFormat(mSwapchains.Format, new MgColor4f(0f, 0f, 0f, 0f)),                    
+                    MgClearValue.FromColorAndFormat(mDisplayQuery.Color, new MgColor4f(0f, 0f, 0f, 0f)),                    
                     new MgClearValue { DepthStencil = new MgClearDepthStencilValue( 1.0f, 0) },
                 },
             };

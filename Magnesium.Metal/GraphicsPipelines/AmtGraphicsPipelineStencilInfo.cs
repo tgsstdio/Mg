@@ -140,6 +140,8 @@ namespace Magnesium.Metal
 			{
 				default:
 					throw new NotSupportedException();
+				case MgCompareOp.ALWAYS:
+					return MTLCompareFunction.Always;
 				case MgCompareOp.LESS:
 					return MTLCompareFunction.Less;
 				case MgCompareOp.LESS_OR_EQUAL:
