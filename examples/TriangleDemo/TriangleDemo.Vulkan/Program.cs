@@ -55,7 +55,7 @@ namespace TriangleDemo.Vulkan
                                 new MgApplicationInfo
                                 {
                                     ApplicationName = "Vulkan Example",
-                                    ApiVersion = Magnesium.MgApplicationInfo.GenerateApiVersion(1, 0, 17),
+                                    ApiVersion = Magnesium.MgApplicationInfo.GenerateApiVersion(1, 0, 37),
                                     ApplicationVersion = 1,
                                     EngineName = "Magnesium",
                                     EngineVersion = 1,

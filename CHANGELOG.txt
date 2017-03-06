@@ -1,3 +1,18 @@
+Magnesium v5.1.1 - 6th March 2017
+ - Added IMgGraphicsDevice.RenderpassInfo to work out clear values later on
+ - Added BGR/A format options to MgClearValue.FromColorAndFormat
+ - Added MgColorComponentFlagBits.ALL_BITS shorthand for R | B | G | A
+ 
+Magnesium.OpenGL v6.1.0 - 6th March 2017 
+	- Updated w.r.t to Mg v5.1.1
+
+Magnesium.OpenGL.DesktopGL v6.1.0 - 6th March 2017 
+	- Updated w.r.t to Mg v5.1.1
+	- Added RenderpassInfo to MgOpenTKGraphicsDevice
+
+Magnesium.Vulkan v5.0.3 - 6th March 2017 
+	- Updated w.r.t to Mg v5.1.1
+
 Magnesium.Metal v6.0.0 - 15 Feb 2017
  - Implemented fence & semaphores
 

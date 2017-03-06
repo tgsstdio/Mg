@@ -18,7 +18,9 @@ namespace Magnesium
 			get;
 		}
 
-		IMgRenderPass Renderpass {
+        MgRenderPassCreateInfo RenderpassInfo { get; }
+
+        IMgRenderPass Renderpass {
 			get;
 		}
 

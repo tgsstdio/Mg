@@ -129,7 +129,16 @@ namespace Magnesium.OpenGL.DesktopGL
 			mQueueRenderer.Initialize ();
 		}
 
-		IGLRenderPass mRenderpass;
+        private MgRenderPassCreateInfo mRenderpassInfo;
+        public MgRenderPassCreateInfo RenderpassInfo
+        {
+            get
+            {
+                return mRenderpassInfo;
+            }
+        }
+
+        IGLRenderPass mRenderpass;
 		void SetupRenderpass (MgGraphicsDeviceCreateInfo createInfo)
 		{
 			var attachmentDescriptions = new [] {
@@ -145,11 +154,38 @@ namespace Magnesium.OpenGL.DesktopGL
 					LoadOp = MgAttachmentLoadOp.CLEAR,
 					StoreOp = MgAttachmentStoreOp.STORE,
 					StencilLoadOp = MgAttachmentLoadOp.CLEAR,
-					StencilStoreOp = MgAttachmentStoreOp.STORE,
+					StencilStoreOp = MgAttachmentStoreOp.STORE,                    
 				},
 			};
 
-			mRenderpass = new GLRenderPass (attachmentDescriptions);
+            mRenderpassInfo = new MgRenderPassCreateInfo
+            {
+                Attachments = attachmentDescriptions,
+                Subpasses = new []
+                {
+                    new MgSubpassDescription
+                    {
+                        PipelineBindPoint = MgPipelineBindPoint.GRAPHICS,
+                        Flags = 0,
+                        ColorAttachmentCount = 2,
+                        ColorAttachments = new []
+                        {
+                            new MgAttachmentReference
+                            {
+                                Attachment = 0,
+                                Layout = MgImageLayout.COLOR_ATTACHMENT_OPTIMAL,
+                            },
+                        },
+                        DepthStencilAttachment = new MgAttachmentReference
+                        {
+                            Attachment = 1,
+                            Layout = MgImageLayout.DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                        },
+                    }
+                },
+            };
+
+            mRenderpass = new GLRenderPass (attachmentDescriptions);
 		}
 
         public void Create(IMgCommandBuffer setupCmdBuffer, IMgSwapchainCollection swapchainCollection, MgGraphicsDeviceCreateInfo createInfo)
@@ -216,7 +252,7 @@ namespace Magnesium.OpenGL.DesktopGL
 			private set;
 		}
 
-		void SetupSwapchain (IMgSwapchainCollection swapchainCollection, MgGraphicsDeviceCreateInfo createInfo)
+        void SetupSwapchain (IMgSwapchainCollection swapchainCollection, MgGraphicsDeviceCreateInfo createInfo)
 		{
 			if (swapchainCollection.Swapchain == null)
 			{

@@ -2,15 +2,16 @@
 <package >
   <metadata>
     <id>Magnesium</id>
-    <version>5.0.4</version>
     <authors>David Young</authors>
     <owners>David Young</owners>
     <licenseUrl>https://github.com/tgsstdio/Mg/blob/master/LICENSE.txt</licenseUrl>
     <projectUrl>https://github.com/tgsstdio/Mg</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>C# graphics frontend interface (to Vulkan or any graphics library)</description>
-    <releaseNotes>Replace MgThreadPartition with MgGraphicsConfiguration in utility classes </releaseNotes>
-    <copyright>Copyright 2016 David Young</copyright>
+    <description>C#/.net graphics interface for the Vulkan API (and others)</description>
+    <releaseNotes> - Added IMgGraphicsDevice.RenderpassInfo to work out clear values later on
+ - Added BGRA format options to MgClearValue.FromColorAndFormat
+ - Added MgColorComponentFlagBits.ALL_BITS shorthand for R | B | G | A </releaseNotes>
+    <copyright>Copyright (c) 2016, 2017 David Young</copyright>
     <tags>graphics, vulkan</tags>
   </metadata>
 </package>

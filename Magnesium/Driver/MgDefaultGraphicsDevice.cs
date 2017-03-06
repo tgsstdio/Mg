@@ -167,7 +167,16 @@ namespace Magnesium
 			}
 		}
 
-		void CreateRenderpass (MgGraphicsDeviceCreateInfo createInfo)
+        private MgRenderPassCreateInfo mRenderpassInfo;
+        public MgRenderPassCreateInfo RenderpassInfo
+        {
+            get
+            {
+                return mRenderpassInfo;
+            }
+        }
+
+        void CreateRenderpass (MgGraphicsDeviceCreateInfo createInfo)
 		{
 			var attachments = new []
 			{
@@ -228,12 +237,13 @@ namespace Magnesium
 				Dependencies = null,
 			};
 
-			Result err;
+            Result err;
 
 			IMgRenderPass renderPass;
 			err = mGraphicsConfiguration.Partition.Device.CreateRenderPass(renderPassInfo, null, out renderPass);
 			Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
-			mRenderpass = renderPass;
+            mRenderpassInfo = renderPassInfo;
+            mRenderpass = renderPass;
 		}
 
 		void CreateDepthStencil (IMgCommandBuffer setupCmdBuffer, MgGraphicsDeviceCreateInfo createInfo)
