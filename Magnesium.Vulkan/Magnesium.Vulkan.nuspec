@@ -9,6 +9,7 @@
     <projectUrl>https://github.com/tgsstdio/Mg</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>C# implementation of Vulkan 1.0 library</description>
+    <releaseNotes>Updated Magnesium w.r.t. Mg 5.1.1 </releaseNotes>
     <copyright>Copyright 2016 David Young</copyright>
     <tags>graphics vulkan</tags>    
 	<dependencies>
