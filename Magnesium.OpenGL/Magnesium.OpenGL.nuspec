@@ -10,7 +10,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Partial OpenGL polyfill implementation of Vulkan 1.0 library using OpenGL</description>
     <releaseNotes>Updated w.r.t. Magnesium 5.1.1 </releaseNotes>
-    <copyright>Copyright 2016 David Young</copyright>
+    <copyright>Copyright (c) 2016, 2017 David Young</copyright>
     <tags>graphics vulkan OpenGL</tags>
 	<dependencies>
 		<dependency id="Magnesium" version="5.1.1" />
