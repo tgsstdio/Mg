@@ -2,21 +2,25 @@
 <package >
   <metadata>
     <id>Magnesium.Metal</id>
-    <version>5.0.0</version>
+    <version>5.1.0</version>
     <authors>David Young</authors>
     <owners>David Young</owners>
     <licenseUrl>https://github.com/tgsstdio/Mg/blob/master/LICENSE.txt</licenseUrl>
     <projectUrl>https://github.com/tgsstdio/Mg</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Vulkan 1.0 implementation using Xamarin.Metal</description>
-    <releaseNotes>Updated interface w.r.t Magnesium 5.0.4</releaseNotes>
-    <copyright>Copyright 2016 David Young</copyright>
+    <releaseNotes> - Updated interface w.r.t Magnesium 5.1.1
+    - Changed MgDeviceCreateInfo Color and Depth are now optional and should pass in UNDEFINED for those values
+    </releaseNotes>
+    <copyright>Copyright (c) 2016, 2017 David Young</copyright>
     <tags>graphics vulkan metal</tags>    
 	<dependencies>
-		<dependency id="Magnesium" version="5.0.4" />
+		<dependency id="Magnesium" version="5.1.1" />
 	</dependencies>
   </metadata>
   <files>
     <file src="lib/Release/Magnesium.Metal.dll" target="lib/portable-net45+netcore45+wpa81"/>
+    <file src="lib/Release/x86/Magnesium.Metal.dll" target="lib/portable-net45+netcore45+wpa81"/>
+    <file src="lib/Release/x64/Magnesium.Metal.dll" target="lib/portable-net45+netcore45+wpa81"/>
   </files>  
 </package>
