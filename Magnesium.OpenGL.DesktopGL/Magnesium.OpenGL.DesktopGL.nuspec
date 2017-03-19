@@ -12,7 +12,7 @@
     <releaseNotes> - Updated w.r.t. Magnesium 5.1.1;
 	- Added RenderpassInfo to MgOpenTKGraphicsDevice
 	</releaseNotes>
-    <copyright>Copyright 2016 David Young</copyright>
+    <copyright>Copyright (c) 2016, 2017 David Young</copyright>
     <tags>graphics vulkan OpenGL</tags>
 	<dependencies>
 		<dependency id="Magnesium" version="5.1.1" />

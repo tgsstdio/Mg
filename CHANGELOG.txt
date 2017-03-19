@@ -1,3 +1,6 @@
+Magnesium v5.1.2 - 6th March 2017
+- Now MgDeviceCreateInfo Color/DepthStencil is largely optional, relying on defaults / physical device preferences
+
 Magnesium v5.1.1 - 6th March 2017
  - Added IMgGraphicsDevice.RenderpassInfo to work out clear values later on
  - Added BGR/A format options to MgClearValue.FromColorAndFormat

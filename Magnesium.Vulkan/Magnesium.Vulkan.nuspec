@@ -10,7 +10,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>C# implementation of Vulkan 1.0 library</description>
     <releaseNotes>Updated Magnesium w.r.t. Mg 5.1.1 </releaseNotes>
-    <copyright>Copyright 2016 David Young</copyright>
+    <copyright>Copyright (c) 2016, 2017 David Young</copyright>
     <tags>graphics vulkan</tags>    
 	<dependencies>
 		<dependency id="Magnesium" version="5.1.1" />
