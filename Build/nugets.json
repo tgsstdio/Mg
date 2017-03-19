@@ -1,4 +1,5 @@
 {
+	"nugetCmd":"D:\\Nuget\\nuget.exe",
 	"projects":[
 		{
 			"name":"Magnesium",
