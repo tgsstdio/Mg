@@ -33,8 +33,9 @@
             if (-Not (Test-Path $OutputFile))
             {
                 foreach($NuspecFile in 
-                    (Join-Path $Folder ($package.name + ".csproj")),
-                    (Join-Path $Folder ($package.name + ".nuspec"))
+                    (Join-Path $Folder ($package.name + ".csproj"))
+                    #,
+                    #(Join-Path $Folder ($package.name + ".nuspec"))
                     )
                 {            
                     Write-Host -ForegroundColor Magenta " ... Building $NuspecFile" 
@@ -42,6 +43,8 @@
                     if (Test-Path $NuspecFile)
                     {
                         &$NugetCmd pack -symbols $NuspecFile -Prop Configuration=Release
+
+                        &$NugetCmd push $OutputFile $ApiKey -Source $SourceURL
                         break;
                     }
                 }
