@@ -3,6 +3,8 @@
 	"projects":[
 		{
 			"name":"Magnesium",
+			"nuget":"6.0.1-alpha",
+			"version":"6.0.1"
 		}
 		,{
 			"name":"Magnesium.Vulkan",
