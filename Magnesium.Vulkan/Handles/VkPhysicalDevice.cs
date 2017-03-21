@@ -288,7 +288,7 @@ namespace Magnesium.Vulkan
 		public void GetPhysicalDeviceFormatProperties(MgFormat format, out MgFormatProperties pFormatProperties)
 		{
 			var formatProperties = default(VkFormatProperties);
-			Interops.vkGetPhysicalDeviceFormatProperties(Handle, (VkFormat)format, formatProperties);
+			Interops.vkGetPhysicalDeviceFormatProperties(Handle, (VkFormat)format, ref formatProperties);
 
 			pFormatProperties = new MgFormatProperties
 			{
