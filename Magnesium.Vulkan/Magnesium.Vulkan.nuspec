@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<package >
+<package>
   <metadata>
     <id>Magnesium.Vulkan</id>
-    <version>5.0.3</version>
+    <version>5.0.4-beta</version>
     <authors>David Young</authors>
     <owners>David Young</owners>
     <licenseUrl>https://github.com/tgsstdio/Mg/blob/master/LICENSE.txt</licenseUrl>
     <projectUrl>https://github.com/tgsstdio/Mg</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>C# implementation of Vulkan 1.0 library</description>
-    <releaseNotes>Updated Magnesium w.r.t. Mg 5.1.1 </releaseNotes>
+    <releaseNotes> - VK001 - Fixed vkGetPhysicalDeviceFormatProperties implementation </releaseNotes>
     <copyright>Copyright (c) 2016, 2017 David Young</copyright>
     <tags>graphics vulkan</tags>    
 	<dependencies>

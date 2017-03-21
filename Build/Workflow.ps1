@@ -70,7 +70,7 @@ function Sync-NugetAssemblies([String] $packages)
 {
     $db = Get-Content -Raw $packages | ConvertFrom-Json
 
-    $localDir = (Get-Item -Path ".\" -Verbose).FullName;
+    $localDir = (Get-Item -Path "..\" -Verbose).FullName;
 
     foreach($package in $db.projects)
     {
@@ -85,7 +85,7 @@ function Sync-NugetAssemblies([String] $packages)
     }
 }
 
-Sync-NugetAssemblies("build/nugets.json");
+Sync-NugetAssemblies("nugets.json");
 
 #echo $output
 
