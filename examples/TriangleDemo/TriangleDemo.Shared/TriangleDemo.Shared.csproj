@@ -70,14 +70,12 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="GLTriangleDemoDisplayInfo.cs" />
     <Compile Include="ITriangleShaderPath.cs" />
     <Compile Include="Matrix4.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Vector3.cs" />
     <Compile Include="Vector4.cs" />
     <Compile Include="VulkanExample.cs" />
-    <Compile Include="ITriangleDemoDisplayInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Magnesium\Magnesium.csproj">

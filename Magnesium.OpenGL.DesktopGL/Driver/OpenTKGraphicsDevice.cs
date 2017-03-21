@@ -71,56 +71,9 @@ namespace Magnesium.OpenGL.DesktopGL
 //			
 //		}
 
-		void SetupContext (MgGraphicsDeviceCreateInfo createInfo)
+		void SetupContext (MgGraphicsDeviceCreateInfo createInfo, MgFormat colorPassFormat, MgFormat depthPassFormat)
 		{
-            //GraphicsMode mode;
-            //var wnd = mWindow.WindowInfo;
-            //// Create an OpenGL compatibility context
-            //var flags = GraphicsContextFlags.Default;
-            //int major = 1;
-            //int minor = 0;
-            //if (Context == null || Context.IsDisposed)
-            //{
-            //	var color = GetColorFormat (createInfo.Color);
-            //	var depthBit = GetDepthBit (createInfo.DepthStencil);
-            //	var stencilBit = GetStencilBit (createInfo.DepthStencil);
-            //	var samples = (int)createInfo.Samples;
-            //	if (samples == 0)
-            //	{
-            //		// Use a default of 4x samples if PreferMultiSampling is enabled
-            //		// without explicitly setting the desired MultiSampleCount.
-            //		samples = 4;
-            //	}
-            //	mode = new GraphicsMode (color, depthBit, stencilBit, samples);
-            //	try
-            //	{
-            //		Context = new GraphicsContext (mode, wnd, major, minor, flags);
-            //	}
-            //	catch (Exception e)
-            //	{
-            //		mLogger.Log (string.Format ("Failed to create OpenGL context, retrying. Error: {0}", e));
-            //		major = 1;
-            //		minor = 0;
-            //		flags = GraphicsContextFlags.Default;
-            //		Context = new GraphicsContext (mode, wnd, major, minor, flags);
-            //	}
-            //}
-            //Context.MakeCurrent (wnd);
-            //(Context as IGraphicsContextInternal).LoadAll ();
-            ////Context.SwapInterval = mDeviceQuery.GetSwapInterval (mPresentation.PresentationInterval);
-            //// TODO : background threading 
-            //// Provide the graphics context for background loading
-            //// Note: this context should use the same GraphicsMode,
-            //// major, minor version and flags parameters as the main
-            //// context. Otherwise, context sharing will very likely fail.
-            ////			if (Threading.BackgroundContext == null)
-            ////			{
-            ////				Threading.BackgroundContext = new GraphicsContext(mode, wnd, major, minor, flags);
-            ////				Threading.WindowInfo = wnd;
-            ////				Threading.BackgroundContext.MakeCurrent(null);
-            ////			}
-            //Context.MakeCurrent (wnd);
-            mBBContext.SetupContext(mWindow.WindowInfo, createInfo);
+            mBBContext.SetupContext(mWindow.WindowInfo, createInfo, colorPassFormat, depthPassFormat);
 
 			mExtensions.Initialize ();
 			//mCapabilities.Initialize ();
@@ -139,18 +92,18 @@ namespace Magnesium.OpenGL.DesktopGL
         }
 
         IGLRenderPass mRenderpass;
-		void SetupRenderpass (MgGraphicsDeviceCreateInfo createInfo)
-		{
+		void SetupRenderpass (MgGraphicsDeviceCreateInfo createInfo, MgFormat colorPassFormat, MgFormat depthPassFormat)
+        {
 			var attachmentDescriptions = new [] {
 				new MgAttachmentDescription {
-					Format = createInfo.Color,
+					Format = colorPassFormat,
 					LoadOp = MgAttachmentLoadOp.CLEAR,
 					StoreOp = MgAttachmentStoreOp.STORE,
 					StencilLoadOp = MgAttachmentLoadOp.DONT_CARE,
 					StencilStoreOp = MgAttachmentStoreOp.DONT_CARE,
 				},
 				new MgAttachmentDescription {
-					Format = createInfo.DepthStencil,
+					Format = depthPassFormat,
 					LoadOp = MgAttachmentLoadOp.CLEAR,
 					StoreOp = MgAttachmentStoreOp.STORE,
 					StencilLoadOp = MgAttachmentLoadOp.CLEAR,
@@ -208,14 +161,14 @@ namespace Magnesium.OpenGL.DesktopGL
 			ReleaseUnmanagedResources ();
 			mDeviceCreated = false;
 
-			SetupContext (createInfo);
-			SetupRenderpass (createInfo);
+            swapchainCollection.Create (setupCmdBuffer, createInfo.Color, createInfo.Width, createInfo.Height);
+            MgFormat colorPassFormat = swapchainCollection.Format;
 
-            // MANDATORY
-            swapchainCollection.Create (setupCmdBuffer, createInfo.Width, createInfo.Height);
-					
-			SetupSwapchain (swapchainCollection, createInfo);
+            MgFormat depthPassFormat = OverrideDepthStencilFormat(createInfo);
+            SetupContext(createInfo, colorPassFormat, depthPassFormat);
 
+            // SetupSwapchain (swapchainCollection, createInfo);
+            SetupRenderpass(createInfo, colorPassFormat, depthPassFormat);
             mFramebuffers.Create(swapchainCollection, mRenderpass, mView, createInfo.Width, createInfo.Height);
 
 			Scissor = new MgRect2D { 
@@ -236,7 +189,17 @@ namespace Magnesium.OpenGL.DesktopGL
 			mDeviceCreated = true;
 		}
 
-		bool mDeviceCreated = false;
+        private MgFormat OverrideDepthStencilFormat(MgGraphicsDeviceCreateInfo createInfo)
+        {
+            MgFormat depthPassFormat = createInfo.DepthStencil;
+            if (depthPassFormat == MgFormat.UNDEFINED)
+            {
+                depthPassFormat = MgFormat.D24_UNORM_S8_UINT;
+            }
+            return depthPassFormat;
+        }
+
+        bool mDeviceCreated = false;
 		public bool DeviceCreated ()
 		{
 			return mDeviceCreated;
@@ -250,20 +213,6 @@ namespace Magnesium.OpenGL.DesktopGL
 		public MgRect2D Scissor {
 			get;
 			private set;
-		}
-
-        void SetupSwapchain (IMgSwapchainCollection swapchainCollection, MgGraphicsDeviceCreateInfo createInfo)
-		{
-			if (swapchainCollection.Swapchain == null)
-			{
-				throw new ArgumentNullException (nameof(swapchainCollection));
-			}
-            var collection = (OpenTKSwapchainCollection) swapchainCollection;
-            collection.Format = createInfo.Color;
-
-            var sc = (IOpenTKSwapchainKHR) swapchainCollection.Swapchain;
-            Debug.Assert(sc != null, nameof(swapchainCollection.Swapchain) + " is Not a IOpenTKSwapchainKHR type");
-			sc.Initialize ((uint)swapchainCollection.Buffers.Length);
 		}
 
 		~OpenTKGraphicsDevice()

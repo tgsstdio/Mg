@@ -128,12 +128,11 @@ namespace Magnesium
             ReleaseUnmanagedResources();
             mDeviceCreated = false;
 
+            swapchainCollection.Create(setupCmdBuffer, createInfo.Color, createInfo.Width, createInfo.Height);
+            var colorPassFormat = swapchainCollection.Format;
+
             MgFormat depthPassFormat = OverrideDepthStencilFormat(createInfo);
-
             CreateDepthStencil(setupCmdBuffer, depthPassFormat, createInfo);
-            swapchainCollection.Create(setupCmdBuffer, createInfo.Width, createInfo.Height);
-
-            MgFormat colorPassFormat = OverrideColorPassFormat(swapchainCollection, createInfo);
 
             CreateRenderpass(createInfo, colorPassFormat, depthPassFormat);
             mFramebuffers.Create(swapchainCollection, mRenderpass, mDepthStencilImageView, createInfo.Width, createInfo.Height);
@@ -162,19 +161,13 @@ namespace Magnesium
             MgFormat depthPassFormat = createInfo.DepthStencil;
             if (createInfo.DepthStencil == MgFormat.UNDEFINED)
             {
-                if (GetSupportedDepthFormat(out depthPassFormat))
+                if (!GetSupportedDepthFormat(out depthPassFormat))
                 {
-                    // TODO : custom exception 
                     throw new MgDepthStencilNotSupportedException();
                 }
             }
 
             return depthPassFormat;
-        }
-
-        private static MgFormat OverrideColorPassFormat(IMgSwapchainCollection swapchainCollection, MgGraphicsDeviceCreateInfo createInfo)
-        {
-            return (createInfo.Color == MgFormat.UNDEFINED) ? swapchainCollection.Format : createInfo.Color;
         }
 
         public MgViewport CurrentViewport {

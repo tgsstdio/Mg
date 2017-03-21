@@ -45,13 +45,13 @@ namespace TriangleDemo.DesktopGL
                     // IMgSwapchainCollection
                     container.Register<Magnesium.IMgSwapchainCollection, Magnesium.OpenGL.DesktopGL.OpenTKSwapchainCollection>(new PerScopeLifetime());
 
-                    var displayInfo = new GLTriangleDemoDisplayInfo
-                    {
-                        Color = MgFormat.R8G8B8A8_UINT,
-                        Depth = MgFormat.D24_UNORM_S8_UINT
-                    };
+                    //var displayInfo = new GLTriangleDemoDisplayInfo
+                    //{
+                    //    Color = MgFormat.R8G8B8A8_UINT,
+                    //    Depth = MgFormat.D24_UNORM_S8_UINT
+                    //};
 
-                    container.RegisterInstance<TriangleDemo.ITriangleDemoDisplayInfo>(displayInfo);
+                    //container.RegisterInstance<TriangleDemo.ITriangleDemoDisplayInfo>(displayInfo);
 
                     using (var scope = container.BeginScope())
                     {

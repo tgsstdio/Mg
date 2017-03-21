@@ -98,7 +98,7 @@ namespace Magnesium.OpenGL.DesktopGL
 
         public IGraphicsContext Context { get; private set; }
 
-        public void SetupContext(IWindowInfo wnd, MgGraphicsDeviceCreateInfo createInfo)
+        public void SetupContext(IWindowInfo wnd, MgGraphicsDeviceCreateInfo createInfo, MgFormat colorPassFormat, MgFormat depthPassFormat)
         {
             if (Context != null)
                 Context.Dispose();
@@ -110,9 +110,9 @@ namespace Magnesium.OpenGL.DesktopGL
             int minor = 0;
             if (Context == null || Context.IsDisposed)
             {
-                var color = GetColorFormat(createInfo.Color);
-                var depthBit = GetDepthBit(createInfo.DepthStencil);
-                var stencilBit = GetStencilBit(createInfo.DepthStencil);
+                var color = GetColorFormat(colorPassFormat);
+                var depthBit = GetDepthBit(depthPassFormat);
+                var stencilBit = GetStencilBit(depthPassFormat);
                 var samples = (int)createInfo.Samples;
                 if (samples == 0)
                 {
@@ -137,17 +137,6 @@ namespace Magnesium.OpenGL.DesktopGL
             Context.MakeCurrent(wnd);
             (Context as IGraphicsContextInternal).LoadAll();
             //Context.SwapInterval = mDeviceQuery.GetSwapInterval (mPresentation.PresentationInterval);
-            // TODO : background threading 
-            // Provide the graphics context for background loading
-            // Note: this context should use the same GraphicsMode,
-            // major, minor version and flags parameters as the main
-            // context. Otherwise, context sharing will very likely fail.
-            //			if (Threading.BackgroundContext == null)
-            //			{
-            //				Threading.BackgroundContext = new GraphicsContext(mode, wnd, major, minor, flags);
-            //				Threading.WindowInfo = wnd;
-            //				Threading.BackgroundContext.MakeCurrent(null);
-            //			}
             Context.MakeCurrent(wnd);
         }
 

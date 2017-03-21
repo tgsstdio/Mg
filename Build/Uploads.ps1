@@ -1,4 +1,8 @@
-﻿function Upload-NugetAssemblies([String] $Packages, [String] $Configuration)
+﻿param(
+    [bool] $UploadToServer
+)
+
+function Upload-NugetAssemblies([String] $Packages, [String] $Configuration)
 {
     $DefaultSourceURL = "https://www.nuget.org/api/v2/package"
     $SourceURL = Read-Host -Prompt "Input nuget source URL [$($DefaultSourceURL)]?"
@@ -16,6 +20,8 @@
     $Db = Get-Content -Raw $Packages | ConvertFrom-Json
 
     $NugetCmd = $Db.nugetCmd
+	
+	$MsbuildCmd = "msbuild.exe"
 
     foreach($package in $db.projects)
     {
@@ -42,9 +48,13 @@
 
                     if (Test-Path $NuspecFile)
                     {
+						&$MsbuildCmd $NuspecFile /p:Configuration=Release
+					
                         &$NugetCmd pack -symbols $NuspecFile -Prop Configuration=Release
-
-                        &$NugetCmd push $OutputFile $ApiKey -Source $SourceURL
+						if ($UploadToServer)
+						{
+							&$NugetCmd push $OutputFile $ApiKey -Source $SourceURL
+						}
                         break;
                     }
                 }
