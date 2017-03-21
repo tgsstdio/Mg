@@ -1,4 +1,8 @@
-Magnesium v5.1.2 - 6th March 2017
+Mangesium.Vulkan v5.0.4-beta
+- VK001 - Fixed vkGetPhysicalDeviceFormatProperties implementation
+- Built with w.r.t Mg v5.1.2-beta
+
+Magnesium v5.1.2-beta - 20th March 2017
 - Now MgDeviceCreateInfo Color/DepthStencil is largely optional, relying on defaults / physical device preferences
 
 Magnesium v5.1.1 - 6th March 2017
