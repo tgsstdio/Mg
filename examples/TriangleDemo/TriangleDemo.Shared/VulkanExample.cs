@@ -123,9 +123,9 @@ namespace TriangleDemo
                 initSwapchain(mWidth, mHeight);
                 prepare();
             }
-            catch(Exception ex)
+            catch(Exception)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -149,8 +149,8 @@ namespace TriangleDemo
             var createInfo = new MgGraphicsDeviceCreateInfo
             {
                 Samples = MgSampleCountFlagBits.COUNT_1_BIT,
-                Color = MgFormat.R8G8B8A8_UINT,
-                DepthStencil = MgFormat.D24_UNORM_S8_UINT,
+                //Color = MgFormat.R8G8B8A8_UINT,
+                //DepthStencil = MgFormat.D24_UNORM_S8_UINT,
                 Width = mWidth,
                 Height = mHeight,
             };

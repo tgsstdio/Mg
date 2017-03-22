@@ -18,11 +18,27 @@ namespace Magnesium.OpenGL.DesktopGL
 				}
 			};
 			mSwapchain = swapchain;
-		}
+            mSwapchain.Initialize((uint) Buffers.Length);
+            Format = MgFormat.R8G8B8A8_UINT;
+        }
 
-		#region IMgSwapchain implementation
+        //void SetupSwapchain (IMgSwapchainCollection swapchainCollection, MgGraphicsDeviceCreateInfo createInfo)
+        //{
+        //	if (swapchainCollection.Swapchain == null)
+        //	{
+        //		throw new ArgumentNullException (nameof(swapchainCollection));
+        //	}
+        //          var collection = (OpenTKSwapchainCollection) swapchainCollection;
+        //          collection.Format = createInfo.Color;
 
-		public IMgSwapchainKHR Swapchain {
+        //          var sc = (IOpenTKSwapchainKHR) swapchainCollection.Swapchain;
+        //          Debug.Assert(sc != null, nameof(swapchainCollection.Swapchain) + " is Not a IOpenTKSwapchainKHR type");
+        //	
+        //}
+
+        #region IMgSwapchain implementation
+
+        public IMgSwapchainKHR Swapchain {
 			get {
 				return mSwapchain;
 			}
@@ -52,7 +68,7 @@ namespace Magnesium.OpenGL.DesktopGL
         public MgFormat Format
         {
             get;
-            set;
+            private set;
         }
 
         #endregion

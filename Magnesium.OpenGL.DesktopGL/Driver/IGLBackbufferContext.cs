@@ -7,6 +7,6 @@ namespace Magnesium.OpenGL.DesktopGL
     public interface IGLBackbufferContext : IDisposable
     {
         IGraphicsContext Context { get; }
-        void SetupContext(IWindowInfo wnd, MgGraphicsDeviceCreateInfo createInfo);
+        void SetupContext(IWindowInfo wnd, MgFormat colorPassFormat, MgFormat depthPassFormat, MgGraphicsDeviceCreateInfo createInfo);
     }
 }
