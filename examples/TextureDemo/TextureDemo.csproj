@@ -33,22 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Magnesium, Version=5.0.4.30756, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Magnesium.5.0.4\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Magnesium.Ktx, Version=1.0.0.4888, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Magnesium.Ktx.1.0.0\lib\portable45-net45+win8+wpa81\Magnesium.Ktx.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Magnesium.PresentationSurfaces.OpenTK, Version=1.0.2.30735, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Magnesium.PresentationSurfaces.OpenTK.1.0.2\lib\net45\Magnesium.PresentationSurfaces.OpenTK.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Magnesium.Vulkan, Version=5.0.1.33684, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Magnesium.Vulkan.5.0.2\lib\portable45-net45+win8+wpa81\Magnesium.Vulkan.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="OpenTK, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>packages\OpenTK.2.0.0\lib\net20\OpenTK.dll</HintPath>
       <Private>True</Private>
@@ -107,6 +91,24 @@
     <None Include="Textures\pattern_02_bc2.ktx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Magnesium.Ktx\Magnesium.Ktx.csproj">
+      <Project>{6c74b420-5de6-43ed-ab99-18ae19342284}</Project>
+      <Name>Magnesium.Ktx</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Magnesium.PresentationSurfaces.OpenTK\Magnesium.PresentationSurfaces.OpenTK.csproj">
+      <Project>{0d74bcd6-2669-451f-81ff-488eecc07686}</Project>
+      <Name>Magnesium.PresentationSurfaces.OpenTK</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Magnesium.Vulkan\Magnesium.Vulkan.csproj">
+      <Project>{8ef770d0-2dbc-4a8c-bf5d-dc3d429190f8}</Project>
+      <Name>Magnesium.Vulkan</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Magnesium\Magnesium.csproj">
+      <Project>{9f9ac448-9d17-43e5-8889-285426290891}</Project>
+      <Name>Magnesium</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -128,9 +128,15 @@ namespace Magnesium
 			ReleaseUnmanagedResources ();
 			mDeviceCreated = false;
 
-			CreateDepthStencil (setupCmdBuffer, createInfo);
-			CreateRenderpass (createInfo);
+            var depthPassFormat = OverrideDepthStencilFormat(createInfo.DepthStencil);
+
+			CreateDepthStencil (setupCmdBuffer, depthPassFormat, createInfo);
             swapchainCollection.Create (setupCmdBuffer, createInfo.Width, createInfo.Height);
+
+            var colorPassFormat = OverrideColorFormat(swapchainCollection, createInfo);
+
+			CreateRenderpass (colorPassFormat, createInfo.DepthStencil);         
+
 			mFramebuffers.Create(swapchainCollection, mRenderpass, mDepthStencilImageView, createInfo.Width, createInfo.Height);
 
             Scissor = new MgRect2D { 
@@ -150,7 +156,37 @@ namespace Magnesium
 			mDeviceCreated = true;
 		}
 
-		public MgViewport CurrentViewport {
+        private MgFormat OverrideDepthStencilFormat(MgFormat depthStencil)
+        {
+            if (depthStencil == MgFormat.UNDEFINED)
+            {
+                MgFormat supportedFormat;
+                if (GetSupportedDepthFormat(out supportedFormat))
+                {
+                    return supportedFormat;
+                }
+                else
+                {
+                    throw new NotSupportedException();
+                }
+            }
+            else
+            {
+                return depthStencil;
+            }
+        }
+
+        private MgFormat OverrideColorFormat(IMgSwapchainCollection swapchainCollection, MgGraphicsDeviceCreateInfo createInfo)
+        {
+            var color = createInfo.Color;
+            if (color == MgFormat.UNDEFINED)
+            {
+                color = swapchainCollection.Format;
+            }
+            return color;
+        }
+
+        public MgViewport CurrentViewport {
 			get;
 			private set;
 		}
@@ -167,13 +203,13 @@ namespace Magnesium
 			}
 		}
 
-		void CreateRenderpass (MgGraphicsDeviceCreateInfo createInfo)
+		void CreateRenderpass (MgFormat colorPassFormat, MgFormat depthPassFormat)
 		{
 			var attachments = new []
 			{
 				// Color attachment[0] 
 				new MgAttachmentDescription{
-					Format = createInfo.Color,
+					Format = colorPassFormat,
 					// TODO : multisampling
 					Samples = MgSampleCountFlagBits.COUNT_1_BIT,
 					LoadOp =  MgAttachmentLoadOp.CLEAR,
@@ -185,7 +221,7 @@ namespace Magnesium
 				},
 				// Depth attachment[1]
 				new MgAttachmentDescription{
-					Format = createInfo.DepthStencil,
+					Format = depthPassFormat,
 					// TODO : multisampling
 					Samples = MgSampleCountFlagBits.COUNT_1_BIT,
 					LoadOp = MgAttachmentLoadOp.CLEAR,
@@ -236,11 +272,11 @@ namespace Magnesium
 			mRenderpass = renderPass;
 		}
 
-		void CreateDepthStencil (IMgCommandBuffer setupCmdBuffer, MgGraphicsDeviceCreateInfo createInfo)
+		void CreateDepthStencil (IMgCommandBuffer setupCmdBuffer, MgFormat depthPassFormat, MgGraphicsDeviceCreateInfo createInfo)
 		{
 			var image = new MgImageCreateInfo {
 				ImageType = MgImageType.TYPE_2D,
-				Format = createInfo.DepthStencil,
+				Format = depthPassFormat,
 				Extent = new MgExtent3D {
 					Width = createInfo.Width,
 					Height = createInfo.Height,
@@ -287,7 +323,7 @@ namespace Magnesium
 			var depthStencilView = new MgImageViewCreateInfo {
 				Image = mImage,
 				ViewType = MgImageViewType.TYPE_2D,
-				Format = createInfo.DepthStencil,
+				Format = depthPassFormat,
 				Flags = 0,
 				SubresourceRange = new MgImageSubresourceRange {
 					AspectMask = MgImageAspectFlagBits.DEPTH_BIT | MgImageAspectFlagBits.STENCIL_BIT,
