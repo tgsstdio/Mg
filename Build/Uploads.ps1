@@ -1,4 +1,9 @@
-﻿function Upload-NugetAssemblies([String] $Packages, [String] $Configuration)
+﻿param(
+    [bool] $UploadToServer,
+	[bool] $IsDebugMode
+)
+
+function Upload-NugetAssemblies([String] $Packages, [String] $Configuration)
 {
     $DefaultSourceURL = "https://www.nuget.org/api/v2/package"
     $SourceURL = Read-Host -Prompt "Input nuget source URL [$($DefaultSourceURL)]?"
@@ -16,6 +21,17 @@
     $Db = Get-Content -Raw $Packages | ConvertFrom-Json
 
     $NugetCmd = $Db.nugetCmd
+	
+	$MsbuildCmd = "msbuild.exe"
+	
+	$NugetBuildMode = "Configuration=Release"
+	$MsBuildMode = "/p:Configuration=Release"
+	
+	if ($IsDebugMode)
+	{
+		$MsBuildMode = "/p:Configuration=Debug"
+		$NugetBuildMode  = "Configuration=Debug"
+	}
 
     foreach($package in $db.projects)
     {
@@ -28,7 +44,7 @@
         {
             $OutputFile = Join-Path '.\' ($package.name + '.' + $package.nuget + ".nupkg");
             
-            Write-Host -ForegroundColor Yellow -BackgroundColor DarkCyan "Build if missing $($package.name) -> $OutputFile"
+            Write-Host -ForegroundColor Yellow -BackgroundColor DarkCyan "Build if missing $($package.name) -> $OutputFile"				
 
             if (-Not (Test-Path $OutputFile))
             {
@@ -42,9 +58,13 @@
 
                     if (Test-Path $NuspecFile)
                     {
-                        &$NugetCmd pack -symbols $NuspecFile -Prop Configuration=Release
-
-                        &$NugetCmd push $OutputFile $ApiKey -Source $SourceURL
+						&$MsbuildCmd $NuspecFile $MsBuildMode /v:normal
+					
+                        &$NugetCmd pack -symbols $NuspecFile -Prop $NugetBuildMode
+						if ($UploadToServer)
+						{
+							&$NugetCmd push $OutputFile $ApiKey -Source $SourceURL
+						}
                         break;
                     }
                 }
