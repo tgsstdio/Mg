@@ -77,6 +77,15 @@
       <HintPath>..\packages\LightInject.4.1.5\lib\net45\LightInject.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Magnesium, Version=6.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Magnesium.6.0.3-alpha\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
+    </Reference>
+    <Reference Include="Magnesium.PresentationSurfaces.OpenTK, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Magnesium.PresentationSurfaces.OpenTK.1.0.3-alpha\lib\net45\Magnesium.PresentationSurfaces.OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="Magnesium.Vulkan, Version=5.0.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Magnesium.Vulkan.5.0.7-alpha\lib\portable45-net45+win8+wpa81\Magnesium.Vulkan.dll</HintPath>
+    </Reference>
     <Reference Include="OpenTK, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenTK.2.0.0\lib\net20\OpenTK.dll</HintPath>
       <Private>True</Private>
@@ -113,18 +122,6 @@
     <Content Include="triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Magnesium.PresentationSurfaces.OpenTK\Magnesium.PresentationSurfaces.OpenTK.csproj">
-      <Project>{0d74bcd6-2669-451f-81ff-488eecc07686}</Project>
-      <Name>Magnesium.PresentationSurfaces.OpenTK</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Magnesium.Vulkan\Magnesium.Vulkan.csproj">
-      <Project>{8ef770d0-2dbc-4a8c-bf5d-dc3d429190f8}</Project>
-      <Name>Magnesium.Vulkan</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Magnesium\Magnesium.csproj">
-      <Project>{9f9ac448-9d17-43e5-8889-285426290891}</Project>
-      <Name>Magnesium</Name>
-    </ProjectReference>
     <ProjectReference Include="..\TriangleDemo.Shared\TriangleDemo.Shared.csproj">
       <Project>{7506c510-74b1-4eaf-8281-9dceefdbdb5d}</Project>
       <Name>TriangleDemo</Name>

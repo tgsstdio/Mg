@@ -243,10 +243,12 @@
     <Compile Include="Queue\IGLRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Magnesium\Magnesium.csproj">
-      <Project>{9f9ac448-9d17-43e5-8889-285426290891}</Project>
-      <Name>Magnesium</Name>
-    </ProjectReference>
+    <Reference Include="Magnesium, Version=6.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\examples\TriangleDemo\packages\Magnesium.6.0.3-alpha\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
 </Project>
