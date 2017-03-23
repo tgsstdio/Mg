@@ -28,8 +28,8 @@
 		}		
 		,{
 			"name":"Magnesium.Ktx",
-			"nuget":"1.0.1-alpha",			
-			"version":"1.0.1"
+			"nuget":"1.0.2-alpha",			
+			"version":"1.0.2"
 		}
 	]
 }
