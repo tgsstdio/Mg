@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 using System;
 using DryIoc;
+using TextureDemo.Core;
 
 namespace TextureDemo
 {
@@ -14,7 +15,7 @@ namespace TextureDemo
                 using (var container = new Container ())
                 using (var window = new NativeWindow())
                 {                   
-                    window.Title = "Vulkan Example - Basic indexed triangle";
+                    window.Title = "Texture Example - Basic textured quad";
                     window.Visible = true;
 
 
@@ -37,6 +38,8 @@ namespace TextureDemo
                     using (var scope = container.OpenScope())
                     {
                         container.Register<TextureExample>(Reuse.InResolutionScope);
+                        container.Register<ITextureDemoContent, TextureDemo.Vulkan.VulkanDemoContent>(Reuse.InResolutionScope);
+
                         container.Register<Magnesium.IMgGraphicsDevice, Magnesium.MgDefaultGraphicsDevice>(Reuse.InResolutionScope);
                         container.Register<Magnesium.IMgPresentationLayer, Magnesium.MgPresentationLayer>(Reuse.InResolutionScope);
                         container.Register<Magnesium.IMgSwapchainCollection, Magnesium.MgSwapchainCollection>(Reuse.InResolutionScope);
@@ -59,7 +62,7 @@ namespace TextureDemo
                             {
                                 using (var secondLevel = container.OpenScope())
                                 {
-                                    using (var gameWindow = new GameWindow(window))
+                                    using (var gameWindow = new TextureDemo.Core.Windows.GameWindow(window))
                                     using (var example = container.Resolve<TextureExample>())
                                     {                                        
                                         gameWindow.RenderFrame += (sender, e) =>

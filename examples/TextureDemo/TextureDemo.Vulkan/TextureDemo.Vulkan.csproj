@@ -59,16 +59,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BufferInfo.cs" />
     <Compile Include="DryIoc\AsyncExecutionFlowScopeContext.cs" />
     <Compile Include="DryIoc\Container.cs" />
     <Compile Include="DryIoc\FactoryCompiler.cs" />
     <Compile Include="DryIoc\ImTools.cs" />
-    <Compile Include="GameWindow.cs" />
-    <Compile Include="MgGraphicsConfigurationManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TextureExample.cs" />
+    <Compile Include="SPIRVTriangleShaderPath.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -103,6 +100,16 @@
     <None Include="Textures\pattern_02_bc2.ktx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TextureDemo.Core\TextureDemo.Core.csproj">
+      <Project>{a573ed9b-dc3c-48d1-91c4-1c30e377f232}</Project>
+      <Name>TextureDemo.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TextureDemo.Windows\TextureDemo.Core.Windows.csproj">
+      <Project>{5b3c6fde-4afb-4ee7-9741-09890ed307aa}</Project>
+      <Name>TextureDemo.Core.Windows</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

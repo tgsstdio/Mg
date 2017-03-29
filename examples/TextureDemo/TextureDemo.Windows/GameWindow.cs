@@ -30,9 +30,9 @@ using System.Diagnostics;
 // OTHER DEALINGS IN THE SOFTWARE.
 //
 
-namespace TextureDemo
+namespace TextureDemo.Core.Windows
 {
-    class GameWindow : IDisposable
+    public class GameWindow : IDisposable
     {
         const double MaxFrequency = 500.0; // Frequency cap for Update/RenderFrame events
 

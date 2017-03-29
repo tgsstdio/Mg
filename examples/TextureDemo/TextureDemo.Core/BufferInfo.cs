@@ -3,7 +3,7 @@ using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace TextureDemo
+namespace TextureDemo.Core
 {
     /**
 	* @brief Encapsulates access to a Vulkan buffer backed up by device memory

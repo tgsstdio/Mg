@@ -1,6 +1,5 @@
 ﻿using Magnesium;
 using Magnesium.Ktx;
-using OpenTK;
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -13,18 +12,23 @@ using System.Runtime.InteropServices;
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 */
 
-namespace TextureDemo
+namespace TextureDemo.Core
 {
     public class TextureExample : IDisposable
     {
         private MgGraphicsConfigurationManager mManager;
         private MgPhysicalDeviceFeatures mFeatures;
         private MgPhysicalDeviceProperties mPhysicalDeviceProperties;
+        private ITextureDemoContent mContent;
 
         private float mZoom;
 
-        public TextureExample(MgGraphicsConfigurationManager manager)
+        public TextureExample(
+            ITextureDemoContent content,
+            MgGraphicsConfigurationManager manager
+            )
         {
+            mContent = content;
             mManager = manager;
 
             mZoom = -2.5f;
@@ -269,12 +273,12 @@ namespace TextureDemo
                 new[] { imageMemoryBarrier });
         }
 
-        void loadTexture(string fileName, MgFormat format)
+        void loadTexture(MgFormat format)
         {
             IMgImageTools imageTools = new Magnesium.MgImageTools();
             IMgTextureGenerator optimizer = new Magnesium.MgStagingBufferOptimizer(mManager.Configuration, imageTools);            
             IKTXTextureLoader loader = new KTXTextureManager(optimizer, mManager.Configuration);
-            using (var fs = System.IO.File.OpenRead(fileName))
+            using (var fs = mContent.OpenTextureFile())
             {
                 var result = loader.Load(fs);
 
@@ -594,7 +598,7 @@ namespace TextureDemo
 
             // Vertex buffer
             {
-                var bufferSize = (uint)(Marshal.SizeOf<VertexData>() * quadCorners.Length);
+                var bufferSize = (uint)(Marshal.SizeOf(typeof(VertexData)) * quadCorners.Length);
                 vertexBuffer = new BufferInfo(
                     mManager.Configuration.Partition,
                     MgBufferUsageFlagBits.VERTEX_BUFFER_BIT,
@@ -628,7 +632,7 @@ namespace TextureDemo
                 {
                     Binding = VERTEX_BUFFER_BIND_ID,
                     InputRate = MgVertexInputRate.VERTEX,
-                    Stride = (uint) Marshal.SizeOf<VertexData>(),
+                    Stride = (uint) Marshal.SizeOf(typeof(VertexData)),
                 }
             };
 
@@ -642,7 +646,7 @@ namespace TextureDemo
                     Binding = VERTEX_BUFFER_BIND_ID,
                     Location = 0,
                     Format = MgFormat.R32G32B32_SFLOAT,
-                    Offset = (uint) Marshal.OffsetOf<VertexData>("pos"),
+                    Offset = (uint) Marshal.OffsetOf(typeof(VertexData), "pos"),
                 },
                 // Location 1 : Texture coordinates
                 new MgVertexInputAttributeDescription
@@ -650,7 +654,7 @@ namespace TextureDemo
                     Binding = VERTEX_BUFFER_BIND_ID,
                     Location = 1,
                     Format = MgFormat.R32G32_SFLOAT,
-                    Offset = (uint) Marshal.OffsetOf<VertexData>("uv"),
+                    Offset = (uint) Marshal.OffsetOf(typeof(VertexData),"uv"),
                 },
                 // Location 2 : Vertex normal
                 new MgVertexInputAttributeDescription
@@ -658,7 +662,7 @@ namespace TextureDemo
                     Binding = VERTEX_BUFFER_BIND_ID,
                     Location = 2,
                     Format = MgFormat.R32G32B32_SFLOAT,
-                    Offset = (uint) Marshal.OffsetOf<VertexData>("normal"),
+                    Offset = (uint) Marshal.OffsetOf(typeof(VertexData),"normal"),
                 },
             };
 
@@ -787,8 +791,8 @@ namespace TextureDemo
             Debug.Assert(mManager.Configuration != null);
             var device = mManager.Configuration.Device;
 
-            using (var vertFs = System.IO.File.OpenRead("Shaders/texture1.vert.spv"))
-            using (var fragFs = System.IO.File.OpenRead("Shaders/texture1.frag.spv"))
+            using (var vertFs = mContent.OpenVertexShader())
+            using (var fragFs = mContent.OpenFragmentShader())
             {
                 // Load shaders
                 IMgShaderModule vertSM;
@@ -920,6 +924,17 @@ namespace TextureDemo
             }
         }
 
+        /// <summary>
+        /// Convert degrees to radians
+        /// </summary>
+        /// <param name="degrees">An angle in degrees</param>
+        /// <returns>The angle expressed in radians</returns>
+        static float DegreesToRadians(float degrees)
+        {
+            const double degToRad = System.Math.PI / 180.0;
+            return (float)(degrees * degToRad);
+        }
+
         // Prepare and initialize uniform buffer containing shader uniforms
         void prepareUniformBuffers()
         {
@@ -928,7 +943,7 @@ namespace TextureDemo
                 mManager.Configuration.Partition,
                 MgBufferUsageFlagBits.UNIFORM_BUFFER_BIT,
                 MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT | MgMemoryPropertyFlagBits.HOST_COHERENT_BIT,
-                (uint) Marshal.SizeOf<UniformBufferObject>()
+                (uint) Marshal.SizeOf(typeof(UniformBufferObject))
                 );
             updateUniformBuffers();
         }
@@ -938,7 +953,7 @@ namespace TextureDemo
         {
             // Vertex shader
             uboVS.projection = Matrix4.CreatePerspectiveFieldOfView(
-                MathHelper.DegreesToRadians(60.0f),
+                DegreesToRadians(60.0f),
                 ((float)mManager.Width / (float)mManager.Height),
                 0.001f, 256.0f
             );
@@ -968,7 +983,7 @@ namespace TextureDemo
             //    sum = 0;
             //}
 
-            var bufferSize = (uint) Marshal.SizeOf<UniformBufferObject>();
+            var bufferSize = (uint) Marshal.SizeOf(typeof(UniformBufferObject));
             uniformBufferVS.SetData<UniformBufferObject>(bufferSize, new[] { uboVS }, 0, 1);
         }
 
@@ -978,7 +993,7 @@ namespace TextureDemo
             generateQuad();
             setupVertexDescriptions();
             prepareUniformBuffers();
-            loadTexture("Textures/pattern_02_bc2.ktx", MgFormat.BC2_UNORM_BLOCK);
+            loadTexture(MgFormat.BC2_UNORM_BLOCK);
             setupDescriptorSetLayout();
             preparePipelines();
             setupDescriptorPool();

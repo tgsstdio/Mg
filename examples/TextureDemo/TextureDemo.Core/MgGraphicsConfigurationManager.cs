@@ -1,7 +1,7 @@
 ﻿using Magnesium;
 using System.Diagnostics;
 
-namespace TextureDemo
+namespace TextureDemo.Core
 {
     public class MgGraphicsConfigurationManager
     {        
