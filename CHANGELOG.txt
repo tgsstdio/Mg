@@ -1,3 +1,7 @@
+Magnesium.OpenGL v6.0.1 - 12 Feb 2017
+Magnesium.OpenGL.DesktopGL v6.0.1 - 12 Feb 2017
+	- Fixed descriptor sets issue with pull request #9
+
 Magnesium.OpenGL v6.0.0 - 8 Feb 2017
 	- Implemented descriptor sets functionality
 	- Added IMgFence/IGLFence implementation

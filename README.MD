@@ -79,8 +79,8 @@ Magnesium and its implementations uses [Semantic Versioning v2.0.0](http://semve
 | [Magnesium](https://www.nuget.org/packages/Magnesium/) | 5.0.4  | Core C# Vulkan interface with all applications should reference |
 | [Magnesium.Vulkan](https://www.nuget.org/packages/Magnesium.Vulkan/) | 5.0.2 | C# interface to Vulkan version 1.0.17 |
 | [Magnesium.Metal](https://www.nuget.org/packages/Magnesium.Metal/) | 5.0.0  |iOS polyfill for Magnesium for iOS devices using Apple's own Metal API |
-| [Magnesium.OpenGL](https://www.nuget.org/packages/Magnesium.OpenGL/) | 6.0.0  | OpenGL enumation/polyfill to replicate most of Vulkan entities and features |
-| [Magnesium.OpenGL.DesktopGL](https://www.nuget.org/packages/Magnesium.OpenGL.DesktopGL/) | 6.0.0  | OpenTK / OpenGL 4.5 implementation |
+| [Magnesium.OpenGL](https://www.nuget.org/packages/Magnesium.OpenGL/) | 6.0.1  | OpenGL enumation/polyfill to replicate most of Vulkan entities and features |
+| [Magnesium.OpenGL.DesktopGL](https://www.nuget.org/packages/Magnesium.OpenGL.DesktopGL/) | 6.0.1  | OpenTK / OpenGL 4.5 implementation |
 | [Magnesium.PresentationSurfaces.OpenTK](https://www.nuget.org/packages/Magnesium.PresentationSurfaces.OpenTK/) | 1.0.2  | Contains OpenTK implementation of IMgPresentationSurface for Vulkan & DesktopGL |
 | [Magnesium.Ktx](https://www.nuget.org/packages/Magnesium.Ktx/) | 1.0.0 | Loads Khronos .ktx image files |
 
