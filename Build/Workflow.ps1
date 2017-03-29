@@ -85,7 +85,7 @@ function Sync-NugetAssemblies([String] $packages)
     }
 }
 
-Sync-NugetAssemblies("build/nugets.json");
+Sync-NugetAssemblies("nugets.json");
 
 #echo $output
 
