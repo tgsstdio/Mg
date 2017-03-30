@@ -6,22 +6,22 @@ namespace Magnesium.OpenGL.DesktopGL
 {
 	public class FullGLCmdBlendEntrypoint : IGLCmdBlendEntrypoint
 	{
-		#region IBlendCapabilities implementation
+        private IGLErrorHandler mErrHandler;
 
-		public void EnableLogicOp (bool logicOpEnable)
+        public FullGLCmdBlendEntrypoint(IGLErrorHandler errHandler)
+        {
+            mErrHandler = errHandler;
+        }
+
+        #region IBlendCapabilities implementation
+        public void EnableLogicOp (bool logicOpEnable)
 		{
 			if (logicOpEnable)
 				GL.Enable (EnableCap.ColorLogicOp);
 			else 
 				GL.Disable (EnableCap.ColorLogicOp);
 
-			{
-				var error = GL.GetError ();
-				if (error != ErrorCode.NoError)
-				{
-					Debug.WriteLine ("EnableLogicOp : " + error);
-				}
-			}
+            mErrHandler.LogGLError("EnableLogicOp ");
 		}
 
 		private static LogicOp GetGLLogicOp(MgLogicOp logicOp)
@@ -69,15 +69,8 @@ namespace Magnesium.OpenGL.DesktopGL
 		public void LogicOp (MgLogicOp logicOp)
 		{
 			GL.LogicOp (GetGLLogicOp (logicOp));
-
-			{
-				var error = GL.GetError ();
-				if (error != ErrorCode.NoError)
-				{
-					Debug.WriteLine ("LogicOp : " + error);
-				}
-			}
-		}
+            mErrHandler.LogGLError("LogicOp ");
+        }
 
 		private static int GetColorAttachmentId(uint index)
 		{
@@ -193,14 +186,8 @@ namespace Magnesium.OpenGL.DesktopGL
 			else
 				GL.Disable (IndexedEnableCap.Blend, index);
 
-			{
-				var error = GL.GetError ();
-				if (error != ErrorCode.NoError)
-				{
-					Debug.WriteLine ("EnableBlending : " + error);
-				}
-			}
-		}
+            mErrHandler.LogGLError("EnableBlending");
+        }
 
 		public void SetColorMask (uint index, MgColorComponentFlagBits colorMask)
 		{
@@ -259,18 +246,13 @@ namespace Magnesium.OpenGL.DesktopGL
 				GetBlendFactorSrc(srcAlpha), 
 				GetBlendFactorDest(destAlpha));
 
-			{
-				var error = GL.GetError ();
-				if (error != ErrorCode.NoError)
-				{
-					Debug.WriteLine ("ApplyBlendSeparateFunction : " + error);
-				}
-			}
-		}
+            mErrHandler.LogGLError("ApplyBlendSeparateFunction");
+        }
 
         public void SetBlendConstants(MgColor4f blendConstants)
         {
             GL.BlendColor(blendConstants.R, blendConstants.G, blendConstants.B, blendConstants.A);
+            mErrHandler.LogGLError("SetBlendConstants");
         }
 
         #endregion

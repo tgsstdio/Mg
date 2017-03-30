@@ -7,8 +7,8 @@
     <ProjectGuid>{AFE28C8E-DC39-48D2-AD23-F155855EDB7A}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TextureDemo</RootNamespace>
-    <AssemblyName>TextureDemo</AssemblyName>
+    <RootNamespace>TextureDemo.Vulkan</RootNamespace>
+    <AssemblyName>TextureDemo.Vulkan</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

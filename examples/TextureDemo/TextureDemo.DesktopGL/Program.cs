@@ -62,12 +62,12 @@ namespace TextureDemo.DesktopGL
                                     EngineVersion = 1,
                                 },
                                 MgInstanceExtensionOptions.ALL);
-                            using (var graphicsConfiguration = container.GetInstance<IMgGraphicsConfiguration>())
+                            using (var graphicsConfiguration = scope.GetInstance<IMgGraphicsConfiguration>())
                             {
-                                using (var secondLevel = container.BeginScope())
+                                using (var secondLevel = scope.BeginScope())
                                 {
                                     using (var gameWindow = new TextureDemo.Core.Windows.GameWindow(window))
-                                    using (var example = container.GetInstance<TextureDemo.Core.TextureExample> ())
+                                    using (var example = secondLevel.GetInstance<TextureDemo.Core.TextureExample> ())
                                     {
                                         gameWindow.RenderFrame += (sender, e) =>
                                         {

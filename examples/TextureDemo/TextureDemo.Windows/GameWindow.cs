@@ -583,6 +583,12 @@ namespace TextureDemo.Core.Windows
         #endregion
 
         #region IDisposable Support
+
+        ~GameWindow()
+        {
+            Dispose(false);
+        }
+
         private bool mIsDisposed = false; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
@@ -610,7 +616,7 @@ namespace TextureDemo.Core.Windows
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose(true);
             // TODO: uncomment the following line if the finalizer is overridden above.
-            // GC.SuppressFinalize(this);
+            GC.SuppressFinalize(this);
         }
         #endregion
     }

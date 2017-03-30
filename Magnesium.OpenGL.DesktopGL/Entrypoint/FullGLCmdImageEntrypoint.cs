@@ -6,6 +6,12 @@ namespace Magnesium.OpenGL.DesktopGL
 {
 	public class FullGLCmdImageEntrypoint : IGLCmdImageEntrypoint
 	{
+        private IGLErrorHandler mErrHandler;
+        public FullGLCmdImageEntrypoint(IGLErrorHandler errHandler)
+        {
+            mErrHandler = errHandler;
+        }
+
 		private static uint GetUnpackSize(MgFormat surfaceFormat)
 		{
 			switch (surfaceFormat)
@@ -96,11 +102,6 @@ namespace Magnesium.OpenGL.DesktopGL
 		{
 			const int DEFAULT_UNPACK_ALIGNMENT = 4;
 
-			{
-				var error = GL.GetError ();
-				Debug.WriteLineIf (error != ErrorCode.NoError, "PerformOperation BEFORE : " + error);
-			}
-
 			if (instructionSet == null)
 				return;
 
@@ -121,17 +122,17 @@ namespace Magnesium.OpenGL.DesktopGL
 							inst.Data
 						);
 
-						{
-							var error = GL.GetError ();
-							Debug.WriteLineIf (error != ErrorCode.NoError, "CompressedTextureSubImage1D END : " + error);
-						}
-					} 
+                        mErrHandler.LogGLError("CompressedTextureSubImage1D");
+
+                    } 
 					else
 					{
 						// Set pixel alignment to match texel size in bytes
 						GL.PixelStore(PixelStoreParameter.UnpackAlignment, GetUnpackSize(inst.Format));
 
-						GL.Ext.TextureSubImage1D (
+                        mErrHandler.LogGLError("PixelStore.BEGIN");
+
+                        GL.Ext.TextureSubImage1D (
 							inst.TextureId,
 							TextureTarget.Texture1D,
 							inst.Level,
@@ -144,11 +145,8 @@ namespace Magnesium.OpenGL.DesktopGL
 
 						GL.PixelStore(PixelStoreParameter.UnpackAlignment, DEFAULT_UNPACK_ALIGNMENT);
 
-						{
-							var error = GL.GetError ();
-							Debug.WriteLineIf (error != ErrorCode.NoError, "TextureSubImage1D END : " + error);
-						}
-					}
+                        mErrHandler.LogGLError("PixelStore.END");
+                    }
 				} 
 				else if (inst.Target == MgImageType.TYPE_2D)
 				{
@@ -167,24 +165,18 @@ namespace Magnesium.OpenGL.DesktopGL
 							inst.Data
 						);
 
-						{
-							var error = GL.GetError ();
-							Debug.WriteLineIf (error != ErrorCode.NoError, "CompressedTextureSubImage2D END : " + error);
-						}
-					} 
+                        mErrHandler.LogGLError("CompressedTextureSubImage2D");
+                    } 
 					else
 					{
 						// Set pixel alignment to match texel size in bytes
 						GL.PixelStore(PixelStoreParameter.UnpackAlignment, GetUnpackSize(inst.Format));
 
-						{
-							var error = GL.GetError ();
-							Debug.WriteLineIf (error != ErrorCode.NoError, "PixelStore BEGIN : " + error);
-						}
+                        mErrHandler.LogGLError("PixelStore.BEGIN");
 
-						// SEEMS to behave like glTexImage2D
-						// https://www.opengl.org/sdk/docs/man/html/glTexImage2D.xhtml
-						GL.Ext.TextureSubImage2D (
+                        // SEEMS to behave like glTexImage2D
+                        // https://www.opengl.org/sdk/docs/man/html/glTexImage2D.xhtml
+                        GL.Ext.TextureSubImage2D (
 							inst.TextureId,
 							TextureTarget.Texture2D,
 							inst.Level,
@@ -197,18 +189,12 @@ namespace Magnesium.OpenGL.DesktopGL
 							inst.Data
 						);
 
-						{
-							var error = GL.GetError ();
-							Debug.WriteLineIf (error != ErrorCode.NoError, "TextureSubImage2D END : " + error);
-						}
+                        mErrHandler.LogGLError("TextureSubImage2D");
 
-						GL.PixelStore (PixelStoreParameter.UnpackAlignment, DEFAULT_UNPACK_ALIGNMENT);
+                        GL.PixelStore (PixelStoreParameter.UnpackAlignment, DEFAULT_UNPACK_ALIGNMENT);
 
-						{
-							var error = GL.GetError ();
-							Debug.WriteLineIf (error != ErrorCode.NoError, "PixelStore END : " + error);
-						}
-					}
+                        mErrHandler.LogGLError("PixelStore.END");
+                    }
 				}
 				else if (inst.Target == MgImageType.TYPE_3D)
 				{
@@ -229,16 +215,14 @@ namespace Magnesium.OpenGL.DesktopGL
 							inst.Data
 						);
 
-						{
-							var error = GL.GetError ();
-							Debug.WriteLineIf (error != ErrorCode.NoError, "CompressedTextureSubImage3D END : " + error);
-						}
+                        mErrHandler.LogGLError("CompressedTextureSubImage3D");
 					} else
 					{
 						// Set pixel alignment to match texel size in bytes
 						GL.PixelStore(PixelStoreParameter.UnpackAlignment, GetUnpackSize(inst.Format));
+                        mErrHandler.LogGLError("PixelStore.BEGIN");
 
-						GL.Ext.TextureSubImage3D (
+                        GL.Ext.TextureSubImage3D (
 							inst.TextureId,
 							TextureTarget.Texture3D,
 							inst.Level,
@@ -253,19 +237,13 @@ namespace Magnesium.OpenGL.DesktopGL
 							inst.Data
 						);
 
-						GL.PixelStore(PixelStoreParameter.UnpackAlignment, DEFAULT_UNPACK_ALIGNMENT);
+                        mErrHandler.LogGLError("TextureSubImage3D");
 
-						{
-							var error = GL.GetError ();
-							Debug.WriteLineIf (error != ErrorCode.NoError, "TextureSubImage3D END : " + error);
-						}
-					}
+                        GL.PixelStore(PixelStoreParameter.UnpackAlignment, DEFAULT_UNPACK_ALIGNMENT);
+
+                        mErrHandler.LogGLError("PixelStore.END");
+                    }
 				}
-			}
-
-			{
-				var error = GL.GetError ();
-				Debug.WriteLineIf (error != ErrorCode.NoError, "PerformOperation END : " + error);
 			}
 		}
 

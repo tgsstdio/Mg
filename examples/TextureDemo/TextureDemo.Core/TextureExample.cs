@@ -20,15 +20,18 @@ namespace TextureDemo.Core
         private MgPhysicalDeviceFeatures mFeatures;
         private MgPhysicalDeviceProperties mPhysicalDeviceProperties;
         private ITextureDemoContent mContent;
+        private IMgTextureGenerator mOptimizer;
 
         private float mZoom;
 
         public TextureExample(
             ITextureDemoContent content,
+            IMgTextureGenerator optimizer,
             MgGraphicsConfigurationManager manager
             )
         {
             mContent = content;
+            mOptimizer = optimizer;
             mManager = manager;
 
             mZoom = -2.5f;
@@ -115,6 +118,11 @@ namespace TextureDemo.Core
         IMgDescriptorSetLayout mDescriptorSetLayout;
         IMgDescriptorPool mDescriptorPool;
 
+        ~TextureExample()
+        {
+            Dispose(false);
+        }
+
         public void Dispose()
         {
             Dispose(true);
@@ -126,7 +134,6 @@ namespace TextureDemo.Core
         {
             if (mIsDisposed)
                 return;
-
 
             ReleaseManagedResources();
 
@@ -149,6 +156,7 @@ namespace TextureDemo.Core
                 if (mSolidPipeline != null)
                 {
                     mSolidPipeline.DestroyPipeline(device, null);
+                    mSolidPipeline = null;
                 }
 
                 if (mPipelineLayout != null)
@@ -276,8 +284,8 @@ namespace TextureDemo.Core
         void loadTexture(MgFormat format)
         {
             IMgImageTools imageTools = new Magnesium.MgImageTools();
-            IMgTextureGenerator optimizer = new Magnesium.MgStagingBufferOptimizer(mManager.Configuration, imageTools);            
-            IKTXTextureLoader loader = new KTXTextureManager(optimizer, mManager.Configuration);
+     
+            IKTXTextureLoader loader = new KTXTextureManager(mOptimizer, mManager.Configuration);
             using (var fs = mContent.OpenTextureFile())
             {
                 var result = loader.Load(fs);

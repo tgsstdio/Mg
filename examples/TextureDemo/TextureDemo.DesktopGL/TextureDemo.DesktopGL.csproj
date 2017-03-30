@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -26,7 +26,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -37,12 +37,6 @@
     </Reference>
     <Reference Include="Magnesium, Version=6.0.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Magnesium.6.0.3-alpha\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
-    </Reference>
-    <Reference Include="Magnesium.OpenGL, Version=6.1.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Magnesium.OpenGL.6.1.2-alpha\lib\portable45-net45+win8+wpa81\Magnesium.OpenGL.dll</HintPath>
-    </Reference>
-    <Reference Include="Magnesium.OpenGL.DesktopGL, Version=6.1.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Magnesium.OpenGL.DesktopGL.6.1.2-alpha\lib\net45\Magnesium.OpenGL.DesktopGL.dll</HintPath>
     </Reference>
     <Reference Include="Magnesium.PresentationSurfaces.OpenTK, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Magnesium.PresentationSurfaces.OpenTK.1.0.3-alpha\lib\net45\Magnesium.PresentationSurfaces.OpenTK.dll</HintPath>
@@ -68,10 +62,10 @@
     <None Include="App.config" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
-    <None Include="Shaders\texture1.frag">
+    <None Include="Shaders\textureGL.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Shaders\texture1.vert">
+    <None Include="Shaders\textureGL.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Textures\pattern_02_bc2.ktx">
@@ -79,6 +73,14 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Magnesium.OpenGL.DesktopGL\Magnesium.OpenGL.DesktopGL.csproj">
+      <Project>{156d7f9d-1243-4edb-9e45-24faf2f40a4c}</Project>
+      <Name>Magnesium.OpenGL.DesktopGL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Magnesium.OpenGL\Magnesium.OpenGL.csproj">
+      <Project>{84924a0f-0d4c-4b0c-b16a-4f26dd838af2}</Project>
+      <Name>Magnesium.OpenGL</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TextureDemo.Core\TextureDemo.Core.csproj">
       <Project>{a573ed9b-dc3c-48d1-91c4-1c30e377f232}</Project>
       <Name>TextureDemo.Core</Name>

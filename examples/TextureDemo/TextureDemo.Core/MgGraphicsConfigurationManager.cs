@@ -1,4 +1,5 @@
 ﻿using Magnesium;
+using System;
 using System.Diagnostics;
 
 namespace TextureDemo.Core
@@ -132,12 +133,22 @@ namespace TextureDemo.Core
             mConfiguration.Device.FreeCommandBuffers(mConfiguration.Partition.CommandPool, buffers);
         }
 
+        ~MgGraphicsConfigurationManager()
+        {
+            Dispose(false);
+        }
+
         public void Dispose()
         {
-            //if (mPresentationLayer != null)
-            //{
-            //    mPresentationLayer.Dispose();
-            //}
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private bool mIsDisposed = false;
+        protected virtual void Dispose(bool dispose)
+        {
+            if (mIsDisposed)
+                return;
 
             if (mGraphicsDevice != null)
             {
@@ -153,6 +164,8 @@ namespace TextureDemo.Core
             {
                 mConfiguration.Dispose();
             }
+
+            mIsDisposed = true;
         }
     }
 }

@@ -8,7 +8,7 @@ namespace TextureDemo.DesktopGL
     {
         public Stream OpenFragmentShader()
         {
-            return System.IO.File.OpenRead("shaders/triangle.frag");
+            return System.IO.File.OpenRead("Shaders/textureGL.frag");
         }
 
         public Stream OpenTextureFile()
@@ -18,7 +18,7 @@ namespace TextureDemo.DesktopGL
 
         public Stream OpenVertexShader()
         {
-            return System.IO.File.OpenRead("shaders/triangle.vert");
+            return System.IO.File.OpenRead("Shaders/textureGL.vert");
         }
     }
 }

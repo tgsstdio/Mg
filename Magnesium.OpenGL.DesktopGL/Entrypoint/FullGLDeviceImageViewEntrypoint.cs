@@ -38,7 +38,8 @@ namespace Magnesium.OpenGL.DesktopGL
 			int[] ids = new int[1];
 			ids[0] = texture;
 			GL.DeleteTextures(1, ids);
-		}
+            mErrHandler.LogGLError("DeleteImageView");
+        }
 
 		#region IGLImageViewFactory implementation
 		public int CreateImageView (IGLImage image, MgImageViewCreateInfo pCreateInfo)
