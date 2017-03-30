@@ -15,17 +15,18 @@ layout (std140, binding = 0) uniform UBO
 	mat4 model;
 } ubo;
 
-layout (location = 0) out vec2 outUV;
-layout (location = 1) out float outLodBias;
-layout (location = 2) out vec3 outNormal;
+varying vec2 localUV;
+varying float localLodBias;
+varying vec3 localNormal;
 layout (location = 3) out vec3 outViewVec;
 layout (location = 4) out vec3 outLightVec;
 
 
 void vertFunc() 
 {
-	outUV = inUV;
-	outLodBias = ubo.lodBias;
+	localUV = inUV;
+	localLodBias = ubo.lodBias;
+	localNormal = inNormal;
 
 	gl_Position = ubo.projection * vec4(ubo.viewPos + inPos.xyz, 1.0);
 	gl_Position.y *= -1.0f;

@@ -394,19 +394,30 @@ namespace TextureDemo.Core
         {
             var device = mManager.Configuration.Device;
             Debug.Assert(device != null);
-         
+
             if (texture.view != null)
+            {
                 texture.view.DestroyImageView(device, null);
+                texture.view = null;
+            }
 
             if (texture.image != null)
+            {
                 texture.image.DestroyImage(device, null);
+                texture.image = null;
+            }
 
             if (texture.sampler != null)
+            {
                 texture.sampler.DestroySampler(device, null);
+                texture.sampler = null;
+            }
 
             if (texture.deviceMemory != null)
+            {
                 texture.deviceMemory.FreeMemory(device, null);
-            
+                texture.deviceMemory = null;
+            }            
         }
 
         IMgCommandBuffer[] drawCmdBuffers;
