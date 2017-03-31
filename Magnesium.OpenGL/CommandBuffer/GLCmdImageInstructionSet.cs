@@ -3,7 +3,7 @@ namespace Magnesium.OpenGL
 {
 	public class GLCmdImageInstructionSet
 	{
-		public GLCmdTexImageData[] LoadImageData { get; set; }
+		public GLCmdTexImageData[] Images { get; set; }
 	}
 }
 

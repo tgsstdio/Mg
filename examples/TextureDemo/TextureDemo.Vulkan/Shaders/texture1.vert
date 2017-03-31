@@ -7,7 +7,7 @@ layout (location = 0) in vec3 inPos;
 layout (location = 1) in vec2 inUV;
 layout (location = 2) in vec3 inNormal;
 
-layout (std140, binding = 0) uniform UBO 
+layout (std140, binding = 1) uniform UBO 
 {
 	vec3 viewPos;
 	float lodBias;

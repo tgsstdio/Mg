@@ -44,15 +44,16 @@ namespace Magnesium.OpenGL.DesktopGL
             return (glinfoLogLength > 1);
         }
 
-        public bool CheckUniformLocation(int programId, int location)
+        public bool CheckUniformLocation(int programId, int index)
         {
             int locationQuery = -1;
 
-            string name = GL.GetActiveUniformName(programId, location);
+            string name = GL.GetActiveUniformName(programId, index);
 
-            GL.Ext.GetUniform(programId, location, out locationQuery);
+            locationQuery = GL.GetUniformLocation(programId, name);
+
             mErrHandler.CheckGLError();
-            return (locationQuery != -1);
+            return (!string.IsNullOrWhiteSpace(name));
         }
 
         public int GetActiveUniforms(int programId)

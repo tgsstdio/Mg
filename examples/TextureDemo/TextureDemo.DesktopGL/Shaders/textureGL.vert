@@ -1,13 +1,14 @@
 #version 450
 
 #extension GL_ARB_separate_shader_objects : enable
-#extension GL_ARB_shading_language_420pack : enable
+#extension GL_ARB_shading_language_420pack : require
+#extension ARB_explicit_uniform_location: require
 
 layout (location = 0) in vec3 inPos;
 layout (location = 1) in vec2 inUV;
 layout (location = 2) in vec3 inNormal;
 
-layout (std140, binding = 0) uniform UBO 
+layout (std140, binding = 1) uniform UBO 
 {
 	vec3 viewPos;
 	float lodBias;
@@ -18,8 +19,8 @@ layout (std140, binding = 0) uniform UBO
 varying vec2 localUV;
 varying float localLodBias;
 varying vec3 localNormal;
-layout (location = 3) out vec3 outViewVec;
-layout (location = 4) out vec3 outLightVec;
+varying vec3 localViewVec;
+varying vec3 localLightVec;
 
 
 void vertFunc() 

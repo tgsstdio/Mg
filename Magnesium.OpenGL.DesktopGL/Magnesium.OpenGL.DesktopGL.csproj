@@ -89,7 +89,6 @@
     <Compile Include="Entrypoint\FullGLCmdDrawEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLCmdShaderProgramCache.cs" />
     <Compile Include="Entrypoint\FullGLCmdVBOEntrypoint.cs" />
-    <Compile Include="Entrypoint\FullGLCmdImageEntrypoint.cs" />
     <Compile Include="GLSwapchainKHR.cs" />
     <Compile Include="IOpenTKSwapchainKHR.cs" />
     <Compile Include="Driver\OpenTKSwapchainCollection.cs" />
@@ -131,9 +130,6 @@
     <Reference Include="Magnesium, Version=6.0.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\examples\TriangleDemo\packages\Magnesium.6.0.3-alpha\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
     </Reference>
-    <Reference Include="Magnesium.OpenGL, Version=6.1.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\examples\TriangleDemo\packages\Magnesium.OpenGL.6.1.2-alpha\lib\portable45-net45+win8+wpa81\Magnesium.OpenGL.dll</HintPath>
-    </Reference>
     <Reference Include="OpenTK, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\Build\packages\OpenTK.2.0.0\lib\net20\OpenTK.dll</HintPath>
       <Private>True</Private>
@@ -145,5 +141,11 @@
   <ItemGroup>
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Magnesium.OpenGL\Magnesium.OpenGL.csproj">
+      <Project>{84924a0f-0d4c-4b0c-b16a-4f26dd838af2}</Project>
+      <Name>Magnesium.OpenGL</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

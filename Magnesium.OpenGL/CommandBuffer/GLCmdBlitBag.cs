@@ -3,18 +3,18 @@
     public class GLCmdBlitBag
     {
         public GLCmdEncoderItemCollection<GLCmdCopyBufferRecord> CopyBuffers { get; set; }
-        public GLCmdEncoderItemCollection<GLCmdTexImageData> ImageData { get; set; }
+        public GLCmdEncoderItemCollection<GLCmdImageInstructionSet> LoadImageOps { get; set; }
 
         public GLCmdBlitBag()
         {
             CopyBuffers = new GLCmdEncoderItemCollection<GLCmdCopyBufferRecord>();
-            ImageData = new GLCmdEncoderItemCollection<GLCmdTexImageData>();
+            LoadImageOps = new GLCmdEncoderItemCollection<GLCmdImageInstructionSet>();
         }
 
         public void Clear()
         {
             CopyBuffers.Clear();
-            ImageData.Clear();
+            LoadImageOps.Clear();
         }
     }
 }

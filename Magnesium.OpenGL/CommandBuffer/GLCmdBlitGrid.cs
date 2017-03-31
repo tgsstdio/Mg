@@ -3,6 +3,6 @@
     public class GLCmdBlitGrid
     {
         public GLCmdCopyBufferRecord[] CopyBuffers { get; set; }
-        public GLCmdTexImageData[] ImageData { get; set; }
+        public GLCmdImageInstructionSet[] LoadImageOps { get; set; }
     }
 }

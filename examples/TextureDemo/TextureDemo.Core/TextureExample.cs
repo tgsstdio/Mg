@@ -281,7 +281,7 @@ namespace TextureDemo.Core
                 new[] { imageMemoryBarrier });
         }
 
-        void loadTexture(MgFormat format)
+        void loadTexture()
         {
             IMgImageTools imageTools = new Magnesium.MgImageTools();
      
@@ -725,19 +725,20 @@ namespace TextureDemo.Core
             {
                 Bindings = new MgDescriptorSetLayoutBinding[]
                 {
-			        // Binding 0 : Vertex shader uniform buffer
-                    new MgDescriptorSetLayoutBinding
-                    {
-                        DescriptorType = MgDescriptorType.UNIFORM_BUFFER,
-                        StageFlags = MgShaderStageFlagBits.VERTEX_BIT,
-                        Binding = 0,
-                        DescriptorCount = 1,
-                    },
-                    // Binding 1 : Fragment shader image sampler
+                    // Binding 0 : Fragment shader image sampler
                     new MgDescriptorSetLayoutBinding
                     {
                         DescriptorType = MgDescriptorType.COMBINED_IMAGE_SAMPLER,
                         StageFlags = MgShaderStageFlagBits.FRAGMENT_BIT,
+                        Binding = 0,
+                        DescriptorCount = 1,
+                    },
+			        // Binding 1 : Vertex shader uniform buffer
+                     // UNIFORM BLOCKS SHOULD BE LAST
+                    new MgDescriptorSetLayoutBinding
+                    {
+                        DescriptorType = MgDescriptorType.UNIFORM_BUFFER,
+                        StageFlags = MgShaderStageFlagBits.VERTEX_BIT,
                         Binding = 1,
                         DescriptorCount = 1,
                     },
@@ -776,28 +777,28 @@ namespace TextureDemo.Core
 
             var writeDescriptorSets = new []
             {
-			    // Binding 0 : Vertex shader uniform buffer
-                new MgWriteDescriptorSet
-                {
-                    DstSet = mDescriptorSets[0],
-                    DescriptorType = MgDescriptorType.UNIFORM_BUFFER,                    
-                    DstBinding = 0,
-                    DescriptorCount = 1,
-                    BufferInfo = new []
-                    {
-                        uniformBufferVS.Descriptor,
-                    }
-                },
-                // Binding 1 : Fragment shader texture sampler
+                // Binding 0 : Fragment shader texture sampler
                 new MgWriteDescriptorSet
                 {
                     DstSet = mDescriptorSets[0],
                     DescriptorType = MgDescriptorType.COMBINED_IMAGE_SAMPLER,
-                    DstBinding = 1,
+                    DstBinding = 0,
                     DescriptorCount = 1,
                     ImageInfo = new []
                     {
                         texture.descriptor,
+                    }
+                },
+			    // Binding 1 : Vertex shader uniform buffer
+                new MgWriteDescriptorSet
+                {
+                    DstSet = mDescriptorSets[0],
+                    DescriptorType = MgDescriptorType.UNIFORM_BUFFER,                    
+                    DstBinding = 1,
+                    DescriptorCount = 1,
+                    BufferInfo = new []
+                    {
+                        uniformBufferVS.Descriptor,
                     }
                 },
             };
@@ -1012,7 +1013,7 @@ namespace TextureDemo.Core
             generateQuad();
             setupVertexDescriptions();
             prepareUniformBuffers();
-            loadTexture(MgFormat.BC2_UNORM_BLOCK);
+            loadTexture();
             setupDescriptorSetLayout();
             preparePipelines();
             setupDescriptorPool();

@@ -40,6 +40,7 @@ namespace TextureDemo
                         container.Register<TextureExample>(Reuse.InResolutionScope);
                         container.Register<ITextureDemoContent, TextureDemo.Vulkan.VulkanDemoContent>(Reuse.InResolutionScope);
 
+                        container.Register<Magnesium.IMgTextureGenerator, Magnesium.MgStagingBufferOptimizer>(Reuse.InResolutionScope);
                         container.Register<Magnesium.IMgGraphicsDevice, Magnesium.MgDefaultGraphicsDevice>(Reuse.InResolutionScope);
                         container.Register<Magnesium.IMgPresentationLayer, Magnesium.MgPresentationLayer>(Reuse.InResolutionScope);
                         container.Register<Magnesium.IMgSwapchainCollection, Magnesium.MgSwapchainCollection>(Reuse.InResolutionScope);

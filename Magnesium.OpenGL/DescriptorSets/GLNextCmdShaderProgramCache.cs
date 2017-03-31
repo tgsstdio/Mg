@@ -163,7 +163,7 @@ namespace Magnesium.OpenGL
 
 				if (image.SamplerHandle.HasValue)
 				{
-					mEntrypoint.BindCombinedImageSampler(ProgramID, (int) resource.Binding, image.SamplerHandle.Value);
+					//mEntrypoint.BindCombinedImageSampler(ProgramID, (int) resource.Binding, image.SamplerHandle.Value);
 				}
 			}
 		}

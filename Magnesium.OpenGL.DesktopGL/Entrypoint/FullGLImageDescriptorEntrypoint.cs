@@ -14,7 +14,7 @@ namespace Magnesium.OpenGL.DesktopGL
 
 		public long CreateHandle (int textureId, int samplerId)
 		{
-			long texHandle = GL.Arb.GetTextureSamplerHandle (textureId, samplerId);
+			long texHandle = GL.Arb.GetTextureHandle (textureId);
 			mErrHandler.LogGLError ("GetTextureSamplerHandle");
             GL.Arb.MakeTextureHandleResident(texHandle);
             mErrHandler.LogGLError("MakeTextureHandleResident");

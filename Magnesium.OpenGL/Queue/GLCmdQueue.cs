@@ -38,19 +38,17 @@ namespace Magnesium.OpenGL
 			mIsDisposed = true;
 		}
 
-		private IGLCmdImageEntrypoint mImageOps;
         private readonly IGLBlitOperationEntrypoint mBlit;
         public GLCmdQueue (
             IGLCmdStateRenderer renderer,
             IGLBlitOperationEntrypoint blit,
-            IGLSemaphoreEntrypoint generator,
-            IGLCmdImageEntrypoint imageOps)
+            IGLSemaphoreEntrypoint generator
+            )
 		{
             mRenderer = renderer;
             mBlit = blit;
 
 			mSignalModule = generator;
-			mImageOps = imageOps;
 		}
 
 		#region IMgQueue implementation

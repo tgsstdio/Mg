@@ -237,7 +237,6 @@
     <Compile Include="Entrypoint\IGLFramebufferHelper.cs" />
     <Compile Include="Entrypoint\IGLExtensionLookup.cs" />
     <Compile Include="Entrypoint\IGLCmdClearEntrypoint.cs" />
-    <Compile Include="Entrypoint\IGLCmdImageEntrypoint.cs" />
     <Compile Include="Entrypoint\IGLGraphicsPipelineCompiler.cs" />
     <Compile Include="Entrypoint\GLSLGraphicsPipelineCompilier.cs" />
     <Compile Include="Queue\IGLRenderer.cs" />

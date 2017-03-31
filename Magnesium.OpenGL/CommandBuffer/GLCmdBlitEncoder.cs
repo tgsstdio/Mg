@@ -22,7 +22,7 @@ namespace Magnesium.OpenGL.Internals
             return new GLCmdBlitGrid
             {
                 CopyBuffers = mBag.CopyBuffers.ToArray(),
-                ImageData = mBag.ImageData.ToArray(),
+                LoadImageOps = mBag.LoadImageOps.ToArray(),
             };
         }
 
@@ -138,6 +138,8 @@ namespace Magnesium.OpenGL.Internals
 
         public void LoadImageData(MgImageMemoryBarrier[] pImageMemoryBarriers)
         {
+            var images = new List<GLCmdTexImageData>();
+
             foreach (var imgBarrier in pImageMemoryBarriers)
             {
                 if (imgBarrier != null)
@@ -184,27 +186,46 @@ namespace Magnesium.OpenGL.Internals
                                     throw new InvalidOperationException(string.Format("array[{0}].Levels[{1}].SubresourceLayout.Offset > int.MaxValue", i, j));
                                 }
                                 copyCmd.Data = IntPtr.Add(image.Handle, (int)levelDetail.SubresourceLayout.Offset);
-                       
-                                var nextIndex = mBag.ImageData.Push(copyCmd);
-
-                                var instruction = new GLCmdEncodingInstruction
-                                {
-                                    Category = GLCmdEncoderCategory.Blit,
-                                    Index = nextIndex,
-                                    Operation = CmdLoadImageData,
-                                };
-
-                                mInstructions.Add(instruction);
+                                images.Add(copyCmd);
                             }
                         }
                     }
                 }
             }
+
+            if (images.Count > 0)
+            {
+                var item = new GLCmdImageInstructionSet
+                {
+                    Images = images.ToArray()
+                };
+
+                var nextIndex = mBag.LoadImageOps.Push(item);
+
+                var instruction = new GLCmdEncodingInstruction
+                {
+                    Category = GLCmdEncoderCategory.Blit,
+                    Index = nextIndex,
+                    Operation = CmdLoadImageData,
+                };
+
+                mInstructions.Add(instruction);
+            }
         }
 
         private void CmdLoadImageData(GLCmdCommandRecording arg1, uint arg2)
         {
-            throw new NotImplementedException();
+            var encoder = arg1.Blit;
+            Debug.Assert(encoder != null);
+            var grid = encoder.Grid;
+            Debug.Assert(grid != null);
+            var entrypoint = encoder.Entrypoint;
+            Debug.Assert(entrypoint != null);
+            var items = grid.LoadImageOps;
+            Debug.Assert(items != null);
+            var item = items[arg2];
+
+            entrypoint.PerformOperation(item);
         }
     }    
 }

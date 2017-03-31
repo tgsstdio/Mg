@@ -570,13 +570,21 @@ namespace Magnesium.OpenGL.Internals
                 var internalCache = new GLInternalCache(bLayout, blocks, arrayMapper);
 
                 /// MAKE SURE ACTIVE UNIFORMS ARE AVAILABLE
-                //int noOfActiveUniforms = mEntrypoint.GraphicsPipeline.GetActiveUniforms(programId);
+                int noOfActiveUniforms = mEntrypoint.GraphicsPipeline.GetActiveUniforms(programId);
 
-                // var names = mEntrypoint.GraphicsPipeline.GetUniformBlocks(programId);
+                for(var i = 0; i < noOfActiveUniforms; i += 1)
+                {
+                    if (!mEntrypoint.GraphicsPipeline.CheckUniformLocation(programId, i))
+                    {
+                        throw new InvalidOperationException();
+                    }
+                }
 
-                //var binder = ConstructBinder(bLayout, programId, noOfActiveUniforms);
+               // var names = mEntrypoint.GraphicsPipeline.GetUniformBlocks(programId);
 
-                var pipeline = new GLGraphicsPipeline(
+               //var binder = ConstructBinder(bLayout, programId, noOfActiveUniforms);
+
+               var pipeline = new GLGraphicsPipeline(
                     mEntrypoint.GraphicsPipeline,
                     programId,
                     info,
@@ -747,7 +755,7 @@ namespace Magnesium.OpenGL.Internals
                 var dsBinder = new GLNextDescriptorSetBinder();
                 var graphics = new GLCmdGraphicsEncoder(sorter, new GLCmdGraphicsBag(), mEntrypoint.VBO, dsBinder);
                 var compute = new GLCmdComputeEncoder();
-                var blit = new GLCmdBlitEncoder(sorter, new GLCmdBlitBag());
+                var blit = new GLCmdBlitEncoder(sorter, new GLCmdBlitBag(), mEntrypoint.ImageFormat);
                 var encoder = new GLCmdCommandEncoder(sorter, graphics, compute, blit);
 
 
