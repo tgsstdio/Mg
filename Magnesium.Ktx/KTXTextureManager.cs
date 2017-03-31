@@ -319,7 +319,7 @@ namespace Magnesium.Ktx
                         return MgFormat.BC1_RGBA_SRGB_BLOCK;
 
                     case GLIntFmt.GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
-                        return MgFormat.BC3_UNORM_BLOCK;
+                        return MgFormat.BC2_UNORM_BLOCK;
                     case GLIntFmt.GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT:
                         return MgFormat.BC3_SRGB_BLOCK;
 

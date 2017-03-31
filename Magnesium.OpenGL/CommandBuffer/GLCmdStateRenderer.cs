@@ -139,8 +139,17 @@ namespace Magnesium.OpenGL
             UpdateDepthBias(pipelineInfo.DepthBias);
             UpdateBlendConstants(pipelineInfo.BlendConstants);
             UpdateDepthBounds(pipelineInfo.DepthBounds);
-            UpdateFrontStencil(pipelineInfo.FrontStencilInfo);
-            UpdateBackStencil(pipelineInfo.BackStencilInfo);
+
+            if (pipelineInfo.FrontStencilInfo.Equals(pipelineInfo.BackStencilInfo))
+            {
+                var sameChange = pipelineInfo.BackStencilInfo;
+                UpdateBothStencils(sameChange);
+            }
+            else
+            {
+                UpdateFrontStencil(pipelineInfo.FrontStencilInfo);
+                UpdateBackStencil(pipelineInfo.BackStencilInfo);
+            }
 
             if (pipelineInfo.FrontStencilWriteMask == pipelineInfo.BackStencilWriteMask)
             {
@@ -588,7 +597,7 @@ namespace Magnesium.OpenGL
                 mPastBackStencilInfo.CompareMask != stencilInfo.CompareMask
                 )
             {
-                mStencil.SetFrontFaceCullStencilFunction(stencilInfo.StencilFunction, stencilInfo.ReferenceMask, stencilInfo.CompareMask);
+                mStencil.SetBackFaceCullStencilFunction(stencilInfo.StencilFunction, stencilInfo.ReferenceMask, stencilInfo.CompareMask);
 
                 mPastBackStencilInfo.CompareMask = stencilInfo.CompareMask;
                 mPastBackStencilInfo.ReferenceMask = stencilInfo.ReferenceMask;
@@ -605,6 +614,37 @@ namespace Magnesium.OpenGL
         }
 
         #endregion
+
+        public void UpdateBothStencils(GLCmdStencilFunctionInfo item)
+        {
+            bool isRequired = false;
+
+            var faceInfo = mPastFrontStencilInfo;
+            if (!faceInfo.Equals(item))
+            {
+                ExtractStencilValues(faceInfo, item);
+                isRequired = true;
+            }
+
+            faceInfo = mPastBackStencilInfo;
+            if (!faceInfo.Equals(item))
+            {
+
+                ExtractStencilValues(faceInfo, item);
+                isRequired = true;
+             }
+
+            if (isRequired)
+                mStencil.SetBothStencilCullStencilFunction(item.StencilFunction, item.ReferenceMask, item.CompareMask);
+            
+        }
+
+        private static void ExtractStencilValues(GLCmdStencilFunctionInfo dst, GLCmdStencilFunctionInfo src)
+        {
+            dst.ReferenceMask = src.ReferenceMask;
+            dst.StencilFunction = src.StencilFunction;
+            dst.CompareMask = src.CompareMask;
+        }
 
         #region UpdateDepthBounds methods
         private GLCmdDepthBoundsParameter mPastDepthBounds;
@@ -796,6 +836,8 @@ namespace Magnesium.OpenGL
         {
             mCache.SetDescriptorSets(ds);
         }
+
+
     }
 }
 

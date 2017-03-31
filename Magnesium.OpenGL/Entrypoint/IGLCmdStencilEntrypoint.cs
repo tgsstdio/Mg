@@ -14,8 +14,9 @@ namespace Magnesium.OpenGL
 
 		void SetFrontFaceCullStencilFunction (MgCompareOp func, int referenceStencil, uint compare);
 		void SetBackFaceCullStencilFunction(MgCompareOp func, int referenceStencil, uint compare);
+        void SetBothStencilCullStencilFunction(MgCompareOp func, int referenceStencil, uint compare);
 
-		void SetFrontFaceStencilOperation(
+        void SetFrontFaceStencilOperation(
 			MgStencilOp stencilFail,
 			MgStencilOp stencilDepthBufferFail,
 			MgStencilOp stencilPass);
@@ -34,6 +35,8 @@ namespace Magnesium.OpenGL
 			MgStencilOp stencilFail,
 			MgStencilOp stencilDepthBufferFail,
 			MgStencilOp stencilPass);
-	}
+
+
+    }
 }
 

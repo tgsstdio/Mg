@@ -90,13 +90,17 @@ namespace Magnesium.OpenGL.Internals
 			case MgFormat.BC3_UNORM_BLOCK:
 				//case SurfaceFormat.Dxt5:
 			case MgFormat.BC3_SRGB_BLOCK:
-				//case SurfaceFormat.Dxt5SRgb:
-				//case SurfaceFormat.RgbPvrtc4Bpp:
-				//case SurfaceFormat.RgbaPvrtc4Bpp:
-				//case SurfaceFormat.RgbaAtcExplicitAlpha:
-				//case SurfaceFormat.RgbaAtcInterpolatedAlpha:
-				// One texel in DXT3, DXT5 and PVRTC 4bpp is a minimum 4x4 block, which is 16 bytes
-				return 16;
+                //case SurfaceFormat.Dxt5SRgb:
+                //case SurfaceFormat.RgbPvrtc4Bpp:
+                //case SurfaceFormat.RgbaPvrtc4Bpp:
+                //case SurfaceFormat.RgbaAtcExplicitAlpha:
+                //case SurfaceFormat.RgbaAtcInterpolatedAlpha:
+                // One texel in DXT3, DXT5 and PVRTC 4bpp is a minimum 4x4 block, which is 16 bytes
+
+            case MgFormat.BC7_SRGB_BLOCK:
+            case MgFormat.BC7_UNORM_BLOCK:
+                return 16;
+
 			case MgFormat.R8_UNORM:
 				//case SurfaceFormat.Alpha8:
 				return 1;

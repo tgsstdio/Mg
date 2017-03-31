@@ -185,7 +185,13 @@ namespace Magnesium.OpenGL.DesktopGL
 			case MgFormat.BC3_SRGB_BLOCK:
 				return (SizedInternalFormat)All.CompressedSrgbAlphaS3tcDxt5Ext;
 
-			default:
+            case MgFormat.BC7_UNORM_BLOCK:
+                return (SizedInternalFormat) 0x8E8C;
+
+            case MgFormat.BC7_SRGB_BLOCK:
+                return (SizedInternalFormat) 0x8E8D;
+
+            default:
 				throw new NotSupportedException ();
 			}
 

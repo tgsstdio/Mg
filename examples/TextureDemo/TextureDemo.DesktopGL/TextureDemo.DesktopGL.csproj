@@ -68,6 +68,9 @@
     <None Include="Shaders\textureGL.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Textures\1.ktx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Textures\pattern_02_bc2.ktx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

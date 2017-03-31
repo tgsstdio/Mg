@@ -6,10 +6,12 @@ namespace Magnesium.OpenGL.DesktopGL
 {
     public class OpenTKBackbufferContext : IGLBackbufferContext
     {
-        private IMgGraphicsDeviceLogger mLogger;
-        public OpenTKBackbufferContext(IMgGraphicsDeviceLogger logger)
+        private readonly IMgGraphicsDeviceLogger mLogger;
+        private readonly GLContextVersion mVersion;
+        public OpenTKBackbufferContext(IMgGraphicsDeviceLogger logger, GLContextVersion version)
         {
             mLogger = logger;
+            mVersion = version;
         }
 
         private ColorFormat GetColorFormat(Magnesium.MgFormat format)
@@ -106,8 +108,8 @@ namespace Magnesium.OpenGL.DesktopGL
             GraphicsMode mode;
             // Create an OpenGL compatibility context
             var flags = GraphicsContextFlags.Default;
-            int major = 1;
-            int minor = 0;
+            int major = mVersion.Major;
+            int minor = mVersion.Minor;
             if (Context == null || Context.IsDisposed)
             {
                 var color = GetColorFormat(colorPassFormat);

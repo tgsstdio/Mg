@@ -143,7 +143,24 @@ namespace Magnesium.OpenGL.DesktopGL
 					GLFormat = (int) All.CompressedTextureFormats,
 					GLType = (int) PixelType.UnsignedByte, // DEFAULT
 				};
-			case MgFormat.R32_SFLOAT:
+            case MgFormat.BC7_UNORM_BLOCK:
+                return new GLInternalImageFormat
+                {
+                    InternalFormat = 0x8E8C,
+                    GLFormat = (int)All.CompressedTextureFormats,
+                    GLType = (int)PixelType.UnsignedByte, // DEFAULT
+                };
+
+            case MgFormat.BC7_SRGB_BLOCK:
+                //goto case SurfaceFormat.Dxt5;
+                return new GLInternalImageFormat
+                {
+                    InternalFormat = supportsSRgb ? 0x8E8D : 0x8E8C, // default to BC7_UNORM_BLOCK
+                    GLFormat = (int)All.CompressedTextureFormats,
+                    GLType = (int)PixelType.UnsignedByte, // DEFAULT
+                };
+
+            case MgFormat.R32_SFLOAT:
 				// case SurfaceFormat.Single:
 				return new GLInternalImageFormat
 				{

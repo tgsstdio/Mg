@@ -105,7 +105,19 @@ namespace Magnesium.OpenGL.DesktopGL
             mErrHandler.LogGLError("SetStencilWriteMask");
         }
 
-		public void SetFrontFaceCullStencilFunction (MgCompareOp func, int referenceStencil, uint compare)
+        public void SetBothStencilCullStencilFunction(MgCompareOp func, int referenceStencil, uint compare)
+        {
+            var cullFaceModeFront = StencilFace.FrontAndBack;
+            GL.StencilFuncSeparate(
+                cullFaceModeFront,
+                GetStencilFunc(func),
+                referenceStencil,
+                compare);
+
+            mErrHandler.LogGLError("SetFrontFaceCullStencilFunction");
+        }
+
+        public void SetFrontFaceCullStencilFunction (MgCompareOp func, int referenceStencil, uint compare)
 		{
 			var cullFaceModeFront = StencilFace.Front;
 			GL.StencilFuncSeparate (
@@ -228,8 +240,8 @@ namespace Magnesium.OpenGL.DesktopGL
 			}
 		}
 
-		#endregion
+        #endregion
 
-	}
+    }
 }
 

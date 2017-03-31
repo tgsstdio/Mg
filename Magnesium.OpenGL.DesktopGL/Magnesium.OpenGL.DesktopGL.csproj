@@ -67,6 +67,7 @@
     <Compile Include="Device\GLFullFence.cs" />
     <Compile Include="Device\GLNextDescriptorPool.cs" />
     <Compile Include="Driver\IGLBackbufferContext.cs" />
+    <Compile Include="Driver\IGLContextVersion.cs" />
     <Compile Include="Driver\OpenTKBackbufferContext.cs" />
     <Compile Include="Entrypoint\FullGLBlitOperationEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLCmdShaderProgramEntrypoint.cs" />

@@ -471,8 +471,8 @@ namespace Magnesium.OpenGL.Internals
             if (mCurrentPipeline == null)
             {
                 return false;
-            }            
-            
+            }
+
             if (mBoundRenderPass == null)
             {
                 throw new InvalidOperationException("Command must be made inside a Renderpass. ");
@@ -481,25 +481,89 @@ namespace Magnesium.OpenGL.Internals
             // if vbo is missing, generate new one
             PushVertexArrayIfRequired();
 
-            // if front stencil is missing, generate new one
-            PushFrontStencilIfRequired();
-
-            // if back stencil is missing, generate new one
-            PushBackStencilIfRequired();
+            PushStencilValuesIfRequired();
 
             // if descriptor sets is missing, generate new one
             PushBackDescriptorSetIfRequired();
 
-            return true;            
+            return true;
+        }
+
+        private void PushStencilValuesIfRequired()
+        {
+            // if front stencil is missing, generate new one
+            var frontStencilRequired = PushFrontStencilIfRequired();
+
+            // if back stencil is missing, generate new one
+            var backStencilRequired = PushBackStencilIfRequired();
+
+            // compact if needed
+            bool frontNeeded = mPastFrontStencil != null && frontStencilRequired;
+            bool backNeeded = mPastBackStencil != null && backStencilRequired;
+
+            if (frontNeeded && backNeeded && mPastFrontStencil.Equals(mPastBackStencil))
+            {
+                var nextIndex = mBag.StencilFunctions.Push(mPastFrontStencil);
+
+                mInstructions.Add(new GLCmdEncodingInstruction
+                {
+                    Category = GLCmdEncoderCategory.Graphics,
+                    Index = nextIndex,
+                    Operation = CmdUpdateBothStencils,
+                });
+            }
+            else
+            {
+                if (frontNeeded)
+                {
+                    var nextIndex = mBag.StencilFunctions.Push(mPastFrontStencil);
+
+                    mInstructions.Add(new GLCmdEncodingInstruction
+                    {
+                        Category = GLCmdEncoderCategory.Graphics,
+                        Index = nextIndex,
+                        Operation = CmdUpdateFrontStencil,
+                    });
+                }
+                if (backNeeded)
+                {
+                    var nextIndex = mBag.StencilFunctions.Push(mPastBackStencil);
+
+                    mInstructions.Add(new GLCmdEncodingInstruction
+                    {
+                        Category = GLCmdEncoderCategory.Graphics,
+                        Index = nextIndex,
+                        Operation = CmdUpdateBackStencil,
+                    });
+                }
+            }
+        }
+
+        private void CmdUpdateBothStencils(GLCmdCommandRecording arg1, uint arg2)
+        {
+            var context = arg1.Graphics;
+            Debug.Assert(context != null);
+            var grid = context.Grid;
+            Debug.Assert(grid != null);
+            var items = grid.StencilFunctions;
+            Debug.Assert(items != null);
+            var item = items[arg2];
+            var renderer = context.StateRenderer;
+            Debug.Assert(renderer != null);
+            renderer.UpdateBothStencils(item);
         }
 
         private GLCmdStencilFunctionInfo mPastBackStencil;
-        private void PushBackStencilIfRequired()
+        private bool PushBackStencilIfRequired()
         {
             if (mCurrentPipeline == null)
-                return;
+                return false;
 
-            if (mPastBackStencil == null)
+            var userSuppliedAllowed = GLGraphicsPipelineDynamicStateFlagBits.STENCIL_COMPARE_MASK
+                | GLGraphicsPipelineDynamicStateFlagBits.STENCIL_REFERENCE;
+
+            // if pipeline.dynamicStates is enabled for this mask 
+            if (mPastBackStencil == null && ((mCurrentPipeline.DynamicsStates & userSuppliedAllowed) > 0))
             {
                 mPastBackStencil = new GLCmdStencilFunctionInfo
                 {
@@ -507,15 +571,11 @@ namespace Magnesium.OpenGL.Internals
                     ReferenceMask = mBackReference,
                     StencilFunction = mCurrentPipeline.StencilState.BackStencilFunction,
                 };
-
-                var nextIndex = mBag.StencilFunctions.Push(mPastBackStencil);
-
-                mInstructions.Add(new GLCmdEncodingInstruction
-                {
-                    Category = GLCmdEncoderCategory.Graphics,
-                    Index = nextIndex,
-                    Operation = CmdUpdateBackStencil,
-                });
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 
@@ -539,13 +599,16 @@ namespace Magnesium.OpenGL.Internals
         }
 
         private GLCmdStencilFunctionInfo mPastFrontStencil;
-        private void PushFrontStencilIfRequired()
+        private bool PushFrontStencilIfRequired()
         {
             if (mCurrentPipeline == null)
-                return;
+                return false;
 
-            if (mPastFrontStencil == null)
-            {               
+            var userSuppliedAllowed = GLGraphicsPipelineDynamicStateFlagBits.STENCIL_COMPARE_MASK
+                | GLGraphicsPipelineDynamicStateFlagBits.STENCIL_REFERENCE;
+
+            if (mPastFrontStencil == null && ((mCurrentPipeline.DynamicsStates & userSuppliedAllowed) > 0))
+            {
                 mPastFrontStencil = new GLCmdStencilFunctionInfo
                 {
                     CompareMask = mFrontCompare,
@@ -553,15 +616,12 @@ namespace Magnesium.OpenGL.Internals
                     StencilFunction = mCurrentPipeline.StencilState.FrontStencilFunction,
                 };
 
-                var nextIndex = mBag.StencilFunctions.Push(mPastFrontStencil);
-
-                mInstructions.Add(new GLCmdEncodingInstruction
-                {
-                    Category = GLCmdEncoderCategory.Graphics,
-                    Index = nextIndex,
-                    Operation = CmdUpdateFrontStencil,
-                });
+                return true;
             }
+            else
+            {
+                return false;
+            }            
         }
 
         private void CmdUpdateFrontStencil(GLCmdCommandRecording arg1, uint arg2)
