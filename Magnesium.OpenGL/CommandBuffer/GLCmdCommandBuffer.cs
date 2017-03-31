@@ -282,7 +282,10 @@ namespace Magnesium.OpenGL.Internals
 
 		public void CmdPipelineBarrier (MgPipelineStageFlagBits srcStageMask, MgPipelineStageFlagBits dstStageMask, MgDependencyFlagBits dependencyFlags, MgMemoryBarrier[] pMemoryBarriers, MgBufferMemoryBarrier[] pBufferMemoryBarriers, MgImageMemoryBarrier[] pImageMemoryBarriers)
 		{
-
+            if (pImageMemoryBarriers != null)
+            {
+                mCommandEncoder.Blit.LoadImageData(pImageMemoryBarriers);
+            }
 		}
 
 		public void CmdBeginQuery (IMgQueryPool queryPool, uint query, MgQueryControlFlagBits flags)

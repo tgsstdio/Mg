@@ -273,7 +273,6 @@ namespace Magnesium.OpenGL.Internals
 			}
 		}
 
-		#region IMgImage implementation
 		private IntPtr mMemory = IntPtr.Zero;
 		public IntPtr Handle {
 			get {
@@ -302,8 +301,6 @@ namespace Magnesium.OpenGL.Internals
 
 			mIsDisposed = true;
 		}
-
-		#endregion
 	}
 }
 

@@ -8,5 +8,6 @@
         void CopyBufferToImage(IMgBuffer srcBuffer, IMgImage dstImage, MgImageLayout dstImageLayout, MgBufferImageCopy[] pRegions);
         void CopyImageToBuffer(IMgImage srcImage, MgImageLayout srcImageLayout, IMgBuffer dstBuffer, MgBufferImageCopy[] pRegions);
         GLCmdBlitGrid AsGrid();
+        void LoadImageData(MgImageMemoryBarrier[] pImageMemoryBarriers);
     }
 }

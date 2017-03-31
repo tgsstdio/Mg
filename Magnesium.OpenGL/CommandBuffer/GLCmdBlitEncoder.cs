@@ -8,11 +8,13 @@ namespace Magnesium.OpenGL.Internals
     {
         private readonly GLCmdBlitBag mBag;
         private readonly IGLCmdEncoderContextSorter mInstructions;
+        private readonly IGLImageFormatEntrypoint mImageFormat;
 
-        public GLCmdBlitEncoder(IGLCmdEncoderContextSorter instructions, GLCmdBlitBag bag)
+        public GLCmdBlitEncoder(IGLCmdEncoderContextSorter instructions, GLCmdBlitBag bag, IGLImageFormatEntrypoint imageFormat)
         {
             mBag = bag;
             mInstructions = instructions;
+            mImageFormat = imageFormat;
         }
 
         public GLCmdBlitGrid AsGrid()
@@ -20,6 +22,7 @@ namespace Magnesium.OpenGL.Internals
             return new GLCmdBlitGrid
             {
                 CopyBuffers = mBag.CopyBuffers.ToArray(),
+                ImageData = mBag.ImageData.ToArray(),
             };
         }
 
@@ -132,5 +135,76 @@ namespace Magnesium.OpenGL.Internals
         {
             throw new NotImplementedException();
         }
-    }
+
+        public void LoadImageData(MgImageMemoryBarrier[] pImageMemoryBarriers)
+        {
+            foreach (var imgBarrier in pImageMemoryBarriers)
+            {
+                if (imgBarrier != null)
+                {
+                    var image = (IGLImage) imgBarrier.Image;
+                    if (image != null && imgBarrier.OldLayout == MgImageLayout.PREINITIALIZED && imgBarrier.NewLayout == MgImageLayout.SHADER_READ_ONLY_OPTIMAL)
+                    {
+                        var internalFormat = mImageFormat.GetGLFormat(image.Format, true);
+                        //					PixelInternalFormat glInternalFormat;
+                        //					PixelFormat glFormat;
+                        //					PixelType glType;
+                        //					image.Format.GetGLFormat (true, out glInternalFormat, out glFormat, out glType);
+
+                        var subResourceRange = imgBarrier.SubresourceRange;
+                        int layerEnd = (int)(subResourceRange.BaseArrayLayer + subResourceRange.LayerCount);
+                        int levelEnd = (int)(subResourceRange.BaseMipLevel + subResourceRange.LevelCount);
+                        for (int i = (int)subResourceRange.BaseArrayLayer; i < layerEnd; ++i)
+                        {
+                            var arrayDetail = image.ArrayLayers[i];
+                            for (int j = (int)subResourceRange.BaseMipLevel; j < levelEnd; ++j)
+                            {
+                                var levelDetail = arrayDetail.Levels[j];
+                                var copyCmd = new GLCmdTexImageData
+                                {
+                                    Target = image.ImageType,
+                                    Level = j,
+                                    Slice = i,
+                                    Width = levelDetail.Width,
+                                    Height = levelDetail.Height,
+                                    Depth = levelDetail.Depth,
+                                    Format = image.Format,
+                                    PixelFormat = internalFormat.GLFormat,
+                                    InternalFormat = internalFormat.InternalFormat,
+                                    PixelType = internalFormat.GLType,
+                                    TextureId = image.OriginalTextureId,
+                                };
+                                if (levelDetail.SubresourceLayout.Size > (ulong)int.MaxValue)
+                                {
+                                    throw new InvalidOperationException(string.Format("array[{0}].Levels[{1}].SubresourceLayout.Size > int.MaxValue", i, j));
+                                }
+                                copyCmd.Size = (int)levelDetail.SubresourceLayout.Size;
+                                if (levelDetail.SubresourceLayout.Offset > (ulong)int.MaxValue)
+                                {
+                                    throw new InvalidOperationException(string.Format("array[{0}].Levels[{1}].SubresourceLayout.Offset > int.MaxValue", i, j));
+                                }
+                                copyCmd.Data = IntPtr.Add(image.Handle, (int)levelDetail.SubresourceLayout.Offset);
+                       
+                                var nextIndex = mBag.ImageData.Push(copyCmd);
+
+                                var instruction = new GLCmdEncodingInstruction
+                                {
+                                    Category = GLCmdEncoderCategory.Blit,
+                                    Index = nextIndex,
+                                    Operation = CmdLoadImageData,
+                                };
+
+                                mInstructions.Add(instruction);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void CmdLoadImageData(GLCmdCommandRecording arg1, uint arg2)
+        {
+            throw new NotImplementedException();
+        }
+    }    
 }

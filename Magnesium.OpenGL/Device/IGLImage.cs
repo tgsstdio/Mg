@@ -1,4 +1,6 @@
-﻿namespace Magnesium.OpenGL
+﻿using System;
+
+namespace Magnesium.OpenGL
 {
     public interface IGLImage : IMgImage
     {
@@ -8,5 +10,7 @@
         int Levels { get; }
         int OriginalTextureId { get; }
         MgFormat Format { get; }
+        MgImageType ImageType { get; }
+        IntPtr Handle { get; }
     }
 }
