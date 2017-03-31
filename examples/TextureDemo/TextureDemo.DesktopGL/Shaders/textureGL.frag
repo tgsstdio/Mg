@@ -2,6 +2,7 @@
 
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_ARB_shading_language_420pack : enable
+#extension GL_ARB_bindless_texture : enable
 
 layout (binding = 1) uniform sampler2D samplerColor;
 
@@ -24,5 +25,5 @@ void fragFunc()
 	vec3 diffuse = max(dot(N, L), 0.0) * vec3(1.0);
 	float specular = pow(max(dot(R, V), 0.0), 16.0) * color.a;
 
-	outFragColor = vec4(localNormal, 1.0);
+	outFragColor = color;
 }
