@@ -13,13 +13,13 @@
 		}
 		,{
 			"name":"Magnesium.OpenGL",
-			"nuget":"6.1.2-alpha",
-			"version":"6.1.2"
+			"nuget":"6.1.3-alpha",
+			"version":"6.1.3"
 		}			
 		,{
 			"name":"Magnesium.OpenGL.DesktopGL",
-			"nuget":"6.1.2-alpha",			
-			"version":"6.1.2"
+			"nuget":"6.1.3-alpha",			
+			"version":"6.1.3"
 		}
 		,{
 			"name":"Magnesium.PresentationSurfaces.OpenTK",

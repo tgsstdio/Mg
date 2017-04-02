@@ -2,19 +2,19 @@
 <package>
   <metadata>
     <id>Magnesium.OpenGL.DesktopGL</id>
-    <version>6.1.2-alpha</version>
+    <version>6.1.3-alpha</version>
     <authors>David Young</authors>
     <owners>David Young</owners>
     <licenseUrl>https://github.com/tgsstdio/Mg/blob/master/LICENSE.txt</licenseUrl>
     <projectUrl>https://github.com/tgsstdio/Mg</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>OpenGL polyfill implementation of Vulkan 1.0 library using OpenGL and OpenTK</description>
-    <releaseNotes>Implemented descriptor sets functionality, Added IMgFence/IGLFence implementation, Implemented CopyBuffers into CommandBuffers</releaseNotes>
-    <copyright>Copyright 2016 David Young</copyright>
+    <releaseNotes> - Alpha build for textures </releaseNotes>
+    <copyright>Copyright (c) 2016, 2017 David Young</copyright>
     <tags>graphics vulkan OpenGL</tags>
 	<dependencies>
-		<dependency id="Magnesium" version="5.0.4" />
-		<dependency id="Magnesium.OpenGL" version="6.0.1" />		
+		<dependency id="Magnesium" version="6.0.3-alpha" />
+		<dependency id="Magnesium.OpenGL" version="6.1.3-alpha" />		
 		<dependency id="OpenTK" version="2.0.0" />		
 	</dependencies>
   </metadata>

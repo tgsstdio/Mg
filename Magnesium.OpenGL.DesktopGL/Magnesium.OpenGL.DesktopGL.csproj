@@ -128,6 +128,12 @@
     <Folder Include="CommandBuffer\" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Magnesium, Version=6.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\Build\packages\Magnesium.6.0.3-alpha\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
+    </Reference>
+    <Reference Include="Magnesium.OpenGL, Version=6.1.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\Build\packages\Magnesium.OpenGL.6.1.3-alpha\lib\portable45-net45+win8+wpa81\Magnesium.OpenGL.dll</HintPath>
+    </Reference>
     <Reference Include="OpenTK, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\Build\packages\OpenTK.2.0.0\lib\net20\OpenTK.dll</HintPath>
       <Private>True</Private>
@@ -139,15 +145,5 @@
   <ItemGroup>
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Magnesium.OpenGL\Magnesium.OpenGL.csproj">
-      <Project>{84924a0f-0d4c-4b0c-b16a-4f26dd838af2}</Project>
-      <Name>Magnesium.OpenGL</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Magnesium\Magnesium.csproj">
-      <Project>{9f9ac448-9d17-43e5-8889-285426290891}</Project>
-      <Name>Magnesium</Name>
-    </ProjectReference>
   </ItemGroup>
 </Project>
