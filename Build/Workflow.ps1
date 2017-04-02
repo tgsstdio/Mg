@@ -70,7 +70,8 @@ function Sync-NugetAssemblies([String] $packages)
 {
     $db = Get-Content -Raw $packages | ConvertFrom-Json
 
-    $localDir = (Get-Item -Path ".\" -Verbose).FullName;
+    # should scan Magnesium root folder
+    $localDir = (Get-Item -Path "..\" -Verbose).FullName;
 
     foreach($package in $db.projects)
     {
