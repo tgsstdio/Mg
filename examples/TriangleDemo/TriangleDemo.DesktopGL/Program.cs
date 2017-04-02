@@ -89,6 +89,8 @@ namespace TriangleDemo.DesktopGL
 
         static void SetupOpenGL(ServiceContainer container)
         {
+            container.RegisterInstance(new Magnesium.OpenGL.DesktopGL.GLContextVersion(OpenTK.Graphics.GraphicsContextFlags.Debug | OpenTK.Graphics.GraphicsContextFlags.ForwardCompatible, 3, 3));
+
             container.Register<Magnesium.IMgTextureGenerator, Magnesium.MgLinearImageOptimizer>(new PerContainerLifetime());
 
             // Magnesium.OpenGL
@@ -121,7 +123,6 @@ namespace TriangleDemo.DesktopGL
             container.Register<Magnesium.OpenGL.IGLCmdDrawEntrypoint, Magnesium.OpenGL.DesktopGL.FullGLCmdDrawEntrypoint>(new PerContainerLifetime());
             container.Register<Magnesium.OpenGL.IGLCmdClearEntrypoint, Magnesium.OpenGL.DesktopGL.FullGLCmdClearEntrypoint>(new PerContainerLifetime());
             container.Register<Magnesium.OpenGL.IGLSemaphoreEntrypoint, Magnesium.OpenGL.DesktopGL.FullGLSemaphoreEntrypoint>(new PerContainerLifetime());
-            container.Register<Magnesium.OpenGL.IGLCmdImageEntrypoint, Magnesium.OpenGL.DesktopGL.FullGLCmdImageEntrypoint>(new PerContainerLifetime());
             container.Register<Magnesium.OpenGL.IGLCmdVBOEntrypoint, Magnesium.OpenGL.DesktopGL.FullGLCmdVBOEntrypoint>(new PerContainerLifetime());
             container.Register<Magnesium.OpenGL.IGLSamplerEntrypoint, Magnesium.OpenGL.DesktopGL.FullGLSamplerEntrypoint>(new PerContainerLifetime());
             container.Register<Magnesium.OpenGL.IGLDeviceImageEntrypoint, Magnesium.OpenGL.DesktopGL.FullGLDeviceImageEntrypoint>(new PerContainerLifetime());
