@@ -32,6 +32,7 @@ void fragFunc()
 		float specular = pow(max(dot(R, V), 0.0), 16.0) * color.a;
 
 		outFragColor = color;
+		outFragColor.a = 1;
 	}
 	else
 	{

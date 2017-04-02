@@ -19,6 +19,7 @@ namespace Magnesium.OpenGL
 
         public void Initialize()
         {
+            mBlit.Initialize();
             mStateRenderer.Initialize();
         }
 

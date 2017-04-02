@@ -11,6 +11,13 @@ namespace Magnesium.OpenGL.DesktopGL
             mErrHandler = errHandler;
         }
 
+        public void Initialize()
+        {
+            GL.Enable(EnableCap.Texture1D);
+            GL.Enable(EnableCap.Texture2D);
+            GL.Enable(EnableCap.Texture3DExt);
+        }
+
         public void CopyBuffer(uint src, uint dst, IntPtr readOffset, IntPtr writeOffset, int size)
         {
             GL.CopyNamedBufferSubData(src, dst, readOffset, writeOffset, size);
@@ -252,6 +259,5 @@ namespace Magnesium.OpenGL.DesktopGL
                 }
             }
         }
-
     }
 }

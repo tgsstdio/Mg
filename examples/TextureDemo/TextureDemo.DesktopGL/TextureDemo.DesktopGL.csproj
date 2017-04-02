@@ -35,12 +35,6 @@
     <Reference Include="LightInject, Version=5.0.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\LightInject.5.0.2\lib\net45\LightInject.dll</HintPath>
     </Reference>
-    <Reference Include="Magnesium, Version=6.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Magnesium.6.0.3-alpha\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
-    </Reference>
-    <Reference Include="Magnesium.PresentationSurfaces.OpenTK, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Magnesium.PresentationSurfaces.OpenTK.1.0.3-alpha\lib\net45\Magnesium.PresentationSurfaces.OpenTK.dll</HintPath>
-    </Reference>
     <Reference Include="OpenTK, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenTK.2.0.0\lib\net20\OpenTK.dll</HintPath>
     </Reference>
@@ -83,6 +77,14 @@
     <ProjectReference Include="..\..\..\Magnesium.OpenGL\Magnesium.OpenGL.csproj">
       <Project>{84924a0f-0d4c-4b0c-b16a-4f26dd838af2}</Project>
       <Name>Magnesium.OpenGL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Magnesium.PresentationSurfaces.OpenTK\Magnesium.PresentationSurfaces.OpenTK.csproj">
+      <Project>{0d74bcd6-2669-451f-81ff-488eecc07686}</Project>
+      <Name>Magnesium.PresentationSurfaces.OpenTK</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Magnesium\Magnesium.csproj">
+      <Project>{9f9ac448-9d17-43e5-8889-285426290891}</Project>
+      <Name>Magnesium</Name>
     </ProjectReference>
     <ProjectReference Include="..\TextureDemo.Core\TextureDemo.Core.csproj">
       <Project>{a573ed9b-dc3c-48d1-91c4-1c30e377f232}</Project>

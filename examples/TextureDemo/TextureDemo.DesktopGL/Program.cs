@@ -91,7 +91,7 @@ namespace TextureDemo.DesktopGL
 
         static void SetupOpenGL(ServiceContainer container)
         {
-            container.RegisterInstance(new Magnesium.OpenGL.DesktopGL.GLContextVersion(3, 3));
+            container.RegisterInstance(new Magnesium.OpenGL.DesktopGL.GLContextVersion(OpenTK.Graphics.GraphicsContextFlags.ForwardCompatible | OpenTK.Graphics.GraphicsContextFlags.Debug, 3, 3));
 
             container.Register<Magnesium.IMgTextureGenerator, Magnesium.MgLinearImageOptimizer>(new PerContainerLifetime());
 

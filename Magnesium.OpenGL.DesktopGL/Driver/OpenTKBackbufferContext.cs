@@ -107,7 +107,7 @@ namespace Magnesium.OpenGL.DesktopGL
 
             GraphicsMode mode;
             // Create an OpenGL compatibility context
-            var flags = GraphicsContextFlags.Default;
+            var flags = mVersion.Flags;
             int major = mVersion.Major;
             int minor = mVersion.Minor;
             if (Context == null || Context.IsDisposed)
@@ -125,7 +125,7 @@ namespace Magnesium.OpenGL.DesktopGL
                 mode = new GraphicsMode(color, depthBit, stencilBit, samples);
                 try
                 {
-                    Context = new GraphicsContext(mode, wnd, major, minor, flags);
+                    Context = new GraphicsContext(mode, wnd, major, minor, flags);                    
                 }
                 catch (Exception e)
                 {

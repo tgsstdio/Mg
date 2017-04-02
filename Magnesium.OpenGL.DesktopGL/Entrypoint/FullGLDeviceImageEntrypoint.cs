@@ -5,6 +5,12 @@ namespace Magnesium.OpenGL.DesktopGL
 {
 	public class FullGLDeviceImageEntrypoint : IGLDeviceImageEntrypoint
 	{
+        private IGLErrorHandler mErrHandler;
+        public FullGLDeviceImageEntrypoint(IGLErrorHandler errHandler)
+        {
+            mErrHandler = errHandler;
+        }
+
 		public void DeleteImage (int textureId)
 		{
 			int[] ids = new int[1];
@@ -205,8 +211,10 @@ namespace Magnesium.OpenGL.DesktopGL
 
 			int[] textureId = new int[1];
 			GL.CreateTextures (TextureTarget.Texture1D, 1, textureId);
-			GL.Ext.TextureStorage1D (textureId [0], (ExtDirectStateAccess)All.Texture1D, levels, internalFormat, width);
-			return textureId [0];
+            mErrHandler.CheckGLError();
+            GL.Ext.TextureStorage1D (textureId [0], (ExtDirectStateAccess)All.Texture1D, levels, internalFormat, width);
+            mErrHandler.CheckGLError();
+            return textureId [0];
 		}
 
 		public int CreateTextureStorage2D (int levels, MgFormat format, int width, int height)
@@ -215,8 +223,10 @@ namespace Magnesium.OpenGL.DesktopGL
 
 			int[] textureId = new int[1];
 			GL.CreateTextures (TextureTarget.Texture2D, 1, textureId);
-			GL.Ext.TextureStorage2D (textureId[0], (ExtDirectStateAccess)All.Texture2D, levels, internalFormat, width, height);
-			return textureId [0];
+            mErrHandler.LogGLError("CreateTextures");
+            GL.Ext.TextureStorage2D (textureId[0], (ExtDirectStateAccess)All.Texture2D, levels, internalFormat, width, height);
+            mErrHandler.LogGLError("TextureStorage2D");
+            return textureId [0];
 		}
 
 		public int CreateTextureStorage3D (int levels, MgFormat format, int width, int height, int depth)
@@ -225,8 +235,10 @@ namespace Magnesium.OpenGL.DesktopGL
 
 			int[] textureId = new int[1];
 			GL.CreateTextures (TextureTarget.Texture3D, 1, textureId);
-			GL.Ext.TextureStorage3D (textureId [0], (ExtDirectStateAccess)All.Texture3D, levels, internalFormat, width, height, depth);
-			return textureId [0];
+            mErrHandler.CheckGLError();
+            GL.Ext.TextureStorage3D(textureId[0], (ExtDirectStateAccess)All.Texture3D, levels, internalFormat, width, height, depth);
+            mErrHandler.CheckGLError();
+            return textureId [0];
 		}
 
 		#endregion
