@@ -11,7 +11,7 @@ namespace Magnesium.OpenGL.DesktopGL
 		public MgPolygonMode Mode { get; set; }			
 
 		public GLGraphicsPipelineFlagBits Flags {get;set;}
-		public GLQueueRendererRasterizerState RasterizerValues {get;set;}
+		public GLRasterizerState RasterizerValues {get;set;}
 		public GLGraphicsPipelineStencilState StencilValues {get;set;}
 		public GLGraphicsPipelineBlendColorAttachmentState BlendValues { get; set;}
 		public GLGraphicsPipelineDepthState DepthValues {get;set;}

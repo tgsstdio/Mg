@@ -49,7 +49,7 @@ namespace TextureDemo
                                 new Magnesium.MgApplicationInfo
                                 {
                                     ApplicationName = "Vulkan Example",
-                                    ApiVersion = Magnesium.MgApplicationInfo.GenerateApiVersion(1, 0, 17),
+                                    ApiVersion = Magnesium.MgApplicationInfo.GenerateApiVersion(1, 0, 30),
                                     ApplicationVersion = 1,
                                     EngineName = "Magnesium",
                                     EngineVersion = 1,

@@ -268,7 +268,12 @@ namespace Magnesium.OpenGL.DesktopGL
 			}
 		}
 
-		#endregion
-	}
+        public void SetBlendConstants(MgColor4f blendConstants)
+        {
+            GL.BlendColor(blendConstants.R, blendConstants.G, blendConstants.B, blendConstants.A);
+        }
+
+        #endregion
+    }
 }
 

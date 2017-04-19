@@ -4,7 +4,7 @@ using System;
 
 namespace Magnesium.OpenGL.DesktopGL
 {
-    public class OpenTKBackbufferContext : IBackbufferContext
+    public class OpenTKBackbufferContext : IGLBackbufferContext
     {
         private IMgGraphicsDeviceLogger mLogger;
         public OpenTKBackbufferContext(IMgGraphicsDeviceLogger logger)

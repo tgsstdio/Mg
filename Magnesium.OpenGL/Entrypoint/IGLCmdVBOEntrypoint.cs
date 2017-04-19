@@ -2,18 +2,18 @@ namespace Magnesium.OpenGL
 {
 	public interface IGLCmdVBOEntrypoint
 	{
-		void BindIndexBuffer (int vbo, int bufferId);
+		void BindIndexBuffer (uint vbo, uint bufferId);
 
-		void BindDoubleVertexAttribute(int vbo, int location, int size, GLVertexAttributeType pointerType, int offset);
-		void BindIntVertexAttribute   (int vbo, int location, int size, GLVertexAttributeType pointerType, int offset);
-		void BindFloatVertexAttribute (int vbo, int location, int size, GLVertexAttributeType pointerType, bool isNormalized, int offset);
-		void SetupVertexAttributeDivisor (int vbo, int location, int divisor);
+		void BindDoubleVertexAttribute(uint vbo, uint location, int size, GLVertexAttributeType pointerType, uint offset);
+		void BindIntVertexAttribute   (uint vbo, uint location, int size, GLVertexAttributeType pointerType, uint offset);
+		void BindFloatVertexAttribute (uint vbo, uint location, int size, GLVertexAttributeType pointerType, bool isNormalized, uint offset);
+		void SetupVertexAttributeDivisor (uint vbo, uint location, uint divisor);
 
-		int GenerateVBO ();
+		uint GenerateVBO ();
 
-		void DeleteVBO(int vbo);
+		void DeleteVBO(uint vbo);
 
-		void AssociateBufferToLocation (int vbo, int location, int bufferId, long offsets, uint stride);
+		void AssociateBufferToLocation (uint vbo, uint location, uint bufferId, long offsets, uint stride);
 	}
 }
 

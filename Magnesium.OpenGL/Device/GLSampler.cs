@@ -1,9 +1,8 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
-	public class GLSampler : IMgSampler
+    public class GLSampler : IMgSampler
 	{
 		public int SamplerId { get; private set; }
 

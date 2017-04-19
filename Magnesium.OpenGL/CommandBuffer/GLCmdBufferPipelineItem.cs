@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using System;
 
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
 	[StructLayout(LayoutKind.Sequential)]
 	public struct GLCmdBufferPipelineItem  : IEquatable<GLCmdBufferPipelineItem>

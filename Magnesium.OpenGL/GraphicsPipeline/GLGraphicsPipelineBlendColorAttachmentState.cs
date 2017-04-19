@@ -1,10 +1,9 @@
 ﻿using System.Runtime.InteropServices;
 using System;
-using Magnesium;
 
 namespace Magnesium.OpenGL
 {
-	[StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential)]
 	public struct GLGraphicsPipelineBlendColorAttachmentState : IEquatable<GLGraphicsPipelineBlendColorAttachmentState>
 	{
 		public bool BlendEnable { get; set; }

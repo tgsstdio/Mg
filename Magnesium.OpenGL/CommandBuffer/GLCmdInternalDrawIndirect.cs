@@ -1,27 +1,22 @@
-namespace Magnesium.OpenGL
+using System;
+
+namespace Magnesium.OpenGL.Internals
 {
 	public class GLCmdInternalDrawIndirect
 	{
-		public uint stride {
+		public uint Stride {
 			get;
 			set;
 		}
 
-		public uint drawCount {
+		public uint DrawCount {
 			get;
 			set;
 		}
 
-		public ulong offset {
-			get;
-			set;
-		}
-
-		public IMgBuffer buffer {
-			get;
-			set;
-		}
-	}
+        public MgPrimitiveTopology Topology { get; internal set; }
+        public IntPtr Indirect { get; set; }
+    }
 
 }
 

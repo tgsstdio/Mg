@@ -8,9 +8,9 @@
 			mImgDescriptor = imgDescriptor;	
 		}
 
-		public ulong? SamplerHandle { get; set; }
+		public long? SamplerHandle { get; set; }
 
-		public void Replace (ulong handle)
+		public void Replace (long handle)
 		{
 			Destroy ();
 			SamplerHandle = handle;

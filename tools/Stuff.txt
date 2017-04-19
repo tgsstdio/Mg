@@ -1,0 +1,74 @@
+
+    The command
+
+      void GetActiveUniformBlockiv(uint program, uint uniformBlockIndex,
+                                   enum pname, int *params);
+
+    is equivalent to calling
+
+      GLenum prop;
+      GetProgramResourceiv(program, UNIFORM_BLOCK, uniformBlockIndex,
+                           1, &prop, maxSize, NULL, params);
+
+    where the value of <prop> is taken from Table X.3, based on the value of
+    <pname>, and <maxSize> is taken to specify a sufficiently large buffer to
+    receive all values that would be written to <params>.
+
+        <pname>                         <prop>
+        ------------------------------  ------------------------------
+        UNIFORM_BLOCK_BINDING           BUFFER_BINDING
+        UNIFORM_BLOCK_DATA_SIZE         BUFFER_DATA_SIZE
+        UNIFORM_BLOCK_NAME_LENGTH       NAME_LENGTH
+        UNIFORM_BLOCK_ACTIVE_UNIFORMS   NUM_ACTIVE_VARIABLES
+        UNIFORM_BLOCK_ACTIVE_           ACTIVE_VARIABLES
+          UNIFORM_INDICES
+        UNIFORM_BLOCK_REFERENCED_BY_    REFERENCED_BY_VERTEX_SHADER
+          VERTEX_SHADER
+        UNIFORM_BLOCK_REFERENCED_BY_    REFERENCED_BY_TESS_CONTROL_SHADER
+          TESS_CONTROL_SHADER
+        UNIFORM_BLOCK_REFERENCED_BY_    REFERENCED_BY_TESS_EVALUATION_SHADER
+          TESS_EVALUATION_SHADER
+        UNIFORM_BLOCK_REFERENCED_BY_    REFERENCED_BY_GEOMETRY_SHADER
+          GEOMETRY_SHADER
+        UNIFORM_BLOCK_REFERENCED_BY_    REFERENCED_BY_FRAGMENT_SHADER
+          FRAGMENT_SHADER
+        UNIFORM_BLOCK_REFERENCED_BY_    REFERENCED_BY_COMPUTE_SHADER
+          COMPUTE_SHADER
+		  
+		  
+GL_ARB_shading_language_420pack
+		  
+#extension GL_ARB_shading_language_420pack : enable
+
+    Add to Layout Qualifiers:
+
+    "More than one layout qualifier may appear in a single declaration. If the 
+    same layout-qualifier-name occurs in multiple layout qualifiers for the same 
+    declaration, the last one overrides the former ones."
+
+    Add to Uniform Block Layout Qualifiers, if the base language version is 1.4 
+    or above:
+
+        layout-qualifier-id
+            binding = integer-constant
+
+    "The binding identifier specifies the uniform buffer binding point 
+    corresponding to the uniform block, which will be used to obtain the 
+    values of the member variables of the block. It is an error to specify the
+    binding identifier for the global scope or for block member declarations. 
+    Any uniform block declared without a binding identifier is initially 
+    assigned to block binding point zero. After a program is linked, the 
+    binding points used for uniform blocks declared with or without a binding 
+    identifier can be updated by the OpenGL API.
+
+    "If the binding identifier is used with a uniform block instanced as an 
+    array then the first element of the array takes the specified block binding
+    and each subsequent element takes the next consecutive uniform block 
+    binding point.
+
+    "If the binding point for any uniform block instance is less than zero, or 
+    greater than or equal to the implementation-dependent maximum number of 
+    uniform buffer bindings, a compilation error will occur.  When the binding 
+    identifier is used with a uniform block instanced as an array of size N, 
+    all elements of the array from binding through binding + N - 1 must be
+    within this range."		  

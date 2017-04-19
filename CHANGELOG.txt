@@ -1,3 +1,20 @@
+Magnesium.OpenGL v6.0.1 - 12 Feb 2017
+Magnesium.OpenGL.DesktopGL v6.0.1 - 12 Feb 2017
+	- Fixed descriptor sets issue with pull request #9
+
+Magnesium.OpenGL v6.0.0 - 8 Feb 2017
+	- Implemented descriptor sets functionality
+	- Added IMgFence/IGLFence implementation
+	- Implemented CopyBuffers into CommandBuffers
+	
+Magnesium.OpenGL.DesktopGL v6.0.0 - 8 Feb 2017
+	- Implemented descriptor sets functionality
+	- Implemented GLFullFence of IMgFence interface
+	- Implemented CopyBuffers into CommandBuffers
+
+Magnesium.Ktx v1.0.0 - 24 Dec 2016
+	- Loads Khronos .ktx image files
+
 Magnesium.Metal v5.0.0 - 9 Nov 2016
  - Updated w.r.t Magnesium v5.0.4 
 

@@ -1,5 +1,6 @@
 namespace Magnesium.OpenGL
 {
+    // TODO: Turn this class internal
 	public class GLImageLevelSubresource
 	{
 		public MgSubresourceLayout SubresourceLayout {

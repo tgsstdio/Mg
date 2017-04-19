@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Diagnostics;
 
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
-	public class GLDevice : IMgDevice
+    public class GLDevice : IMgDevice
 	{
 		#region IMgDevice implementation
 		public PFN_vkVoidFunction GetDeviceProcAddr (string pName)
@@ -41,18 +40,7 @@ namespace Magnesium.OpenGL
 			pMemory = mEntrypoint.DeviceMemory.CreateDeviceMemory(pAllocateInfo);
 			return Result.SUCCESS;
 		}
-//		public void FreeMemory (IMgDeviceMemory memory, IMgAllocationCallbacks allocator)
-//		{
-//			throw new NotImplementedException ();
-//		}
-//		public Result MapMemory (IMgDeviceMemory memory, ulong offset, ulong size, uint flags, out IntPtr ppData)
-//		{
-//			throw new NotImplementedException ();
-//		}
-//		public void UnmapMemory (IMgDeviceMemory memory)
-//		{
-//			throw new NotImplementedException ();
-//		}
+
 		public Result FlushMappedMemoryRanges (MgMappedMemoryRange[] pMemoryRanges)
 		{
 			throw new NotImplementedException ();
@@ -70,16 +58,67 @@ namespace Magnesium.OpenGL
 			var internalBuffer = buffer as IGLBuffer;
 			if (internalBuffer == null)
 			{
-				throw new ArgumentException ("buffer");
+				throw new ArgumentException (nameof(buffer));
 			}
 
+            uint mask = DetermineBufferMemoryType(internalBuffer.Usage);
 			pMemoryRequirements = new MgMemoryRequirements {
 				Size = internalBuffer.RequestedSize,
-				MemoryTypeBits = internalBuffer.BufferType.GetMask (),
+				MemoryTypeBits = mask,
 			};
 		}
 
-		internal static int CalculateMipLevels(int width, int height = 0, int depth = 0)
+        private uint DetermineBufferMemoryType(MgBufferUsageFlagBits usage)
+        {
+            var flags = MgBufferUsageFlagBits.STORAGE_BUFFER_BIT;
+            // 1st precedence
+            if ((usage & flags) == flags)
+            {
+                return GLMemoryBufferType.SSBO.GetMask();
+            }
+
+            flags = MgBufferUsageFlagBits.VERTEX_BUFFER_BIT;
+            if ((usage & flags) == flags)
+            {
+                return GLMemoryBufferType.VERTEX.GetMask();
+            }
+
+            flags = MgBufferUsageFlagBits.INDIRECT_BUFFER_BIT;
+            if ((usage & flags) == flags)
+            {
+                return GLMemoryBufferType.INDIRECT.GetMask();
+            }
+
+            flags = MgBufferUsageFlagBits.UNIFORM_BUFFER_BIT;
+            if ((usage & flags) == flags)
+            {
+                return GLMemoryBufferType.UNIFORM.GetMask();
+            }
+
+            flags = MgBufferUsageFlagBits.INDEX_BUFFER_BIT;
+            if ((usage & flags) == flags)
+            {
+                return GLMemoryBufferType.INDEX.GetMask();
+            }
+
+            flags = MgBufferUsageFlagBits.TRANSFER_DST_BIT;
+            if ((usage & flags) == flags)
+            {
+                return GLMemoryBufferType.TRANSFER_DST.GetMask();
+            }
+
+            flags = MgBufferUsageFlagBits.TRANSFER_SRC_BIT;
+            if ((usage & flags) == flags)
+            {
+                return GLMemoryBufferType.TRANSFER_SRC.GetMask();
+            }
+            else
+            {
+                throw new NotSupportedException("BufferMemoryType not supported");
+            }
+        }
+
+        internal static int CalculateMipLevels(int width, int height = 0, int depth = 0)
 		{
 			int levels = 1;
 			int size = Math.Max(Math.Max(width, height), depth);
@@ -93,7 +132,12 @@ namespace Magnesium.OpenGL
 
 		public void GetImageMemoryRequirements (IMgImage image, out MgMemoryRequirements memoryRequirements)
 		{
-			var texture = image as GLImage;
+            if (image == null)
+            {
+                throw new ArgumentNullException(nameof(image));
+            }
+
+			var texture = (IGLImage) image;
 
 			uint imageSize = 0;
 
@@ -157,43 +201,96 @@ namespace Magnesium.OpenGL
 			};
 		}
 
-//		public Result BindImageMemory (IMgImage image, IMgDeviceMemory memory, ulong memoryOffset)
-//		{
-//			throw new NotImplementedException ();
-//		}
+
 		public void GetImageSparseMemoryRequirements (IMgImage image, out MgSparseImageMemoryRequirements[] sparseMemoryRequirements)
 		{
 			throw new NotImplementedException ();
 		}
 		public Result CreateFence (MgFenceCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgFence fence)
 		{
-			throw new NotImplementedException ();
+            fence = mEntrypoint.Fence.CreateFence();
+            return Result.SUCCESS;
 		}
-//		public void DestroyFence (MgFence fence, IMgAllocationCallbacks allocator)
-//		{
-//			throw new NotImplementedException ();
-//		}
+
 		public Result ResetFences (IMgFence[] pFences)
 		{
-			throw new NotImplementedException ();
+			foreach(var fence in pFences)
+            {
+                IGLFence bFence = (IGLFence) fence;
+                bFence.Reset();
+            }
+            return Result.SUCCESS;                
 		}
 		public Result GetFenceStatus (IMgFence fence)
 		{
-			throw new NotImplementedException ();
-		}
+            IGLFence bFence = (IGLFence)fence;
+            return (bFence.IsSignalled) ? Result.SUCCESS : Result.NOT_READY;
+        }
+
 		public Result WaitForFences (IMgFence[] pFences, bool waitAll, ulong timeout)
 		{
-			throw new NotImplementedException ();
+            if (timeout == 0)
+            {
+                // report current state only
+
+                // NO WAITING AT ALL 
+                foreach (var fence in pFences)
+                {
+                    IGLFence bFence = (IGLFence)fence;
+                    // TODO MAYBE NON BLOCKING ONLY
+                    if (!bFence.IsSignalled)
+                    {
+                        return Result.TIMEOUT;
+                    }
+                }
+                return Result.SUCCESS;
+            }
+            else
+            {
+                Stopwatch timer = new Stopwatch();
+
+                var noOfFences = pFences.Length;
+
+                ulong elapsedInNanoSecs = 0UL;
+                var remainingTime = timeout;
+
+                var currentFence = 0;
+                do
+                {
+                    IGLFence bFence = (IGLFence)pFences[currentFence];
+                    timer.Start();
+                    // ONE AT A TIME
+                    var isSignalled = bFence.IsReady((long)remainingTime);
+
+                    timer.Stop();
+ 
+                    elapsedInNanoSecs = (ulong) ((timer.ElapsedTicks * 1000000000) / Stopwatch.Frequency);
+
+                    // remove elapsed time from timeout
+                    remainingTime -= elapsedInNanoSecs;
+                    if (isSignalled)
+                    {
+                        currentFence += 1;
+                    }
+
+                    // COMPLETED LAST FENCE
+                    if (currentFence >= noOfFences)
+                    {
+                        return Result.SUCCESS;
+                    }
+                }
+                while (elapsedInNanoSecs < timeout);
+
+                return Result.TIMEOUT;
+            }            
+
 		}
 		public Result CreateSemaphore (MgSemaphoreCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgSemaphore pSemaphore)
 		{
 			pSemaphore = mEntrypoint.Semaphore.CreateSemaphore();
 			return Result.SUCCESS;
 		}
-//		public void DestroySemaphore (IMgSemaphore semaphore, IMgAllocationCallbacks allocator)
-//		{
-//			throw new NotImplementedException ();
-//		}
+
 		public Result CreateEvent (MgEventCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgEvent @event)
 		{
 			throw new NotImplementedException ();
@@ -231,10 +328,7 @@ namespace Magnesium.OpenGL
 			pBuffer = mEntrypoint.Buffers.CreateBuffer(pCreateInfo);
 			return Result.SUCCESS;
 		}
-//		public void DestroyBuffer (IMgBuffer buffer, IMgAllocationCallbacks allocator)
-//		{
-//			throw new NotImplementedException ();
-//		}
+
 		public Result CreateBufferView (MgBufferViewCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgBufferView pView)
 		{
 			throw new NotImplementedException ();
@@ -379,7 +473,7 @@ namespace Magnesium.OpenGL
 
 		public void GetImageSubresourceLayout (IMgImage image, MgImageSubresource pSubresource, out MgSubresourceLayout pLayout)
 		{
-			var internalImage = image as GLImage;
+			var internalImage = (IGLImage) image;
 
 			if (internalImage != null
 				&& pSubresource.ArrayLayer < internalImage.ArrayLayers.Length 
@@ -405,7 +499,7 @@ namespace Magnesium.OpenGL
 				throw new ArgumentNullException ("pCreateInfo.Image", "pCreateInfo.Image is null");
 			}
 
-			var originalImage = pCreateInfo.Image as GLImage;
+			var originalImage = (IGLImage) pCreateInfo.Image;
 
 			if (originalImage == null)
 			{
@@ -422,31 +516,17 @@ namespace Magnesium.OpenGL
 			return Result.SUCCESS;
 		}
 
-//		public void DestroyImageView (IMgImageView imageView, IMgAllocationCallbacks allocator)
-//		{
-//			mImageViews [imageView.Key].Destroy ();
-//		}
-
-		//private List<GLShaderModule> mShaderModules = new List<GLShaderModule>();
 		public Result CreateShaderModule (MgShaderModuleCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgShaderModule pShaderModule)
 		{			
 			pShaderModule = new GLShaderModule (pCreateInfo, mEntrypoint.ShaderModule);
 			return Result.SUCCESS;
 		}
 
-//		public void DestroyShaderModule (IMgShaderModule shaderModule, IMgAllocationCallbacks allocator)
-//		{
-//			mShaderModules[shaderModule.Key].Destroy();
-//		}
-
 		public Result CreatePipelineCache (MgPipelineCacheCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgPipelineCache pPipelineCache)
 		{
 			throw new NotImplementedException ();
 		}
-//		public void DestroyPipelineCache (IMgPipelineCache pipelineCache, IMgAllocationCallbacks allocator)
-//		{
-//			throw new NotImplementedException ();
-//		}
+
 		public Result GetPipelineCacheData (IMgPipelineCache pipelineCache, out byte[] pData)
 		{
 			throw new NotImplementedException ();
@@ -455,137 +535,117 @@ namespace Magnesium.OpenGL
 		{
 			throw new NotImplementedException ();
 		}
-		//private List<GLGraphicsPipeline> mPipelines = new List<GLGraphicsPipeline> ();
 
-//		int CompileShaderModules (MgGraphicsPipelineCreateInfo info)
-//		{
-//			var modules = new List<int> ();
-//			foreach (var stage in info.Stages)
-//			{
-//				var shaderType = ShaderType.VertexShader;
-//				if (stage.Stage == MgShaderStageFlagBits.FRAGMENT_BIT)
-//				{
-//					shaderType = ShaderType.FragmentShader;
-//				}
-//				else if (stage.Stage == MgShaderStageFlagBits.VERTEX_BIT)
-//				{
-//					shaderType = ShaderType.VertexShader;
-//				}
-//				else if (stage.Stage == MgShaderStageFlagBits.COMPUTE_BIT)
-//				{
-//					shaderType = ShaderType.ComputeShader;
-//				}
-//				else if (stage.Stage == MgShaderStageFlagBits.GEOMETRY_BIT)
-//				{
-//					shaderType = ShaderType.GeometryShader;
-//				}
-//				var module = stage.Module as GLShaderModule;
-//				if (module != null &&  module.ShaderId.HasValue)
-//				{
-//					modules.Add (module.ShaderId.Value);
-//				}
-//				else
-//				{
-//					using (var ms = new MemoryStream ())
-//					{
-//						module.Info.Code.CopyTo (ms, (int)module.Info.CodeSize.ToUInt32 ());
-//						ms.Seek (0, SeekOrigin.Begin);
-//						// FIXME : Encoding type 
-//						using (var sr = new StreamReader (ms))
-//						{
-//							string fileContents = sr.ReadToEnd ();
-//							module.ShaderId = GLSLTextShader.CompileShader (shaderType, fileContents, string.Empty);
-//							modules.Add (module.ShaderId.Value);
-//						}
-//					}
-//				}
-//			}
-//			return GLSLTextShader.LinkShaders (modules.ToArray ());
-//		}
 		public Result CreateGraphicsPipelines (IMgPipelineCache pipelineCache, MgGraphicsPipelineCreateInfo[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgPipeline[] pPipelines)
 		{
 			var output = new List<IMgPipeline> ();
 
 			foreach (var info in pCreateInfos)
-			{
-				var layout = info.Layout as GLPipelineLayout;
-				if (layout == null)
-				{
-					throw new ArgumentException ("pCreateInfos[].Layout");
-				}
+            {
+                var bLayout = (IGLPipelineLayout)info.Layout;
+                if (bLayout == null)
+                {
+                    throw new ArgumentException("pCreateInfos[].Layout");
+                }
 
-				if (info.VertexInputState == null)
-				{
-					throw new ArgumentNullException ("pCreateInfos[].VertexInputState");
-				}
+                if (info.VertexInputState == null)
+                {
+                    throw new ArgumentNullException("pCreateInfos[].VertexInputState");
+                }
 
-				if (info.InputAssemblyState == null)
-				{
-					throw new ArgumentNullException ("pCreateInfos[].InputAssemblyState");
-				}
+                if (info.InputAssemblyState == null)
+                {
+                    throw new ArgumentNullException("pCreateInfos[].InputAssemblyState");
+                }
 
-				if (info.RasterizationState == null)
-				{
-					throw new ArgumentNullException ("pCreateInfos[].RasterizationState");
-				}
+                if (info.RasterizationState == null)
+                {
+                    throw new ArgumentNullException("pCreateInfos[].RasterizationState");
+                }
 
-				var programId = mEntrypoint.GraphicsCompiler.Compile (info);
+                var programId = mEntrypoint.GraphicsCompiler.Compile(info);
 
-				/// MAKE SURE ACTIVE UNIFORMS ARE AVAILABLE
-				int noOfActiveUniforms = mEntrypoint.GraphicsPipeline.GetActiveUniforms(programId);
+                var blocks = mEntrypoint.GraphicsCompiler.Inspect(programId);
+                var arrayMapper = new GLInternalCacheArrayMapper(bLayout, blocks);
+                var internalCache = new GLInternalCache(bLayout, blocks, arrayMapper);
 
-				var uniqueLocations = new SortedDictionary<int, GLVariableBind> ();
-				foreach (var binding in layout.Bindings)
-				{
-					bool uniformFound = false;
+                /// MAKE SURE ACTIVE UNIFORMS ARE AVAILABLE
+                //int noOfActiveUniforms = mEntrypoint.GraphicsPipeline.GetActiveUniforms(programId);
 
-					if (noOfActiveUniforms > 0)
-					{
-						uniformFound = mEntrypoint.GraphicsPipeline.CheckUniformLocation (programId, binding.Location);
-					}
+                // var names = mEntrypoint.GraphicsPipeline.GetUniformBlocks(programId);
 
-					// ONLY ACTIVE UNIFORMS
-					// FIXME : input attachment
-					var bind = new GLVariableBind{
-						IsActive = (noOfActiveUniforms > 0 && uniformFound), 
-						Location = binding.Location,
-						DescriptorType = binding.DescriptorType };
+                //var binder = ConstructBinder(bLayout, programId, noOfActiveUniforms);
 
-					// WILL THROW ERROR HERE IF COLLISION
-					uniqueLocations.Add(binding.Location, bind);
-				}
+                var pipeline = new GLGraphicsPipeline(
+                    mEntrypoint.GraphicsPipeline,
+                    programId,
+                    info,
+                    internalCache,
+                    bLayout
+                );
 
-				// ASSUME NO GAPS ARE SUPPLIED
-				var uniformBinder = new GLProgramUniformBinder (uniqueLocations.Values.Count);
-				foreach (var bind in uniqueLocations.Values)
-				{
-					uniformBinder.Bindings[bind.Location] = bind;
-				}
+                // TODO : BASE PIPELINE / CHILD
 
-				var pipeline = new GLGraphicsPipeline (
-					mEntrypoint.GraphicsPipeline,
-					programId,
-					info,
-					uniformBinder
-				);
-
-				// TODO : BASE PIPELINE / CHILD
-
-				output.Add (pipeline);
-			}
-			pPipelines = output.ToArray ();
+                output.Add(pipeline);
+            }
+            pPipelines = output.ToArray ();
 			return Result.SUCCESS;
 		}
-		public Result CreateComputePipelines (IMgPipelineCache pipelineCache, MgComputePipelineCreateInfo[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgPipeline[] pPipelines)
+
+        //private GLProgramUniformBinder ConstructBinder(IGLPipelineLayout bLayout, int programId)
+        //{
+        //
+        //    int noOfActiveUniforms = mEntrypoint.GraphicsPipeline.GetActiveUniforms(programId);
+        //    var notUniformBlock = ~(MgDescriptorType.UNIFORM_BUFFER | MgDescriptorType.UNIFORM_BUFFER_DYNAMIC);
+        //    var uniqueLocations = new SortedDictionary<uint, GLVariableBind>();
+
+        //    foreach (var binding in bLayout.Bindings)
+        //    {
+        //        bool uniformFound = false;
+
+
+        //        if (noOfActiveUniforms > 0)
+        //        {
+        //            if (binding.Binding > int.MaxValue)
+        //            {
+        //                throw new ArgumentOutOfRangeException("Mg.GL: binding.Binding is > int.MaxValue");
+        //            }
+
+        //            // NOT SURE IF THIS IS STILL WORTH CHECKING
+        //            if ((binding.DescriptorType & notUniformBlock) > 0)
+        //            {
+        //                int location = (int)binding.Binding;
+        //                uniformFound = mEntrypoint.GraphicsPipeline.CheckUniformLocation(programId, location);
+        //            }
+        //        }
+
+        //        // ONLY ACTIVE UNIFORMS
+        //        // FIXME : input attachment
+        //        var bind = new GLVariableBind
+        //        {
+        //            IsActive = (noOfActiveUniforms > 0 && uniformFound),
+        //            Location = binding.Binding,
+        //            DescriptorType = binding.DescriptorType
+        //        };
+
+        //        // WILL THROW ERROR HERE IF COLLISION
+        //        uniqueLocations.Add(binding.Binding, bind);
+        //    }
+
+        //    // ASSUME NO GAPS ARE SUPPLIED
+        //    var uniformBinder = new GLProgramUniformBinder(uniqueLocations.Values.Count);
+        //    foreach (var bind in uniqueLocations.Values)
+        //    {
+        //        uniformBinder.Bindings[bind.Location] = bind;
+        //    }
+        //    return uniformBinder;
+        //}
+
+        public Result CreateComputePipelines (IMgPipelineCache pipelineCache, MgComputePipelineCreateInfo[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgPipeline[] pPipelines)
 		{
 			throw new NotImplementedException ();
 		}
-//		public void DestroyPipeline (IMgPipeline pipeline, IMgAllocationCallbacks allocator)
-//		{
-//			mPipelines [pipeline.Key].Destroy ();	
-//		}
 
-		//private List<GLPipelineLayout> mPipelineLayouts = new List<GLPipelineLayout> ();
 		public Result CreatePipelineLayout (MgPipelineLayoutCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgPipelineLayout pPipelineLayout)
 		{
 			if (pCreateInfo == null)
@@ -603,25 +663,16 @@ namespace Magnesium.OpenGL
 				throw new NotSupportedException ("DESKTOPGL - SetLayouts must be <= 1");
 			}
 
-			pPipelineLayout = new GLPipelineLayout (pCreateInfo);
+			pPipelineLayout = new GLNextPipelineLayout (pCreateInfo);
 			return Result.SUCCESS;
 		}
-//		public void DestroyPipelineLayout (IMgPipelineLayout pipelineLayout, IMgAllocationCallbacks allocator)
-//		{
-//			mPipelineLayouts [pipelineLayout.Key].Destroy ();
-//		}
 
 		public Result CreateSampler (MgSamplerCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgSampler pSampler)
 		{
 			pSampler = new GLSampler (mEntrypoint.Sampler.CreateSampler (), pCreateInfo, mEntrypoint.Sampler);
 			return Result.SUCCESS;
 		}
-//		public void DestroySampler (IMgSampler sampler, IMgAllocationCallbacks allocator)
-//		{
-//			mSamplers [sampler.Key].Destroy ();	
-//		}
 
-		//private List<GLDescriptorSetLayout> mDescriptorSetLayouts = new List<GLDescriptorSetLayout> ();
 		public Result CreateDescriptorSetLayout (MgDescriptorSetLayoutCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDescriptorSetLayout pSetLayout)
 		{
 			if (pCreateInfo == null)
@@ -631,10 +682,6 @@ namespace Magnesium.OpenGL
 			pSetLayout  = new GLDescriptorSetLayout (pCreateInfo); 
 			return Result.SUCCESS;
 		}
-//		public void DestroyDescriptorSetLayout (IMgDescriptorSetLayout descriptorSetLayout, IMgAllocationCallbacks allocator)
-//		{
-//			mDescriptorSetLayouts [descriptorSetLayout.Key].Destroy ();
-//		}
 
 		public Result CreateDescriptorPool (MgDescriptorPoolCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDescriptorPool pDescriptorPool)
 		{
@@ -642,174 +689,38 @@ namespace Magnesium.OpenGL
 			return Result.SUCCESS;
 		}
 
-//		public void DestroyDescriptorPool (IMgDescriptorPool descriptorPool, IMgAllocationCallbacks allocator)
-//		{
-//			mPools [descriptorPool.Key].Destroy ();
-//		}
-
 		public Result ResetDescriptorPool (IMgDescriptorPool descriptorPool, uint flags)
 		{
 			throw new NotImplementedException ();
 		}
 
-		//private ConcurrentDictionary<int, GLDescriptorSet> mDescriptorSets = new ConcurrentDictionary<int, GLDescriptorSet>();
-		public Result AllocateDescriptorSets (MgDescriptorSetAllocateInfo pAllocateInfo, out IMgDescriptorSet[] pDescriptorSets)
+    	public Result AllocateDescriptorSets (MgDescriptorSetAllocateInfo pAllocateInfo, out IMgDescriptorSet[] pDescriptorSets)
 		{
-			if (pAllocateInfo == null)
-			{	
-				throw new ArgumentNullException ("pAllocateInfo");
-			}
-
-			var pool = pAllocateInfo.DescriptorPool as IGLDescriptorPool;
-			if (pool == null)
-			{
-				throw new ArgumentNullException ("pAllocateInfo.DescriptorPool");
-			}
-
-			var noOfSetsRequested = pAllocateInfo.SetLayouts.Length;
-			if (pool.NoOfSets < noOfSetsRequested)
-			{
-				throw new InvalidOperationException ();
-			}
-
-			pDescriptorSets = new GLDescriptorSet[noOfSetsRequested];
-
-			for (int i = 0; i < noOfSetsRequested; ++i)
-			{
-				var setLayout = pAllocateInfo.SetLayouts[i] as GLDescriptorSetLayout;
-
-				GLDescriptorSet dSet;
-				if (!pool.TryTake (out dSet))
-				{
-					throw new InvalidOperationException ();
-				}
-				// copy here
-				dSet.Populate (setLayout);
-				pDescriptorSets[i] = dSet;
-			}
-
-			return Result.SUCCESS;
+            return mEntrypoint.DescriptorSet.Allocate(pAllocateInfo, out pDescriptorSets);
 		}
 
 		public Result FreeDescriptorSets (IMgDescriptorPool descriptorPool, IMgDescriptorSet[] pDescriptorSets)
 		{
-			if (descriptorPool == null)
-			{	
-				throw new ArgumentNullException ("descriptorPool");
-			}
-
-			var localPool = descriptorPool as IGLDescriptorPool;
-
-			foreach (var dSet in pDescriptorSets)
-			{
-				var localSet = dSet as GLDescriptorSet;
-				if (localSet != null)
-				{
-					localSet.Destroy ();
-					localPool.Add (localSet);
-				}
-			}
-			return Result.SUCCESS;
-
+            return mEntrypoint.DescriptorSet.Free(descriptorPool, pDescriptorSets);
 		}
 
 		public void UpdateDescriptorSets (MgWriteDescriptorSet[] pDescriptorWrites, MgCopyDescriptorSet[] pDescriptorCopies)
 		{
-			if (pDescriptorWrites != null)
-			{
-				foreach (var desc in pDescriptorWrites)
-				{
-					var localSet = desc.DstSet as GLDescriptorSet;
-					if (localSet == null)
-					{
-						throw new NotSupportedException ();
-					}
-
-					var x = desc.DstBinding; // SHOULD ALWAYS BE ZERO
-
-					int offset = (int)desc.DstArrayElement;
-					int count = (int)desc.DescriptorCount;
-
-					var lastIndex = localSet.Bindings.Length - 1;
-					var right = offset + count - 1;
-					if (right > lastIndex)
-					{
-						// VULKAN WOULD CONTINUE ONTO WRITE ADDITIONAL VALUES TO NEXT BINDING
-						// ONLY ONE SET OF BINDING USED
-						throw new IndexOutOfRangeException ();
-					}
-
-					switch (desc.DescriptorType)
-					{
-					//case MgDescriptorType.SAMPLER:
-					case MgDescriptorType.COMBINED_IMAGE_SAMPLER:
-					case MgDescriptorType.SAMPLED_IMAGE:
-
-						// HOPEFULLY DESCRIPTOR SETS ARE GROUPED BY COMMON TYPES
-						for (int i = 0; i < count; ++i)
-						{
-							MgDescriptorImageInfo info = desc.ImageInfo [i];						
-
-							var localSampler = info.Sampler as GLSampler;
-							var localView = info.ImageView as GLImageView;	
-
-							// Generate bindless texture handle 
-							// FIXME : messy as F***
-
-							var internalBinding = localSet.Bindings [offset + i];
-
-							if (internalBinding != null)
-							{
-								var texHandle = mEntrypoint.ImageDescriptor.CreateHandle (localView.TextureId, localSampler.SamplerId); 
-
-								var imageDesc = internalBinding.ImageDesc;
-								imageDesc.Replace (texHandle);
-							}
-						}					
-						break;
-					case MgDescriptorType.STORAGE_BUFFER:
-					case MgDescriptorType.STORAGE_BUFFER_DYNAMIC:
-						// HOPEFULLY DESCRIPTOR SETS ARE GROUPED BY COMMON TYPES
-						for (int i = 0; i < count; ++i)
-						{
-							var info = desc.BufferInfo [i];
-
-							var buf = info.Buffer as IGLBuffer;
-
-							if (buf != null && buf.BufferType == GLMemoryBufferType.SSBO)
-							{
-								var bufferDesc = localSet.Bindings [offset + i].BufferDesc;
-								bufferDesc.BufferId = buf.BufferId;
-							}
-						}
-						break;
-					default:
-						throw new NotSupportedException ();					
-					}
-
-				}
-			}
+            mEntrypoint.DescriptorSet.Update(pDescriptorWrites, pDescriptorCopies);
 		}
+
 		public Result CreateFramebuffer (MgFramebufferCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgFramebuffer pFramebuffer)
 		{
 			pFramebuffer = new GLFramebuffer ();
 			return Result.SUCCESS;
 		}
 
-//		public void DestroyFramebuffer (IMgFramebuffer framebuffer, IMgAllocationCallbacks allocator)
-//		{
-//			throw new NotImplementedException ();
-//		}
-
 		public Result CreateRenderPass (MgRenderPassCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgRenderPass pRenderPass)
 		{
 			pRenderPass = new GLRenderPass (pCreateInfo.Attachments);
 			return Result.SUCCESS;
 		}
-//		public void DestroyRenderPass (IMgRenderPass renderPass, IMgAllocationCallbacks allocator)
-//		{
-//			throw new NotImplementedException ();
-//		}
+
 		public void GetRenderAreaGranularity (IMgRenderPass renderPass, out MgExtent2D pGranularity)
 		{
 			throw new NotImplementedException ();
@@ -819,14 +730,7 @@ namespace Magnesium.OpenGL
 			pCommandPool = new GLCommandPool (pCreateInfo.Flags);
 			return Result.SUCCESS;
 		}
-//		public void DestroyCommandPool (IMgCommandPool commandPool, IMgAllocationCallbacks allocator)
-//		{
-//			throw new NotImplementedException ();
-//		}
-//		public Result ResetCommandPool (IMgCommandPool commandPool, MgCommandPoolResetFlagBits flags)
-//		{
-//			throw new NotImplementedException ();
-//		}
+
 		public Result AllocateCommandBuffers (MgCommandBufferAllocateInfo pAllocateInfo, IMgCommandBuffer[] pCommandBuffers)
 		{			
 			var cmdPool = pAllocateInfo.CommandPool as GLCommandPool;
@@ -836,23 +740,21 @@ namespace Magnesium.OpenGL
 				throw new InvalidCastException ("pAllocateInfo.CommandPool");
 			}
 
-//			{
-//				var error = GL.GetError ();
-//				Debug.WriteLineIf (error != ErrorCode.NoError, "AllocateCommandBuffers (BEFORE) : " + error);
-//			}
-
 			for (uint i = 0; i < pAllocateInfo.CommandBufferCount; ++i)
 			{
-				// TODO : for now
-				var buffer = new GLCommandBuffer (true, new GLCmdBufferRepository(), mEntrypoint.VBO, mEntrypoint.ImageFormat);
+                // TODO : for now
+                var sorter = new GLCmdIncrementalContextSorter();
+                var dsBinder = new GLNextDescriptorSetBinder();
+                var graphics = new GLCmdGraphicsEncoder(sorter, new GLCmdGraphicsBag(), mEntrypoint.VBO, dsBinder);
+                var compute = new GLCmdComputeEncoder();
+                var blit = new GLCmdBlitEncoder(sorter, new GLCmdBlitBag());
+                var encoder = new GLCmdCommandEncoder(sorter, graphics, compute, blit);
+
+
+				var buffer = new GLCmdCommandBuffer(true, encoder);
 				cmdPool.Buffers.Add (buffer);
 				pCommandBuffers [i] = buffer;
 			}
-
-//			{
-//				var error = GL.GetError ();
-//				Debug.WriteLineIf (error != ErrorCode.NoError, "AllocateCommandBuffers (BEFORE) : " + error);
-//			}
 
 			return Result.SUCCESS;
 		}
@@ -860,7 +762,7 @@ namespace Magnesium.OpenGL
 		{
 			foreach (var item in pCommandBuffers)
 			{
-				var cmdBuf = item as GLCommandBuffer;
+				var cmdBuf = (IGLCommandBuffer) item;
 				cmdBuf.ResetAllData ();
 			}
 		}
@@ -872,10 +774,7 @@ namespace Magnesium.OpenGL
 		{
 			throw new NotImplementedException ();
 		}
-//		public void DestroySwapchainKHR (IMgSwapchainKHR swapchain, IMgAllocationCallbacks allocator)
-//		{
-//			throw new NotImplementedException ();
-//		}
+
 		public Result GetSwapchainImagesKHR (IMgSwapchainKHR swapchain, out IMgImage[] pSwapchainImages)
 		{
 			throw new NotImplementedException ();

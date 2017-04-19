@@ -1,10 +1,10 @@
 using System;
 
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
 	public class GLCmdClearValuesParameter : IEquatable<GLCmdClearValuesParameter>
 	{
-		public GLClearValueArrayItem[] Attachments { get; set; }
+		public GLCmdClearValueArrayItem[] Attachments { get; set; }
 
 		#region IEquatable implementation
 		public bool Equals (GLCmdClearValuesParameter other)

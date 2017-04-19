@@ -21,6 +21,7 @@ namespace Magnesium.OpenGL
 			MgBlendFactor colorDest,
 			MgBlendFactor alphaSource,
 			MgBlendFactor alphaDest);
-	}
+        void SetBlendConstants(MgColor4f blendConstants);
+    }
 }
 

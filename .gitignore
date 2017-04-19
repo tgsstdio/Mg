@@ -79,9 +79,15 @@ Magnesium.Vulkan/.vs/Magnesium.Vulkan/v14/.suo
 Build/.vs/Mg ALL PORTABLE/v14/.suo
 Build/.vs/Mg.OpenGL.DesktopGL/v14/.suo
 
-examples/*/packages/*
-examples/*/*/bin/*
-examples/*/*/obj/*
+examples/*/.vs/*
+examples/*/[Pp]ackages/*
+examples/*/*/[Bb]in/*
+examples/*/*/[Oo]bj/*
+
+tests/*/[Pp]ackages/*
+tests/*/[Bb]in/*
+tests/*/[Oo]bj/*
+
 Build/lib/*
 *.nupkg
 *.suo
@@ -89,3 +95,8 @@ Magnesium.PresentationSurfaces.OpenTK/.vs/Magnesium.PresentationSurfaces.OpenTK/
 *.user
 examples/*/bin/*
 examples/*/obj/*
+*.db
+
+tests/*/*/[Bb]in/*
+tests/*/*/[Oo]bj/*
+tests/*/*/[Pp]ackages/*

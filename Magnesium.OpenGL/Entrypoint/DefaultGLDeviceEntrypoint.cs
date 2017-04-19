@@ -18,8 +18,12 @@ namespace Magnesium.OpenGL
 			IGLSemaphoreEntrypoint semaphore,
 			IGLGraphicsPipelineEntrypoint graphicsPipeline,
 			IGLImageFormatEntrypoint imageFormat,
-			IGLGraphicsPipelineCompiler graphicsCompiler
-		)
+			IGLGraphicsPipelineCompiler graphicsCompiler,
+            IGLFenceEntrypoint fence,
+            IGLCmdShaderProgramEntrypoint shaderProgram,
+            IGLDescriptorSetEntrypoint descriptorSet,
+            IGLUniformBlockEntrypoint uniformBlocks
+        )
 		{
 			VBO = vbo;
 			Sampler = sampler;
@@ -34,6 +38,10 @@ namespace Magnesium.OpenGL
 			GraphicsPipeline = graphicsPipeline;
 			ImageFormat = imageFormat;
 			GraphicsCompiler = graphicsCompiler;
+            Fence = fence;
+            ShaderProgram = shaderProgram;
+            DescriptorSet = descriptorSet;
+            UniformBlocks = uniformBlocks;
 		}
 
 		#region IGLDeviceCapabilities implementation
@@ -104,7 +112,31 @@ namespace Magnesium.OpenGL
 			get;
 			private set;
 		}
-		#endregion
-	}
+
+        public IGLFenceEntrypoint Fence
+        {
+            get;
+            private set;
+        }
+
+        public IGLCmdShaderProgramEntrypoint ShaderProgram
+        {
+            get;
+            private set;
+        }
+
+        public IGLUniformBlockEntrypoint UniformBlocks
+        {
+            get;
+            private set;
+        }
+
+        public IGLDescriptorSetEntrypoint DescriptorSet
+        {
+            get;
+            private set;
+        }
+        #endregion
+    }
 }
 

@@ -2,7 +2,7 @@ namespace Magnesium.OpenGL
 {
 	public interface IGLDeviceImageViewEntrypoint
 	{
-		int CreateImageView (GLImage originalImage, MgImageViewCreateInfo pCreateInfo);
+		int CreateImageView (IGLImage originalImage, MgImageViewCreateInfo pCreateInfo);
 		void DeleteImageView(int texture);
 	}
 }

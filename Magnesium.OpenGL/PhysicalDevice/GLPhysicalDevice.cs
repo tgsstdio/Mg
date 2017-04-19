@@ -1,38 +1,7 @@
 using System;
 
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
-	public enum GLMemoryBufferType : uint 
-	{
-		SSBO = 0,
-		INDIRECT = 1,
-		VERTEX = 2, 
-		INDEX = 3,
-		IMAGE = 4,
-	}
-
-	public static class GLMemoryBufferExtensions 
-	{
-		public static uint GetMask(this GLMemoryBufferType bufferType)
-		{
-			switch(bufferType)
-			{
-			case GLMemoryBufferType.SSBO:
-				return 1 << 0;
-			case GLMemoryBufferType.INDIRECT:
-				return 1 << 1;
-			case GLMemoryBufferType.VERTEX:
-				return 1 << 2;
-			case GLMemoryBufferType.INDEX:
-				return 1 << 3;
-			case GLMemoryBufferType.IMAGE:
-				return 1 << 4;
-			default:
-				throw new NotSupportedException ();
-			}
-		}
-	}
-
 	public class GLPhysicalDevice : IMgPhysicalDevice
 	{
 		private readonly GLDevice mDevice;
@@ -68,7 +37,7 @@ namespace Magnesium.OpenGL
 			// 0 : buffer based 
 			// 1 : host defined (for INDIRECT)
 			pMemoryProperties = new MgPhysicalDeviceMemoryProperties();
-			var slots = new MgMemoryType[5];
+			var slots = new MgMemoryType[8];
 
 			const uint allOn = (uint)(
 			                       MgMemoryPropertyFlagBits.DEVICE_LOCAL_BIT |
@@ -83,8 +52,11 @@ namespace Magnesium.OpenGL
 			slots [2] = new MgMemoryType{ PropertyFlags = allOn };
 			slots [3] = new MgMemoryType{ PropertyFlags = allOn };
 			slots [4] = new MgMemoryType{ PropertyFlags = allOn };
+            slots [5] = new MgMemoryType { PropertyFlags = allOn };
+            slots [6] = new MgMemoryType { PropertyFlags = allOn };
+            slots [7] = new MgMemoryType { PropertyFlags = allOn };
 
-			pMemoryProperties.MemoryTypes = slots;
+            pMemoryProperties.MemoryTypes = slots;
 		}
 		public void GetPhysicalDeviceFeatures (out MgPhysicalDeviceFeatures pFeatures)
 		{

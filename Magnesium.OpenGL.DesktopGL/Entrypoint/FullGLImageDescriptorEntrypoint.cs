@@ -5,7 +5,6 @@ namespace Magnesium.OpenGL.DesktopGL
 	public class FullGLImageDescriptorEntrypoint : IGLImageDescriptorEntrypoint
 	{
 		readonly IGLErrorHandler mErrHandler;
-
 		public FullGLImageDescriptorEntrypoint (IGLErrorHandler errHandler)
 		{
 			mErrHandler = errHandler;
@@ -13,17 +12,17 @@ namespace Magnesium.OpenGL.DesktopGL
 
 		#region IGLImageDescriptorEntrypoint implementation
 
-		public ulong CreateHandle (int textureId, int samplerId)
+		public long CreateHandle (int textureId, int samplerId)
 		{
 			long texHandle = GL.Arb.GetTextureSamplerHandle (textureId, samplerId);
-			mErrHandler.LogGLError ("FullGLImageDescriptorEntrypoint.CreateHandle");
-			return (ulong)texHandle;
+			mErrHandler.LogGLError (nameof(CreateHandle));
+			return texHandle;
 		}
 
-		public void ReleaseHandle (ulong handle)
+		public void ReleaseHandle (long handle)
 		{
 			GL.Arb.MakeTextureHandleNonResident (handle);
-			mErrHandler.LogGLError ("FullGLImageDescriptorEntrypoint.ReleaseHandle");
+			mErrHandler.LogGLError (nameof(ReleaseHandle));
 		}
 
 		#endregion

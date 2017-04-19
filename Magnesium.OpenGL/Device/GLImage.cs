@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.Internals
 {
-	public class GLImage : IMgImage
+    public class GLImage : IGLImage
 	{
 		private readonly int mTextureId;
 		public int OriginalTextureId {

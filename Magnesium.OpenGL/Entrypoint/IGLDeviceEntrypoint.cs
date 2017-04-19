@@ -15,6 +15,10 @@
 		IGLGraphicsPipelineEntrypoint GraphicsPipeline { get; }
 		IGLGraphicsPipelineCompiler GraphicsCompiler { get; }
 		IGLImageFormatEntrypoint ImageFormat { get; }
-	}
+        IGLFenceEntrypoint Fence { get; }
+        IGLCmdShaderProgramEntrypoint ShaderProgram { get; }
+        IGLUniformBlockEntrypoint UniformBlocks { get; }
+        IGLDescriptorSetEntrypoint DescriptorSet { get; }
+    }
 }
 

@@ -23,32 +23,28 @@ namespace Magnesium.OpenGL.DesktopGL
 
 		IGLExtensionLookup mExtensions;
 
-		IGLDevicePlatform mGLPlatform;
-
 		IMgGraphicsDeviceLogger mLogger;
 
 		IMgGraphicsConfiguration mGraphicsConfiguration;
 
 		IGLFramebufferHelperSelector mSelector;
 
-		IGLQueueRenderer mQueueRenderer;
+		IGLRenderer mQueueRenderer;
 
 		public OpenTKGraphicsDevice (
 			INativeWindow window,
             IMgGraphicsConfiguration configuration,
 			IGLFramebufferHelperSelector selector,
 			IGLExtensionLookup extensions,
-			IGLDevicePlatform glPlatform,
 			IMgGraphicsDeviceLogger logger,
-			IGLQueueRenderer queueRenderer,
-            IBackbufferContext bbContext
+			IGLRenderer queueRenderer,
+            IGLBackbufferContext bbContext
 		)
 		{
 			mGraphicsConfiguration = configuration;
 			mView = new GLNullImageView ();
 			mWindow = window;
 			mExtensions = extensions;
-			mGLPlatform = glPlatform;
 			mLogger = logger;
 			mSelector = selector;
 			mQueueRenderer = queueRenderer;
@@ -128,12 +124,12 @@ namespace Magnesium.OpenGL.DesktopGL
 
 			mExtensions.Initialize ();
 			//mCapabilities.Initialize ();
-			mGLPlatform.Initialize ();
+			//mGLPlatform.Initialize ();
 			mSelector.Initialize();
-			mQueueRenderer.SetDefault ();
+			mQueueRenderer.Initialize ();
 		}
 
-		GLRenderPass mRenderpass;
+		IGLRenderPass mRenderpass;
 		void SetupRenderpass (MgGraphicsDeviceCreateInfo createInfo)
 		{
 			var attachmentDescriptions = new [] {
@@ -191,7 +187,7 @@ namespace Magnesium.OpenGL.DesktopGL
 				Offset = new MgOffset2D{ X = 0, Y = 0 },
 			};
 
-			// initialise viewport
+			// initialize viewport
 			CurrentViewport = new MgViewport {
 				Width = createInfo.Width,
 				Height = createInfo.Height,
@@ -260,7 +256,7 @@ namespace Magnesium.OpenGL.DesktopGL
 		}
 
 		private bool mIsDisposed = false;
-        private IBackbufferContext mBBContext;
+        private IGLBackbufferContext mBBContext;
 
         protected virtual void Dispose(bool isDisposing)
 		{
