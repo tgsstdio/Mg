@@ -1,4 +1,4 @@
-﻿namespace Mgtc
+namespace Magnesium.Mtx
 {
 	public class MipmapData
 	{

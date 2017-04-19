@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using Magnesium;
 
-namespace Mgtc
+namespace Magnesium.Mtx
 {
     public class KTXLoadInstructions
 	{

@@ -39,7 +39,6 @@
     <Compile Include="KTXHeader.cs" />
     <Compile Include="KTXLoadInstructions.cs" />
     <Compile Include="KTXMipmapData.cs" />
-    <Compile Include="KTXTextureManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Magnesium">

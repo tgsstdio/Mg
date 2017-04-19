@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 
-namespace Mgtc
+namespace Magnesium.Mtx
 {
 	/**
 		 * @internal
@@ -32,6 +32,7 @@ namespace Mgtc
 		public UInt32 BytesOfKeyValueData;
 
 		// TODO : adjust file identifier
+		// SHOULD BE MTX 100
 		private readonly byte[] KTXIdentifier= {0xAB, 0x4B, 0x54, 0x58, 0x20, 0x31, 0x31, 0xBB, 0x0D, 0x0A, 0x1A, 0x0A};
 		private UInt32 KTX_ENDIAN_REF = 0x04030201;
 		private UInt32 KTX_ENDIAN_REF_REV = 0x01020304;
@@ -240,18 +241,18 @@ namespace Mgtc
 				return;
 			}
 
-			/* Check glType and glFormat */
-			Instructions.IsCompressed = false;
-			if (GlType == 0 || GlFormat == 0)
-			{
-				if (GlType + GlFormat != 0)
-				{
-					/* either both or none of glType, glFormat must be zero */
-					Instructions.Result = KTXError.InvalidValue;
-					return;
-				}
-				Instructions.IsCompressed = true;
-			}
+			///* Check glType and glFormat */
+			//Instructions.IsCompressed = false;
+			//if (GlType == 0 || GlFormat == 0)
+			//{
+			//	if (GlType + GlFormat != 0)
+			//	{
+			//		/* either both or none of glType, glFormat must be zero */
+			//		Instructions.Result = KTXError.InvalidValue;
+			//		return;
+			//	}
+			//	Instructions.IsCompressed = true;
+			//}
 
 			/* Check texture dimensions. KTX files can store 8 types of textures:
 		   1D, 2D, 3D, cube, and array variants of these. There is currently

@@ -1,7 +1,7 @@
-﻿using Magnesium;
+using Magnesium;
 using System.IO;
 
-namespace Mgtc
+namespace Magnesium.Mtx
 {
     public interface IKTXTextureLoader
     {

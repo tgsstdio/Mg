@@ -1,6 +1,6 @@
-﻿using Magnesium;
+using Magnesium;
 
-namespace Mgtc
+namespace Magnesium.Mtx
 {
     public class KTXTextureOutput
     {

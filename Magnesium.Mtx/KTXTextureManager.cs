@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Collections.Generic;
 using Magnesium;
 using System.Diagnostics;
 
-namespace Mgtc
+namespace Magnesium.Mtx
 {
 	public class KTXTextureManager : IKTXTextureLoader
 	{

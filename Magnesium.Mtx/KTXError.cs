@@ -1,5 +1,5 @@
-﻿
-namespace Mgtc
+
+namespace Magnesium.Mtx
 {
 	/**
 	 * @brief Error codes returned by library functions.
