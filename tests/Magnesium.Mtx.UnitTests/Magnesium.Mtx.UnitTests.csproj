@@ -36,5 +36,15 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Magnesium.Mtx\Magnesium.Mtx.csproj">
+      <Project>{6C74B420-5DE6-43ED-AB99-18AE19342284}</Project>
+      <Name>Magnesium.Mtx</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Magnesium\Magnesium.csproj">
+      <Project>{9F9AC448-9D17-43E5-8889-285426290891}</Project>
+      <Name>Magnesium</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -8,10 +8,10 @@ namespace Magnesium.Mtx.UnitTests
 	public class Test
 	{
 		[Test()]
-		public void TestCase()
+		public void CheckIdentifier()
 		{
-			// SHOULD BE <<MTX 100>>\r\n\z
-			byte[] KTXIdentifier = { 0xAB, 0x4D, 0x54, 0x58, 0x20, 0x31, 0x31, 0xBB, 0x0D, 0x0A, 0x1A, 0x0A };
+			// SHOULD BE <<MTX 100>>\r\n\z\n
+			byte[] KTXIdentifier = Magnesium.Mtx.MtxHeader.FileIdentifier;
 
 			var charOffset = 0;
 			var internalValue = KTXIdentifier[charOffset];
@@ -62,10 +62,6 @@ namespace Magnesium.Mtx.UnitTests
 
 			charOffset += 1;
 			internalValue = KTXIdentifier[charOffset];
-			Assert.AreEqual(0x0D, internalValue);
-
-			charOffset += 1;
-			internalValue = KTXIdentifier[charOffset];
 			Assert.AreEqual(0x0A, internalValue);
 
 			charOffset += 1;
@@ -82,5 +78,41 @@ namespace Magnesium.Mtx.UnitTests
 		{
 			return Encoding.ASCII.GetChars(new byte[] { value }, 0, 1)[0];
 		}
-}
+
+		[Test()]
+		public void ExtractData()
+		{
+			var expected = new MtxHeader
+			{
+				Endianness = Mtx.MtxHeader.ENDIAN_REF,
+				ImageType = MgImageType.TYPE_2D,
+				ViewType = MgImageViewType.TYPE_2D_ARRAY,
+				FormatType = MgFormat.R8G8B8_UINT,
+				PixelSize = 3,
+				ImageWidth = 1024,
+				ImageHeight = 512,
+				ImageDepth = 1,
+				ArrayLayers = 2,
+				MipLevels = 10,
+				BytesOfKeyValueData = 0,
+			};
+
+			var buf = new byte[MtxHeader.HEADER_SIZE];
+			expected.Save(buf, 0);
+
+			var actual = new MtxHeader();
+			actual.Load(buf);
+
+			Assert.AreEqual(expected.Endianness, actual.Endianness);
+			Assert.AreEqual(expected.ImageType, actual.ImageType);
+			Assert.AreEqual(expected.ViewType, actual.ViewType);
+			Assert.AreEqual(expected.FormatType, actual.FormatType);
+			Assert.AreEqual(expected.PixelSize, actual.PixelSize);
+			Assert.AreEqual(expected.ImageWidth, actual.ImageWidth);
+			Assert.AreEqual(expected.ImageHeight, actual.ImageHeight);
+			Assert.AreEqual(expected.ImageDepth, actual.ImageDepth);
+			Assert.AreEqual(expected.ArrayLayers, expected.ArrayLayers);
+			Assert.AreEqual(expected.MipLevels, expected.MipLevels);
+		}
+	}
 }
