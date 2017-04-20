@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Magnesium.Mtx
 {
-    public interface IKTXTextureLoader
+    public interface IMtxTextureLoader
     {
         KTXTextureOutput Load(Stream fs);
     }

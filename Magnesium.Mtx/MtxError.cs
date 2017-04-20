@@ -4,7 +4,7 @@ namespace Magnesium.Mtx
 	/**
 	 * @brief Error codes returned by library functions.
 	 */
-	public enum KTXError {
+	public enum MtxError {
 		/// <summary>
 		/// Operation was successful.
 		/// </summary>

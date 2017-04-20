@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace Magnesium.Mtx
 {
@@ -18,7 +19,7 @@ namespace Magnesium.Mtx
 			0x0D, 0x0A, 0x1A,
 			0x0A
 		};
-		public readonly static UInt32 HEADER_SIZE = 63;
+		public readonly static int HEADER_SIZE = 63;
 		public readonly static UInt32 ENDIAN_REF = 0x04030201;
 		public readonly static UInt32 ENDIAN_REF_REVERSED = 0x01020304;
 
@@ -29,7 +30,7 @@ namespace Magnesium.Mtx
 			return fileEndianness.Length;
 		}
 
-		private bool RequiresSwap()
+		public bool RequiresSwap()
 		{
 			return Endianness == ENDIAN_REF_REVERSED;
 		}
@@ -70,14 +71,14 @@ namespace Magnesium.Mtx
 			return startIndex + 1;
 		}
 
-		public KTXError Load(byte[] headerChunk)
+		public MtxError Load(byte[] headerChunk)
 		{
 			/* Compare identifier, is this a KTX file? */
 			for (int i = 0; i < FileIdentifier.Length; ++i)
 			{
 				if (headerChunk[i] != FileIdentifier[i])
 				{
-					return KTXError.UnknownFileFormat;
+					return MtxError.UnknownFileFormat;
 				}
 			}
 
@@ -88,7 +89,7 @@ namespace Magnesium.Mtx
 			headerOffset += sizeof(UInt32);
 			PopulateFields(headerChunk, headerOffset);
 
-			return KTXError.Success;
+			return MtxError.Success;
 		}
 
 		public MgImageType ImageType;
@@ -143,7 +144,7 @@ namespace Magnesium.Mtx
 			return offset + 1;
 		}
 
-		private int ReadUInt32(byte[] src, int offset, out UInt32 dest)
+		public int ReadUInt32(byte[] src, int offset, out UInt32 dest)
 		{
 			if (RequiresSwap())
 			{
@@ -158,6 +159,36 @@ namespace Magnesium.Mtx
 			}
 
 			return offset + UINT32_NO_OF_BYTES;
+		}
+
+		public bool ExtractUInt32(Stream stream, out UInt32 result)
+		{
+			byte[] chunk = new byte[UINT32_NO_OF_BYTES];
+			int bytesRead = stream.Read(chunk, 0, UINT32_NO_OF_BYTES);
+			if (bytesRead != UINT32_NO_OF_BYTES)
+			{
+				result = 0;
+				return false;
+			}
+			if (RequiresSwap())
+			{
+				SwapEndian(chunk, UINT32_NO_OF_BYTES);
+			}
+			result = BitConverter.ToUInt32(chunk, 0);
+			return true;
+		}
+
+		public void SwapEndian(byte[] inplace, int count)
+		{
+			if (RequiresSwap())
+			{
+				int window = (int)PixelSize;
+
+				for (var index = 0; index < count; index += window)
+				{
+					Array.Reverse(inplace, index, window);
+				}
+			}
 		}
 
 		public byte[] KeyValueData { get; set; }

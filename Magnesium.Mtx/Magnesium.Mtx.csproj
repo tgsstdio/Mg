@@ -30,13 +30,13 @@
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="IKTXTextureLoader.cs" />
+    <Compile Include="IMtxTextureLoader.cs" />
     <Compile Include="KTXTextureOutput.cs" />
-    <Compile Include="MipmapData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="KTXError.cs" />
+    <Compile Include="MtxError.cs" />
     <Compile Include="MtxHeader.cs" />
-    <Compile Include="KTXMipmapData.cs" />
+    <Compile Include="MtxMipmapData.cs" />
+    <Compile Include="MtxTextureManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Magnesium">
