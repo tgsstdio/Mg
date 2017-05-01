@@ -24,7 +24,7 @@ namespace Magnesium.OpenGL.DesktopGL
 		public void ReleaseHandle (long handle)
 		{
 			GL.Arb.MakeTextureHandleNonResident (handle);
-			mErrHandler.LogGLError (nameof(ReleaseHandle));
+			mErrHandler.LogGLError ("ReleaseHandle");
 		}
 
 		#endregion

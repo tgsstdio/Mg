@@ -58,7 +58,7 @@ namespace Magnesium.OpenGL.Internals
 			var internalBuffer = buffer as IGLBuffer;
 			if (internalBuffer == null)
 			{
-				throw new ArgumentException (nameof(buffer));
+				throw new ArgumentException ("buffer");
 			}
 
             uint mask = DetermineBufferMemoryType(internalBuffer.Usage);
@@ -134,7 +134,7 @@ namespace Magnesium.OpenGL.Internals
 		{
             if (image == null)
             {
-                throw new ArgumentNullException(nameof(image));
+                throw new ArgumentNullException("image");
             }
 
 			var texture = (IGLImage) image;

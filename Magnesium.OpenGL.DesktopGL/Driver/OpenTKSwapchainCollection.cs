@@ -22,20 +22,6 @@ namespace Magnesium.OpenGL.DesktopGL
             Format = MgFormat.R8G8B8A8_UINT;
         }
 
-        //void SetupSwapchain (IMgSwapchainCollection swapchainCollection, MgGraphicsDeviceCreateInfo createInfo)
-        //{
-        //	if (swapchainCollection.Swapchain == null)
-        //	{
-        //		throw new ArgumentNullException (nameof(swapchainCollection));
-        //	}
-        //          var collection = (OpenTKSwapchainCollection) swapchainCollection;
-        //          collection.Format = createInfo.Color;
-
-        //          var sc = (IOpenTKSwapchainKHR) swapchainCollection.Swapchain;
-        //          Debug.Assert(sc != null, nameof(swapchainCollection.Swapchain) + " is Not a IOpenTKSwapchainKHR type");
-        //	
-        //}
-
         #region IMgSwapchain implementation
 
         public IMgSwapchainKHR Swapchain {

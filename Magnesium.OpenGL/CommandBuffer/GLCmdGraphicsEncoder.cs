@@ -696,7 +696,7 @@ namespace Magnesium.OpenGL.Internals
         public void BindVertexBuffers(uint firstBinding, IMgBuffer[] pBuffers, ulong[] pOffsets)
         {
             if (pBuffers == null)
-                throw new ArgumentNullException(nameof(pBuffers));
+                throw new ArgumentNullException("pBuffers");
 
             mBoundVertexBuffer = new GLCmdVertexBufferParameter
             {
@@ -710,7 +710,7 @@ namespace Magnesium.OpenGL.Internals
         public void BindIndexBuffer(IMgBuffer buffer, ulong offset, MgIndexType indexType)
         {
             if (buffer == null)
-                throw new ArgumentNullException(nameof(buffer));           
+                throw new ArgumentNullException("buffer");           
 
             mBoundIndexBuffer = new GLCmdIndexBufferParameter
             {

@@ -27,12 +27,12 @@ namespace Magnesium.OpenGL.Internals
 		{
 			if (layout == null)
 			{
-				throw new ArgumentNullException(nameof(layout));
+				throw new ArgumentNullException("layout");
 			}
 
 			if (pDescriptorSets == null)
 			{
-				throw new ArgumentNullException(nameof(pDescriptorSets));
+				throw new ArgumentNullException("pDescriptorSets");
 			}
 
 			if (firstSet != 0)

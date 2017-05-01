@@ -11,9 +11,6 @@ namespace Magnesium.OpenGL.Internals
 		{
 			Items = items;
 
-			//if (count == 0)
-			//	throw new ArgumentOutOfRangeException(nameof(count) + " must be greater than zero");
-
 			Count = count;
 			Head = new GLPoolResourceNode
 			{
@@ -32,7 +29,7 @@ namespace Magnesium.OpenGL.Internals
 		{
 			if (request == 0)
 			{
-				throw new ArgumentOutOfRangeException(nameof(request) + " must be greater than 0");
+				throw new ArgumentOutOfRangeException("request must be greater than 0");
 			}
 
 			{

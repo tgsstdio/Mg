@@ -40,12 +40,12 @@ namespace Magnesium.OpenGL.Internals
         {
             if (srcBuffer == null)
             {
-                throw new ArgumentNullException(nameof(srcBuffer));
+                throw new ArgumentNullException("srcBuffer");
             }
 
             if (dstBuffer == null)
             {
-                throw new ArgumentNullException(nameof(dstBuffer));
+                throw new ArgumentNullException("dstBuffer");
             }
 
             var bSrcBuffer = (IGLBuffer)srcBuffer;
@@ -60,17 +60,17 @@ namespace Magnesium.OpenGL.Internals
                 var region = pRegions[i];
                 if (region.SrcOffset > (ulong) long.MaxValue)
                 {
-                    throw new InvalidOperationException(nameof(pRegions) + "[" +  i + "].SrcOffset is greater than long.MaxValue");
+                    throw new InvalidOperationException("pRegions[" +  i + "].SrcOffset is greater than long.MaxValue");
                 }
 
                 if (region.DstOffset > (ulong)long.MaxValue)
                 {
-                    throw new InvalidOperationException(nameof(pRegions) + "[" + i + "].DstOffset is greater than long.MaxValue");
+                    throw new InvalidOperationException("pRegions[" + i + "].DstOffset is greater than long.MaxValue");
                 }
 
                 if (region.Size > (ulong) int.MaxValue)
                 {
-                    throw new InvalidOperationException(nameof(pRegions) + "[" + i + "].Size is greater than int.MaxValue");
+                    throw new InvalidOperationException("pRegions[" + i + "].Size is greater than int.MaxValue");
                 }
 
                 var bufferParam = new GLCmdCopyBufferRegionRecord

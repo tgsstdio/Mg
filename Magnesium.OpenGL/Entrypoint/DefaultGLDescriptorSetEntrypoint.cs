@@ -17,7 +17,7 @@ namespace Magnesium.OpenGL
 		public Result Allocate(MgDescriptorSetAllocateInfo pAllocateInfo, out IMgDescriptorSet[] pDescriptorSets)
 		{
 			if (pAllocateInfo == null)
-				throw new ArgumentNullException(nameof(pAllocateInfo));
+				throw new ArgumentNullException("pAllocateInfo");
 
 			var parentPool = (IGLNextDescriptorPool)pAllocateInfo.DescriptorPool;
 
@@ -135,12 +135,12 @@ namespace Magnesium.OpenGL
 		{
 			if (descriptorPool == null)
 			{
-				throw new ArgumentNullException(nameof(descriptorPool));
+				throw new ArgumentNullException("descriptorPool");
 			}
 
 			if (pDescriptorSets == null)
 			{
-				throw new ArgumentNullException(nameof(pDescriptorSets));
+				throw new ArgumentNullException("pDescriptorSets");
 			}
 
 			var parentPool = (IGLNextDescriptorPool) descriptorPool;
@@ -202,7 +202,7 @@ namespace Magnesium.OpenGL
                                 , ticket
                                 , first
                                 , count
-                                , nameof(pDescriptorWrites) + "[" + i + "]");
+                                , "pDescriptorWrites[" + i + "]");
                             break;
                         case MgDescriptorType.UNIFORM_BUFFER:
                         case MgDescriptorType.UNIFORM_BUFFER_DYNAMIC:
@@ -212,7 +212,7 @@ namespace Magnesium.OpenGL
                                 , ticket
                                 , first
                                 , count
-                                , nameof(pDescriptorWrites) + "[" + i + "]");
+                                , "pDescriptorWrites[" + i + "]");
                             break;
                         default:
                             throw new NotSupportedException("UpdateDescriptorSets");

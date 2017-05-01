@@ -77,7 +77,7 @@ namespace Magnesium.OpenGL.Internals
 		public void CmdBindPipeline(MgPipelineBindPoint pipelineBindPoint, IMgPipeline pipeline)
 		{
 			if (pipeline == null)
-				throw new ArgumentNullException(nameof(pipeline));
+				throw new ArgumentNullException("pipeline");
 
 			if (pipelineBindPoint == MgPipelineBindPoint.COMPUTE)
 			{
@@ -179,7 +179,7 @@ namespace Magnesium.OpenGL.Internals
 		{
             if (buffer == null)
             {
-                throw new ArgumentNullException(nameof(buffer));
+                throw new ArgumentNullException("buffer");
             }
 
             mCommandEncoder.Graphics.DrawIndirect(buffer, offset, drawCount, stride);
@@ -189,7 +189,7 @@ namespace Magnesium.OpenGL.Internals
 		{
             if (buffer == null)
             {
-                throw new ArgumentNullException(nameof(buffer));
+                throw new ArgumentNullException("buffer");
             }
 
             mCommandEncoder.Graphics.DrawIndexedIndirect(buffer, offset, drawCount, stride);
@@ -204,7 +204,7 @@ namespace Magnesium.OpenGL.Internals
 		{
             if (buffer == null)
             {
-                throw new ArgumentNullException(nameof(buffer));
+                throw new ArgumentNullException("buffer");
             }
 
             mCommandEncoder.Compute.DispatchIndirect(buffer, offset);

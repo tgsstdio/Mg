@@ -100,17 +100,17 @@ namespace Magnesium.OpenGL.DesktopGL
         {
 			if (createInfo == null)
 			{
-				throw new ArgumentNullException (nameof(createInfo));
+				throw new ArgumentNullException ("createInfo");
 			}
 
 			if (setupCmdBuffer == null)
 			{
-				throw new ArgumentNullException (nameof(setupCmdBuffer));
+				throw new ArgumentNullException ("setupCmdBuffer");
 			}
 
 			if (swapchainCollection == null)
 			{
-				throw new ArgumentNullException (nameof(swapchainCollection));
+				throw new ArgumentNullException ("swapchainCollection");
 			}
 
 			ReleaseUnmanagedResources ();
