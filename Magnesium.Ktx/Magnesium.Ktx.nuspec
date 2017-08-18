@@ -1,19 +1,19 @@
 <?xml version="1.0"?>
-<package >
+<package>
   <metadata>
     <id>Magnesium.Ktx</id>
-    <version>1.0.0</version>
+    <version>1.0.4-alpha</version>
     <authors>David Young</authors>
     <owners>David Young</owners>
     <licenseUrl>https://github.com/tgsstdio/Mg/blob/master/LICENSE.txt</licenseUrl>
     <projectUrl>https://github.com/tgsstdio/Mg</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Loads Khronos .ktx image file format in Magnesium.</description>
-    <releaseNotes>Updated w.r.t Magnesium 5.0.4</releaseNotes>
+    <releaseNotes>Updated w.r.t Magnesium 5.2.7</releaseNotes>
     <copyright>Copyright 2016 David Young</copyright>
     <tags>graphics vulkan ktx</tags>
 	<dependencies>
-		<dependency id="Magnesium" version="5.0.4" />
+		<dependency id="Magnesium" version="5.2.0" />
 	</dependencies>
   </metadata>
 </package>
