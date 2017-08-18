@@ -265,6 +265,8 @@
     <Compile Include="Handles\VkInteropsUtility.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Magnesium, Version=5.2.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\Build\packages\Magnesium.5.2.6-alpha\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
