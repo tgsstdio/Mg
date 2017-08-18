@@ -4,5 +4,6 @@
 	{
 		NONE = 0,
 		ALL,
-	}
+        SWAPCHAIN_ONLY,
+    }
 }

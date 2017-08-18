@@ -238,9 +238,15 @@ namespace Magnesium
 
 		void CreateDepthStencil (IMgCommandBuffer setupCmdBuffer, MgGraphicsDeviceCreateInfo createInfo)
 		{
-			var image = new MgImageCreateInfo {
+            // WILL ignore user-supplied depth 
+            if (!GetSupportedDepthFormat(out MgFormat depthFormat))
+            {
+                throw new InvalidOperationException("No depth format available");
+            }
+
+            var image = new MgImageCreateInfo {
 				ImageType = MgImageType.TYPE_2D,
-				Format = createInfo.DepthStencil,
+				Format = depthFormat,
 				Extent = new MgExtent3D {
 					Width = createInfo.Width,
 					Height = createInfo.Height,

@@ -30,9 +30,8 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Magnesium, Version=4.0.6136.42367, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\Magnesium.Vulkan\packages\Magnesium.4.0.0\lib\portable-net45+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10\Magnesium.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Magnesium, Version=6.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Magnesium.5.2.0-alpha\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>

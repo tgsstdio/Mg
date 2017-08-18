@@ -243,9 +243,8 @@
     <Compile Include="Queue\IGLRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Magnesium, Version=4.0.6155.29495, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\Build\packages\Magnesium.5.0.4\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Magnesium, Version=5.2.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\Build\packages\Magnesium.5.2.7-alpha\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

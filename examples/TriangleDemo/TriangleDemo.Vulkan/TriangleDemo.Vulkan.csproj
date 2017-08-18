@@ -77,17 +77,14 @@
       <HintPath>..\packages\LightInject.4.1.5\lib\net45\LightInject.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Magnesium, Version=5.0.4.30756, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Magnesium.5.0.4\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Magnesium, Version=5.2.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Magnesium.5.2.7-alpha\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
     </Reference>
-    <Reference Include="Magnesium.PresentationSurfaces.OpenTK, Version=1.0.2.30735, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Magnesium.PresentationSurfaces.OpenTK.1.0.2\lib\net45\Magnesium.PresentationSurfaces.OpenTK.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Magnesium.PresentationSurfaces.OpenTK, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Magnesium.PresentationSurfaces.OpenTK.1.0.4-alpha\lib\net45\Magnesium.PresentationSurfaces.OpenTK.dll</HintPath>
     </Reference>
-    <Reference Include="Magnesium.Vulkan, Version=5.0.1.33684, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Magnesium.Vulkan.5.0.2\lib\portable45-net45+win8+wpa81\Magnesium.Vulkan.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Magnesium.Vulkan, Version=5.0.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Magnesium.Vulkan.5.0.7-alpha\lib\portable45-net45+win8+wpa81\Magnesium.Vulkan.dll</HintPath>
     </Reference>
     <Reference Include="OpenTK, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenTK.2.0.0\lib\net20\OpenTK.dll</HintPath>
@@ -127,7 +124,7 @@
   <ItemGroup>
     <ProjectReference Include="..\TriangleDemo.Shared\TriangleDemo.Shared.csproj">
       <Project>{7506c510-74b1-4eaf-8281-9dceefdbdb5d}</Project>
-      <Name>TriangleDemo</Name>
+      <Name>TriangleDemo.Shared</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
