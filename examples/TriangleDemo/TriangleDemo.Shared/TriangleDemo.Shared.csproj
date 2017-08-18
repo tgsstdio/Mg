@@ -81,11 +81,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Magnesium, Version=5.2.6.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Magnesium.5.2.6-alpha\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
-    </Reference>
-    <Reference Include="Magnesium.OpenGL, Version=6.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Magnesium.OpenGL.6.0.4-alpha\lib\portable45-net45+win8+wpa81\Magnesium.OpenGL.dll</HintPath>
+    <Reference Include="Magnesium, Version=5.2.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Magnesium.5.2.7-alpha\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

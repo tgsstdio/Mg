@@ -2,15 +2,20 @@
 <package>
   <metadata>
     <id>Magnesium</id>
-    <version>5.2.6-alpha</version>
+    <version>5.2.7-alpha</version>
     <authors>David Young</authors>
     <owners>David Young</owners>
     <licenseUrl>https://github.com/tgsstdio/Mg/blob/master/LICENSE.txt</licenseUrl>
     <projectUrl>https://github.com/tgsstdio/Mg</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>C# graphics frontend interface (to Vulkan or any graphics library)</description>
-    <releaseNotes>Replace MgThreadPartition with MgGraphicsConfiguration in utility classes </releaseNotes>
-    <copyright>Copyright 2016 David Young</copyright>
+    <releaseNotes>
+      SHOULD BE LAST COMPATIBLE VERSION BEFORE INTERFACE CHANGE
+      - New enum value MgDeviceExtensionOption.SWAPCHAIN_ONLY
+      - MgDefaultGraphicsConfiguration uses MgDeviceExtensionOption.SWAPCHAIN_ONLY as its default option
+      - MgDefaultGraphicsDevice will ignore user specified DepthFormat and use highest available version
+    </releaseNotes>
+    <copyright>Copyright (c) 2016, 2017 David Young </copyright>
     <tags>graphics, vulkan</tags>
   </metadata>
 </package>

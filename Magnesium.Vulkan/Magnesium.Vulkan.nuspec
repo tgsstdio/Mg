@@ -2,18 +2,18 @@
 <package>
   <metadata>
     <id>Magnesium.Vulkan</id>
-    <version>5.0.6-alpha</version>
+    <version>5.0.7-alpha</version>
     <authors>David Young</authors>
     <owners>David Young</owners>
     <licenseUrl>https://github.com/tgsstdio/Mg/blob/master/LICENSE.txt</licenseUrl>
     <projectUrl>https://github.com/tgsstdio/Mg</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>C# implementation of Vulkan 1.0 library</description>
-    <releaseNotes>FIXED - CmdBindDescriptorSets to pass in null into dynamic offsets, FIXED - CreateGraphicsPipelines to accept array of dynamic states </releaseNotes>
-    <copyright>Copyright 2016 David Young</copyright>
+    <releaseNotes>Updated w.r.t Magnesium v5.2.7</releaseNotes>
+    <copyright>Copyright 2016, 2017 David Young</copyright>
     <tags>graphics vulkan</tags>    
 	<dependencies>
-		<dependency id="Magnesium" version="5.0.4" />
+		<dependency id="Magnesium" version="5.2.7" />
 	</dependencies>
   </metadata>  
 </package>
