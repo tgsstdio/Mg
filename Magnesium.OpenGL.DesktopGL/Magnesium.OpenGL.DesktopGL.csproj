@@ -128,11 +128,11 @@
     <Folder Include="CommandBuffer\" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Magnesium, Version=5.2.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\Build\packages\Magnesium.5.2.5-alpha\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
+    <Reference Include="Magnesium, Version=5.2.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\Build\packages\Magnesium.5.2.7-alpha\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
     </Reference>
-    <Reference Include="Magnesium.OpenGL, Version=6.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\Build\packages\Magnesium.OpenGL.6.0.4-alpha\lib\portable45-net45+win8+wpa81\Magnesium.OpenGL.dll</HintPath>
+    <Reference Include="Magnesium.OpenGL, Version=6.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\Build\packages\Magnesium.OpenGL.6.0.5-alpha\lib\portable45-net45+win8+wpa81\Magnesium.OpenGL.dll</HintPath>
     </Reference>
     <Reference Include="OpenTK, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\Build\packages\OpenTK.2.0.0\lib\net20\OpenTK.dll</HintPath>

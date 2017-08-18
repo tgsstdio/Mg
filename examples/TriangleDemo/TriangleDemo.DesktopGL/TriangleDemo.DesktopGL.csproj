@@ -77,11 +77,11 @@
       <HintPath>..\packages\LightInject.4.1.5\lib\net45\LightInject.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Magnesium, Version=6.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Magnesium.6.0.1-alpha\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
+    <Reference Include="Magnesium, Version=5.2.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Magnesium.5.2.7-alpha\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
     </Reference>
-    <Reference Include="Magnesium.OpenGL, Version=6.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Magnesium.OpenGL.6.1.0\lib\portable45-net45+win8+wpa81\Magnesium.OpenGL.dll</HintPath>
+    <Reference Include="Magnesium.OpenGL, Version=6.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Magnesium.OpenGL.6.0.5-alpha\lib\portable45-net45+win8+wpa81\Magnesium.OpenGL.dll</HintPath>
     </Reference>
     <Reference Include="Magnesium.OpenGL.DesktopGL, Version=6.0.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Magnesium.OpenGL.DesktopGL.6.0.5-alpha\lib\net45\Magnesium.OpenGL.DesktopGL.dll</HintPath>
