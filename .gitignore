@@ -100,3 +100,5 @@ examples/*/obj/*
 tests/*/*/[Bb]in/*
 tests/*/*/[Oo]bj/*
 tests/*/*/[Pp]ackages/*
+
+examples/*/*/[Pp]ackages/*

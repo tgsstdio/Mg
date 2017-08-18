@@ -12,16 +12,9 @@ namespace InstanceDemo
 			try
 			{
 				var entrypoint = new VkEntrypoint();
+       
 
-
-				IMgAllocationCallbacks callback = entrypoint.CreateAllocationCallbacks();
-				callback.PfnInternalAllocation = DebugInternalAllocation;
-				callback.PfnAllocation = DebugAllocateFunction;
-				callback.PfnReallocation = DebugReallocationFunction;
-				callback.PfnInternalFree = DebugInternalFree;
-				callback.PfnFree = null;
-
-				using (var driver = new MgDriver(entrypoint))
+				using (var driver = new MgDriverContext(entrypoint))
 				{                    
 					driver.Initialize(new MgApplicationInfo
 					{
@@ -33,31 +26,23 @@ namespace InstanceDemo
 					},
 					MgInstanceExtensionOptions.ALL);
 
-					using (var device = driver.CreateLogicalDevice(null, MgDeviceExtensionOptions.ALL))
-					{                                                             
+                    var pCreateInfo = new MgDebugReportCallbackCreateInfoEXT
+                    {
+                        Flags = 0,
+                        PfnCallback = MyDebugReportCallback,
+                    };
 
+                    using (var device = driver.CreateLogicalDevice(null, MgDeviceExtensionOptions.SWAPCHAIN_ONLY, MgQueueAllocation.One, MgQueueFlagBits.GRAPHICS_BIT | MgQueueFlagBits.COMPUTE_BIT))
+					{                                                            
 						if (device.Queues.Length > 0)
 						{
 							Console.WriteLine(nameof(device.Queues.Length) + " : " + device.Queues.Length);
 
-                            using (var partition = device.Queues[0].CreatePartition(0,
-                                new MgDescriptorPoolCreateInfo
-                                {
-                                    MaxSets = 1,
-                                    PoolSizes = new MgDescriptorPoolSize[]
-                                    {
-                                        new MgDescriptorPoolSize
-                                        {
-                                            DescriptorCount = 1,
-                                            Type = MgDescriptorType.COMBINED_IMAGE_SAMPLER,
-                                        }
-                                    },
-                                })
-                            )
+                            using (var partition = device.Queues[0].CreatePartition(0))                            
                             {
                                 IMgBuffer buffer;
-                                var result = partition.Device.CreateBuffer(new MgBufferCreateInfo { SharingMode = MgSharingMode.EXCLUSIVE, Size = 1024, Usage = MgBufferUsageFlagBits.VERTEX_BUFFER_BIT }, callback, out buffer);
-                                buffer.DestroyBuffer(partition.Device, callback);
+                                var result = partition.Device.CreateBuffer(new MgBufferCreateInfo { SharingMode = MgSharingMode.EXCLUSIVE, Size = 1024, Usage = MgBufferUsageFlagBits.VERTEX_BUFFER_BIT }, null, out buffer);
+                                buffer.DestroyBuffer(partition.Device, null);
                             }
 						}
 					}
@@ -71,24 +56,39 @@ namespace InstanceDemo
 			}
 		}
 
-		private static void DebugInternalFree(IntPtr pUserData, IntPtr size, uint allocationType, uint allocationScope)
+        private static UInt32 MyDebugReportCallback(
+           MgDebugReportFlagBitsEXT flags,
+           MgDebugReportObjectTypeEXT objectType,
+           UInt64 @object,
+           IntPtr location,
+           int messageCode,
+           string pLayerPrefix,
+           string pMessage,
+           IntPtr pUserData)
+        {
+            Console.WriteLine(pMessage);
+            return 1;
+        }
+
+    private static void DebugInternalFree(IntPtr pUserData, IntPtr size, MgInternalAllocationType allocationType, MgSystemAllocationScope allocationScope)
 		{
 			Console.WriteLine(nameof(DebugInternalFree));
 		}
 
-		private static void DebugReallocationFunction(IntPtr pUserData, IntPtr pOriginal, IntPtr size, IntPtr alignment, uint allocationScope)
-		{
-			Console.WriteLine(nameof(DebugReallocationFunction));
-		}
+		//private static IntPtr DebugReallocationFunction(IntPtr pUserData, IntPtr pOriginal, IntPtr size, IntPtr alignment, MgSystemAllocationScope allocationScope)
+		//{
+		//	Console.WriteLine(nameof(DebugReallocationFunction));
+  //          return IntPtr.Zero;
+		//}
 
-		private static void DebugInternalAllocation(IntPtr pUserData, IntPtr size, uint allocationType, uint allocationScope)
+		private static void DebugInternalAllocation(IntPtr pUserData, IntPtr size, MgInternalAllocationType allocationType, MgSystemAllocationScope allocationScope)
 		{
 			Console.WriteLine("DebugInternalAllocation");
 		}
 
-		private static void DebugAllocateFunction(IntPtr pUserData, IntPtr size, IntPtr alignment, uint allocationScope)
-		{
-			Console.WriteLine(nameof(size) + " : " + size);
-		}
+		//private static IntPtr DebugAllocateFunction(IntPtr pUserData, IntPtr size, IntPtr alignment, MgSystemAllocationScope allocationScope)
+		//{
+		//	Console.WriteLine(nameof(size) + " : " + size);
+		//}
 	}
 }

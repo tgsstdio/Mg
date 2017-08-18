@@ -95,7 +95,11 @@ namespace Magnesium
                     }
                 }
                 extensions = enabledExtensions.ToArray();
-            }            
+            }
+            else if (option == MgDeviceExtensionOptions.SWAPCHAIN_ONLY)
+            {
+                extensions = new[] { "VK_KHR_swapchain" };
+            }
 
 			return CreateDevice (firstPhysicalDevice, presentationSurface, allocationUsage, deviceUsage, extensions);
 		}
