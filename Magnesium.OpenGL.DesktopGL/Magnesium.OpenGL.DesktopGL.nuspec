@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>Magnesium.OpenGL.DesktopGL</id>
-    <version>6.0.5-alpha</version>
+    <version>6.0.5-beta</version>
     <authors>David Young</authors>
     <owners>David Young</owners>
     <licenseUrl>https://github.com/tgsstdio/Mg/blob/master/LICENSE.txt</licenseUrl>

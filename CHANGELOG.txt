@@ -1,4 +1,4 @@
-Magnesium v5.2.7
+Magnesium v5.2.7 - 18 Aug 2017
 	- New enum value MgDeviceExtensionOption.SWAPCHAIN_ONLY
 	- MgDefaultGraphicsConfiguration uses MgDeviceExtensionOption.SWAPCHAIN_ONLY as its default option
 	- MgDefaultGraphicsDevice will ignore user specified DepthFormat and use highest available version

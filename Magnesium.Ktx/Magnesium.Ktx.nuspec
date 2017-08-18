@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>Magnesium.Ktx</id>
-    <version>1.0.4-alpha</version>
+    <version>1.0.4-beta</version>
     <authors>David Young</authors>
     <owners>David Young</owners>
     <licenseUrl>https://github.com/tgsstdio/Mg/blob/master/LICENSE.txt</licenseUrl>
