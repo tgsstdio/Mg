@@ -1,30 +1,25 @@
 {
 	"nugetCmd":"D:\\Nuget\\nuget.exe",
+	"msBuild":"C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\MSBuild\\15.0\\Bin\\MSBuild.exe",
 	"projects":[
 		{
 			"name":"Magnesium",
-			"nuget":"5.0.4",
-			"version":"5.0.4"
+			"nuget":"5.2.6-alpha",
+			"version":"5.2.6"
 		}
 		,{
 			"name":"Magnesium.Vulkan",
-			"nuget":"5.0.2",
-			"version":"5.0.2"
 		}
 		,{
 			"name":"Magnesium.OpenGL",
-			"nuget":"6.0.1",
-			"version":"6.0.1"
 		}			
 		,{
 			"name":"Magnesium.OpenGL.DesktopGL",
-			"nuget":"6.0.1",			
-			"version":"6.0.1"
 		}
 		,{
 			"name":"Magnesium.PresentationSurfaces.OpenTK",
-			"nuget":"1.0.2",			
-			"version":"1.0.2"
+			"nuget":"1.0.3-alpha",			
+			"version":"1.0.3"
 		}		
 		,{
 			"name":"Magnesium.Ktx",

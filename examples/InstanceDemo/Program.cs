@@ -26,12 +26,6 @@ namespace InstanceDemo
 					},
 					MgInstanceExtensionOptions.ALL);
 
-                    var pCreateInfo = new MgDebugReportCallbackCreateInfoEXT
-                    {
-                        Flags = 0,
-                        PfnCallback = MyDebugReportCallback,
-                    };
-
                     using (var device = driver.CreateLogicalDevice(null, MgDeviceExtensionOptions.SWAPCHAIN_ONLY, MgQueueAllocation.One, MgQueueFlagBits.GRAPHICS_BIT | MgQueueFlagBits.COMPUTE_BIT))
 					{                                                            
 						if (device.Queues.Length > 0)
@@ -55,40 +49,5 @@ namespace InstanceDemo
                 throw ex;
 			}
 		}
-
-        private static UInt32 MyDebugReportCallback(
-           MgDebugReportFlagBitsEXT flags,
-           MgDebugReportObjectTypeEXT objectType,
-           UInt64 @object,
-           IntPtr location,
-           int messageCode,
-           string pLayerPrefix,
-           string pMessage,
-           IntPtr pUserData)
-        {
-            Console.WriteLine(pMessage);
-            return 1;
-        }
-
-    private static void DebugInternalFree(IntPtr pUserData, IntPtr size, MgInternalAllocationType allocationType, MgSystemAllocationScope allocationScope)
-		{
-			Console.WriteLine(nameof(DebugInternalFree));
-		}
-
-		//private static IntPtr DebugReallocationFunction(IntPtr pUserData, IntPtr pOriginal, IntPtr size, IntPtr alignment, MgSystemAllocationScope allocationScope)
-		//{
-		//	Console.WriteLine(nameof(DebugReallocationFunction));
-  //          return IntPtr.Zero;
-		//}
-
-		private static void DebugInternalAllocation(IntPtr pUserData, IntPtr size, MgInternalAllocationType allocationType, MgSystemAllocationScope allocationScope)
-		{
-			Console.WriteLine("DebugInternalAllocation");
-		}
-
-		//private static IntPtr DebugAllocateFunction(IntPtr pUserData, IntPtr size, IntPtr alignment, MgSystemAllocationScope allocationScope)
-		//{
-		//	Console.WriteLine(nameof(size) + " : " + size);
-		//}
 	}
 }

@@ -50,7 +50,7 @@ namespace Magnesium
             mPresentationSurface.Initialize(width, height);
             mLogicalDevice = mDriverContext.CreateLogicalDevice(
                 mPresentationSurface.Surface,
-                MgDeviceExtensionOptions.ALL,
+                MgDeviceExtensionOptions.SWAPCHAIN_ONLY,
                 MgQueueAllocation.One,
                 MgQueueFlagBits.GRAPHICS_BIT | MgQueueFlagBits.COMPUTE_BIT);
 

@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
-<package >
+<package>
   <metadata>
     <id>Magnesium</id>
-    <version>5.0.4</version>
     <authors>David Young</authors>
     <owners>David Young</owners>
     <licenseUrl>https://github.com/tgsstdio/Mg/blob/master/LICENSE.txt</licenseUrl>

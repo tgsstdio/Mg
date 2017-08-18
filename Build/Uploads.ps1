@@ -22,7 +22,7 @@ function Upload-NugetAssemblies([String] $Packages, [String] $Configuration)
 
     $NugetCmd = $Db.nugetCmd
 	
-	$MsbuildCmd = "msbuild.exe"
+	$MsbuildCmd = $Db.msBuild
 	
 	$NugetBuildMode = "Configuration=Release"
 	$MsBuildMode = "/p:Configuration=Release"

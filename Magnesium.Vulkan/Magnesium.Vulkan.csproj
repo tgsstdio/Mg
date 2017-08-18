@@ -265,9 +265,6 @@
     <Compile Include="Handles\VkInteropsUtility.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Magnesium, Version=4.0.6136.42367, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Magnesium.4.0.0\lib\portable-net45+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10\Magnesium.dll</HintPath>
-      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>

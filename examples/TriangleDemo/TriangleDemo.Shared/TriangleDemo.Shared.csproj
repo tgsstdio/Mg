@@ -78,13 +78,15 @@
     <Compile Include="VulkanExample.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Magnesium, Version=5.0.4.30756, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Magnesium.5.0.4\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <Reference Include="Magnesium, Version=5.2.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Magnesium.5.2.6-alpha\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
+    </Reference>
+    <Reference Include="Magnesium.OpenGL, Version=6.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Magnesium.OpenGL.6.0.4-alpha\lib\portable45-net45+win8+wpa81\Magnesium.OpenGL.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
