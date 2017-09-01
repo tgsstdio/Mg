@@ -236,7 +236,6 @@ namespace Magnesium
 				QueueCreateInfos = new[] {
 					queueCreateInfo
 				},
-                EnabledFeatures = new MgPhysicalDeviceFeatures(),
 			};
 
 			IMgDevice device;
