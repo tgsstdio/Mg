@@ -78,13 +78,12 @@
     <Compile Include="VulkanExample.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Magnesium, Version=5.0.4.30756, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Magnesium.5.0.4\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <Reference Include="Magnesium, Version=5.2.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Magnesium.5.2.8-beta\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
