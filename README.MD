@@ -22,16 +22,16 @@ Quick Links
 
 Magnesium and its implementations uses [Semantic Versioning v2.0.0](http://semver.org/) for versioning assemblies
 
-### Version 5.2.7
- - Magnesium v5.2.7 - 18 Aug 2017
+### Version 5.2.8-beta
+ - Magnesium v5.2.8 - 2 Sep 2017
 	- New enum value MgDeviceExtensionOption.SWAPCHAIN_ONLY
 	- MgDefaultGraphicsConfiguration uses MgDeviceExtensionOption.SWAPCHAIN_ONLY as its default option
 	- MgDefaultGraphicsDevice will ignore user specified DepthFormat and use highest available version
- - Magnesium.OpenGL v6.0.5
- - Magnesium.OpenGL.DesktopGL v6.0.5
- - Magnesium.Vulkan v5.0.7
- - Magnesium.PresentationSurfaces.OpenTK v1.0.4
- - Magnesium.Ktx v1.0.4
+ - Magnesium.OpenGL v6.1.4 beta
+ - Magnesium.OpenGL.DesktopGL v6.1.4 beta
+ - Magnesium.Vulkan v5.0.7 beta
+ - Magnesium.PresentationSurfaces.OpenTK v1.0.4 beta
+ - Magnesium.Ktx v1.0.4 beta
 	- Updated w.r.t Magnesium v5.2.7
 
 ### Version 6.0.0
@@ -88,11 +88,11 @@ Magnesium and its implementations uses [Semantic Versioning v2.0.0](http://semve
 
 | Interface / Implementation | Latest Version  | Description |
 |-----------|----------|-----------|
-| [Magnesium](https://www.nuget.org/packages/Magnesium/) | 5.2.7-beta  | Core C# Vulkan interface with all applications should reference |
+| [Magnesium](https://www.nuget.org/packages/Magnesium/) | 5.2.8-beta  | Core C# Vulkan interface with all applications should reference |
 | [Magnesium.Vulkan](https://www.nuget.org/packages/Magnesium.Vulkan/) | 5.0.7-beta | C# interface to Vulkan version 1.0.17 |
 | [Magnesium.Metal](https://www.nuget.org/packages/Magnesium.Metal/) | 5.0.0  |iOS polyfill for Magnesium for iOS devices using Apple's own Metal API |
-| [Magnesium.OpenGL](https://www.nuget.org/packages/Magnesium.OpenGL/) | 6.0.5-beta  | OpenGL enumation/polyfill to replicate most of Vulkan entities and features |
-| [Magnesium.OpenGL.DesktopGL](https://www.nuget.org/packages/Magnesium.OpenGL.DesktopGL/) | 6.0.5-beta  | OpenTK / OpenGL 4.5 implementation |
+| [Magnesium.OpenGL](https://www.nuget.org/packages/Magnesium.OpenGL/) | 6.1.4-beta  | OpenGL enumation/polyfill to replicate most of Vulkan entities and features |
+| [Magnesium.OpenGL.DesktopGL](https://www.nuget.org/packages/Magnesium.OpenGL.DesktopGL/) | 6.1.4-beta  | OpenTK / OpenGL 4.5 implementation |
 | [Magnesium.PresentationSurfaces.OpenTK](https://www.nuget.org/packages/Magnesium.PresentationSurfaces.OpenTK/) | 1.0.4-beta  | Contains OpenTK implementation of IMgPresentationSurface for Vulkan & DesktopGL |
 | [Magnesium.Ktx](https://www.nuget.org/packages/Magnesium.Ktx/) | 1.0.4-beta | Loads Khronos .ktx image files |
 

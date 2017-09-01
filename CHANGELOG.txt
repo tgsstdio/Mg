@@ -1,12 +1,12 @@
-Magnesium v5.2.7 - 18 Aug 2017
+Magnesium v5.2.8 beta - 2 Sep 2017
 	- New enum value MgDeviceExtensionOption.SWAPCHAIN_ONLY
 	- MgDefaultGraphicsConfiguration uses MgDeviceExtensionOption.SWAPCHAIN_ONLY as its default option
 	- MgDefaultGraphicsDevice will ignore user specified DepthFormat and use highest available version
-Magnesium.OpenGL v6.0.5
-Magnesium.OpenGL.DesktopGL v6.0.5
-Magnesium.Vulkan v5.0.7
-Magnesium.PresentationSurfaces.OpenTK v1.0.4
-Magnesium.Ktx v1.0.4
+Magnesium.OpenGL v6.1.4 beta
+Magnesium.OpenGL.DesktopGL v6.1.4 beta
+Magnesium.Vulkan v5.0.7 beta
+Magnesium.PresentationSurfaces.OpenTK v1.0.4 beta
+Magnesium.Ktx v1.0.4 beta
 	- Updated w.r.t Magnesium v5.2.7
 
 Magnesium.OpenGL v6.0.1 - 12 Feb 2017

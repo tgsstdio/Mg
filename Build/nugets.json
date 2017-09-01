@@ -4,7 +4,7 @@
 	"projects":[
 		{
 			"name":"Magnesium",
-			"nuget":"5.2.8-alpha",
+			"nuget":"5.2.8-beta",
 			"version":"5.2.8"
 		}
 		,{
