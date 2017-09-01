@@ -33,11 +33,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Magnesium, Version=5.2.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\TextureDemo\packages\Magnesium.5.2.7-alpha\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
+    <Reference Include="Magnesium, Version=5.2.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\TextureDemo\packages\Magnesium.5.2.8-beta\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
     </Reference>
     <Reference Include="Magnesium.Vulkan, Version=5.0.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\TextureDemo\packages\Magnesium.Vulkan.5.0.7-alpha\lib\portable45-net45+win8+wpa81\Magnesium.Vulkan.dll</HintPath>
+      <HintPath>..\TextureDemo\packages\Magnesium.Vulkan.5.0.7-beta\lib\portable45-net45+win8+wpa81\Magnesium.Vulkan.dll</HintPath>
     </Reference>
     <Reference Include="SimpleInjector, Version=3.3.2.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
       <HintPath>..\TextureDemo\packages\SimpleInjector.3.3.2\lib\net45\SimpleInjector.dll</HintPath>

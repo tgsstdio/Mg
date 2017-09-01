@@ -44,8 +44,8 @@
     <Compile Include="TexturePageInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Magnesium, Version=5.2.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\examples\TextureDemo\packages\Magnesium.5.2.7-alpha\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
+    <Reference Include="Magnesium, Version=5.2.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\examples\TextureDemo\packages\Magnesium.5.2.8-beta\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

@@ -33,17 +33,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Magnesium, Version=5.2.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Magnesium.5.2.7-alpha\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
+    <Reference Include="Magnesium, Version=5.2.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Magnesium.5.2.8-beta\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
     </Reference>
     <Reference Include="Magnesium.Ktx, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Magnesium.Ktx.1.0.4-alpha\lib\portable45-net45+win8+wpa81\Magnesium.Ktx.dll</HintPath>
+      <HintPath>packages\Magnesium.Ktx.1.0.4-beta\lib\portable45-net45+win8+wpa81\Magnesium.Ktx.dll</HintPath>
     </Reference>
     <Reference Include="Magnesium.PresentationSurfaces.OpenTK, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Magnesium.PresentationSurfaces.OpenTK.1.0.4-alpha\lib\net45\Magnesium.PresentationSurfaces.OpenTK.dll</HintPath>
+      <HintPath>packages\Magnesium.PresentationSurfaces.OpenTK.1.0.4-beta\lib\net45\Magnesium.PresentationSurfaces.OpenTK.dll</HintPath>
     </Reference>
     <Reference Include="Magnesium.Vulkan, Version=5.0.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Magnesium.Vulkan.5.0.7-alpha\lib\portable45-net45+win8+wpa81\Magnesium.Vulkan.dll</HintPath>
+      <HintPath>packages\Magnesium.Vulkan.5.0.7-beta\lib\portable45-net45+win8+wpa81\Magnesium.Vulkan.dll</HintPath>
     </Reference>
     <Reference Include="OpenTK, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>packages\OpenTK.2.0.0\lib\net20\OpenTK.dll</HintPath>
