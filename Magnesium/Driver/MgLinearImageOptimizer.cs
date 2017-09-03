@@ -59,11 +59,8 @@ namespace Magnesium
 
             Debug.Assert(mGraphicsConfiguration.Partition != null);
 
-            var physicalDevice = mGraphicsConfiguration.Partition.PhysicalDevice;
-            physicalDevice.GetPhysicalDeviceMemoryProperties(out MgPhysicalDeviceMemoryProperties pMemoryProperties);
-
             // Get memory type that can be mapped to host memory
-            bool isValid = pMemoryProperties.GetMemoryType(memReqs.MemoryTypeBits, MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT, out uint memoryTypeIndex);
+            bool isValid = mGraphicsConfiguration.MemoryProperties.GetMemoryType(memReqs.MemoryTypeBits, MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT, out uint memoryTypeIndex);
             Debug.Assert(isValid);
 			memAllocInfo.MemoryTypeIndex = memoryTypeIndex;
 

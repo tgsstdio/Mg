@@ -7,6 +7,7 @@ namespace Magnesium
         IMgDevice Device { get; }
         IMgThreadPartition Partition { get; }
         IMgQueue Queue { get; }
+        MgPhysicalDeviceMemoryProperties MemoryProperties { get; }
 
         void Initialize(uint width, uint height);
     }

@@ -31,6 +31,14 @@ namespace Magnesium
             }
         }
 
+        private MgPhysicalDeviceMemoryProperties mMemoryProperties;
+        public MgPhysicalDeviceMemoryProperties MemoryProperties {
+            get
+            {
+                return mMemoryProperties;
+            }
+        }
+
         private readonly MgDriverContext mDriverContext;
         private readonly IMgPresentationSurface mPresentationSurface;
         public MgDefaultGraphicsConfiguration(
@@ -55,6 +63,9 @@ namespace Magnesium
                 MgQueueFlagBits.GRAPHICS_BIT | MgQueueFlagBits.COMPUTE_BIT);
 
             mPartition = mLogicalDevice.Queues[0].CreatePartition(MgCommandPoolCreateFlagBits.RESET_COMMAND_BUFFER_BIT);
+
+            mPartition.PhysicalDevice.GetPhysicalDeviceMemoryProperties(out MgPhysicalDeviceMemoryProperties pMemoryProperties);
+            mMemoryProperties = pMemoryProperties;
         }
 
 		~MgDefaultGraphicsConfiguration()

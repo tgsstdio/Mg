@@ -331,7 +331,7 @@ namespace TriangleDemo
                 // Request a host visible memory type that can be used to copy our data do
                 // Also request it to be coherent, so that writes are visible to the GPU right after unmapping the buffer
                 uint typeIndex;
-                var isValid = mConfiguration.Partition.GetMemoryType(memReqs.MemoryTypeBits,
+                var isValid = mConfiguration.MemoryProperties.GetMemoryType(memReqs.MemoryTypeBits,
                     MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT | MgMemoryPropertyFlagBits.HOST_COHERENT_BIT,
                     out typeIndex);
 
@@ -382,7 +382,7 @@ namespace TriangleDemo
 
 
                 uint typeIndex;
-                var isValid = mConfiguration.Partition.GetMemoryType(memReqs.MemoryTypeBits, MgMemoryPropertyFlagBits.DEVICE_LOCAL_BIT, out typeIndex);
+                var isValid = mConfiguration.MemoryProperties.GetMemoryType(memReqs.MemoryTypeBits, MgMemoryPropertyFlagBits.DEVICE_LOCAL_BIT, out typeIndex);
                 Debug.Assert(isValid);
 
                 var memAlloc = new MgMemoryAllocateInfo
@@ -414,7 +414,7 @@ namespace TriangleDemo
                 mConfiguration.Device.GetBufferMemoryRequirements(stagingBuffers.indices.buffer, out memReqs);
 
                 uint typeIndex;
-                var isValid = mConfiguration.Partition.GetMemoryType(memReqs.MemoryTypeBits,
+                var isValid = mConfiguration.MemoryProperties.GetMemoryType(memReqs.MemoryTypeBits,
                     MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT | MgMemoryPropertyFlagBits.HOST_COHERENT_BIT,
                     out typeIndex);
                 Debug.Assert(isValid);
@@ -460,7 +460,7 @@ namespace TriangleDemo
                 mConfiguration.Device.GetBufferMemoryRequirements(indices.buffer, out memReqs);
 
                 uint typeIndex;
-                var isValid = mConfiguration.Partition.GetMemoryType(memReqs.MemoryTypeBits, MgMemoryPropertyFlagBits.DEVICE_LOCAL_BIT, out typeIndex);
+                var isValid = mConfiguration.MemoryProperties.GetMemoryType(memReqs.MemoryTypeBits, MgMemoryPropertyFlagBits.DEVICE_LOCAL_BIT, out typeIndex);
                 Debug.Assert(isValid);
 
                 var memAlloc = new MgMemoryAllocateInfo
@@ -680,7 +680,7 @@ namespace TriangleDemo
             // We also want the buffer to be host coherent so we don't have to flush (or sync after every update.
             // Note: This may affect performance so you might not want to do this in a real world application that updates buffers on a regular base
             uint typeIndex;
-            var isValid = mConfiguration.Partition.GetMemoryType(memReqs.MemoryTypeBits, MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT | MgMemoryPropertyFlagBits.HOST_COHERENT_BIT, out typeIndex);
+            var isValid = mConfiguration.MemoryProperties.GetMemoryType(memReqs.MemoryTypeBits, MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT | MgMemoryPropertyFlagBits.HOST_COHERENT_BIT, out typeIndex);
             Debug.Assert(isValid);
 
             MgMemoryAllocateInfo allocInfo = new MgMemoryAllocateInfo
