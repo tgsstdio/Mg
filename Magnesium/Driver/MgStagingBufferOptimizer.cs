@@ -1,11 +1,10 @@
 ﻿using System;
-using Magnesium;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace Magnesium
 {
-	public class MgStagingBufferOptimizer : IMgTextureGenerator
+    public class MgStagingBufferOptimizer : IMgTextureGenerator
 	{
 		private readonly IMgGraphicsConfiguration mGraphicsConfiguration;
 		private readonly IMgImageTools mImageTools;
@@ -49,9 +48,13 @@ namespace Magnesium
 				AllocationSize = memReqs.Size,
 			};
 
-			// Get memory type index for a host visible buffer
-			uint memoryTypeIndex;
-			bool isTypeValid = mGraphicsConfiguration.Partition.GetMemoryType(memReqs.MemoryTypeBits, MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT, out memoryTypeIndex);
+
+            var physicalDevice = mGraphicsConfiguration.Partition.PhysicalDevice;
+            physicalDevice.GetPhysicalDeviceMemoryProperties(out MgPhysicalDeviceMemoryProperties pMemoryProperties);
+
+            // Get memory type index for a host visible buffer
+            uint memoryTypeIndex;
+			bool isTypeValid = pMemoryProperties.GetMemoryType(memReqs.MemoryTypeBits, MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT, out memoryTypeIndex);
 			Debug.Assert (isTypeValid);
 			memAllocInfo.MemoryTypeIndex = memoryTypeIndex;
 
@@ -123,7 +126,7 @@ namespace Magnesium
 			device.GetImageMemoryRequirements(texture.Image, out memReqs);
 			memAllocInfo.AllocationSize = memReqs.Size;
 
-			isTypeValid = mGraphicsConfiguration.Partition.GetMemoryType(memReqs.MemoryTypeBits, MgMemoryPropertyFlagBits.DEVICE_LOCAL_BIT, out memoryTypeIndex);
+			isTypeValid = pMemoryProperties.GetMemoryType(memReqs.MemoryTypeBits, MgMemoryPropertyFlagBits.DEVICE_LOCAL_BIT, out memoryTypeIndex);
 			Debug.Assert (isTypeValid);
 			memAllocInfo.MemoryTypeIndex = memoryTypeIndex;
 

@@ -24,13 +24,16 @@ namespace Magnesium
 		}
 
 		MgPhysicalDeviceProperties mProperties;
+        MgPhysicalDeviceMemoryProperties mDeviceMemoryProperties;
 		private void Setup ()
 		{
-			MgPhysicalDeviceProperties prop;
             Debug.Assert(mGraphicsConfiguration.Partition != null);
-            mGraphicsConfiguration.Partition.PhysicalDevice.GetPhysicalDeviceProperties (out prop);
+            mGraphicsConfiguration.Partition.PhysicalDevice.GetPhysicalDeviceProperties (out MgPhysicalDeviceProperties prop);
 			mProperties = prop;
-		}
+
+            mGraphicsConfiguration.Partition.PhysicalDevice.GetPhysicalDeviceMemoryProperties(out MgPhysicalDeviceMemoryProperties pMemoryProperties);
+            mDeviceMemoryProperties = pMemoryProperties;
+        }
 
 		private IMgImageView mDepthStencilImageView;
 
@@ -277,9 +280,8 @@ namespace Magnesium
 			}
             mGraphicsConfiguration.Partition.Device.GetImageMemoryRequirements (mImage, out memReqs);
 			mem_alloc.AllocationSize = memReqs.Size;
-			uint memTypeIndex;
-			bool memoryTypeFound = mGraphicsConfiguration.Partition.GetMemoryType (memReqs.MemoryTypeBits, MgMemoryPropertyFlagBits.DEVICE_LOCAL_BIT, out memTypeIndex);
-			Debug.Assert (memoryTypeFound);
+            bool memoryTypeFound = mDeviceMemoryProperties.GetMemoryType(memReqs.MemoryTypeBits, MgMemoryPropertyFlagBits.DEVICE_LOCAL_BIT, out uint memTypeIndex);
+            Debug.Assert (memoryTypeFound);
 			mem_alloc.MemoryTypeIndex = memTypeIndex;
 			{
 				IMgDeviceMemory dsDeviceMemory;
@@ -310,44 +312,6 @@ namespace Magnesium
 				mDepthStencilImageView = dsView;
 			}
 		}
-
-		//private IMgFramebuffer[] mFramebuffers;
-		//public IMgFramebuffer[] Framebuffers {
-		//	get {
-		//		return mFramebuffers;
-		//	}
-		//}
-
-		//void CreateFramebuffers (IMgSwapchainCollection swapchains, MgGraphicsDeviceCreateInfo createInfo)
-		//{
-  //          IMgFramebuffer[] SetupFrameBuffers(IMgRenderPass renderPass, IMgDepthStencilBuffer depthStencil, IMgSwapchainCollection swapChain, uint width, uint height)
-  //          {
-  //          Debug.Assert(mGraphicsConfiguration.Partition != null);
-
-  //           Create frame buffers for every swap chain image
-  //          var frameBuffers = new IMgFramebuffer[swapchains.Buffers.Length];
-		//	for (uint i = 0; i < frameBuffers.Length; i++)
-		//	{
-		//		var frameBufferCreateInfo = new MgFramebufferCreateInfo
-		//		{
-		//			RenderPass = mRenderpass,
-		//			Attachments = new []
-		//			{
-  //                      swapchains.Buffers[i].View,
-		//				 Depth/Stencil attachment is the same for all frame buffers
-		//				mDepthStencilImageView,
-		//			},
-		//			Width = createInfo.Width,
-		//			Height = createInfo.Height,
-		//			Layers = 1,
-		//		};
-
-		//		var err = mGraphicsConfiguration.Partition.Device.CreateFramebuffer(frameBufferCreateInfo, null, out frameBuffers[i]);
-		//		Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
-		//	}
-
-		//	mFramebuffers = frameBuffers;
-		//}
 
 		private bool mDeviceCreated = false;
 		public bool DeviceCreated ()
