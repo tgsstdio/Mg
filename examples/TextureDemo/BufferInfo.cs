@@ -40,11 +40,9 @@ namespace TextureDemo
         /** @brief Memory propertys flags to be filled by external source at buffer creation (to query at some later point) */
         MgMemoryPropertyFlagBits mMemoryPropertyFlags;
 
-        public BufferInfo(IMgThreadPartition partition, MgBufferUsageFlagBits usage, MgMemoryPropertyFlagBits propertyFlags, uint bufferSize)
+        public BufferInfo(IMgDevice device, MgPhysicalDeviceMemoryProperties memoryProperties, MgBufferUsageFlagBits usage, MgMemoryPropertyFlagBits propertyFlags, uint bufferSize)
         {
-            Debug.Assert(partition != null);
-
-            mDevice = partition.Device;
+            mDevice = device;
             Debug.Assert(mDevice != null);
 
             mUsageFlags = usage;
@@ -59,9 +57,7 @@ namespace TextureDemo
 
             IMgBuffer buffer;
 
-            var device = partition.Device;
-
-            var result = device.CreateBuffer(bufferCreateInfo, null, out buffer);
+            var result = mDevice.CreateBuffer(bufferCreateInfo, null, out buffer);
             Debug.Assert(result == Result.SUCCESS);
 
             MgMemoryRequirements memReqs;
@@ -70,7 +66,7 @@ namespace TextureDemo
             mBufferSize = memReqs.Size;
 
             uint memoryTypeIndex;
-            partition.GetMemoryType(memReqs.MemoryTypeBits, mMemoryPropertyFlags, out memoryTypeIndex);
+            memoryProperties.GetMemoryType(memReqs.MemoryTypeBits, mMemoryPropertyFlags, out memoryTypeIndex);
 
             var memAlloc = new MgMemoryAllocateInfo
             {

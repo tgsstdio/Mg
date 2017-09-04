@@ -596,7 +596,8 @@ namespace TextureDemo
             {
                 var bufferSize = (uint)(Marshal.SizeOf<VertexData>() * quadCorners.Length);
                 vertexBuffer = new BufferInfo(
-                    mManager.Configuration.Partition,
+                    mManager.Configuration.Device,
+                    mManager.Configuration.MemoryProperties,
                     MgBufferUsageFlagBits.VERTEX_BUFFER_BIT,
                     MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT | MgMemoryPropertyFlagBits.HOST_COHERENT_BIT,
                     bufferSize);
@@ -608,7 +609,8 @@ namespace TextureDemo
             {
                 var bufferSize = indexCount * sizeof(uint);
                 indexBuffer = new BufferInfo(
-                    mManager.Configuration.Partition,
+                    mManager.Configuration.Device,
+                    mManager.Configuration.MemoryProperties,
                     MgBufferUsageFlagBits.INDEX_BUFFER_BIT,
                     MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT | MgMemoryPropertyFlagBits.HOST_COHERENT_BIT,
                     bufferSize);
@@ -925,7 +927,8 @@ namespace TextureDemo
         {
             // Vertex shader uniform buffer block
             uniformBufferVS = new BufferInfo(
-                mManager.Configuration.Partition,
+                mManager.Configuration.Device,
+                mManager.Configuration.MemoryProperties,
                 MgBufferUsageFlagBits.UNIFORM_BUFFER_BIT,
                 MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT | MgMemoryPropertyFlagBits.HOST_COHERENT_BIT,
                 (uint) Marshal.SizeOf<UniformBufferObject>()
