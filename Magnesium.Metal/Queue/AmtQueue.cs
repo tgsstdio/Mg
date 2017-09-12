@@ -27,39 +27,39 @@ namespace Magnesium.Metal
 			if (mIsDisposed)
 				return;			
 
-			foreach (var order in mOrders.Values)
-			{
-				foreach (var submission in order.Submissions.Values)
-				{
-					// RESET ALL FENCES CURRENTLY ATTACHED
-					submission.Reset ();
-				}
-			}
+			//foreach (var order in mOrders.Values)
+			//{
+			//	foreach (var submission in order.Submissions.Values)
+			//	{
+			//		// RESET ALL FENCES CURRENTLY ATTACHED
+			//		submission.Reset ();
+			//	}
+			//}
 
 			mIsDisposed = true;
 		}
 
-		private readonly IAmtSemaphoreEntrypoint mSignalModule;
+		//private readonly IAmtFenceEntrypoint mFences;
 		private readonly IMTLCommandQueue mPresentQueue;
 
-		public AmtQueue (IAmtQueueRenderer renderer, IAmtSemaphoreEntrypoint entrypoint, IMTLCommandQueue presentQueue)
+		public AmtQueue (IAmtQueueRenderer renderer, IMTLCommandQueue presentQueue)
 		{
 			mRenderer = renderer;
-			mSignalModule = entrypoint;
+			//mFences = fences;
 			mPresentQueue = presentQueue;
 		}
 
 		#region IMgQueue implementation
 		private ConcurrentDictionary<long, AmtQueueSubmission> mSubmissions = new ConcurrentDictionary<long, AmtQueueSubmission>();
-		private ConcurrentDictionary<long, AmtQueueSubmitOrder> mOrders = new ConcurrentDictionary<long, AmtQueueSubmitOrder>();
+		//private ConcurrentDictionary<long, AmtQueueSubmitOrder> mOrders = new ConcurrentDictionary<long, AmtQueueSubmitOrder>();
 
-		Result CompleteAllPreviousSubmissions (IMgFence fence)
+		Result CompleteAllPreviousSubmissions (IAmtFence fence)
 		{
-			var internalFence = fence as IAmtQueueFence;
-			if (internalFence != null)
+			if (fence != null)
 			{
+				fence.Reset(1);
 				var result = QueueWaitIdle ();
-				internalFence.Signal ();
+				fence.Signal ();
 				return result;
 			}
 			else
@@ -87,40 +87,61 @@ namespace Magnesium.Metal
 
 		public Result QueueSubmit (MgSubmitInfo[] pSubmits, IMgFence fence)
 		{
+			var bFence = (IAmtFence) fence;
 			if (pSubmits == null)
 			{				
-				return CompleteAllPreviousSubmissions (fence);
+				return CompleteAllPreviousSubmissions (bFence);
 			} 
 			else
 			{
-				var children = new List<AmtQueueSubmission> ();
-	
+				//var children = new List<AmtQueueSubmission> ();
+
+				var count = 0;
 				foreach (var sub in pSubmits)
-				{					
-					var submit = EnqueueSubmission (sub);
-					if (fence != null)
+				{			
+					if (sub.CommandBuffers != null)
 					{
-						submit.OrderFence = mSignalModule.CreateSemaphore ();
+						foreach (var cb in sub.CommandBuffers)
+						{
+							if (cb != null)
+							{
+								count += 1;
+							}
+						}
 					}
-					children.Add (submit);
+
+					var submit = EnqueueSubmission(sub);
+
+					if (bFence != null)
+					{
+						submit.OrderFence = bFence;
+					}
+					//children.Add (submit);
+
+
 				}
 
-				if (fence != null)
+				if (bFence != null)
 				{
-					var order = new AmtQueueSubmitOrder ();
-					order.Key = mOrderKey;
-					order.Submissions = new ConcurrentDictionary<long, AmtSemaphore> ();
-					order.Fence = fence as IAmtQueueFence;
-					foreach (var sub in children)
-					{
-						order.Submissions.TryAdd (sub.Key, sub.OrderFence);
-					}
-					// JUST LOOP AROUND
-					Interlocked.CompareExchange(ref mOrderKey, 0, long.MaxValue);
-					Interlocked.Increment(ref mOrderKey);
-
-					mOrders.TryAdd (order.Key, order);
+					bFence.Reset(count);
 				}
+
+				//if (fence != null)
+				//{
+				//	var order = new AmtQueueSubmitOrder ();
+				//	order.Key = mOrderKey;
+				//	order.Submissions = new ConcurrentDictionary<long, AmtSemaphore> ();
+				//	order.Fence = fence as IAmtFence;
+				//	foreach (var sub in children)
+				//	{
+				//		order.Submissions.TryAdd (sub.Key, sub.OrderFence);
+				//	}
+				//	// JUST LOOP AROUND
+				//	Interlocked.CompareExchange(ref mOrderKey, 0, long.MaxValue);
+				//	Interlocked.Increment(ref mOrderKey);
+
+				//	mOrders.TryAdd (order.Key, order);
+				//}
 
 				return Result.SUCCESS;
 			}
@@ -135,7 +156,7 @@ namespace Magnesium.Metal
 				int checks = 0;
 				foreach (var signal in request.Waits)
 				{
-					if (signal.IsSignalled)
+					if (signal.IsAlreadySignalled)
 					{
 						++checks;
 					}
@@ -182,37 +203,37 @@ namespace Magnesium.Metal
 				}
 
 
-				var orderKeys = new long[mOrders.Keys.Count];
-				mOrders.Keys.CopyTo(orderKeys, 0);
-				foreach (var orderKey in orderKeys)
-				{
-					AmtQueueSubmitOrder order;
-					if (mOrders.TryGetValue(orderKey, out order))
-					{
-						var submissionKeys = new long[order.Submissions.Keys.Count];
-						order.Submissions.Keys.CopyTo(submissionKeys, 0);
+				//var orderKeys = new long[mOrders.Keys.Count];
+				//mOrders.Keys.CopyTo(orderKeys, 0);
+				//foreach (var orderKey in orderKeys)
+				//{
+				//	AmtQueueSubmitOrder order;
+				//	if (mOrders.TryGetValue(orderKey, out order))
+				//	{
+				//		var submissionKeys = new long[order.Submissions.Keys.Count];
+				//		order.Submissions.Keys.CopyTo(submissionKeys, 0);
 
-						foreach (uint key in submissionKeys)
-						{
-							AmtSemaphore signal;
-							if (order.Submissions.TryGetValue (key, out signal))
-							{
-								if (signal.IsSignalled)
-								{
-									AmtSemaphore removedSemaphore;
-									order.Submissions.TryRemove(key, out removedSemaphore);
-								}
-							}
-						}
+				//		foreach (uint key in submissionKeys)
+				//		{
+				//			AmtSemaphore signal;
+				//			if (order.Submissions.TryGetValue (key, out signal))
+				//			{
+				//				if (signal.IsSignalled)
+				//				{
+				//					AmtSemaphore removedSemaphore;
+				//					order.Submissions.TryRemove(key, out removedSemaphore);
+				//				}
+				//			}
+				//		}
 
-						if (order.Submissions.Count <= 0)
-						{
-							order.Fence.Signal();
-							AmtQueueSubmitOrder removedItem;
-							mOrders.TryRemove (orderKey, out removedItem);
-						}
-					}
-				}
+				//		if (order.Submissions.Count <= 0)
+				//		{
+				//			order.Fence.Signal();
+				//			AmtQueueSubmitOrder removedItem;
+				//			mOrders.TryRemove (orderKey, out removedItem);
+				//		}
+				//	}
+				//}
 
 			} while (!IsEmpty());
 
@@ -221,7 +242,9 @@ namespace Magnesium.Metal
 
 		public bool IsEmpty ()
 		{
-			return (mSubmissions.Keys.Count == 0 && mOrders.Keys.Count == 0);
+			return (mSubmissions.Keys.Count == 0
+			        //&& mOrders.Keys.Count == 0
+			       );
 		}
 
 		public Result QueueBindSparse (MgBindSparseInfo[] pBindInfo, IMgFence fence)

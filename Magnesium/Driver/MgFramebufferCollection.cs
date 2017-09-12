@@ -30,12 +30,18 @@ namespace Magnesium
                 var frameBufferCreateInfo = new MgFramebufferCreateInfo
                 {
                     RenderPass = pass,
-                    Attachments = new[]
-                    {
+                    Attachments =
+                    // DEPTH / STENCIL IS NOW OPTIONAL
+                    (depthStencilView != null)
+                    ? new IMgImageView[] {
                         swapchains.Buffers[i].View,
 						// Depth/Stencil attachment is the same for all frame buffers
 						depthStencilView,
-                    },
+                        }
+                    : new IMgImageView[] {
+                        swapchains.Buffers[i].View,
+                      }
+                    ,
                     Width = width,
                     Height = height,
                     Layers = 1,

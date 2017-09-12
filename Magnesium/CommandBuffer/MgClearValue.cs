@@ -18,7 +18,7 @@ namespace Magnesium
             UINT,
         }
 
-        public static MgClearValue FromColorAndFormat(MgFormat format, MgColor4f color)
+        public static MgClearValue FromColorAndFormat(MgFormat format, MgColor4f colorx)
         {
             float factor = 0;
             MgClearColorCategory category;
@@ -126,17 +126,33 @@ namespace Magnesium
 
             }
 
-            switch (category)
-            {
-                case MgClearColorCategory.INT:
-                    return new MgClearValue { Color = new MgClearColorValue(new MgVec4i((int)(color.R * factor), (int)(color.G * factor), (int)(color.B * factor), (int)(color.A * factor))) };
-                case MgClearColorCategory.UINT:
-                    return new MgClearValue { Color = new MgClearColorValue(new MgVec4Ui((uint)(color.R * factor), (uint)(color.G * factor), (uint)(color.B * factor), (uint)(color.A * factor))) };
-                case MgClearColorCategory.FLOAT:
-                    return new MgClearValue { Color = new MgClearColorValue(new MgColor4f(color.R * factor, color.G * factor, color.B * factor, color.A * factor)) };
-                default:
-                    throw new NotSupportedException();
-            }
+			// SWIZZLE 
+			MgColor4f finalColor = colorx;
+			switch (format)
+			{
+				case MgFormat.B8G8R8_UNORM:
+				case MgFormat.B8G8R8_SINT:
+                case MgFormat.B8G8R8_UINT:
+				case MgFormat.B8G8R8A8_SINT:
+				case MgFormat.B8G8R8A8_UINT:
+				case MgFormat.B8G8R8A8_UNORM:
+					finalColor.R = colorx.B;
+					finalColor.B = colorx.R;
+					break;
+			}
+
+			switch (category)
+			{
+				case MgClearColorCategory.INT:
+					return new MgClearValue { Color = new MgClearColorValue(new MgVec4i((int)(finalColor.R * factor), (int)(finalColor.G * factor), (int)(finalColor.B * factor), (int)(finalColor.A * factor))) };
+				case MgClearColorCategory.UINT:
+					return new MgClearValue { Color = new MgClearColorValue(new MgVec4Ui((uint)(finalColor.R * factor), (uint)(finalColor.G * factor), (uint)(finalColor.B * factor), (uint)(finalColor.A * factor))) };
+				case MgClearColorCategory.FLOAT:
+					return new MgClearValue { Color = new MgClearColorValue(new MgColor4f(finalColor.R * factor, finalColor.G * factor, finalColor.B * factor, finalColor.A * factor)) };
+				default:
+					throw new NotSupportedException();
+			}
+
         }
     }
 }

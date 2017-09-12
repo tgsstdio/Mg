@@ -6,9 +6,11 @@ namespace Magnesium
 	{
 		public UInt32 Width { get; set; }
 		public UInt32 Height { get; set;}
-		public MgFormat Color { get; set; }
-		public MgFormat DepthStencil { get; set;}
-		public MgSampleCountFlagBits Samples { get; set; }
+        public MgColorFormatOption Color { get; set; }
+		public MgFormat OverrideColor { get; set; }
+        public MgDepthFormatOption DepthStencil { get; set; }
+		public MgFormat OverrideDepthStencil { get; set;}
+        public MgSampleCountFlagBits Samples { get; set; }
 	}
 }
 

@@ -68,7 +68,7 @@ namespace Magnesium
 			}
 		}
 
-		public void Create(IMgCommandBuffer cmd, UInt32 width, UInt32 height)
+		public void Create(IMgCommandBuffer cmd, MgColorFormatOption option, MgFormat overrideFormat, UInt32 width, UInt32 height)
 		{
 			mWidth = width;
 			mHeight = height;
@@ -76,7 +76,14 @@ namespace Magnesium
 			Result err;
 			IMgSwapchainKHR oldSwapchain = mSwapChain;
 
-            Setup();
+            if (option == MgColorFormatOption.USE_OVERRIDE)
+            {
+                Format = overrideFormat;
+            }
+            else
+            {
+                Setup();
+            }
 
 			// Get physical device surface properties and formats
 			MgSurfaceCapabilitiesKHR surfCaps;

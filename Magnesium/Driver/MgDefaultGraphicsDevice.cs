@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Magnesium
@@ -108,52 +109,57 @@ namespace Magnesium
             }
 
             if (createInfo == null)
-			{
-				throw new ArgumentNullException (nameof(createInfo));
-			}
+            {
+                throw new ArgumentNullException(nameof(createInfo));
+            }
 
-			if (swapchainCollection == null)
-			{
-				throw new ArgumentNullException (nameof(swapchainCollection));
-			}
+            if (swapchainCollection == null)
+            {
+                throw new ArgumentNullException(nameof(swapchainCollection));
+            }
 
             Setup();
 
             // Check if device supports requested sample count for color and depth frame buffer
             if (
-				(mProperties.Limits.FramebufferColorSampleCounts < createInfo.Samples)
-				|| (mProperties.Limits.FramebufferDepthSampleCounts < createInfo.Samples))
-			{
-				throw new ArgumentOutOfRangeException ("createInfo.Samples",
-					"MgDefaultDepthStencilBuffer : This physical device cannot fulfil the requested sample count for BOTH color and depth frame buffer");
-			}
+                (mProperties.Limits.FramebufferColorSampleCounts < createInfo.Samples)
+                || (mProperties.Limits.FramebufferDepthSampleCounts < createInfo.Samples))
+            {
+                throw new ArgumentOutOfRangeException("createInfo.Samples",
+                    "MgDefaultDepthStencilBuffer : This physical device cannot fulfil the requested sample count for BOTH color and depth frame buffer");
+            }
 
-			ReleaseUnmanagedResources ();
-			mDeviceCreated = false;
+            ReleaseUnmanagedResources();
+            mDeviceCreated = false;
 
-			CreateDepthStencil (setupCmdBuffer, createInfo);
-			CreateRenderpass (createInfo);
-            swapchainCollection.Create (setupCmdBuffer, createInfo.Width, createInfo.Height);
-			mFramebuffers.Create(swapchainCollection, mRenderpass, mDepthStencilImageView, createInfo.Width, createInfo.Height);
+            swapchainCollection.Create(setupCmdBuffer, createInfo.Color, createInfo.OverrideColor, createInfo.Width, createInfo.Height);
+            var colorPassFormat = swapchainCollection.Format;
 
-            Scissor = new MgRect2D { 
-				Extent = new MgExtent2D{ Width = createInfo.Width, Height = createInfo.Height },
-				Offset = new MgOffset2D{ X = 0, Y = 0 },
-			};
+            var depthPassFormat = CreateDepthStencil(setupCmdBuffer, createInfo.DepthStencil, createInfo.OverrideDepthStencil, createInfo);
 
-			// initialize viewport
-			CurrentViewport = new MgViewport {
-				Width = createInfo.Width,
-				Height = createInfo.Height,
-				X = 0,
-				Y = 0,
-				MinDepth = 0f,
-				MaxDepth = 1f,
-			};
-			mDeviceCreated = true;
-		}
+            CreateRenderpass(createInfo, colorPassFormat, createInfo.DepthStencil, depthPassFormat);
+            mFramebuffers.Create(swapchainCollection, mRenderpass, mDepthStencilImageView, createInfo.Width, createInfo.Height);
 
-		public MgViewport CurrentViewport {
+            Scissor = new MgRect2D
+            {
+                Extent = new MgExtent2D { Width = createInfo.Width, Height = createInfo.Height },
+                Offset = new MgOffset2D { X = 0, Y = 0 },
+            };
+
+            // initialize viewport
+            CurrentViewport = new MgViewport
+            {
+                Width = createInfo.Width,
+                Height = createInfo.Height,
+                X = 0,
+                Y = 0,
+                MinDepth = 0f,
+                MaxDepth = 1f,
+            };
+            mDeviceCreated = true;
+        }
+
+        public MgViewport CurrentViewport {
 			get;
 			private set;
 		}
@@ -170,13 +176,23 @@ namespace Magnesium
 			}
 		}
 
-		void CreateRenderpass (MgGraphicsDeviceCreateInfo createInfo)
+        private MgRenderPassCreateInfo mRenderpassInfo;
+        public MgRenderPassCreateInfo RenderpassInfo
+        {
+            get
+            {
+                return mRenderpassInfo;
+            }
+        }
+
+        void CreateRenderpass (MgGraphicsDeviceCreateInfo createInfo, MgFormat colorPassFormat, MgDepthFormatOption depthOption,  MgFormat depthPassFormat)
 		{
-			var attachments = new []
-			{
+            var attachments = new List<MgAttachmentDescription>();
+
+			attachments.Add(			
 				// Color attachment[0] 
 				new MgAttachmentDescription{
-					Format = createInfo.Color,
+					Format = colorPassFormat,
 					// TODO : multisampling
 					Samples = MgSampleCountFlagBits.COUNT_1_BIT,
 					LoadOp =  MgAttachmentLoadOp.CLEAR,
@@ -185,23 +201,30 @@ namespace Magnesium
 					StencilStoreOp = MgAttachmentStoreOp.DONT_CARE,
 					InitialLayout = MgImageLayout.COLOR_ATTACHMENT_OPTIMAL,
 					FinalLayout = MgImageLayout.COLOR_ATTACHMENT_OPTIMAL,
-				},
-				// Depth attachment[1]
-				new MgAttachmentDescription{
-					Format = createInfo.DepthStencil,
-					// TODO : multisampling
-					Samples = MgSampleCountFlagBits.COUNT_1_BIT,
-					LoadOp = MgAttachmentLoadOp.CLEAR,
-					StoreOp = MgAttachmentStoreOp.STORE,
-
-					// TODO : activate stencil if needed
-					StencilLoadOp =  MgAttachmentLoadOp.DONT_CARE,
-					StencilStoreOp =  MgAttachmentStoreOp.DONT_CARE,
-
-					InitialLayout = MgImageLayout.DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-					FinalLayout = MgImageLayout.DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
 				}
-			};
+            );
+
+            if (depthOption != MgDepthFormatOption.USE_NONE)
+            {
+                attachments.Add(
+                    // Depth attachment[1]
+                    new MgAttachmentDescription
+                    {
+                        Format = depthPassFormat,
+                        // TODO : multisampling
+                        Samples = MgSampleCountFlagBits.COUNT_1_BIT,
+                        LoadOp = MgAttachmentLoadOp.CLEAR,
+                        StoreOp = MgAttachmentStoreOp.STORE,
+
+                        // TODO : activate stencil if needed
+                        StencilLoadOp = MgAttachmentLoadOp.DONT_CARE,
+                        StencilStoreOp = MgAttachmentStoreOp.DONT_CARE,
+
+                        InitialLayout = MgImageLayout.DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                        FinalLayout = MgImageLayout.DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                    }
+                );
+            }
 
 			var colorReference = new MgAttachmentReference
 			{
@@ -209,10 +232,14 @@ namespace Magnesium
 				Layout = MgImageLayout.COLOR_ATTACHMENT_OPTIMAL,
 			};
 
-			var depthReference = new MgAttachmentReference{
-				Attachment = 1,
-				Layout = MgImageLayout.DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-			};
+            MgAttachmentReference depthReference =
+                (depthOption != MgDepthFormatOption.USE_NONE)
+                ?   new MgAttachmentReference
+                    {
+                        Attachment = 1,
+                        Layout = MgImageLayout.DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                    }
+                : null;
 
 			var subpass = new MgSubpassDescription
 			{
@@ -226,94 +253,128 @@ namespace Magnesium
 			};
 
 			var renderPassInfo = new MgRenderPassCreateInfo{
-				Attachments = attachments,
+				Attachments = attachments.ToArray(),
 				Subpasses = new []{subpass},
 				Dependencies = null,
 			};
 
-			Result err;
+            Result err;
 
 			IMgRenderPass renderPass;
 			err = mGraphicsConfiguration.Partition.Device.CreateRenderPass(renderPassInfo, null, out renderPass);
 			Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
-			mRenderpass = renderPass;
+            mRenderpassInfo = renderPassInfo;
+            mRenderpass = renderPass;
 		}
 
-		void CreateDepthStencil (IMgCommandBuffer setupCmdBuffer, MgGraphicsDeviceCreateInfo createInfo)
-		{
-            // WILL ignore user-supplied depth 
-            if (!GetSupportedDepthFormat(out MgFormat depthFormat))
+        MgFormat CreateDepthStencil (IMgCommandBuffer setupCmdBuffer, MgDepthFormatOption option, MgFormat overrideDepthStencil, MgGraphicsDeviceCreateInfo createInfo)
+        {
+            if (option == MgDepthFormatOption.USE_NONE)
             {
-                throw new InvalidOperationException("No depth format available");
+                /*
+                 * left as null
+                 * - mImage
+                 * - mDepthStencilImageView
+                 * - mDeviceMemory
+                 */
+                return MgFormat.UNDEFINED;
             }
 
-            var image = new MgImageCreateInfo {
-				ImageType = MgImageType.TYPE_2D,
-				Format = depthFormat,
-				Extent = new MgExtent3D {
-					Width = createInfo.Width,
-					Height = createInfo.Height,
-					Depth = 1
-				},
-				MipLevels = 1,
-				ArrayLayers = 1,
-				Samples = createInfo.Samples,
-				Tiling = MgImageTiling.OPTIMAL,
-				// TODO : multisampled uses MgImageUsageFlagBits.TRANSIENT_ATTACHMENT_BIT | MgImageUsageFlagBits.DEPTH_STENCIL_ATTACHMENT_BIT;
-				Usage = MgImageUsageFlagBits.DEPTH_STENCIL_ATTACHMENT_BIT | MgImageUsageFlagBits.TRANSFER_SRC_BIT,
-				Flags = 0,
-			};
-			var mem_alloc = new MgMemoryAllocateInfo {
-				AllocationSize = 0,
-				MemoryTypeIndex = 0,
-			};
-			MgMemoryRequirements memReqs;
+            MgFormat depthFormat = MgFormat.UNDEFINED;
+
+            if (option == MgDepthFormatOption.AUTO_DETECT)
+            {
+                // WILL ignore user-supplied depth 
+                if (!GetSupportedDepthFormat(out depthFormat))
+                {
+                    throw new InvalidOperationException("No depth format available");
+                }
+            }
+            else if (option == MgDepthFormatOption.USE_OVERRIDE)
+            {
+                depthFormat = overrideDepthStencil;
+            }
+            // TODO : NONE MEANS DISABLE VIEW CREATION
+
+            SetupDepthStencilImageAndMemory(setupCmdBuffer, depthFormat, createInfo);
+
+            return depthFormat;
+        }
+
+        private void SetupDepthStencilImageAndMemory(IMgCommandBuffer setupCmdBuffer, MgFormat depthFormat, MgGraphicsDeviceCreateInfo createInfo)
+        {
+            var image = new MgImageCreateInfo
+            {
+                ImageType = MgImageType.TYPE_2D,
+                Format = depthFormat,
+                Extent = new MgExtent3D
+                {
+                    Width = createInfo.Width,
+                    Height = createInfo.Height,
+                    Depth = 1
+                },
+                MipLevels = 1,
+                ArrayLayers = 1,
+                Samples = createInfo.Samples,
+                Tiling = MgImageTiling.OPTIMAL,
+                // TODO : multisampled uses MgImageUsageFlagBits.TRANSIENT_ATTACHMENT_BIT | MgImageUsageFlagBits.DEPTH_STENCIL_ATTACHMENT_BIT;
+                Usage = MgImageUsageFlagBits.DEPTH_STENCIL_ATTACHMENT_BIT | MgImageUsageFlagBits.TRANSFER_SRC_BIT,
+                Flags = 0,
+            };
+            var mem_alloc = new MgMemoryAllocateInfo
+            {
+                AllocationSize = 0,
+                MemoryTypeIndex = 0,
+            };
+            MgMemoryRequirements memReqs;
 
             Debug.Assert(mGraphicsConfiguration.Partition != null);
 
             Result err;
-			{
-				IMgImage dsImage;
-				err = mGraphicsConfiguration.Partition.Device.CreateImage (image, null, out dsImage);
-				Debug.Assert (err == Result.SUCCESS, err + " != Result.SUCCESS");
-				mImage = dsImage;
-			}
-            mGraphicsConfiguration.Partition.Device.GetImageMemoryRequirements (mImage, out memReqs);
-			mem_alloc.AllocationSize = memReqs.Size;
+            {
+                IMgImage dsImage;
+                err = mGraphicsConfiguration.Partition.Device.CreateImage(image, null, out dsImage);
+                Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
+                mImage = dsImage;
+            }
+            mGraphicsConfiguration.Partition.Device.GetImageMemoryRequirements(mImage, out memReqs);
+            mem_alloc.AllocationSize = memReqs.Size;
             bool memoryTypeFound = mDeviceMemoryProperties.GetMemoryType(memReqs.MemoryTypeBits, MgMemoryPropertyFlagBits.DEVICE_LOCAL_BIT, out uint memTypeIndex);
-            Debug.Assert (memoryTypeFound);
-			mem_alloc.MemoryTypeIndex = memTypeIndex;
-			{
-				IMgDeviceMemory dsDeviceMemory;
-				err = mGraphicsConfiguration.Partition.Device.AllocateMemory (mem_alloc, null, out dsDeviceMemory);
-				Debug.Assert (err == Result.SUCCESS, err + " != Result.SUCCESS");
-				mDeviceMemory = dsDeviceMemory;
-			}
-			err = mImage.BindImageMemory (mGraphicsConfiguration.Partition.Device, mDeviceMemory, 0);
-			Debug.Assert (err == Result.SUCCESS, err + " != Result.SUCCESS");
-			mImageTools.SetImageLayout (setupCmdBuffer, mImage, MgImageAspectFlagBits.DEPTH_BIT | MgImageAspectFlagBits.STENCIL_BIT, MgImageLayout.UNDEFINED, MgImageLayout.DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
-			var depthStencilView = new MgImageViewCreateInfo {
-				Image = mImage,
-				ViewType = MgImageViewType.TYPE_2D,
-				Format = createInfo.DepthStencil,
-				Flags = 0,
-				SubresourceRange = new MgImageSubresourceRange {
-					AspectMask = MgImageAspectFlagBits.DEPTH_BIT | MgImageAspectFlagBits.STENCIL_BIT,
-					BaseMipLevel = 0,
-					LevelCount = 1,
-					BaseArrayLayer = 0,
-					LayerCount = 1,
-				},
-			};
-			{
-				IMgImageView dsView;
-				err = mGraphicsConfiguration.Partition.Device.CreateImageView (depthStencilView, null, out dsView);
-				Debug.Assert (err == Result.SUCCESS, err + " != Result.SUCCESS");
-				mDepthStencilImageView = dsView;
-			}
-		}
+            Debug.Assert(memoryTypeFound);
+            mem_alloc.MemoryTypeIndex = memTypeIndex;
+            {
+                IMgDeviceMemory dsDeviceMemory;
+                err = mGraphicsConfiguration.Partition.Device.AllocateMemory(mem_alloc, null, out dsDeviceMemory);
+                Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
+                mDeviceMemory = dsDeviceMemory;
+            }
+            err = mImage.BindImageMemory(mGraphicsConfiguration.Partition.Device, mDeviceMemory, 0);
+            Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
+            mImageTools.SetImageLayout(setupCmdBuffer, mImage, MgImageAspectFlagBits.DEPTH_BIT | MgImageAspectFlagBits.STENCIL_BIT, MgImageLayout.UNDEFINED, MgImageLayout.DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+            var depthStencilView = new MgImageViewCreateInfo
+            {
+                Image = mImage,
+                ViewType = MgImageViewType.TYPE_2D,
+                Format = depthFormat,
+                Flags = 0,
+                SubresourceRange = new MgImageSubresourceRange
+                {
+                    AspectMask = MgImageAspectFlagBits.DEPTH_BIT | MgImageAspectFlagBits.STENCIL_BIT,
+                    BaseMipLevel = 0,
+                    LevelCount = 1,
+                    BaseArrayLayer = 0,
+                    LayerCount = 1,
+                },
+            };
+            {
+                IMgImageView dsView;
+                err = mGraphicsConfiguration.Partition.Device.CreateImageView(depthStencilView, null, out dsView);
+                Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
+                mDepthStencilImageView = dsView;
+            }
+        }
 
-		private bool mDeviceCreated = false;
+        private bool mDeviceCreated = false;
 		public bool DeviceCreated ()
 		{
 			return mDeviceCreated;

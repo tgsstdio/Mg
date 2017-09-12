@@ -5,6 +5,8 @@ Magnesium and its implementations uses [Semantic Versioning v2.0.0](http://semve
 ## Version 7.0.0
  - Magnesium v7.0.0
  	- Refactored GetMemoryType to MgPhysicalDeviceMemoryProperties and MgGraphicsConfiguration
+	- Changed MgGraphicsDeviceCreateInfo to either auto-detect (default) or override color format of the graphics device
+	- Changed MgGraphicsDeviceCreateInfo to either auto-detect (default), override, or disable (use none) depth/stencil format of the graphics device
 
 ## Version 5.2.8-beta
  - Magnesium v5.2.8 - 2 Sep 2017
