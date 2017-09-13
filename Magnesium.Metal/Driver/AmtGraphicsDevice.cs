@@ -90,14 +90,18 @@ namespace Magnesium.Metal
 			}
 			mDeviceCreated = false;
 
-			// USE DEFAULT 
-			var colorPassFormat = (dsCreateInfo.Color == MgFormat.UNDEFINED)
-				? MgFormat.B8G8R8A8_UNORM : dsCreateInfo.Color;
-			var colorFormat = AmtFormatExtensions.GetPixelFormat(colorPassFormat);
+            // USE DEFAULT 
+            var colorPassFormat =
+                (dsCreateInfo.Color == MgColorFormatOption.USE_OVERRIDE)
+                ? dsCreateInfo.OverrideColor
+                : MgFormat.B8G8R8A8_UNORM;
+;			var colorFormat = AmtFormatExtensions.GetPixelFormat(colorPassFormat);
 
-			// USE DEFAULT
-			var depthPassFormat = (dsCreateInfo.DepthStencil == MgFormat.UNDEFINED)
-				? MgFormat.D24_UNORM_S8_UINT : dsCreateInfo.DepthStencil;
+            // USE DEFAULT
+            var depthPassFormat =
+                (dsCreateInfo.DepthStencil == MgDepthFormatOption.USE_OVERRIDE)
+                ? dsCreateInfo.OverrideDepthStencil
+                : MgFormat.D32_SFLOAT_S8_UINT;
 			var depthFormat = AmtFormatExtensions.GetPixelFormat(depthPassFormat);
 
 			var sampleCount = AmtSampleCountFlagBitExtensions.TranslateSampleCount(dsCreateInfo.Samples);
@@ -105,15 +109,18 @@ namespace Magnesium.Metal
 			ReleaseUnmanagedResources();
 
 			mApplicationView.ColorPixelFormat = colorFormat;
-			mApplicationView.DepthStencilPixelFormat = depthFormat;
+            mApplicationView.DepthStencilPixelFormat = depthFormat;
 			mApplicationView.SampleCount = sampleCount;
 
 			CreateDepthStencilImageView();
 			CreateRenderpass(dsCreateInfo, colorPassFormat, depthPassFormat);
 
 			var bSwapchainCollection = (AmtSwapchainCollection)swapchainCollection;
-			bSwapchainCollection.Format = dsCreateInfo.Color;
-			bSwapchainCollection.Create(setupCmdBuffer, dsCreateInfo.Width, dsCreateInfo.Height);
+			bSwapchainCollection.Format = colorPassFormat;
+            bSwapchainCollection.Create(
+                setupCmdBuffer, dsCreateInfo.Color,
+                dsCreateInfo.OverrideColor, dsCreateInfo.Width,
+                dsCreateInfo.Height);
 
 			mFramebuffers.Create(
 				swapchainCollection,
@@ -150,7 +157,7 @@ namespace Magnesium.Metal
 
 		void CreateRenderpass(MgGraphicsDeviceCreateInfo createInfo, MgFormat colorFormat, MgFormat depthStencilFormat)
 		{
-			bool isStencilFormat = AmtFormatExtensions.IsStencilFormat(createInfo.DepthStencil);
+			bool isStencilFormat = AmtFormatExtensions.IsStencilFormat(depthStencilFormat);
 
 			var attachments = new[]
 			{

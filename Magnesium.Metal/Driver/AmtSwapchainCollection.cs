@@ -58,7 +58,7 @@ namespace Magnesium.Metal
 			private set;
 		}
 
-		public void Create(IMgCommandBuffer cmd, uint width, uint height)
+        public void Create(IMgCommandBuffer cmd, MgColorFormatOption color, MgFormat overrideColor, uint width, uint height)
 		{
 			Width = width;
 			Height = height;
