@@ -104,6 +104,13 @@ namespace MetalSample
 				Magnesium.Metal.AmtPresentationBarrierEntrypoint>(Lifestyle.Singleton);
 			mContainer.Register<Magnesium.IMgPresentationLayer,
 				Magnesium.MgPresentationLayer>(Lifestyle.Singleton);
+
+            mContainer.Register<Magnesium.Metal.IAmtDeviceEntrypoint,
+                AmtDefaultDeviceEntrypoint>(Lifestyle.Singleton);
+            mContainer.Register<Magnesium.Metal.IAmtFenceEntrypoint,
+                AmtFenceEntrypoint>(Lifestyle.Singleton);
+            mContainer.Register<Magnesium.Metal.IAmtSemaphoreEntrypoint,
+                AmtSemaphoreEntrypoint>(Lifestyle.Singleton);
 		}
 
 		void RegisterMagnesiumSingletons(IMTLDevice localDevice)

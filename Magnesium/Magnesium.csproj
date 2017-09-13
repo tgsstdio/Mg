@@ -73,7 +73,7 @@
     <Compile Include="Driver\IMgPresentationLayer.cs" />
     <Compile Include="Driver\MgColorFormatOption.cs" />
     <Compile Include="Driver\MgDefaultGraphicsConfiguration.cs" />
-    <Compile Include="Driver\MgFormatNotSupportedException.cs" />
+    <Compile Include="Driver\MgDepthStencilNotSupportedException.cs" />
     <Compile Include="Driver\MgDepthFormatOption.cs" />
     <Compile Include="Driver\MgFramebufferCollection.cs" />
     <Compile Include="Driver\MgInstanceExtensionOptions.cs" />
@@ -334,6 +334,7 @@
     <Compile Include="Driver\MgRenderPassProfile.cs" />
     <Compile Include="Driver\IMgPresentationBarrierEntrypoint.cs" />
     <Compile Include="Entrypoint\MgPresentationBarrierEntrypoint.cs" />
+    <Compile Include="Driver\MgColorFormatNotSupportedException.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup />

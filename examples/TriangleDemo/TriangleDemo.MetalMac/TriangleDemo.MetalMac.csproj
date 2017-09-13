@@ -50,10 +50,6 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.Mac" />
-    <Reference Include="SimpleInjector">
-      <HintPath>..\packages\SimpleInjector.3.2.7\lib\net45\SimpleInjector.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\AppIcons.appiconset\Contents.json" />
@@ -84,7 +80,7 @@
     <Compile Include="GameViewController.designer.cs">
       <DependentUpon>GameViewController.cs</DependentUpon>
     </Compile>
-    <Compile Include="SpinningCube.cs" />
+    <Compile Include="MetalTriangleDemoShaderPath.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="MainMenu.xib" />
@@ -108,6 +104,10 @@
     <ProjectReference Include="..\..\..\Magnesium.Metal\Magnesium.Metal.csproj">
       <Project>{32B6046B-4432-4DDF-9718-EB5C3A1A0285}</Project>
       <Name>Magnesium.Metal</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TriangleDemo.Shared\TriangleDemo.Shared.csproj">
+      <Project>{7506C510-74B1-4EAF-8281-9DCEEFDBDB5D}</Project>
+      <Name>TriangleDemo.Shared</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />

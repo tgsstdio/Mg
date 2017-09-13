@@ -65,8 +65,11 @@ namespace MetalSample
 
 				var dsCreateInfo = new MgGraphicsDeviceCreateInfo
 				{
-					Color = MgFormat.B8G8R8A8_UNORM,
-					DepthStencil = MgFormat.D32_SFLOAT_S8_UINT,
+					//Color = MgFormat.B8G8R8A8_UNORM,
+                    Color = MgColorFormatOption.AUTO_DETECT,
+					// DepthStencil = MgFormat.D32_SFLOAT_S8_UINT,
+                    DepthStencil = MgDepthFormatOption.AUTO_DETECT,
+
 					Samples = MgSampleCountFlagBits.COUNT_1_BIT,
 					Width = mWidth,
 					Height = mHeight,
@@ -178,7 +181,7 @@ namespace MetalSample
 			const MgMemoryPropertyFlagBits memoryPropertyFlags = MgMemoryPropertyFlagBits.HOST_COHERENT_BIT;
 
 			uint memoryTypeIndex;
-			mConfiguration.Partition.GetMemoryType(
+            mConfiguration.MemoryProperties.GetMemoryType(
 				memReqs.MemoryTypeBits, memoryPropertyFlags, out memoryTypeIndex);
 
 			var memAlloc = new MgMemoryAllocateInfo
@@ -265,7 +268,7 @@ namespace MetalSample
 			const MgMemoryPropertyFlagBits uniformPropertyFlags = MgMemoryPropertyFlagBits.HOST_COHERENT_BIT;
 
 			uint uniformMemoryTypeIndex;
-			mConfiguration.Partition.GetMemoryType(
+            mConfiguration.MemoryProperties.GetMemoryType(
 				uniformsMemReqs.MemoryTypeBits, uniformPropertyFlags, out uniformMemoryTypeIndex);
 
 			var uniformMemAlloc = new MgMemoryAllocateInfo
