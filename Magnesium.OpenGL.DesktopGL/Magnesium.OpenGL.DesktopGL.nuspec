@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>Magnesium.OpenGL.DesktopGL</id>
-    <version>7.0.0-alpha</version>
+    <version>7.1.0-alpha</version>
     <authors>David Young</authors>
     <owners>David Young</owners>
     <licenseUrl>https://github.com/tgsstdio/Mg/blob/master/LICENSE.txt</licenseUrl>
@@ -13,8 +13,8 @@
     <copyright>Copyright (c) 2016, 2017 David Young</copyright>
     <tags>graphics vulkan OpenGL</tags>
 	<dependencies>
-		<dependency id="Magnesium" version="5.2.0" />
-		<dependency id="Magnesium.OpenGL" version="6.1.0" />		
+		<dependency id="Magnesium" version="7.0.0" />
+		<dependency id="Magnesium.OpenGL" version="7.1.0" />		
 		<dependency id="OpenTK" version="2.0.0" />		
 	</dependencies>
   </metadata>

@@ -77,13 +77,25 @@
       <HintPath>..\packages\LightInject.4.1.5\lib\net45\LightInject.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Magnesium, Version=7.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Magnesium.7.1.0-alpha\lib\netstandard1.1\Magnesium.dll</HintPath>
+    </Reference>
+    <Reference Include="Magnesium.OpenGL, Version=7.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Magnesium.OpenGL.7.1.1-alpha\lib\netstandard1.1\Magnesium.OpenGL.dll</HintPath>
+    </Reference>
     <Reference Include="OpenTK, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenTK.2.0.0\lib\net20\OpenTK.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -98,7 +110,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
     <None Include="Shaders\triangle.frag">
@@ -113,17 +127,9 @@
       <Project>{156d7f9d-1243-4edb-9e45-24faf2f40a4c}</Project>
       <Name>Magnesium.OpenGL.DesktopGL</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Magnesium.OpenGL\Magnesium.OpenGL.csproj">
-      <Project>{84924a0f-0d4c-4b0c-b16a-4f26dd838af2}</Project>
-      <Name>Magnesium.OpenGL</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\Magnesium.PresentationSurfaces.OpenTK\Magnesium.PresentationSurfaces.OpenTK.csproj">
       <Project>{0d74bcd6-2669-451f-81ff-488eecc07686}</Project>
       <Name>Magnesium.PresentationSurfaces.OpenTK</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Magnesium\Magnesium.csproj">
-      <Project>{9f9ac448-9d17-43e5-8889-285426290891}</Project>
-      <Name>Magnesium</Name>
     </ProjectReference>
     <ProjectReference Include="..\TriangleDemo.Shared\TriangleDemo.Shared.csproj">
       <Project>{7506c510-74b1-4eaf-8281-9dceefdbdb5d}</Project>

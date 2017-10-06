@@ -77,12 +77,24 @@
       <HintPath>..\packages\LightInject.4.1.5\lib\net45\LightInject.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Magnesium, Version=7.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Magnesium.7.1.0-alpha\lib\netstandard1.1\Magnesium.dll</HintPath>
+    </Reference>
+    <Reference Include="Magnesium.Vulkan, Version=7.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Magnesium.Vulkan.7.1.1-alpha\lib\netstandard1.1\Magnesium.Vulkan.dll</HintPath>
+    </Reference>
     <Reference Include="OpenTK, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenTK.2.0.0\lib\net20\OpenTK.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -116,14 +128,6 @@
     <ProjectReference Include="..\..\..\Magnesium.PresentationSurfaces.OpenTK\Magnesium.PresentationSurfaces.OpenTK.csproj">
       <Project>{0d74bcd6-2669-451f-81ff-488eecc07686}</Project>
       <Name>Magnesium.PresentationSurfaces.OpenTK</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Magnesium.Vulkan\Magnesium.Vulkan.csproj">
-      <Project>{8ef770d0-2dbc-4a8c-bf5d-dc3d429190f8}</Project>
-      <Name>Magnesium.Vulkan</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Magnesium\Magnesium.csproj">
-      <Project>{9f9ac448-9d17-43e5-8889-285426290891}</Project>
-      <Name>Magnesium</Name>
     </ProjectReference>
     <ProjectReference Include="..\TriangleDemo.Shared\TriangleDemo.Shared.csproj">
       <Project>{7506c510-74b1-4eaf-8281-9dceefdbdb5d}</Project>
