@@ -175,12 +175,12 @@ namespace TriangleDemo.MetalMac
 			mApplicationView = (MTKView)View;
 			mContainer.RegisterSingleton<MTKView>(mApplicationView);
 
-			var query = new MacTriangleDemoDisplayInfo
-			{
-				Color = MgFormat.B8G8R8A8_UNORM,
-				Depth = MgFormat.D32_SFLOAT_S8_UINT,
-			};
-			mContainer.RegisterSingleton<ITriangleDemoDisplayInfo>(query);
+			//var query = new MacTriangleDemoDisplayInfo
+			//{
+			//	Color = MgFormat.B8G8R8A8_UNORM,
+			//	Depth = MgFormat.D32_SFLOAT_S8_UINT,
+			//};
+			//mContainer.RegisterSingleton<ITriangleDemoDisplayInfo>(query);
 		}
 
 		#endregion

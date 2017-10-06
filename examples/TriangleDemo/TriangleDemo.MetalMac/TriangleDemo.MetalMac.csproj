@@ -29,6 +29,7 @@
     <UseSGen>true</UseSGen>
     <UseRefCounting>true</UseRefCounting>
     <PlatformTarget>x86</PlatformTarget>
+    <PackageSigningKey>3rd Party Mac Developer Installer</PackageSigningKey>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <Optimize>true</Optimize>
@@ -50,6 +51,9 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.Mac" />
+    <Reference Include="SimpleInjector">
+      <HintPath>packages\SimpleInjector.4.0.11\lib\net45\SimpleInjector.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\AppIcons.appiconset\Contents.json" />
@@ -86,17 +90,10 @@
     <InterfaceDefinition Include="MainMenu.xib" />
   </ItemGroup>
   <ItemGroup>
-    <BundleResource Include="Resources\fragment.metallib">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </BundleResource>
-    <BundleResource Include="Resources\vertex.metallib">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </BundleResource>
-    <BundleResource Include="Resources\Fragment.metal">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </BundleResource>
-  </ItemGroup>
-  <ItemGroup>
+    <ProjectReference Include="..\TriangleDemo.Shared\TriangleDemo.Shared.csproj">
+      <Project>{7506C510-74B1-4EAF-8281-9DCEEFDBDB5D}</Project>
+      <Name>TriangleDemo.Shared</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Magnesium\Magnesium.csproj">
       <Project>{9F9AC448-9D17-43E5-8889-285426290891}</Project>
       <Name>Magnesium</Name>
@@ -105,10 +102,14 @@
       <Project>{32B6046B-4432-4DDF-9718-EB5C3A1A0285}</Project>
       <Name>Magnesium.Metal</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TriangleDemo.Shared\TriangleDemo.Shared.csproj">
-      <Project>{7506C510-74B1-4EAF-8281-9DCEEFDBDB5D}</Project>
-      <Name>TriangleDemo.Shared</Name>
-    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\triangleVert.metal">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </BundleResource>
+    <BundleResource Include="Resources\triangleFrag.metal">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </BundleResource>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
 </Project>
