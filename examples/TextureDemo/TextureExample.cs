@@ -35,8 +35,10 @@ namespace TextureDemo
             var createInfo = new MgGraphicsDeviceCreateInfo
             {
                 Samples = MgSampleCountFlagBits.COUNT_1_BIT,
-                Color = MgFormat.R8G8B8A8_UINT,
-                DepthStencil = MgFormat.X8_D24_UNORM_PACK32,
+                Color = MgColorFormatOption.AUTO_DETECT,
+              //  OverrideColor = MgFormat.R8G8B8A8_UINT,
+                DepthStencil = MgDepthFormatOption.AUTO_DETECT,
+                //OverrideDepthStencil = MgFormat.X8_D24_UNORM_PACK32,
                 Width = 1280,
                 Height = 720,
             };

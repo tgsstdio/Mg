@@ -33,12 +33,27 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Magnesium, Version=7.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\TextureDemo\packages\Magnesium.7.1.0-alpha\lib\netstandard1.1\Magnesium.dll</HintPath>
+    </Reference>
+    <Reference Include="Magnesium.Ktx, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\TextureDemo\packages\Magnesium.Ktx.1.0.5-alpha\lib\netstandard1.1\Magnesium.Ktx.dll</HintPath>
+    </Reference>
+    <Reference Include="Magnesium.Vulkan, Version=7.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\TextureDemo\packages\Magnesium.Vulkan.7.1.1-alpha\lib\netstandard1.1\Magnesium.Vulkan.dll</HintPath>
+    </Reference>
     <Reference Include="SimpleInjector, Version=3.3.2.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
       <HintPath>..\TextureDemo\packages\SimpleInjector.3.3.2\lib\net45\SimpleInjector.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\TextureDemo\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -57,20 +72,6 @@
     </None>
     <None Include="App.config" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Magnesium.Ktx\Magnesium.Ktx.csproj">
-      <Project>{6C74B420-5DE6-43ED-AB99-18AE19342284}</Project>
-      <Name>Magnesium.Ktx</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Magnesium.Vulkan\Magnesium.Vulkan.csproj">
-      <Project>{8ef770d0-2dbc-4a8c-bf5d-dc3d429190f8}</Project>
-      <Name>Magnesium.Vulkan</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Magnesium\Magnesium.csproj">
-      <Project>{9f9ac448-9d17-43e5-8889-285426290891}</Project>
-      <Name>Magnesium</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
