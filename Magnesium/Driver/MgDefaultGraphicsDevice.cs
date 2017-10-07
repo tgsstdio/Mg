@@ -132,12 +132,12 @@ namespace Magnesium
             ReleaseUnmanagedResources();
             mDeviceCreated = false;
 
-            swapchainCollection.Create(setupCmdBuffer, createInfo.Color, createInfo.OverrideColor, createInfo.Width, createInfo.Height);
-            var colorPassFormat = swapchainCollection.Format;
+            swapchainCollection.Create(setupCmdBuffer, createInfo.Swapchain.Color, createInfo.Swapchain.OverrideColor, createInfo.Width, createInfo.Height);
+            var autoColorFormat = swapchainCollection.Format;
 
-            var depthPassFormat = CreateDepthStencil(setupCmdBuffer, createInfo.DepthStencil, createInfo.OverrideDepthStencil, createInfo);
+            var autoDepthStencilFormat = CreateDepthStencil(setupCmdBuffer, createInfo.Swapchain.DepthStencil, createInfo.Swapchain.OverrideDepthStencil, createInfo);
 
-            CreateRenderpass(createInfo, colorPassFormat, createInfo.DepthStencil, depthPassFormat);
+            CreateRenderpass(createInfo, autoColorFormat, autoDepthStencilFormat);
             mFramebuffers.Create(swapchainCollection, mRenderpass, mDepthStencilImageView, createInfo.Width, createInfo.Height);
 
             Scissor = new MgRect2D
@@ -185,14 +185,25 @@ namespace Magnesium
             }
         }
 
-        void CreateRenderpass (MgGraphicsDeviceCreateInfo createInfo, MgFormat colorPassFormat, MgDepthFormatOption depthOption,  MgFormat depthPassFormat)
-		{
+        void CreateRenderpass(MgGraphicsDeviceCreateInfo createInfo, MgFormat autoColorFormat, MgFormat autoDepthStencilFormat)
+        {
             var attachments = new List<MgAttachmentDescription>();
 
-			attachments.Add(			
+            var colorFormat = createInfo.RenderPass.Color == MgColorFormatOption.AUTO_DETECT
+                ? autoColorFormat
+                : createInfo.RenderPass.OverrideColor;
+
+            var depthOption = createInfo.RenderPass.DepthStencil;
+
+            var depthStencilFormat = createInfo.RenderPass.DepthStencil == MgDepthFormatOption.AUTO_DETECT
+                ? autoDepthStencilFormat          
+                // DOESN't MATTER IF NONE, WILL BE IGNORED
+                : createInfo.RenderPass.OverrideDepthStencil;
+
+            attachments.Add(			
 				// Color attachment[0] 
 				new MgAttachmentDescription{
-					Format = colorPassFormat,
+					Format = colorFormat,
 					// TODO : multisampling
 					Samples = MgSampleCountFlagBits.COUNT_1_BIT,
 					LoadOp =  MgAttachmentLoadOp.CLEAR,
@@ -210,7 +221,7 @@ namespace Magnesium
                     // Depth attachment[1]
                     new MgAttachmentDescription
                     {
-                        Format = depthPassFormat,
+                        Format = depthStencilFormat,
                         // TODO : multisampling
                         Samples = MgSampleCountFlagBits.COUNT_1_BIT,
                         LoadOp = MgAttachmentLoadOp.CLEAR,
