@@ -73,6 +73,7 @@
     <Compile Include="Driver\IMgPresentationLayer.cs" />
     <Compile Include="Driver\MgColorFormatOption.cs" />
     <Compile Include="Driver\MgDefaultGraphicsConfiguration.cs" />
+    <Compile Include="Driver\MgDeviceFormatSetting.cs" />
     <Compile Include="Driver\MgFormatNotSupportedException.cs" />
     <Compile Include="Driver\MgDepthFormatOption.cs" />
     <Compile Include="Driver\MgFramebufferCollection.cs" />
