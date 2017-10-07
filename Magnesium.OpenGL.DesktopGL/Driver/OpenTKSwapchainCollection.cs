@@ -1,6 +1,7 @@
 ﻿using System;
 using Magnesium;
 using Magnesium.OpenGL;
+using System.Diagnostics;
 
 namespace Magnesium.OpenGL.DesktopGL
 {
@@ -18,11 +19,11 @@ namespace Magnesium.OpenGL.DesktopGL
 				}
 			};
 			mSwapchain = swapchain;
-		}
+        }
 
-		#region IMgSwapchain implementation
+        #region IMgSwapchain implementation
 
-		public IMgSwapchainKHR Swapchain {
+        public IMgSwapchainKHR Swapchain {
 			get {
 				return mSwapchain;
 			}
@@ -38,11 +39,23 @@ namespace Magnesium.OpenGL.DesktopGL
 			private set;
 		}
 
-		public void Create (IMgCommandBuffer cmd, uint width, uint height)
+		public void Create (IMgCommandBuffer cmd, MgColorFormatOption option, MgFormat overrideColor, uint width, uint height)
 		{
-			Width = width;
+            if (option == MgColorFormatOption.AUTO_DETECT)
+            {
+                Format = MgFormat.R8G8B8A8_UINT;
+            }
+            else
+            {
+                Format = overrideColor;
+            }
+
+            Width = width;
 			Height = height;
-		}
+
+            Debug.Assert(mSwapchain != null);
+            mSwapchain.Initialize((uint)Buffers.Length);
+        }
 
 		public MgSwapchainBuffer[] Buffers {
 			get;

@@ -99,6 +99,8 @@ namespace TriangleDemo
         private IMgCommandBuffer mPostPresentCmdBuffer;
         private IMgPresentationLayer mPresentationLayer;
 
+		//private ITriangleDemoDisplayInfo mDisplayQuery;
+
         public VulkanExample
         (
             IMgGraphicsConfiguration configuration,
@@ -112,6 +114,7 @@ namespace TriangleDemo
             mSwapchains = swapchains;
             mGraphicsDevice = graphicsDevice;
             mPresentationLayer = presentationLayer;
+			Debug.Assert(mPresentationLayer != null);
             mTrianglePath = shaderPath;
 
             mWidth = 1280U;
@@ -123,9 +126,9 @@ namespace TriangleDemo
                 initSwapchain(mWidth, mHeight);
                 prepare();
             }
-            catch(Exception ex)
+            catch(Exception)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -143,14 +146,16 @@ namespace TriangleDemo
                 CommandPool = mConfiguration.Partition.CommandPool,
                 Level = MgCommandBufferLevel.PRIMARY,
             };
-
+			Debug.WriteLine("HELLO");
             mConfiguration.Device.AllocateCommandBuffers(pAllocateInfo, buffers);
 
             var createInfo = new MgGraphicsDeviceCreateInfo
             {
                 Samples = MgSampleCountFlagBits.COUNT_1_BIT,
-                Color = MgFormat.R8G8B8A8_UINT,
-                DepthStencil = MgFormat.D24_UNORM_S8_UINT,
+				// USUALLY MgFormat.R8G8B8A8_UINT,
+				Color =  MgColorFormatOption.AUTO_DETECT,
+				// USUALLY MgFormat.D24_UNORM_S8_UINT
+                DepthStencil = MgDepthFormatOption.AUTO_DETECT,
                 Width = mWidth,
                 Height = mHeight,
             };
@@ -1026,6 +1031,8 @@ namespace TriangleDemo
         // This allows to generate work upfront and from multiple threads, one of the biggest advantages of Vulkan
         void buildCommandBuffers()
         {
+            var colorFormat = mGraphicsDevice.RenderpassInfo.Attachments[0].Format;
+
             var renderPassBeginInfo = new MgRenderPassBeginInfo {
                 RenderPass = mGraphicsDevice.Renderpass,
                 RenderArea = new MgRect2D
@@ -1037,7 +1044,7 @@ namespace TriangleDemo
                 // We use two attachments (color and depth) that are cleared at the start of the subpass and as such we need to set clear values for both
                 ClearValues = new MgClearValue[]
                 {
-                    MgClearValue.FromColorAndFormat(mSwapchains.Format, new MgColor4f(0f, 0f, 0f, 0f)),                    
+                    MgClearValue.FromColorAndFormat(colorFormat, new MgColor4f(0f, 0f, 0f, 0f)),                    
                     new MgClearValue { DepthStencil = new MgClearDepthStencilValue( 1.0f, 0) },
                 },
             };

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using Metal;
 using MetalKit;
 
 namespace Magnesium.Metal
@@ -59,6 +60,15 @@ namespace Magnesium.Metal
 			}
 		}
 
+		private MgRenderPassCreateInfo mRenderpassInfo;
+		public MgRenderPassCreateInfo RenderpassInfo
+		{
+			get
+			{
+				return mRenderpassInfo;
+			}
+		}
+
 		void ReleaseUnmanagedResources()
 		{
 			mRenderpass = null;
@@ -80,19 +90,26 @@ namespace Magnesium.Metal
 			}
 			mDeviceCreated = false;
 
-			var colorFormat = AmtFormatExtensions.GetPixelFormat(dsCreateInfo.Color);
-			var depthFormat = AmtFormatExtensions.GetPixelFormat(dsCreateInfo.DepthStencil);
+			// USE DEFAULT 
+			var colorPassFormat = (dsCreateInfo.Color == MgFormat.UNDEFINED)
+				? MgFormat.B8G8R8A8_UNORM : dsCreateInfo.Color;
+			var colorFormat = AmtFormatExtensions.GetPixelFormat(colorPassFormat);
+
+			// USE DEFAULT
+			var depthPassFormat = (dsCreateInfo.DepthStencil == MgFormat.UNDEFINED)
+				? MgFormat.D24_UNORM_S8_UINT : dsCreateInfo.DepthStencil;
+			var depthFormat = AmtFormatExtensions.GetPixelFormat(depthPassFormat);
+
 			var sampleCount = AmtSampleCountFlagBitExtensions.TranslateSampleCount(dsCreateInfo.Samples);
 
 			ReleaseUnmanagedResources();
 
-			mApplicationView.SampleCount = sampleCount;
-			// FIXME : RUNTIME ISSUE WITH SETTING COLOR FORMAT; SHOULD "FIGURE" OUT APPROPRIATE COLOR FORMAT SOMEHOW
 			mApplicationView.ColorPixelFormat = colorFormat;
 			mApplicationView.DepthStencilPixelFormat = depthFormat;
+			mApplicationView.SampleCount = sampleCount;
 
 			CreateDepthStencilImageView();
-			CreateRenderpass(dsCreateInfo);
+			CreateRenderpass(dsCreateInfo, colorPassFormat, depthPassFormat);
 
 			var bSwapchainCollection = (AmtSwapchainCollection)swapchainCollection;
 			bSwapchainCollection.Format = dsCreateInfo.Color;
@@ -131,7 +148,7 @@ namespace Magnesium.Metal
 			mDepthStencilView = new AmtImageView(mApplicationView.DepthStencilTexture);
 		}
 
-		void CreateRenderpass(MgGraphicsDeviceCreateInfo createInfo)
+		void CreateRenderpass(MgGraphicsDeviceCreateInfo createInfo, MgFormat colorFormat, MgFormat depthStencilFormat)
 		{
 			bool isStencilFormat = AmtFormatExtensions.IsStencilFormat(createInfo.DepthStencil);
 
@@ -139,7 +156,7 @@ namespace Magnesium.Metal
 			{
 				// Color attachment[0] 
 				new MgAttachmentDescription{
-					Format = createInfo.Color,
+					Format = colorFormat,
 					// TODO : multisampling
 					Samples = createInfo.Samples,
 					LoadOp =  MgAttachmentLoadOp.CLEAR,
@@ -151,7 +168,7 @@ namespace Magnesium.Metal
 				},
 				// Depth attachment[1]
 				new MgAttachmentDescription{
-					Format = createInfo.DepthStencil,
+					Format = depthStencilFormat,
 					// TODO : multisampling
 					Samples = createInfo.Samples,
 					LoadOp = MgAttachmentLoadOp.CLEAR,
@@ -203,6 +220,7 @@ namespace Magnesium.Metal
 			err = mConfiguration.Device.CreateRenderPass(renderPassInfo, null, out renderPass);
 			Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
 			mRenderpass = renderPass;
+			mRenderpassInfo = renderPassInfo;
 		}
 
 		public bool DeviceCreated()

@@ -10,7 +10,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MonoMacResourcePrefix>Resources</MonoMacResourcePrefix>
     <UseXamMacFullFramework>true</UseXamMacFullFramework>
-    <ReleaseVersion>5.0.0</ReleaseVersion>
+    <ReleaseVersion>5.1.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -38,13 +38,64 @@
     <IncludeMonoRuntime>false</IncludeMonoRuntime>
     <UseSGen>false</UseSGen>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Build\lib\x86\Debug</OutputPath>
+    <DefineConstants>__UNIFIED__;DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <EnableCodeSigning>false</EnableCodeSigning>
+    <CreatePackage>false</CreatePackage>
+    <EnablePackageSigning>false</EnablePackageSigning>
+    <IncludeMonoRuntime>false</IncludeMonoRuntime>
+    <UseSGen>false</UseSGen>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Build\lib\x64\Debug</OutputPath>
+    <DefineConstants>__UNIFIED__;DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <EnableCodeSigning>false</EnableCodeSigning>
+    <CreatePackage>false</CreatePackage>
+    <EnablePackageSigning>false</EnablePackageSigning>
+    <IncludeMonoRuntime>false</IncludeMonoRuntime>
+    <UseSGen>false</UseSGen>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <Optimize>true</Optimize>
+    <OutputPath>..\Build\lib\x86\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <EnableCodeSigning>false</EnableCodeSigning>
+    <CreatePackage>false</CreatePackage>
+    <EnablePackageSigning>false</EnablePackageSigning>
+    <IncludeMonoRuntime>false</IncludeMonoRuntime>
+    <UseSGen>false</UseSGen>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <Optimize>true</Optimize>
+    <OutputPath>..\Build\lib\x64\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <EnableCodeSigning>false</EnableCodeSigning>
+    <CreatePackage>false</CreatePackage>
+    <EnablePackageSigning>false</EnablePackageSigning>
+    <IncludeMonoRuntime>false</IncludeMonoRuntime>
+    <UseSGen>false</UseSGen>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.Mac" />
-    <Reference Include="Magnesium">
-      <HintPath>..\examples\MetalSample\packages\Magnesium.5.0.4\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -130,7 +181,6 @@
     <Compile Include="Queue\IAmtQueueRenderer.cs" />
     <Compile Include="Queue\AmtQueueSubmitOrder.cs" />
     <Compile Include="Queue\AmtQueueSubmission.cs" />
-    <Compile Include="Queue\IAmtQueueFence.cs" />
     <Compile Include="Queue\IAmtSemaphoreEntrypoint.cs" />
     <Compile Include="Entrypoint\AmtSemaphoreEntrypoint.cs" />
     <Compile Include="Driver\AmtSwapchainCollection.cs" />
@@ -169,20 +219,18 @@
     <Compile Include="Device\AmtDescriptorSetUpdateKey.cs" />
     <Compile Include="Device\AmtDescriptorSetBindingLocator.cs" />
     <Compile Include="CommandBuffer\Recording\AmtCmdBindRenderPassRecord.cs" />
+    <Compile Include="Device\AmtFence.cs" />
+    <Compile Include="Device\IAmtFence.cs" />
+    <Compile Include="Entrypoint\IAmtFenceEntrypoint.cs" />
+    <Compile Include="Entrypoint\IAmtDeviceEntrypoint.cs" />
+    <Compile Include="Entrypoint\AmtDefaultDeviceEntrypoint.cs" />
+    <Compile Include="Entrypoint\AmtFenceEntrypoint.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="CommandBuffer\" />
-    <Folder Include="Entrypoint\" />
-    <Folder Include="Device\" />
-    <Folder Include="GraphicsPipelines\" />
-    <Folder Include="PhysicalDevice\" />
-    <Folder Include="Queue\" />
-    <Folder Include="CommandBuffer\Encoding\" />
-    <Folder Include="CommandBuffer\Recording\" />
-    <Folder Include="Driver\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
+    <ProjectReference Include="..\Magnesium\Magnesium.csproj">
+      <Project>{9f9ac448-9d17-43e5-8889-285426290891}</Project>
+      <Name>Magnesium</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
 </Project>

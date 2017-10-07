@@ -9,18 +9,18 @@
 		}
 		,{
 			"name":"Magnesium.Vulkan",
-			"nuget":"5.0.7-beta",
-			"version":"5.0.7"
+			"nuget":"7.0.0-alpha",
+			"version":"7.0.0"
 		}
 		,{
 			"name":"Magnesium.OpenGL",
-			"nuget":"6.1.4-beta",
-			"version":"6.1.4"
+			"nuget":"7.0.0-alpha",
+			"version":"7.0.0"
 		}			
 		,{
 			"name":"Magnesium.OpenGL.DesktopGL",
-			"nuget":"6.1.4-beta",			
-			"version":"6.1.4"
+			"nuget":"7.0.0-alpha",			
+			"version":"7.0.0"
 		}
 		,{
 			"name":"Magnesium.PresentationSurfaces.OpenTK",
@@ -31,6 +31,6 @@
 			"name":"Magnesium.Ktx",
 			"nuget":"1.0.4-beta",			
 			"version":"1.0.4"
-		}
+		}	
 	]
 }
