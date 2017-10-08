@@ -18,7 +18,7 @@ namespace Magnesium
 		void CmdSetStencilCompareMask(MgStencilFaceFlagBits faceMask, UInt32 compareMask);
 		void CmdSetStencilWriteMask(MgStencilFaceFlagBits faceMask, UInt32 writeMask);
 		void CmdSetStencilReference(MgStencilFaceFlagBits faceMask, UInt32 reference);
-		void CmdBindDescriptorSets(MgPipelineBindPoint pipelineBindPoint, IMgPipelineLayout layout, UInt32 firstSet, UInt32 descriptorSetCount, IMgDescriptorSet[] pDescriptorSets, UInt32[] pDynamicOffsets);
+		void CmdBindDescriptorSets(MgPipelineBindPoint pipelineBindPoint, IMgPipelineLayout layout, UInt32 firstSet, IMgDescriptorSet[] pDescriptorSets, UInt32[] pDynamicOffsets);
 		void CmdBindIndexBuffer(IMgBuffer buffer, UInt64 offset, MgIndexType indexType);
 		void CmdBindVertexBuffers(UInt32 firstBinding, IMgBuffer[] pBuffers, UInt64[] pOffsets);
 		void CmdDraw(UInt32 vertexCount, UInt32 instanceCount, UInt32 firstVertex, UInt32 firstInstance);

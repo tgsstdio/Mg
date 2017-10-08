@@ -181,13 +181,14 @@ namespace Magnesium.Vulkan
 			Interops.vkCmdSetStencilReference(this.Handle, (VkStencilFaceFlags)faceMask, reference);
 		}
 
-		public void CmdBindDescriptorSets(MgPipelineBindPoint pipelineBindPoint, IMgPipelineLayout layout, UInt32 firstSet, UInt32 descriptorSetCount, IMgDescriptorSet[] pDescriptorSets, UInt32[] pDynamicOffsets)
+		public void CmdBindDescriptorSets(MgPipelineBindPoint pipelineBindPoint, IMgPipelineLayout layout, UInt32 firstSet, IMgDescriptorSet[] pDescriptorSets, UInt32[] pDynamicOffsets)
 		{
 
             var bLayout = (VkPipelineLayout)layout;
             Debug.Assert(bLayout != null);
 
             var stride = Marshal.SizeOf(typeof(IntPtr));
+            var descriptorSetCount = pDescriptorSets != null ? (uint) pDescriptorSets.Length : 0U;
             IntPtr sets = Marshal.AllocHGlobal((int)(stride * descriptorSetCount));
 
             var src = new ulong[descriptorSetCount];
