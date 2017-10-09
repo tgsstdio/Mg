@@ -6,27 +6,27 @@ namespace Magnesium
     public delegate void PFN_vkInternalAllocationNotification(
 		IntPtr pUserData,
 		IntPtr size,
-		uint allocationType,
-        uint allocationScope);
+		MgInternalAllocationType allocationType,
+        MgSystemAllocationScope allocationScope);
 
 	public delegate void PFN_vkInternalFreeNotification(
 		IntPtr pUserData,
 		IntPtr size,
-		uint allocationType,
-		uint allocationScope);
+        MgInternalAllocationType allocationType,
+        MgSystemAllocationScope allocationScope);
 
-	public delegate void PFN_vkReallocationFunction(
+	public delegate IntPtr PFN_vkReallocationFunction(
 		IntPtr pUserData,
 		IntPtr pOriginal,
 		IntPtr size,
 		IntPtr alignment,
-		uint allocationScope);
+        MgSystemAllocationScope allocationScope);
 
-	public delegate void PFN_vkAllocationFunction(
+	public delegate IntPtr PFN_vkAllocationFunction(
 		IntPtr pUserData,
 		IntPtr size,
 		IntPtr alignment,
-		uint allocationScope);
+        MgSystemAllocationScope allocationScope);
 
 	public delegate void PFN_vkFreeFunction(
 		IntPtr pUserData,
@@ -34,7 +34,7 @@ namespace Magnesium
 
 	public delegate void PFN_vkVoidFunction();
 
-	public delegate bool PFN_MgDebugReportCallbackEXT(
+	public delegate UInt32 PFN_MgDebugReportCallbackEXT(
 		MgDebugReportFlagBitsEXT flags,
 		MgDebugReportObjectTypeEXT objectType,
 		UInt64 @object,
