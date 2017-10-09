@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>Magnesium</id>
-    <version>5.2.8-beta</version>
+    <version>5.2.8</version>
     <authors>David Young</authors>
     <owners>David Young</owners>
     <licenseUrl>https://github.com/tgsstdio/Mg/blob/master/LICENSE.txt</licenseUrl>

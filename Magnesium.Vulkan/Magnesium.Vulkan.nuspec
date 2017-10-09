@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>Magnesium.Vulkan</id>
-    <version>5.0.7-beta</version>
+    <version>5.0.7</version>
     <authors>David Young</authors>
     <owners>David Young</owners>
     <licenseUrl>https://github.com/tgsstdio/Mg/blob/master/LICENSE.txt</licenseUrl>
