@@ -4,32 +4,32 @@
 	"projects":[
 		{
 			"name":"Magnesium",
-			"nuget":"5.2.8-beta",
+			"nuget":"5.2.8",
 			"version":"5.2.8"
 		}
 		,{
 			"name":"Magnesium.Vulkan",
-			"nuget":"5.0.7-beta",
+			"nuget":"5.0.7",
 			"version":"5.0.7"
 		}
 		,{
 			"name":"Magnesium.OpenGL",
-			"nuget":"6.1.4-beta",
+			"nuget":"6.1.4",
 			"version":"6.1.4"
 		}			
 		,{
 			"name":"Magnesium.OpenGL.DesktopGL",
-			"nuget":"6.1.4-beta",			
-			"version":"6.1.4"
+			"nuget":"6.1.5",			
+			"version":"6.1.5"
 		}
 		,{
 			"name":"Magnesium.PresentationSurfaces.OpenTK",
-			"nuget":"1.0.4-beta",			
+			"nuget":"1.0.4",			
 			"version":"1.0.4"
 		}		
 		,{
 			"name":"Magnesium.Ktx",
-			"nuget":"1.0.4-beta",			
+			"nuget":"1.0.4",			
 			"version":"1.0.4"
 		}
 	]
