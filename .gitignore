@@ -104,3 +104,4 @@ tests/*/*/[Pp]ackages/*
 examples/*/*/[Pp]ackages/*
 */[Pp]ackages/*
 */.vs/*
+*.ide
