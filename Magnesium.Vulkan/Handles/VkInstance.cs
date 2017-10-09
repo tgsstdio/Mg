@@ -66,7 +66,19 @@ namespace Magnesium.Vulkan
 		{
 			Debug.Assert(!mIsDisposed);
 
-			return Interops.vkGetInstanceProcAddr(Handle, pName);
+            var fnNamePtr = IntPtr.Zero;
+            try
+            {
+                fnNamePtr = VkInteropsUtility.NativeUtf8FromString(pName);
+                return Interops.vkGetInstanceProcAddr(Handle, fnNamePtr);
+            }
+            finally
+            {
+                if (fnNamePtr != IntPtr.Zero)
+                {
+                    Marshal.FreeHGlobal(fnNamePtr);
+                }
+            }
 		}
 
 		public Result CreateDisplayPlaneSurfaceKHR(MgDisplaySurfaceCreateInfoKHR createInfo, IMgAllocationCallbacks allocator, out IMgSurfaceKHR pSurface)
@@ -163,7 +175,7 @@ namespace Magnesium.Vulkan
 			Debug.Assert(!mIsDisposed);
 
 			var allocatorHandle = GetAllocatorHandle(allocator);
-            var funcPtr = Interops.vkGetInstanceProcAddr(Handle, "vkCreateDebugReportCallbackEXT");
+            var funcPtr = GetInstanceProcAddr("vkCreateDebugReportCallbackEXT");
 
             if (funcPtr == IntPtr.Zero)
             {

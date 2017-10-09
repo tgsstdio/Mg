@@ -14,12 +14,24 @@ namespace Magnesium.Vulkan
 			Handle = handle;
 		}
 
-		public PFN_vkVoidFunction GetDeviceProcAddr(string pName)
+		public IntPtr GetDeviceProcAddr(string pName)
 		{
 			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
-			return Interops.vkGetDeviceProcAddr(Handle, pName);
-		}
+            IntPtr fnNamePtr = IntPtr.Zero;
+            try
+            {
+                fnNamePtr = VkInteropsUtility.NativeUtf8FromString(pName);
+                return Interops.vkGetDeviceProcAddr(Handle, fnNamePtr);
+            }
+            finally
+            {
+                if (fnNamePtr != IntPtr.Zero)
+                {
+                    Marshal.FreeHGlobal(fnNamePtr);
+                }
+            }
+        }
 
 		/// <summary>
 		/// Allocator is optional

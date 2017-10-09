@@ -32,8 +32,6 @@ namespace Magnesium
 		IntPtr pUserData,
 		IntPtr pMemory);
 
-	public delegate void PFN_vkVoidFunction();
-
 	public delegate UInt32 PFN_MgDebugReportCallbackEXT(
 		MgDebugReportFlagBitsEXT flags,
 		MgDebugReportObjectTypeEXT objectType,
