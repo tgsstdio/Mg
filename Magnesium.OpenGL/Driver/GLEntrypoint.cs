@@ -7,17 +7,19 @@ namespace Magnesium.OpenGL
 	{
 		private readonly IGLQueue mQueue;
 		readonly IGLDeviceEntrypoint mEntrypoint;
-		public GLEntrypoint(IGLQueue queue, IGLDeviceEntrypoint entrypoint)
+        readonly IGLPhysicalDeviceFormatLookupEntrypoint mFormatLookup;
+        public GLEntrypoint(IGLQueue queue, IGLDeviceEntrypoint entrypoint, IGLPhysicalDeviceFormatLookupEntrypoint formatLookup)
 		{
 			mQueue = queue;
 			mEntrypoint = entrypoint;
+            mFormatLookup = formatLookup;
 		}
 
 		#region IMgEntrypoint implementation
 
 		public Result CreateInstance (MgInstanceCreateInfo createInfo, IMgAllocationCallbacks allocator, out IMgInstance instance)
 		{
-			instance = new GLInstance (mQueue, mEntrypoint);
+			instance = new GLInstance (mQueue, mEntrypoint, mFormatLookup);
 			return Result.SUCCESS;
 		}
 
