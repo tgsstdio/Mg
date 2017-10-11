@@ -5,7 +5,7 @@ namespace Magnesium
     // Device
     public interface IMgDevice
 	{
-		PFN_vkVoidFunction GetDeviceProcAddr(string pName);
+		IntPtr GetDeviceProcAddr(string pName);
 		void DestroyDevice(IMgAllocationCallbacks allocator);
 		void GetDeviceQueue(UInt32 queueFamilyIndex, UInt32 queueIndex, out IMgQueue pQueue);
 		Result DeviceWaitIdle();
