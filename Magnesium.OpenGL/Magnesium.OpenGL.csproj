@@ -140,6 +140,7 @@
     <Compile Include="Entrypoint\IGLUniformBlockEntrypoint.cs" />
     <Compile Include="PhysicalDevice\GLMemoryBufferExtensions.cs" />
     <Compile Include="PhysicalDevice\GLMemoryBufferType.cs" />
+    <Compile Include="Entrypoint\IGLPhysicalDeviceFormatLookupEntrypoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Driver\GLEntrypoint.cs" />
     <Compile Include="Queue\GLCmdQueue.cs" />
