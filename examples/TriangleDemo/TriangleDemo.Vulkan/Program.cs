@@ -33,6 +33,7 @@ namespace TriangleDemo.Vulkan
 
                     // SCOPE
                     container.Register<Magnesium.IMgGraphicsDevice, Magnesium.MgDefaultGraphicsDevice>(new PerScopeLifetime());
+                    container.Register<Magnesium.IMgGraphicsDeviceContext, Magnesium.MgDefaultGraphicsDeviceContext>(new PerScopeLifetime());
                     container.Register<VulkanExample>(new PerScopeLifetime());
                     container.Register<Magnesium.IMgPresentationBarrierEntrypoint, Magnesium.MgPresentationBarrierEntrypoint>(new PerScopeLifetime());
 

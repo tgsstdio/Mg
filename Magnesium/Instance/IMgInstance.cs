@@ -6,7 +6,7 @@ namespace Magnesium
 	{
 		void DestroyInstance(IMgAllocationCallbacks allocator);
 		Result EnumeratePhysicalDevices(out IMgPhysicalDevice[] physicalDevices);
-		PFN_vkVoidFunction GetInstanceProcAddr(string pName);
+		IntPtr GetInstanceProcAddr(string pName);
 		Result CreateDisplayPlaneSurfaceKHR(MgDisplaySurfaceCreateInfoKHR createInfo, IMgAllocationCallbacks allocator, out IMgSurfaceKHR pSurface);
 
 		Result CreateAndroidSurfaceKHR(MgAndroidSurfaceCreateInfoKHR pCreateInfo, IMgAllocationCallbacks allocator, out IMgSurfaceKHR pSurface);

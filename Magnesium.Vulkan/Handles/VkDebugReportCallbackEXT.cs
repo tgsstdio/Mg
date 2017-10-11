@@ -6,9 +6,11 @@ namespace Magnesium.Vulkan
 	public class VkDebugReportCallbackEXT : IMgDebugReportCallbackEXT
 	{
 		internal UInt64 Handle { get; private set; }
-		public VkDebugReportCallbackEXT(UInt64 callback)
+        PFN_MgDebugReportCallbackEXT Callback { get; set; }
+		public VkDebugReportCallbackEXT(UInt64 handle, PFN_MgDebugReportCallbackEXT callback)
 		{
-			this.Handle = callback;
+			this.Handle = handle;
+            this.Callback = callback;
 		}
 
 		private bool mIsDisposed = false;
@@ -26,6 +28,7 @@ namespace Magnesium.Vulkan
 			Interops.vkDestroyDebugReportCallbackEXT(bInstance.Handle, this.Handle, allocatorPtr);
 
 			this.Handle = 0UL;
+            this.Callback = null;
 			mIsDisposed = true;
 		}
 	}

@@ -14,10 +14,6 @@ namespace Magnesium
 			get;
 		}
 
-		IMgImageView DepthStencilImageView {
-			get;
-		}
-
         MgRenderPassCreateInfo RenderpassInfo { get; }
 
         IMgRenderPass Renderpass {

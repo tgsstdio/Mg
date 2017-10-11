@@ -4,11 +4,14 @@ namespace Magnesium.OpenGL.Internals
 {
 	public class GLPhysicalDevice : IMgPhysicalDevice
 	{
-		private readonly GLDevice mDevice;
-		public GLPhysicalDevice (IGLQueue queue, IGLDeviceEntrypoint entrypoint)
+        private IGLPhysicalDeviceFormatLookupEntrypoint mFormatLookup;
+        private readonly GLDevice mDevice;
+		public GLPhysicalDevice (IGLQueue queue, IGLDeviceEntrypoint entrypoint, IGLPhysicalDeviceFormatLookupEntrypoint lookup)
 		{
 			mDevice = new GLDevice (queue, entrypoint);
-		}
+            mFormatLookup = lookup;
+
+        }
 
 		#region IMgPhysicalDevice implementation
 		public void GetPhysicalDeviceProperties (out MgPhysicalDeviceProperties pProperties)
@@ -62,10 +65,20 @@ namespace Magnesium.OpenGL.Internals
 		{
 			pFeatures = new MgPhysicalDeviceFeatures ();
 		}
+
 		public void GetPhysicalDeviceFormatProperties (MgFormat format, out MgFormatProperties pFormatProperties)
 		{
-			throw new NotImplementedException ();
-		}
+            if (!mFormatLookup.TryGetValue(format, out pFormatProperties))
+            {
+                pFormatProperties = new MgFormatProperties
+                {
+                    Format = format,
+                    BufferFeatures = 0,
+                    LinearTilingFeatures = 0,
+                    OptimalTilingFeatures = 0,
+                };
+            }
+        }
 		public Result GetPhysicalDeviceImageFormatProperties (MgFormat format, MgImageType type, MgImageTiling tiling, MgImageUsageFlagBits usage, MgImageCreateFlagBits flags, out MgImageFormatProperties pImageFormatProperties)
 		{
 			throw new NotImplementedException ();

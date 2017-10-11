@@ -7,7 +7,7 @@ namespace Magnesium.OpenGL.Internals
     public class GLDevice : IMgDevice
 	{
 		#region IMgDevice implementation
-		public PFN_vkVoidFunction GetDeviceProcAddr (string pName)
+		public IntPtr GetDeviceProcAddr (string pName)
 		{
 			throw new NotImplementedException ();		
 		}

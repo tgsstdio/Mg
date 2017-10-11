@@ -17,10 +17,10 @@ namespace Magnesium.Vulkan
 		internal extern static Result vkEnumeratePhysicalDevices(IntPtr instance, ref UInt32 pPhysicalDeviceCount, [In, Out] IntPtr[] pPhysicalDevices);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static PFN_vkVoidFunction vkGetDeviceProcAddr(IntPtr device, [MarshalAs(UnmanagedType.LPStr)] string pName);
+		internal extern static IntPtr vkGetDeviceProcAddr(IntPtr device, IntPtr pName);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static PFN_vkVoidFunction vkGetInstanceProcAddr(IntPtr instance, [MarshalAs(UnmanagedType.LPStr)] string pName);
+		internal extern static IntPtr vkGetInstanceProcAddr(IntPtr instance, IntPtr pName);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkGetPhysicalDeviceProperties(IntPtr physicalDevice, ref VkPhysicalDeviceProperties pProperties);
@@ -505,8 +505,8 @@ namespace Magnesium.Vulkan
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static VkBool32 vkGetPhysicalDeviceXcbPresentationSupportKHR(IntPtr physicalDevice, UInt32 queueFamilyIndex, ref IntPtr connection, IntPtr visual_id);
 
-		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static Result vkCreateDebugReportCallbackEXT(IntPtr instance, ref VkDebugReportCallbackCreateInfoEXT pCreateInfo, IntPtr pAllocator, ref UInt64 pCallback);
+		//[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		//internal extern static Result vkCreateDebugReportCallbackEXT(IntPtr instance, ref VkDebugReportCallbackCreateInfoEXT pCreateInfo, IntPtr pAllocator, ref UInt64 pCallback);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkDestroyDebugReportCallbackEXT(IntPtr instance, UInt64 callback, IntPtr pAllocator);

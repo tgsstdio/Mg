@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan
 {
@@ -61,11 +62,23 @@ namespace Magnesium.Vulkan
 			return last;
 		}
 
-		public PFN_vkVoidFunction GetInstanceProcAddr(string pName)
+		public IntPtr GetInstanceProcAddr(string pName)
 		{
 			Debug.Assert(!mIsDisposed);
 
-			return Interops.vkGetInstanceProcAddr(Handle, pName);
+            var fnNamePtr = IntPtr.Zero;
+            try
+            {
+                fnNamePtr = VkInteropsUtility.NativeUtf8FromString(pName);
+                return Interops.vkGetInstanceProcAddr(Handle, fnNamePtr);
+            }
+            finally
+            {
+                if (fnNamePtr != IntPtr.Zero)
+                {
+                    Marshal.FreeHGlobal(fnNamePtr);
+                }
+            }
 		}
 
 		public Result CreateDisplayPlaneSurfaceKHR(MgDisplaySurfaceCreateInfoKHR createInfo, IMgAllocationCallbacks allocator, out IMgSurfaceKHR pSurface)
@@ -155,30 +168,41 @@ namespace Magnesium.Vulkan
 			return result;
 		}
 
-		public Result CreateDebugReportCallbackEXT(MgDebugReportCallbackCreateInfoEXT pCreateInfo, IMgAllocationCallbacks allocator, out IMgDebugReportCallbackEXT pCallback)
-		{
-			throw new NotImplementedException();
+        private delegate Result vkCreateDebugReportCallbackEXT(IntPtr instance, ref VkDebugReportCallbackCreateInfoEXT pCreateInfo, IntPtr pAllocator, ref UInt64 pCallback);
 
+        public Result CreateDebugReportCallbackEXT(MgDebugReportCallbackCreateInfoEXT pCreateInfo, IMgAllocationCallbacks allocator, out IMgDebugReportCallbackEXT pCallback)
+		{
 			Debug.Assert(!mIsDisposed);
 
 			var allocatorHandle = GetAllocatorHandle(allocator);
+            var funcPtr = GetInstanceProcAddr("vkCreateDebugReportCallbackEXT");
 
-			var createInfo = new VkDebugReportCallbackCreateInfoEXT
-			{
-				sType = VkStructureType.StructureTypeDebugReportCallbackCreateInfoExt,
-				pNext = IntPtr.Zero,
-				flags = (VkDebugReportFlagsExt)pCreateInfo.Flags,
-				// TODO : figure out translation
-				pfnCallback = null,
-				pUserData = pCreateInfo.UserData,
-			};
+            if (funcPtr == IntPtr.Zero)
+            {
+                pCallback = null;
+                return Result.ERROR_FEATURE_NOT_PRESENT;
+            }
 
-			var callback = 0UL;
-			var result = Interops.vkCreateDebugReportCallbackEXT(Handle, ref createInfo, allocatorHandle, ref callback);
-			// TODO : figure out translation
-			pCallback = new VkDebugReportCallbackEXT(callback);
+            var createFunc = Marshal.GetDelegateForFunctionPointer(funcPtr, typeof(vkCreateDebugReportCallbackEXT)) as vkCreateDebugReportCallbackEXT;
 
-			return result;
+            var bCallback = Marshal.GetFunctionPointerForDelegate(pCreateInfo.PfnCallback);
+
+            var createInfo = new VkDebugReportCallbackCreateInfoEXT
+            {
+                sType = VkStructureType.StructureTypeDebugReportCallbackCreateInfoExt,
+                pNext = IntPtr.Zero,
+                flags = (VkDebugReportFlagsExt)pCreateInfo.Flags,
+                pfnCallback = bCallback,
+                pUserData = pCreateInfo.UserData,
+            };
+
+            var debugHandle = 0UL;
+            var result = createFunc(Handle, ref createInfo, allocatorHandle, ref debugHandle);
+            // TODO : figure out translation
+            pCallback = new VkDebugReportCallbackEXT(debugHandle, pCreateInfo.PfnCallback);
+
+            return result;       
+        
 		}
 
 		public void DebugReportMessageEXT(MgDebugReportFlagBitsEXT flags, MgDebugReportObjectTypeEXT objectType, UInt64 @object, IntPtr location, Int32 messageCode, string pLayerPrefix, string pMessage)
