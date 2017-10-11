@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Magnesium.OpenGL.DesktopGL", "..\Magnesium.OpenGL.DesktopGL\Magnesium.OpenGL.DesktopGL.csproj", "{156D7F9D-1243-4EDB-9E45-24FAF2F40A4C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Magnesium.OpenGL.DesktopGL", "Magnesium.OpenGL.DesktopGL.csproj", "{156D7F9D-1243-4EDB-9E45-24FAF2F40A4C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Magnesium.OpenGL", "..\Magnesium.OpenGL\Magnesium.OpenGL.csproj", "{84924A0F-0D4C-4B0C-B16A-4F26DD838AF2}"
 EndProject
@@ -60,6 +60,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {C5DB37E8-0433-49F6-B4EA-3208E5ACE081}
+		SolutionGuid = {70EEDCB7-7355-4A1A-9A9D-F41D7C66B3F5}
 	EndGlobalSection
 EndGlobal

@@ -21,13 +21,13 @@ Quick Links
 
 | Interface / Implementation | Latest Version  | Description |
 |-----------|----------|-----------|
-| [Magnesium](https://www.nuget.org/packages/Magnesium/) | 5.2.8-beta  | Core C# Vulkan interface with all applications should reference |
-| [Magnesium.Vulkan](https://www.nuget.org/packages/Magnesium.Vulkan/) | 5.0.7-beta | C# interface to Vulkan version 1.0.17 |
+| [Magnesium](https://www.nuget.org/packages/Magnesium/) | 5.2.8  | Core C# Vulkan interface with all applications should reference |
+| [Magnesium.Vulkan](https://www.nuget.org/packages/Magnesium.Vulkan/) | 5.0.7 | C# interface to Vulkan version 1.0.17 |
 | [Magnesium.Metal](https://www.nuget.org/packages/Magnesium.Metal/) | 5.0.0  |iOS polyfill for Magnesium for iOS devices using Apple's own Metal API |
-| [Magnesium.OpenGL](https://www.nuget.org/packages/Magnesium.OpenGL/) | 6.1.4-beta  | OpenGL enumation/polyfill to replicate most of Vulkan entities and features |
-| [Magnesium.OpenGL.DesktopGL](https://www.nuget.org/packages/Magnesium.OpenGL.DesktopGL/) | 6.1.4-beta  | OpenTK / OpenGL 4.5 implementation |
-| [Magnesium.PresentationSurfaces.OpenTK](https://www.nuget.org/packages/Magnesium.PresentationSurfaces.OpenTK/) | 1.0.4-beta  | Contains OpenTK implementation of IMgPresentationSurface for Vulkan & DesktopGL |
-| [Magnesium.Ktx](https://www.nuget.org/packages/Magnesium.Ktx/) | 1.0.4-beta | Loads Khronos .ktx image files |
+| [Magnesium.OpenGL](https://www.nuget.org/packages/Magnesium.OpenGL/) | 6.1.4  | OpenGL enumation/polyfill to replicate most of Vulkan entities and features |
+| [Magnesium.OpenGL.DesktopGL](https://www.nuget.org/packages/Magnesium.OpenGL.DesktopGL/) | 6.1.5  | OpenTK / OpenGL 4.5 implementation |
+| [Magnesium.PresentationSurfaces.OpenTK](https://www.nuget.org/packages/Magnesium.PresentationSurfaces.OpenTK/) | 1.0.4  | Contains OpenTK implementation of IMgPresentationSurface for Vulkan & DesktopGL |
+| [Magnesium.Ktx](https://www.nuget.org/packages/Magnesium.Ktx/) | 1.0.4 | Loads Khronos .ktx image files |
 
 -----------
 
