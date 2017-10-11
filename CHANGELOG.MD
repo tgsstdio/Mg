@@ -13,6 +13,24 @@ Magnesium and its implementations uses [Semantic Versioning v2.0.0](http://semve
 	- Updated CreateDebugReportCallbackEXT w.r.t to GetInstanceProcAddr
 	- Updated GetInstanceProcAddr & GetDeviceProcAddr to accept proc names as null-terminated UTF-8 strings
 
+## Version 5.2.9
+ - Magnesium v5.2.9 - 10 Oct 2017 10 Oct 2017
+SHOULD BE LAST COMPATIBLE VERSION BEFORE INTERFACE CHANGE i.e. Mg 7.0.0
+	- New enum value MgDeviceExtensionOption.SWAPCHAIN_ONLY
+	- MgDefaultGraphicsConfiguration uses MgDeviceExtensionOption.SWAPCHAIN_ONLY as its default option
+	- MgDefaultGraphicsDevice will ignore user specified DepthFormat and use highest available version
+ - Magnesium.OpenGL v6.1.4
+	- Updated w.r.t Magnesium v5.2.9
+ - Magnesium.OpenGL.DesktopGL v6.1.5
+	- Updated w.r.t Magnesium v5.2.9
+	- GL002 - Fixed LineStrip issue (missing enum in switch)
+ - Magnesium.Vulkan v5.0.7
+	- Updated w.r.t Magnesium v5.2.9
+ - Magnesium.PresentationSurfaces.OpenTK v1.0.4
+	- Updated w.r.t Magnesium v5.2.9
+ - Magnesium.Ktx v1.0.4
+	- Updated w.r.t Magnesium v5.2.9	
+	
 ## Version 5.2.8-beta
  - Magnesium v5.2.8 - 2 Sep 2017
 	- New enum value MgDeviceExtensionOption.SWAPCHAIN_ONLY

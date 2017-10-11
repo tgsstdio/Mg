@@ -7,7 +7,7 @@ namespace Magnesium.OpenGL.DesktopGL
 	{
 		#region ICmdDrawCapabilities implementation
 
-		PrimitiveType GetPrimitiveType (MgPrimitiveTopology topology)
+		public static PrimitiveType GetPrimitiveType (MgPrimitiveTopology topology)
 		{
 			switch (topology)
 			{
@@ -21,6 +21,8 @@ namespace Magnesium.OpenGL.DesktopGL
 				return PrimitiveType.LineStrip;
 			case MgPrimitiveTopology.TRIANGLE_FAN:
 				return PrimitiveType.TriangleFan;
+            case MgPrimitiveTopology.TRIANGLE_STRIP:
+                return PrimitiveType.TriangleStrip;
 			case MgPrimitiveTopology.LINE_LIST_WITH_ADJACENCY:
 				return PrimitiveType.LinesAdjacency;
 			case MgPrimitiveTopology.LINE_STRIP_WITH_ADJACENCY:

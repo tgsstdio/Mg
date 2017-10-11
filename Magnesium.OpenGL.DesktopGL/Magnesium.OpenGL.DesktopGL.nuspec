@@ -2,7 +2,11 @@
 <package>
   <metadata>
     <id>Magnesium.OpenGL.DesktopGL</id>
+<<<<<<< HEAD
     <version>7.0.0-alpha</version>
+=======
+    <version>6.1.5</version>
+>>>>>>> refs/remotes/origin/master
     <authors>David Young</authors>
     <owners>David Young</owners>
     <licenseUrl>https://github.com/tgsstdio/Mg/blob/master/LICENSE.txt</licenseUrl>
