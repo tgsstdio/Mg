@@ -141,13 +141,13 @@ namespace Magnesium.OpenGL.Internals
 			MgPipelineBindPoint pipelineBindPoint,
 			IMgPipelineLayout layout,
 			uint firstSet,
-			uint descriptorSetCount,
 			IMgDescriptorSet[] pDescriptorSets,
 			uint[] pDynamicOffsets)
 		{
 			if (pipelineBindPoint == MgPipelineBindPoint.GRAPHICS)
 			{
-				mCommandEncoder.Graphics.BindDescriptorSets(layout,
+                uint descriptorSetCount = pDescriptorSets != null ? (uint) pDescriptorSets.Length : 0U;
+                mCommandEncoder.Graphics.BindDescriptorSets(layout,
 															firstSet,
 															descriptorSetCount,
 															pDescriptorSets,
