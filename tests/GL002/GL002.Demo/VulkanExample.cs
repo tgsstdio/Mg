@@ -125,8 +125,8 @@ namespace TriangleDemo
             var createInfo = new MgGraphicsDeviceCreateInfo
             {
                 Samples = MgSampleCountFlagBits.COUNT_1_BIT,
-                Color = MgFormat.R8G8B8A8_UINT,
-                DepthStencil = MgFormat.D24_UNORM_S8_UINT,
+               // Color = MgFormat.R8G8B8A8_UINT,
+               // DepthStencil = MgFormat.D24_UNORM_S8_UINT,
                 Width = mWidth,
                 Height = mHeight,
             };
@@ -268,7 +268,7 @@ namespace TriangleDemo
 
                 mConfiguration.Device.GetBufferMemoryRequirements(stagingBuffers.vertices.buffer, out MgMemoryRequirements memReqs);
 
-                var isValid = mConfiguration.Partition.GetMemoryType(memReqs.MemoryTypeBits,
+                var isValid = mConfiguration.MemoryProperties.GetMemoryType(memReqs.MemoryTypeBits,
                     MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT | MgMemoryPropertyFlagBits.HOST_COHERENT_BIT,
                     out uint typeIndex);
 
@@ -313,7 +313,7 @@ namespace TriangleDemo
 
                 mConfiguration.Device.GetBufferMemoryRequirements(vertices.buffer, out MgMemoryRequirements memReqs);
 
-                var isValid = mConfiguration.Partition.GetMemoryType(memReqs.MemoryTypeBits, MgMemoryPropertyFlagBits.DEVICE_LOCAL_BIT, out uint typeIndex);
+                var isValid = mConfiguration.MemoryProperties.GetMemoryType(memReqs.MemoryTypeBits, MgMemoryPropertyFlagBits.DEVICE_LOCAL_BIT, out uint typeIndex);
                 Debug.Assert(isValid);
 
                 var memAlloc = new MgMemoryAllocateInfo
@@ -341,7 +341,7 @@ namespace TriangleDemo
 
                 mConfiguration.Device.GetBufferMemoryRequirements(stagingBuffers.indices.buffer, out MgMemoryRequirements memReqs);
 
-                var isValid = mConfiguration.Partition.GetMemoryType(memReqs.MemoryTypeBits,
+                var isValid = mConfiguration.MemoryProperties.GetMemoryType(memReqs.MemoryTypeBits,
                     MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT | MgMemoryPropertyFlagBits.HOST_COHERENT_BIT,
                     out uint typeIndex);
                 Debug.Assert(isValid);
@@ -382,7 +382,7 @@ namespace TriangleDemo
 
                 mConfiguration.Device.GetBufferMemoryRequirements(indices.buffer, out MgMemoryRequirements memReqs);
 
-                var isValid = mConfiguration.Partition.GetMemoryType(memReqs.MemoryTypeBits, MgMemoryPropertyFlagBits.DEVICE_LOCAL_BIT, out uint typeIndex);
+                var isValid = mConfiguration.MemoryProperties.GetMemoryType(memReqs.MemoryTypeBits, MgMemoryPropertyFlagBits.DEVICE_LOCAL_BIT, out uint typeIndex);
                 Debug.Assert(isValid);
 
                 var memAlloc = new MgMemoryAllocateInfo
@@ -551,7 +551,7 @@ namespace TriangleDemo
 
             mConfiguration.Device.GetBufferMemoryRequirements(uniformDataVS.buffer, out MgMemoryRequirements memReqs);
 
-            var isValid = mConfiguration.Partition.GetMemoryType(memReqs.MemoryTypeBits, MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT | MgMemoryPropertyFlagBits.HOST_COHERENT_BIT, out uint typeIndex);
+            var isValid = mConfiguration.MemoryProperties.GetMemoryType(memReqs.MemoryTypeBits, MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT | MgMemoryPropertyFlagBits.HOST_COHERENT_BIT, out uint typeIndex);
             Debug.Assert(isValid);
 
             MgMemoryAllocateInfo allocInfo = new MgMemoryAllocateInfo
@@ -859,7 +859,7 @@ namespace TriangleDemo
                     }
                 );
 
-                cmdBuf.CmdBindDescriptorSets( MgPipelineBindPoint.GRAPHICS, mPipelineLayout, 0, 1, new[] { mDescriptorSet }, null);
+                cmdBuf.CmdBindDescriptorSets( MgPipelineBindPoint.GRAPHICS, mPipelineLayout, 0, new[] { mDescriptorSet }, null);
 
                 cmdBuf.CmdBindPipeline(MgPipelineBindPoint.GRAPHICS, mPipeline);
 

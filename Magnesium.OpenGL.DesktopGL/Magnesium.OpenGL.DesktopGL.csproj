@@ -108,7 +108,6 @@
     <Compile Include="Driver\MgOpenGLException.cs" />
     <Compile Include="Driver\Es20GLSpecificExtensionLookup.cs" />
     <Compile Include="Driver\Es20GLFramebufferHelper.cs" />
-    <Compile Include="Driver\OpenTKGraphicsDevice.cs" />
     <Compile Include="Driver\IMgGraphicsDeviceLogger.cs" />
     <Compile Include="Device\GLDeviceMemory.cs" />
     <Compile Include="Device\FullGLBuffer.cs" />
