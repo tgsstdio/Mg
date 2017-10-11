@@ -35,7 +35,8 @@ namespace TriangleDemo.DesktopGL
                     // SCOPE
                     //container.Register<Magnesium.IMgGraphicsDevice, Magnesium.MgDefaultGraphicsDevice>(new PerScopeLifetime());
                     // IMgGraphicsDevice
-                    container.Register<Magnesium.IMgGraphicsDevice, Magnesium.OpenGL.DesktopGL.OpenTKGraphicsDevice>(new PerScopeLifetime());
+                    container.Register<Magnesium.IMgGraphicsDevice, Magnesium.MgDefaultGraphicsDevice>(new PerScopeLifetime());
+                    container.Register<Magnesium.IMgGraphicsDeviceContext, Magnesium.OpenGL.DesktopGL.DesktopGLGraphicsContext>(new PerScopeLifetime());
 
                     container.Register<VulkanExample>(new PerScopeLifetime());
                     container.Register<Magnesium.IMgPresentationBarrierEntrypoint, Magnesium.MgPresentationBarrierEntrypoint>(new PerScopeLifetime());
@@ -100,6 +101,8 @@ namespace TriangleDemo.DesktopGL
 
             // Magnesium.OpenGL
             container.Register<Magnesium.IMgEntrypoint, Magnesium.OpenGL.GLEntrypoint>(new PerContainerLifetime());
+            // for depth format
+            container.Register<Magnesium.OpenGL.IGLPhysicalDeviceFormatLookupEntrypoint, Magnesium.OpenGL.DesktopGL.FullGLPhysicalDeviceFormatLookupEntrypoint>(new PerContainerLifetime());
 
             // IMgGraphicsDevice
             //container.Register<Magnesium.IMgGraphicsDevice, Magnesium.OpenGL.DesktopGL.OpenTKGraphicsDevice>(new PerContainerLifetime());

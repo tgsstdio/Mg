@@ -4,10 +4,10 @@ namespace Magnesium.OpenGL.Internals
 {
 	public class GLInstance : IMgInstance
 	{
-		public GLInstance (IGLQueue queue, IGLDeviceEntrypoint entrypoint)
+		public GLInstance (IGLQueue queue, IGLDeviceEntrypoint entrypoint, IGLPhysicalDeviceFormatLookupEntrypoint formatLookup)
 		{
 			mPhysicalDevices = new GLPhysicalDevice[1];
-			mPhysicalDevices[0] = new GLPhysicalDevice(queue, entrypoint);
+			mPhysicalDevices[0] = new GLPhysicalDevice(queue, entrypoint, formatLookup);
 		}
 
 		private GLPhysicalDevice[] mPhysicalDevices;

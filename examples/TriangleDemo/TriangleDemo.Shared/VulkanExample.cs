@@ -153,9 +153,9 @@ namespace TriangleDemo
             {
                 Samples = MgSampleCountFlagBits.COUNT_1_BIT,
 				// USUALLY MgFormat.R8G8B8A8_UINT,
-				Color =  MgColorFormatOption.AUTO_DETECT,
+				// Color =  MgColorFormatOption.AUTO_DETECT,
 				// USUALLY MgFormat.D24_UNORM_S8_UINT
-                DepthStencil = MgDepthFormatOption.AUTO_DETECT,
+                // DepthStencil = MgDepthFormatOption.AUTO_DETECT,
                 Width = mWidth,
                 Height = mHeight,
             };
@@ -1088,7 +1088,7 @@ namespace TriangleDemo
                 );
 
                 // Bind descriptor sets describing shader binding points
-                cmdBuf.CmdBindDescriptorSets( MgPipelineBindPoint.GRAPHICS, mPipelineLayout, 0, 1, new[] { mDescriptorSet }, null);
+                cmdBuf.CmdBindDescriptorSets( MgPipelineBindPoint.GRAPHICS, mPipelineLayout, 0, new[] { mDescriptorSet }, null);
 
                 // Bind the rendering pipeline
                 // The pipeline (state object) contains all states of the rendering pipeline, binding it will set all the states specified at pipeline creation time
