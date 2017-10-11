@@ -78,10 +78,16 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Magnesium, Version=5.2.8.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Magnesium.5.2.8-beta\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
+      <HintPath>..\packages\Magnesium.5.2.8\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
+    </Reference>
+    <Reference Include="Magnesium.OpenGL, Version=6.1.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Magnesium.OpenGL.6.1.4\lib\portable45-net45+win8+wpa81\Magnesium.OpenGL.dll</HintPath>
+    </Reference>
+    <Reference Include="Magnesium.OpenGL.DesktopGL, Version=6.1.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Magnesium.OpenGL.DesktopGL.6.1.5\lib\net45\Magnesium.OpenGL.DesktopGL.dll</HintPath>
     </Reference>
     <Reference Include="Magnesium.PresentationSurfaces.OpenTK, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Magnesium.PresentationSurfaces.OpenTK.1.0.4-beta\lib\net45\Magnesium.PresentationSurfaces.OpenTK.dll</HintPath>
+      <HintPath>..\packages\Magnesium.PresentationSurfaces.OpenTK.1.0.4\lib\net45\Magnesium.PresentationSurfaces.OpenTK.dll</HintPath>
     </Reference>
     <Reference Include="OpenTK, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenTK.2.0.0\lib\net20\OpenTK.dll</HintPath>
@@ -118,16 +124,6 @@
     <None Include="Shaders\triangle.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Magnesium.OpenGL.DesktopGL\Magnesium.OpenGL.DesktopGL.csproj">
-      <Project>{156d7f9d-1243-4edb-9e45-24faf2f40a4c}</Project>
-      <Name>Magnesium.OpenGL.DesktopGL</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Magnesium.OpenGL\Magnesium.OpenGL.csproj">
-      <Project>{84924a0f-0d4c-4b0c-b16a-4f26dd838af2}</Project>
-      <Name>Magnesium.OpenGL</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
