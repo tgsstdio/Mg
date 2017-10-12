@@ -12,10 +12,10 @@ namespace Magnesium.OpenGL.DesktopGL
 		{
 			Buffers = new MgSwapchainBuffer[]{ 
 				new MgSwapchainBuffer{
-					View = new GLNullImageView(),
+					View = new GLNullColorImageView(),
 				},
 				new MgSwapchainBuffer{
-					View = new GLNullImageView(),
+					View = new GLNullColorImageView(),
 				}
 			};
 			mSwapchain = swapchain;

@@ -20,7 +20,7 @@ namespace Magnesium
 
 		#region ISwapchain implementation
 
-		public void Setup ()
+		public void SelectFormat (MgColorFormatOption option, MgFormat overrideFormat)
 		{
 			// Get the list of VkFormat's that are supported:
 			MgSurfaceFormatKHR[] surfFormats;
@@ -33,13 +33,28 @@ namespace Magnesium
 			if (surfFormats.Length == 1 && surfFormats[0].Format == MgFormat.UNDEFINED)
 			{
 				Format = MgFormat.B8G8R8A8_UNORM;
-			}
+                mColorSpace = surfFormats[0].ColorSpace;
+            }
 			else
 			{
 				Debug.Assert(surfFormats.Length >= 1);
-				Format = surfFormats[0].Format;
-			}
-			mColorSpace = surfFormats[0].ColorSpace;
+
+                var preferredSurfaceFormat = 0;
+                if (option == MgColorFormatOption.USE_OVERRIDE)
+                {
+                    for (var i = 0; i < surfFormats.Length; i += 1)
+                    {
+                        if (surfFormats[i].Format == overrideFormat)
+                        {
+                            preferredSurfaceFormat = i;
+                            break;
+                        }
+                    }
+                }
+				Format = surfFormats[preferredSurfaceFormat].Format;
+                mColorSpace = surfFormats[preferredSurfaceFormat].ColorSpace;
+            }
+
 		}
 		public MgFormat Format { get; private set; }
 		private MgColorSpaceKHR mColorSpace;
@@ -76,14 +91,7 @@ namespace Magnesium
 			Result err;
 			IMgSwapchainKHR oldSwapchain = mSwapChain;
 
-            if (option == MgColorFormatOption.USE_OVERRIDE)
-            {
-                Format = overrideFormat;
-            }
-            else
-            {
-                Setup();
-            }
+            SelectFormat(option, overrideFormat);            
 
 			// Get physical device surface properties and formats
 			MgSurfaceCapabilitiesKHR surfCaps;

@@ -65,7 +65,7 @@ namespace Magnesium
             mContext.ReleaseDepthStencil();
 		}
 
-        public void Create(IMgCommandBuffer setupCmdBuffer, IMgSwapchainCollection swapchainCollection, MgGraphicsDeviceCreateInfo createInfo)
+        public void Create(IMgCommandBuffer setupCmdBuffer, IMgImageBufferCollection imageCollection, MgGraphicsDeviceCreateInfo createInfo)
         {
             if (setupCmdBuffer == null)
             {
@@ -77,9 +77,9 @@ namespace Magnesium
                 throw new ArgumentNullException(nameof(createInfo));
             }
 
-            if (swapchainCollection == null)
+            if (imageCollection == null)
             {
-                throw new ArgumentNullException(nameof(swapchainCollection));
+                throw new ArgumentNullException(nameof(imageCollection));
             }
 
             mContext.Initialize(createInfo);
@@ -87,15 +87,15 @@ namespace Magnesium
             ReleaseUnmanagedResources();
             mDeviceCreated = false;
 
-            swapchainCollection.Create(setupCmdBuffer, createInfo.Swapchain.Color, createInfo.Swapchain.OverrideColor, createInfo.Width, createInfo.Height);
-            var autoColorFormat = swapchainCollection.Format;
+            imageCollection.Create(setupCmdBuffer, createInfo.Swapchain.Color, createInfo.Swapchain.OverrideColor, createInfo.Width, createInfo.Height);
+            var autoColorFormat = imageCollection.Format;
 
             var autoDepthStencilFormat = SelectDepthStencilFormat(createInfo.Swapchain.DepthStencil, createInfo.Swapchain.OverrideDepthStencil);
             var view = mContext.SetupDepthStencil(createInfo, setupCmdBuffer, autoDepthStencilFormat);
             mContext.SetupContext(createInfo, autoColorFormat, autoDepthStencilFormat);
 
             CreateRenderpass(createInfo, autoColorFormat, autoDepthStencilFormat);
-            mFramebuffers.Create(swapchainCollection, mRenderpass, view, createInfo.Width, createInfo.Height);
+            mFramebuffers.Create(imageCollection, mRenderpass, view, createInfo.Width, createInfo.Height);
 
             Scissor = new MgRect2D
             {

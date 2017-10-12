@@ -67,6 +67,9 @@
     <Compile Include="Device\GLFullFence.cs" />
     <Compile Include="Device\GLNextDescriptorPool.cs" />
     <Compile Include="Driver\DesktopGLGraphicsContext.cs" />
+    <Compile Include="Driver\FullGLOffscreenDepthStencilContext.cs" />
+    <Compile Include="Driver\GLNullDepthStencilImageView.cs" />
+    <Compile Include="Driver\GLNullOffscreenDeviceLocalMemory.cs" />
     <Compile Include="Driver\IGLBackbufferContext.cs" />
     <Compile Include="Driver\OpenTKBackbufferContext.cs" />
     <Compile Include="Entrypoint\FullGLBlitOperationEntrypoint.cs" />
@@ -95,7 +98,7 @@
     <Compile Include="GLSwapchainKHR.cs" />
     <Compile Include="IOpenTKSwapchainKHR.cs" />
     <Compile Include="Driver\OpenTKSwapchainCollection.cs" />
-    <Compile Include="Driver\GLNullImageView.cs" />
+    <Compile Include="Driver\GLNullColorImageView.cs" />
     <Compile Include="Driver\FullGLExtensionLookup.cs" />
     <Compile Include="Driver\Es20FramebufferSupport.cs" />
     <Compile Include="Driver\FullGLFramebufferSupport.cs" />

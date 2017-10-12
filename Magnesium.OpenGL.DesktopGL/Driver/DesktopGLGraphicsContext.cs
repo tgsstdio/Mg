@@ -1,4 +1,5 @@
-﻿using OpenTK;
+﻿using Magnesium.OpenGL.DesktopGL.Internals;
+using OpenTK;
 
 namespace Magnesium.OpenGL.DesktopGL
 {
@@ -11,7 +12,7 @@ namespace Magnesium.OpenGL.DesktopGL
         IGLRenderer mQueueRenderer;
         private IGLBackbufferContext mBBContext;
 
-        private GLNullImageView mDepthStencilImageView;
+        private IMgImageView mDepthStencilImageView;
 
         public DesktopGLGraphicsContext(
             INativeWindow window,
@@ -52,7 +53,12 @@ namespace Magnesium.OpenGL.DesktopGL
 
         public IMgImageView SetupDepthStencil(MgGraphicsDeviceCreateInfo createInfo, IMgCommandBuffer setupCmdBuffer, MgFormat depthFormat)
         {
-            mDepthStencilImageView = new GLNullImageView();
+            mDepthStencilImageView = new GLNullDepthStencilImageView
+            {
+                Format = depthFormat,
+                Width = createInfo.Width,
+                Height = createInfo.Height,
+            };
             return mDepthStencilImageView;
         }
     }
