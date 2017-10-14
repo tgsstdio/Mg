@@ -85,6 +85,7 @@
     <Compile Include="Driver\MgOffscreenDepthStencilContext.cs" />
     <Compile Include="Driver\MgOffscreenColorImageBuffer.cs" />
     <Compile Include="Driver\MgPresentationLayer.cs" />
+    <Compile Include="MgOffscreenGraphicDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Enums\Result.cs" />
     <Compile Include="Device\MgShaderModuleCreateInfo.cs" />

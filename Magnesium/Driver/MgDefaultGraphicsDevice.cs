@@ -104,7 +104,7 @@ namespace Magnesium
             };
 
             // initialize viewport
-            CurrentViewport = new MgViewport
+            Viewport = new MgViewport
             {
                 Width = createInfo.Width,
                 Height = createInfo.Height,
@@ -116,7 +116,7 @@ namespace Magnesium
             mDeviceCreated = true;
         }
 
-        public MgViewport CurrentViewport {
+        public MgViewport Viewport {
 			get;
 			private set;
 		}
