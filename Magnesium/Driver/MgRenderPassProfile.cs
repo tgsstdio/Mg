@@ -70,7 +70,7 @@ namespace Magnesium
 					Input = ExtractAttachmentIndices(sp.InputAttachments),
 					Resolve = ExtractAttachmentIndices(sp.ResolveAttachments),
 					DepthStencil = sp.DepthStencilAttachment != null 
-					                 ? sp.DepthStencilAttachment.Attachment : ~VK_ATTACHMENT_UNUSED, 
+					                 ? sp.DepthStencilAttachment.Attachment : VK_ATTACHMENT_UNUSED, 
 				};
 				subpasses.Add(item);
 			}

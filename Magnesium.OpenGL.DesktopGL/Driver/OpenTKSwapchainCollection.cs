@@ -1,11 +1,9 @@
-﻿using System;
-using Magnesium;
-using Magnesium.OpenGL;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using Magnesium.OpenGL.DesktopGL.Internals;
 
 namespace Magnesium.OpenGL.DesktopGL
 {
-	public class OpenTKSwapchainCollection : IMgSwapchainCollection
+    public class OpenTKSwapchainCollection : IMgSwapchainCollection
 	{
 		private IOpenTKSwapchainKHR mSwapchain;
 		public OpenTKSwapchainCollection (IOpenTKSwapchainKHR swapchain)

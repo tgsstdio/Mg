@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Magnesium.PresentationSurfaces.OpenTK\Magnesium.PresentationSurfaces.OpenTK.csproj" />
+    <ProjectReference Include="..\..\..\Magnesium.Vulkan\Magnesium.Vulkan.csproj" />
+    <ProjectReference Include="..\..\..\Magnesium\Magnesium.csproj" />
+    <ProjectReference Include="..\OffscreenDemo.Shared\OffscreenDemo.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

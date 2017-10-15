@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Magnesium.OpenGL.DesktopGL.Internals;
+using System;
 
 namespace Magnesium.OpenGL.DesktopGL
 {
@@ -19,10 +20,10 @@ namespace Magnesium.OpenGL.DesktopGL
     
         }
 
-        private GLNullColorImageView mDepthStencilView;
+        private GLNullDepthStencilImageView mDepthStencilView;
         public IMgImageView SetupDepthStencil(MgGraphicsDeviceCreateInfo createInfo, IMgCommandBuffer setupCmdBuffer, MgFormat depthFormat)
         {
-            mDepthStencilView = new GLNullColorImageView
+            mDepthStencilView = new GLNullDepthStencilImageView
             {
                 Format = depthFormat,
                 Width = createInfo.Width,
