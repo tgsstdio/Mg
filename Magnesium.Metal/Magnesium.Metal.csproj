@@ -185,7 +185,7 @@
     <Compile Include="Entrypoint\AmtSemaphoreEntrypoint.cs" />
     <Compile Include="Driver\AmtSwapchainCollection.cs" />
     <Compile Include="Driver\AmtPresentationSurface.cs" />
-    <Compile Include="Driver\AmtNullImageView.cs" />
+    <Compile Include="Driver\AmtDynamicBoundedImageView.cs" />
     <Compile Include="CommandBuffer\Encoding\IAmtBlitEncoder.cs" />
     <Compile Include="CommandBuffer\Encoding\AmtBlitEncoder.cs" />
     <Compile Include="CommandBuffer\Encoding\AmtBlitBag.cs" />
@@ -204,7 +204,6 @@
     <Compile Include="Queue\AmtQueueSwapchainInfo.cs" />
     <Compile Include="Entrypoint\IAmtSwapchainKHR.cs" />
     <Compile Include="Entrypoint\AmtSwapchainKHRImageInfo.cs" />
-    <Compile Include="Driver\AmtGraphicsDevice.cs" />
     <Compile Include="Device\AmtDeviceMemory.cs" />
     <Compile Include="Entrypoint\IAmtMetalLibraryLoader.cs" />
     <Compile Include="Entrypoint\AmtMetalByteCodeLibraryLoader.cs" />
@@ -225,6 +224,9 @@
     <Compile Include="Entrypoint\IAmtDeviceEntrypoint.cs" />
     <Compile Include="Entrypoint\AmtDefaultDeviceEntrypoint.cs" />
     <Compile Include="Entrypoint\AmtFenceEntrypoint.cs" />
+    <Compile Include="Driver\AmtGraphicsDeviceContext.cs" />
+    <Compile Include="Entrypoint\IAmtPhysicalDeviceFormatLookupEntrypoint.cs" />
+    <Compile Include="Entrypoint\AmtDefaultPhysicalDeviceFormatLookupEntrypoint.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Magnesium\Magnesium.csproj">

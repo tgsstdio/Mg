@@ -144,13 +144,17 @@ namespace TriangleDemo.MetalMac
 			mContainer.Register<Magnesium.IMgSwapchainCollection,
 				Magnesium.Metal.AmtSwapchainCollection>(Lifestyle.Singleton);
 			mContainer.Register<Magnesium.IMgGraphicsDevice,
-				Magnesium.Metal.AmtGraphicsDevice>(Lifestyle.Singleton);
+                Magnesium.MgDefaultGraphicsDevice>(Lifestyle.Singleton);
+            mContainer.Register<Magnesium.IMgGraphicsDeviceContext,
+                Magnesium.Metal.AmtGraphicsDeviceContext>(Lifestyle.Singleton);
 			mContainer.Register<Magnesium.IMgPresentationSurface,
 				Magnesium.Metal.AmtPresentationSurface>(Lifestyle.Singleton);
 			mContainer.Register<Magnesium.Metal.IAmtMetalLibraryLoader,
-				Magnesium.Metal.AmtMetalTextSourceLibraryLoader>(Lifestyle.Singleton);
+				Magnesium.Metal.AmtMetalTextSourceLibraryLoader>
+                (Lifestyle.Singleton);
 			mContainer.Register<Magnesium.IMgPresentationBarrierEntrypoint,
-				Magnesium.Metal.AmtPresentationBarrierEntrypoint>(Lifestyle.Singleton);
+				Magnesium.Metal.AmtPresentationBarrierEntrypoint>
+                (Lifestyle.Singleton);
 			mContainer.Register<Magnesium.IMgPresentationLayer,
 				Magnesium.MgPresentationLayer>(Lifestyle.Singleton);
 
@@ -159,7 +163,12 @@ namespace TriangleDemo.MetalMac
 			mContainer.Register<Magnesium.Metal.IAmtFenceEntrypoint,
 				Magnesium.Metal.AmtFenceEntrypoint>(Lifestyle.Singleton);
 			mContainer.Register<Magnesium.Metal.IAmtDeviceEntrypoint,
-				Magnesium.Metal.AmtDefaultDeviceEntrypoint>(Lifestyle.Singleton);
+				Magnesium.Metal.AmtDefaultDeviceEntrypoint>
+                (Lifestyle.Singleton);
+            mContainer.Register<
+                Magnesium.Metal.IAmtPhysicalDeviceFormatLookupEntrypoint,
+                Magnesium.Metal.AmtDefaultPhysicalDeviceFormatLookupEntrypoint>
+                (Lifestyle.Singleton);
 
 		}
 
@@ -169,7 +178,8 @@ namespace TriangleDemo.MetalMac
 
 			// METAL SPECIFIC
 			var deviceQuery = new AmtDeviceQuery { NoOfCommandBufferSlots = 5 };
-			mContainer.RegisterSingleton<Magnesium.Metal.IAmtDeviceQuery>(deviceQuery);
+			mContainer.RegisterSingleton<Magnesium.Metal.IAmtDeviceQuery>
+                  (deviceQuery);
 			mContainer.RegisterSingleton<IMTLDevice>(localDevice);
 
 			mApplicationView = (MTKView)View;

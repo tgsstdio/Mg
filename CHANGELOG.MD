@@ -7,7 +7,33 @@ Magnesium and its implementations uses [Semantic Versioning v2.0.0](http://semve
  	- Refactored GetMemoryType to MgPhysicalDeviceMemoryProperties and MgGraphicsConfiguration
 	- Changed MgGraphicsDeviceCreateInfo to either auto-detect (default) or override color format of the graphics device
 	- Changed MgGraphicsDeviceCreateInfo to either auto-detect (default), override, or disable (use none) depth/stencil format of the graphics device
+	- Removed unused variable QueueFamilyIndexCount from MgBufferCreateInfo
+	- Removed descriptorCount from IMgCommandBuffer.CmdBindDescriptorSets because it was redundant
+	- Changed interface of GetInstanceProcAddr & GetDeviceProcAddr to return IntPtr
+	- Removed PFN_vkVoidFunction from Mg library
+	- Updated CreateDebugReportCallbackEXT w.r.t to GetInstanceProcAddr
+	- Updated GetInstanceProcAddr & GetDeviceProcAddr to accept proc names as null-terminated UTF-8 strings
+	- Using one graphics device implementation for both Magnesium.Vulkan and Mg.OpenGL.DesktopGL 
+	- Removed OpenTKGraphicsDevice and its references from examples and tests 
 
+## Version 5.2.9
+ - Magnesium v5.2.9 - 10 Oct 2017 10 Oct 2017
+SHOULD BE LAST COMPATIBLE VERSION BEFORE INTERFACE CHANGE i.e. Mg 7.0.0
+	- New enum value MgDeviceExtensionOption.SWAPCHAIN_ONLY
+	- MgDefaultGraphicsConfiguration uses MgDeviceExtensionOption.SWAPCHAIN_ONLY as its default option
+	- MgDefaultGraphicsDevice will ignore user specified DepthFormat and use highest available version
+ - Magnesium.OpenGL v6.1.4
+	- Updated w.r.t Magnesium v5.2.9
+ - Magnesium.OpenGL.DesktopGL v6.1.5
+	- Updated w.r.t Magnesium v5.2.9
+	- GL002 - Fixed LineStrip issue (missing enum in switch)
+ - Magnesium.Vulkan v5.0.7
+	- Updated w.r.t Magnesium v5.2.9
+ - Magnesium.PresentationSurfaces.OpenTK v1.0.4
+	- Updated w.r.t Magnesium v5.2.9
+ - Magnesium.Ktx v1.0.4
+	- Updated w.r.t Magnesium v5.2.9	
+	
 ## Version 5.2.8-beta
  - Magnesium v5.2.8 - 2 Sep 2017
 	- New enum value MgDeviceExtensionOption.SWAPCHAIN_ONLY

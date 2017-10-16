@@ -21,7 +21,7 @@ namespace Magnesium.Vulkan
 		public VkStructureType sType { get; set; }
 		public IntPtr pNext { get; set; }
 		public VkDebugReportFlagsExt flags { get; set; }
-		public PFN_vkDebugReportCallbackEXT pfnCallback { get; set; }
+		public IntPtr pfnCallback { get; set; }
 		public IntPtr pUserData { get; set; }
 	}
 }

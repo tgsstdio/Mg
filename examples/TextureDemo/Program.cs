@@ -14,7 +14,7 @@ namespace TextureDemo
                 using (var container = new Container ())
                 using (var window = new NativeWindow())
                 {                   
-                    window.Title = "Vulkan Example - Basic indexed triangle";
+                    window.Title = "TextureDemo - KTX Texture demo";
                     window.Visible = true;
 
 
@@ -38,6 +38,7 @@ namespace TextureDemo
                     {
                         container.Register<TextureExample>(Reuse.InResolutionScope);
                         container.Register<Magnesium.IMgGraphicsDevice, Magnesium.MgDefaultGraphicsDevice>(Reuse.InResolutionScope);
+                        container.Register<Magnesium.IMgGraphicsDeviceContext, Magnesium.MgDefaultGraphicsDeviceContext>(Reuse.InResolutionScope);
                         container.Register<Magnesium.IMgPresentationLayer, Magnesium.MgPresentationLayer>(Reuse.InResolutionScope);
                         container.Register<Magnesium.IMgSwapchainCollection, Magnesium.MgSwapchainCollection>(Reuse.InResolutionScope);
                         container.Register<MgGraphicsConfigurationManager>(Reuse.InResolutionScope);
@@ -48,7 +49,7 @@ namespace TextureDemo
                             driver.Initialize(
                                 new Magnesium.MgApplicationInfo
                                 {
-                                    ApplicationName = "Vulkan Example",
+                                    ApplicationName = "TextureDemo",
                                     ApiVersion = Magnesium.MgApplicationInfo.GenerateApiVersion(1, 0, 30),
                                     ApplicationVersion = 1,
                                     EngineName = "Magnesium",

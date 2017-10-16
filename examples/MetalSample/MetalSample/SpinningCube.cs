@@ -66,9 +66,9 @@ namespace MetalSample
 				var dsCreateInfo = new MgGraphicsDeviceCreateInfo
 				{
 					//Color = MgFormat.B8G8R8A8_UNORM,
-                    Color = MgColorFormatOption.AUTO_DETECT,
+                    //Color = MgColorFormatOption.AUTO_DETECT,
 					// DepthStencil = MgFormat.D32_SFLOAT_S8_UINT,
-                    DepthStencil = MgDepthFormatOption.AUTO_DETECT,
+                    //DepthStencil = MgDepthFormatOption.AUTO_DETECT,
 
 					Samples = MgSampleCountFlagBits.COUNT_1_BIT,
 					Width = mWidth,
@@ -610,7 +610,6 @@ namespace MetalSample
 					MgPipelineBindPoint.GRAPHICS,
 					mPipelineLayout,
 					0,
-					1,
 					new[]
 					{
 				mUniformDescriptorSet,

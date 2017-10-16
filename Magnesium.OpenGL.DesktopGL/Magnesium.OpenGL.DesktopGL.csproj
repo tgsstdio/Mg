@@ -66,11 +66,13 @@
   <ItemGroup>
     <Compile Include="Device\GLFullFence.cs" />
     <Compile Include="Device\GLNextDescriptorPool.cs" />
+    <Compile Include="Driver\DesktopGLGraphicsContext.cs" />
     <Compile Include="Driver\IGLBackbufferContext.cs" />
     <Compile Include="Driver\OpenTKBackbufferContext.cs" />
     <Compile Include="Entrypoint\FullGLBlitOperationEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLCmdShaderProgramEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLFullFenceEntrypoint.cs" />
+    <Compile Include="Entrypoint\FullGLPhysicalDeviceFormatLookupEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLPipelineCacheLayoutEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLUniformBlockEntrypoint.cs" />
     <Compile Include="Entrypoint\NullMgGraphicsDeviceLogger.cs" />
@@ -106,7 +108,6 @@
     <Compile Include="Driver\MgOpenGLException.cs" />
     <Compile Include="Driver\Es20GLSpecificExtensionLookup.cs" />
     <Compile Include="Driver\Es20GLFramebufferHelper.cs" />
-    <Compile Include="Driver\OpenTKGraphicsDevice.cs" />
     <Compile Include="Driver\IMgGraphicsDeviceLogger.cs" />
     <Compile Include="Device\GLDeviceMemory.cs" />
     <Compile Include="Device\FullGLBuffer.cs" />
@@ -129,12 +130,21 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="OpenTK, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <HintPath>..\Build\packages\OpenTK.2.0.0\lib\net20\OpenTK.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>packages\OpenTK.2.0.0\lib\net20\OpenTK.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Magnesium.OpenGL\Magnesium.OpenGL.csproj">
+      <Project>{84924a0f-0d4c-4b0c-b16a-4f26dd838af2}</Project>
+      <Name>Magnesium.OpenGL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Magnesium\Magnesium.csproj">
+      <Project>{9f9ac448-9d17-43e5-8889-285426290891}</Project>
+      <Name>Magnesium</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="OpenTK.dll.config" />

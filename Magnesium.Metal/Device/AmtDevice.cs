@@ -415,7 +415,7 @@ namespace Magnesium.Metal
 			throw new NotImplementedException();
 		}
 
-		public PFN_vkVoidFunction GetDeviceProcAddr(string pName)
+		public IntPtr GetDeviceProcAddr(string pName)
 		{
 			throw new NotImplementedException();
 		}
