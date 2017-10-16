@@ -3,17 +3,27 @@ using System.Diagnostics;
 
 namespace Magnesium
 {
-    public class MgOffscreenColorImageBuffer : IMgImageBufferCollection
+    public class MgOffscreenColorImageBuffer : IDisposable
     {
         private IMgGraphicsConfiguration mConfiguration;
         private IMgOffscreenDeviceLocalMemory mDeviceLocal;
         private IMgDeviceMemory mOffscreenMemory;
 
-        public MgOffscreenColorImageBuffer(IMgGraphicsConfiguration configuration, IMgOffscreenDeviceLocalMemory deviceLocal)
+        public MgOffscreenColorImageBuffer(
+            IMgGraphicsConfiguration configuration,
+            IMgOffscreenDeviceLocalMemory deviceLocal,
+            MgFormat format, 
+            uint width,
+            uint height)
         {
             mConfiguration = configuration;
             mDeviceLocal = deviceLocal;
-            mBuffers = new MgSwapchainBuffer[0];
+
+            Width = width;
+            Height = height;
+            Format = format;
+
+            Setup();
         }
 
         public MgFormat Format { get; private set; }
@@ -22,31 +32,19 @@ namespace Magnesium
 
         public uint Height { get; private set; }
 
-        private MgSwapchainBuffer[] mBuffers;
-        public MgSwapchainBuffer[] Buffers
-        {
-            get
-            {
-                return mBuffers;
-            }
-        }
+        private IMgImageView mImageView;
+        public IMgImageView View { get => mImageView; private set => mImageView = value; }
 
-        public void Create(IMgCommandBuffer cmd, MgColorFormatOption option, MgFormat overrideFormat, uint width, uint height)
+        private void Setup()
         {
             // BASED ON 
             // https://github.com/SaschaWillems/Vulkan/blob/master/offscreen/offscreen.cpp
-
-            Width = width;
-            Height = height;
-            Format = overrideFormat;
-
-            ReleaseUnmanagedResources();
-
+            
             // Color attachment
             var image = new MgImageCreateInfo
             {
                 ImageType = MgImageType.TYPE_2D,
-                Format = overrideFormat,
+                Format = Format,
                 Extent = new MgExtent3D
                 {
                     Width = Width,
@@ -66,6 +64,7 @@ namespace Magnesium
 
             var err = mConfiguration.Device.CreateImage(image, null, out IMgImage offscreenImage);
             Debug.Assert(err == Result.SUCCESS);
+            mOffscreenImage = offscreenImage;
 
             mDeviceLocal.Initialize(offscreenImage);
 
@@ -85,15 +84,7 @@ namespace Magnesium
             };
             err = mConfiguration.Device.CreateImageView(colorImageView, null, out IMgImageView offscreenView);
             Debug.Assert(err == Result.SUCCESS);
-
-            mBuffers = new[]
-            {
-               new MgSwapchainBuffer
-               {
-               Image = offscreenImage,
-               View = offscreenView,
-               }
-            };
+            mImageView = offscreenView;
         }
 
         ~MgOffscreenColorImageBuffer()
@@ -109,6 +100,9 @@ namespace Magnesium
 
         // Free all Vulkan resources used by the swap chain
         private bool mIsDisposed = false;
+        private IMgImage mOffscreenImage;
+
+
         protected virtual void Dispose(bool disposing)
         {
             if (mIsDisposed)
@@ -120,12 +114,15 @@ namespace Magnesium
 
         private void ReleaseUnmanagedResources()
         {
-            foreach (var buffer in mBuffers)
+            if (mImageView != null)
             {
-                buffer.View.DestroyImageView(mConfiguration.Device, null);
-                buffer.Image.DestroyImage(mConfiguration.Device, null);
+                mImageView.DestroyImageView(mConfiguration.Device, null);
             }
-            mBuffers = new MgSwapchainBuffer[0];
+
+            if (mOffscreenImage != null)
+            { 
+                mOffscreenImage.DestroyImage(mConfiguration.Device, null);
+            }
 
             mDeviceLocal.FreeMemory();
         }

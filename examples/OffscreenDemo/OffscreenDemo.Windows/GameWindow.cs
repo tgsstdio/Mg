@@ -32,7 +32,7 @@ using System.Diagnostics;
 
 namespace OffscreenDemo
 {
-    class GameWindow : IDisposable
+    public class GameWindow : IDisposable
     {
         const double MaxFrequency = 500.0; // Frequency cap for Update/RenderFrame events
 

@@ -1,25 +1,50 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 
 namespace Magnesium
 {
-    public class MgOffscreenDepthStencilContext : IMgGraphicsDeviceContext
+    public class MgOffscreenDepthStencilContext : IDisposable
     {
         private IMgGraphicsConfiguration mConfiguration;
-        public MgOffscreenDepthStencilContext(IMgGraphicsConfiguration configuration)
+        public MgOffscreenDepthStencilContext(IMgGraphicsConfiguration configuration, MgFormat format, uint width, uint height)
         {
             mConfiguration = configuration;
-        }
-
-        public void Initialize(MgGraphicsDeviceCreateInfo createInfo)
-        {
-
+            
+            Setup(format, width, height);
         }
 
         private IMgImageView mDepthView;
+        public IMgImageView View { get => mDepthView; private set => mDepthView = value; }
+
         private IMgDeviceMemory mDepthStencilMemory;
         private IMgImage mDepthStencilImage;
 
-        public void ReleaseDepthStencil()
+        ~MgOffscreenDepthStencilContext()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private bool mIsDisposed = false;
+
+
+
+        private void Dispose(bool disposing)
+        {
+            if (mIsDisposed)
+                return;
+
+            ReleaseUnmanagedResources();
+
+            mIsDisposed = true;
+        }
+
+        public void ReleaseUnmanagedResources()
         {
             if (mDepthView != null)
             {
@@ -38,12 +63,7 @@ namespace Magnesium
             }
         }
 
-        public void SetupContext(MgGraphicsDeviceCreateInfo createInfo, MgFormat colorPassFormat, MgFormat depthPassFormat)
-        {
-           
-        }
-
-        public IMgImageView SetupDepthStencil(MgGraphicsDeviceCreateInfo createInfo, IMgCommandBuffer setupCmdBuffer, MgFormat depthFormat)
+        private void Setup(MgFormat depthFormat, uint width, uint height)
         {
             // Color attachment
             var image = new MgImageCreateInfo
@@ -52,8 +72,8 @@ namespace Magnesium
                 Format = depthFormat,
                 Extent = new MgExtent3D
                 {
-                    Width = createInfo.Width,
-                    Height = createInfo.Height,
+                    Width = width,
+                    Height = height,
                     Depth = 1,
                 },
                 MipLevels = 1,
@@ -103,8 +123,6 @@ namespace Magnesium
             err = mConfiguration.Device.CreateImageView(colorImageView, null, out IMgImageView offscreenView);
             Debug.Assert(err == Result.SUCCESS);
             mDepthView = offscreenView;
-
-            return mDepthView;
         }
     }
 }

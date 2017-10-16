@@ -7,9 +7,11 @@ namespace OffscreenDemo
     public class Example : IDisposable
     {
         private MgGraphicsConfigurationManager mManager;
-        public Example(MgGraphicsConfigurationManager manager)
+        private IDemoApplication mApp;
+        public Example(MgGraphicsConfigurationManager manager, IDemoApplication app)
         {
             mManager = manager;
+            mApp = app;
 
             var createInfo = new MgGraphicsDeviceCreateInfo
             {
@@ -24,8 +26,7 @@ namespace OffscreenDemo
 
         void Prepare()
         {
-            // ADD STUFF HERE
-
+            mApp.Initialize(mManager.Configuration);
             mPrepared = true;
         }
 
@@ -34,7 +35,8 @@ namespace OffscreenDemo
         {
             if (!mPrepared)
                 return;
-            // updateUniformBuffers();
+
+            mApp.Update();
             Draw();
         }
 
@@ -61,7 +63,7 @@ namespace OffscreenDemo
         }
 
         private void ReleaseUnmanagedResources()
-        {
+        {            
             mManager.Dispose();
         }
 
@@ -69,23 +71,25 @@ namespace OffscreenDemo
         {
             var layerNo = mManager.Layer.BeginDraw(mManager.PostPresentCommand, null);
 
-            // Command buffer to be sumitted to the queue
+            //// Command buffer to be sumitted to the queue
 
-            var submitInfos = new[]
-            {
-                new MgSubmitInfo
-                {
-                    // ADD COMMANDS HERE
-                    CommandBuffers = null,
-                }
-            };
+            //var submitInfos = new[]
+            //{
+            //    new MgSubmitInfo
+            //    {
+            //        // ADD COMMANDS HERE
+            //        CommandBuffers = null,
+            //    }
+            //};
 
-            // Submit to queue
-            var err = mManager.Configuration.Queue.QueueSubmit(submitInfos, null);
-            Debug.Assert(err == Result.SUCCESS);
+            //// Submit to queue
+            //var err = mManager.Configuration.Queue.QueueSubmit(submitInfos, null);
+            //Debug.Assert(err == Result.SUCCESS);
+
+            var signals = mApp.Render(mManager.Configuration.Queue, layerNo);
 
             //VulkanExampleBase::submitFrame();
-            mManager.Layer.EndDraw(new[] { layerNo }, mManager.PrePresentCommand, null);
+            mManager.Layer.EndDraw(new[] { layerNo }, mManager.PrePresentCommand, signals);
         }
     }
 }
