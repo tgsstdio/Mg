@@ -227,6 +227,7 @@
     <Compile Include="Driver\AmtGraphicsDeviceContext.cs" />
     <Compile Include="Entrypoint\IAmtPhysicalDeviceFormatLookupEntrypoint.cs" />
     <Compile Include="Entrypoint\AmtDefaultPhysicalDeviceFormatLookupEntrypoint.cs" />
+    <Compile Include="Driver\AmtGraphicsDevice.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Magnesium\Magnesium.csproj">

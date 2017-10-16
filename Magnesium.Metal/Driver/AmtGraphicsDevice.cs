@@ -92,15 +92,15 @@ namespace Magnesium.Metal
 
             // USE DEFAULT 
             var colorPassFormat =
-                (dsCreateInfo.Color == MgColorFormatOption.USE_OVERRIDE)
-                ? dsCreateInfo.OverrideColor
+                (dsCreateInfo.Swapchain.Color == MgColorFormatOption.USE_OVERRIDE)
+                ? dsCreateInfo.Swapchain.OverrideColor
                 : MgFormat.B8G8R8A8_UNORM;
 ;			var colorFormat = AmtFormatExtensions.GetPixelFormat(colorPassFormat);
 
             // USE DEFAULT
             var depthPassFormat =
-                (dsCreateInfo.DepthStencil == MgDepthFormatOption.USE_OVERRIDE)
-                ? dsCreateInfo.OverrideDepthStencil
+                (dsCreateInfo.Swapchain.DepthStencil == MgDepthFormatOption.USE_OVERRIDE)
+                ? dsCreateInfo.Swapchain.OverrideDepthStencil
                 : MgFormat.D32_SFLOAT_S8_UINT;
 			var depthFormat = AmtFormatExtensions.GetPixelFormat(depthPassFormat);
 
@@ -118,8 +118,8 @@ namespace Magnesium.Metal
 			var bSwapchainCollection = (AmtSwapchainCollection)swapchainCollection;
 			bSwapchainCollection.Format = colorPassFormat;
             bSwapchainCollection.Create(
-                setupCmdBuffer, dsCreateInfo.Color,
-                dsCreateInfo.OverrideColor, dsCreateInfo.Width,
+                setupCmdBuffer, dsCreateInfo.Swapchain.Color,
+                dsCreateInfo.Swapchain.OverrideColor, dsCreateInfo.Width,
                 dsCreateInfo.Height);
 
 			mFramebuffers.Create(
@@ -207,7 +207,7 @@ namespace Magnesium.Metal
 				PipelineBindPoint = MgPipelineBindPoint.GRAPHICS,
 				Flags = 0,
 				InputAttachments = null,
-				ColorAttachmentCount = 1,
+				// ColorAttachmentCount = 1,
 				ColorAttachments = new[] { colorReference },
 				ResolveAttachments = null,
 				DepthStencilAttachment = depthReference,

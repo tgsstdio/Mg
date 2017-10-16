@@ -69,7 +69,7 @@ namespace Magnesium.Metal
 
             Format =  (option == MgColorFormatOption.USE_OVERRIDE)
                 ? overrideColor
-                : MgFormat.B8G8R8A8_UNORM;
+                : MgFormat.B8G8R8A8_UNORM;   
 		}
 
 		public void Dispose()

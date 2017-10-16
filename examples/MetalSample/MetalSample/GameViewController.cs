@@ -94,8 +94,7 @@ namespace MetalSample
 				Magnesium.Metal.AmtEntrypoint>(Lifestyle.Singleton);
 			mContainer.Register<Magnesium.IMgSwapchainCollection,
 				Magnesium.Metal.AmtSwapchainCollection>(Lifestyle.Singleton);
-			mContainer.Register<Magnesium.IMgGraphicsDevice,
-                Magnesium.MgDefaultGraphicsDevice>(Lifestyle.Singleton);
+
 			mContainer.Register<Magnesium.IMgPresentationSurface,
 				Magnesium.Metal.AmtPresentationSurface>(Lifestyle.Singleton);
 			mContainer.Register<Magnesium.Metal.IAmtMetalLibraryLoader,
@@ -118,6 +117,12 @@ namespace MetalSample
                 Magnesium.Metal.IAmtPhysicalDeviceFormatLookupEntrypoint,
                 Magnesium.Metal.AmtDefaultPhysicalDeviceFormatLookupEntrypoint>
                 (Lifestyle.Singleton);
+
+            mContainer.Register<Magnesium.IMgGraphicsDevice,
+                Magnesium.MgDefaultGraphicsDevice>(Lifestyle.Singleton);
+
+            //mContainer.Register<Magnesium.IMgGraphicsDevice,
+                //Magnesium.Metal.AmtGraphicsDevice>(Lifestyle.Singleton);
 		}
 
 		void RegisterMagnesiumSingletons(IMTLDevice localDevice)
