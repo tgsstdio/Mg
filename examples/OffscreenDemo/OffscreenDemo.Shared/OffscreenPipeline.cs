@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace OffscreenDemo
 {
-    public class OffscreenPipeline
+    public class OffscreenPipeline : IScreenQuadPipeline
     {
         private IOffscreenDemoShaderPath mTrianglePath;
         public OffscreenPipeline(IOffscreenDemoShaderPath path)
@@ -12,7 +12,7 @@ namespace OffscreenDemo
             mTrianglePath = path;
         }
 
-        private static IMgDescriptorSetLayout SetupDescriptorSetLayout(IMgGraphicsConfiguration configuration)
+        private static IMgDescriptorSetLayout SetupDescriptorSetLayout(IMgDevice device)
         {
             var descriptorLayout = new MgDescriptorSetLayoutCreateInfo
             {
@@ -30,12 +30,12 @@ namespace OffscreenDemo
                 },
             };
 
-            var err = configuration.Device.CreateDescriptorSetLayout(descriptorLayout, null, out IMgDescriptorSetLayout setLayout);
+            var err = device.CreateDescriptorSetLayout(descriptorLayout, null, out IMgDescriptorSetLayout setLayout);
             Debug.Assert(err == Result.SUCCESS);
             return setLayout;
         }
 
-        private static IMgPipelineLayout SetupPipelineLayout(IMgGraphicsConfiguration configuration, IMgDescriptorSetLayout descSetLayout)
+        private static IMgPipelineLayout SetupPipelineLayout(IMgDevice device, IMgDescriptorSetLayout descSetLayout)
         {
             var pPipelineLayoutCreateInfo = new MgPipelineLayoutCreateInfo
             {
@@ -45,7 +45,7 @@ namespace OffscreenDemo
                  }
             };
 
-            var err = configuration.Device.CreatePipelineLayout(pPipelineLayoutCreateInfo, null, out IMgPipelineLayout pipelineLayout);
+            var err = device.CreatePipelineLayout(pPipelineLayoutCreateInfo, null, out IMgPipelineLayout pipelineLayout);
             Debug.Assert(err == Result.SUCCESS);
             return pipelineLayout;
         }
@@ -55,9 +55,12 @@ namespace OffscreenDemo
         private IMgPipeline mPipeline;
         public void Initialize(IMgGraphicsConfiguration configuration, IMgEffectFramework framework)
         {
-            mDescriptorSetLayout = SetupDescriptorSetLayout(configuration);
-            mPipelineLayout = SetupPipelineLayout(configuration, mDescriptorSetLayout);
-            mPipeline = BuildPipeline(configuration, mPipelineLayout, framework, mTrianglePath);
+            var device = configuration.Device;
+            Debug.Assert(device != null);
+
+            mDescriptorSetLayout = SetupDescriptorSetLayout(device);
+            mPipelineLayout = SetupPipelineLayout(device, mDescriptorSetLayout);
+            mPipeline = BuildPipeline(device, mPipelineLayout, framework, mTrianglePath);
         }
 
         public void BuildCommandBuffers(
@@ -117,7 +120,7 @@ namespace OffscreenDemo
         }
 
         private static IMgPipeline BuildPipeline(
-            IMgGraphicsConfiguration configuration,
+            IMgDevice device,
             IMgPipelineLayout pipelineLayout,
             IMgEffectFramework framework,
             IOffscreenDemoShaderPath path)
@@ -132,7 +135,7 @@ namespace OffscreenDemo
                         Code = vertFs,
                         CodeSize = new UIntPtr((ulong)vertFs.Length),
                     };
-                    configuration.Device.CreateShaderModule(vsCreateInfo, null, out vsModule);
+                    device.CreateShaderModule(vsCreateInfo, null, out vsModule);
                 }
 
                 IMgShaderModule fsModule;
@@ -142,7 +145,7 @@ namespace OffscreenDemo
                         Code = fragFs,
                         CodeSize = new UIntPtr((ulong)fragFs.Length),
                     };
-                    configuration.Device.CreateShaderModule(fsCreateInfo, null, out fsModule);
+                    device.CreateShaderModule(fsCreateInfo, null, out fsModule);
                 }
 
                 var pipelineCreateInfo = new MgGraphicsPipelineCreateInfo
@@ -266,7 +269,7 @@ namespace OffscreenDemo
                     },
                 };
 
-                var err = configuration.Device.CreateGraphicsPipelines(
+                var err = device.CreateGraphicsPipelines(
                     null,
                     new[] { pipelineCreateInfo },
                     null,
@@ -274,8 +277,8 @@ namespace OffscreenDemo
 
                 Debug.Assert(err == Result.SUCCESS);
 
-                vsModule.DestroyShaderModule(configuration.Device, null);
-                fsModule.DestroyShaderModule(configuration.Device, null);
+                vsModule.DestroyShaderModule(device, null);
+                fsModule.DestroyShaderModule(device, null);
 
                 return pipelines[0];
             }
