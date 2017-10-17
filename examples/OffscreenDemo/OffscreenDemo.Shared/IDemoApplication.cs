@@ -1,13 +1,19 @@
 ﻿using Magnesium;
+using System;
 
 namespace OffscreenDemo
 {
     public interface IDemoApplication
     {
-        void Initialize(IMgGraphicsConfiguration configuration);
+        MgGraphicsDeviceCreateInfo Initialize();
+
+        void Prepare(IMgGraphicsConfiguration configuration, IMgGraphicsDevice screen);
 
         void Update();
 
         IMgSemaphore[] Render(IMgQueue queue, uint layerNo);
+
+        void ReleaseManagedResources();
+        void ReleaseUnmanagedResources();
     }
 }

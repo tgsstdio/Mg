@@ -14,7 +14,17 @@ namespace OffscreenDemo
             mToScreen = toScreen;
         }
 
-        public void Initialize(IMgGraphicsConfiguration configuration)
+        public MgGraphicsDeviceCreateInfo Initialize()
+        {
+            return new MgGraphicsDeviceCreateInfo
+            {
+                Samples = MgSampleCountFlagBits.COUNT_1_BIT,
+                Width = 1280,
+                Height = 720,
+            };
+        }
+
+        public void Prepare(IMgGraphicsConfiguration configuration, IMgGraphicsDevice screen)
         {
             const uint WIDTH = 1280;
             const uint HEIGHT = 720;
@@ -101,6 +111,16 @@ namespace OffscreenDemo
         public void Update()
         {
             throw new NotImplementedException();
+        }
+
+        public void ReleaseManagedResources()
+        {
+  
+        }
+
+        public void ReleaseUnmanagedResources()
+        {
+        
         }
     }
 }

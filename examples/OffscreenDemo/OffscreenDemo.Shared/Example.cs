@@ -13,12 +13,7 @@ namespace OffscreenDemo
             mManager = manager;
             mApp = app;
 
-            var createInfo = new MgGraphicsDeviceCreateInfo
-            {
-                Samples = MgSampleCountFlagBits.COUNT_1_BIT,
-                Width = 1280,
-                Height = 720,
-            };
+            var createInfo = mApp.Initialize();
 
             mManager.Initialize(createInfo);
             Prepare();
@@ -26,7 +21,7 @@ namespace OffscreenDemo
 
         void Prepare()
         {
-            mApp.Initialize(mManager.Configuration);
+            mApp.Prepare(mManager.Configuration, mManager.Graphics);
             mPrepared = true;
         }
 
@@ -57,13 +52,19 @@ namespace OffscreenDemo
             if (mIsDisposed)
                 return;
 
+            if (disposing)
+            {
+                mApp.ReleaseManagedResources();
+            }
+
             ReleaseUnmanagedResources();
 
             mIsDisposed = true;
         }
 
         private void ReleaseUnmanagedResources()
-        {            
+        {
+            mApp.ReleaseUnmanagedResources();
             mManager.Dispose();
         }
 
