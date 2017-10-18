@@ -70,6 +70,89 @@ namespace OffscreenDemo
             return pLayout;
         }
 
+        static void BuildCommandBuffers(
+            IMgEffectFramework framework,
+            IMgCommandBuffer[] drawCmdBuffers,
+            IMgDevice device,
+            IMgPipeline pipeline,
+            IMgPipelineLayout pipelineLayout,
+            IMgDescriptorSet descSet,
+            IMgBuffer vertices,
+            IMgBuffer indices,
+            uint indexCount
+        )
+        {
+            var cmdBufInfo = new MgCommandBufferBeginInfo
+            {
+
+            };
+
+            var colorFormat = framework.RenderpassInfo.Attachments[0].Format;
+
+            var renderPassBeginInfo = new MgRenderPassBeginInfo
+            {
+                RenderPass = framework.Renderpass,
+                RenderArea = framework.Scissor,
+                ClearValues = new MgClearValue[]
+                {
+                    MgClearValue.FromColorAndFormat(colorFormat, new MgColor4f(0f, 0f, 0f, 0f)),
+                    new MgClearValue { DepthStencil = new MgClearDepthStencilValue(1024f, 0) }
+                },
+            };
+
+            //uint cmdBufferCount;
+            //MgCommandBufferAllocateInfo cmdBufAllocateInfo;
+            //InitCommandBuffers(framework, out drawCmdBuffers, out cmdBufferCount, out cmdBufAllocateInfo);
+
+            Debug.Assert(device != null);
+
+            for (var i = 0; i < framework.Framebuffers.Length; ++i)
+            {
+                // Set target frame buffer
+                renderPassBeginInfo.Framebuffer = framework.Framebuffers[i];
+
+                var cmdBuf = drawCmdBuffers[i];
+
+                var err = cmdBuf.BeginCommandBuffer(cmdBufInfo);
+                Debug.Assert(err == Result.SUCCESS);
+
+                cmdBuf.CmdBeginRenderPass(renderPassBeginInfo, MgSubpassContents.INLINE);
+
+                cmdBuf.CmdSetViewport(0, new[] { framework.Viewport });
+
+                cmdBuf.CmdSetScissor(0, new[] { framework.Scissor });
+
+                cmdBuf.CmdBindDescriptorSets(MgPipelineBindPoint.GRAPHICS, pipelineLayout, 0, new [] { descSet }, null);
+                cmdBuf.CmdBindPipeline(MgPipelineBindPoint.GRAPHICS, pipeline);
+
+                cmdBuf.CmdBindVertexBuffers(0, new[] { vertices }, new[] { 0UL });
+                cmdBuf.CmdBindIndexBuffer(indices, 0, MgIndexType.UINT32);
+
+                cmdBuf.CmdDrawIndexed(indexCount, 1, 0, 0, 0);
+
+                cmdBuf.CmdEndRenderPass();
+
+                err = cmdBuf.EndCommandBuffer();
+                Debug.Assert(err == Result.SUCCESS);
+            }
+        }
+
+        private static void InitCommandBuffers(IMgDevice device, IMgEffectFramework framework, IMgCommandBuffer[] drawCmdBuffers, uint cmdBufferCount, IMgCommandPool pool)
+        {
+            // cmdBufferCount = (uint)framework.Framebuffers.Length;
+           // drawCmdBuffers = new IMgCommandBuffer[cmdBufferCount];
+
+            var cmdBufAllocateInfo = new MgCommandBufferAllocateInfo
+            {
+                CommandBufferCount = cmdBufferCount,
+                CommandPool = pool,
+                Level = MgCommandBufferLevel.PRIMARY,
+            };
+
+            var err = device.AllocateCommandBuffers(cmdBufAllocateInfo, drawCmdBuffers);
+            Debug.Assert(err == Result.SUCCESS);
+        }
+
         private static IMgPipeline BuildPipeline(
             IMgDevice device,
             IMgEffectFramework framework,

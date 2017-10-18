@@ -79,7 +79,9 @@ namespace OffscreenDemo
             mToScreen.Initialize(configuration, offscreen);
 
             // 4. init triangle 
+
             // 5. init screen quad
+
             // 6. init command buffers
            // mRenderToTexture.BuildCommandBuffers(offscreen, )
 

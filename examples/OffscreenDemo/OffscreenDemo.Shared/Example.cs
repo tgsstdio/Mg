@@ -1,6 +1,4 @@
-﻿using Magnesium;
-using System;
-using System.Diagnostics;
+﻿using System;
 
 namespace OffscreenDemo
 {
@@ -32,7 +30,7 @@ namespace OffscreenDemo
                 return;
 
             mApp.Update();
-            Draw();
+            RenderFrame();
         }
 
         ~Example()
@@ -68,28 +66,12 @@ namespace OffscreenDemo
             mManager.Dispose();
         }
 
-        private void Draw()
+        private void RenderFrame()
         {
             var layerNo = mManager.Layer.BeginDraw(mManager.PostPresentCommand, null);
 
-            //// Command buffer to be sumitted to the queue
-
-            //var submitInfos = new[]
-            //{
-            //    new MgSubmitInfo
-            //    {
-            //        // ADD COMMANDS HERE
-            //        CommandBuffers = null,
-            //    }
-            //};
-
-            //// Submit to queue
-            //var err = mManager.Configuration.Queue.QueueSubmit(submitInfos, null);
-            //Debug.Assert(err == Result.SUCCESS);
-
             var signals = mApp.Render(mManager.Configuration.Queue, layerNo);
 
-            //VulkanExampleBase::submitFrame();
             mManager.Layer.EndDraw(new[] { layerNo }, mManager.PrePresentCommand, signals);
         }
     }

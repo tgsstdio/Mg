@@ -1,6 +1,7 @@
 ﻿using Magnesium;
 using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace OffscreenDemo
 {
@@ -61,6 +62,119 @@ namespace OffscreenDemo
             mDescriptorSetLayout = SetupDescriptorSetLayout(device);
             mPipelineLayout = SetupPipelineLayout(device, mDescriptorSetLayout);
             mPipeline = BuildPipeline(device, mPipelineLayout, framework, mTrianglePath);
+        }
+
+        class DrawItem
+        {
+            public IMgEffectFramework Framework { get; set; }
+            public IMgCommandBuffer[] drawCmdBuffers { get; set; }
+            public IMgDescriptorSet DescriptorSet { get; set; }
+            public IMgBuffer Vertices { get; set; }
+            public IMgBuffer Indices { get; set; }
+            public uint IndexCount { get; set; }
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        struct TriangleVertex
+        {
+            public Vector3 position;
+            public Vector3 color;
+        };
+
+        class StagingLevel
+        {
+            public MgStagingBuffer Vertices { get; set; }
+            public MgStagingBuffer Indices { get; set; }
+        }
+
+        void PrepareVertices(IMgGraphicsConfiguration configuration)
+        {
+            var corners = new []
+            {
+                new TriangleVertex{
+                    position =new Vector3(1.0f,  1.0f, 0.0f),
+                    color = new Vector3( 1.0f, 0.0f, 0.0f )
+                },
+
+                new TriangleVertex{
+                    position =new Vector3(-1.0f,  1.0f, 0.0f ),
+                    color = new Vector3( 0.0f, 1.0f, 0.0f )
+                },
+
+                new TriangleVertex{
+                    position =new Vector3( 0.0f, -1.0f, 0.0f ),
+                    color = new Vector3( 0.0f, 0.0f, 1.0f )
+                },
+            };
+
+            var structSize = Marshal.SizeOf(typeof(TriangleVertex));
+            var vertexBufferSize = (ulong)(corners.Length * structSize);
+
+            // Setup indices
+            UInt32[] indexBuffer = { 0, 1, 2 };
+            var indexBufferSize = (ulong) indexBuffer.Length * sizeof(UInt32);
+
+            var stagingBuffers = new StagingLevel
+            {
+                Vertices = new MgStagingBuffer(configuration, vertexBufferSize),
+                Indices = new MgStagingBuffer(configuration, indexBufferSize),
+            };
+
+            // DEVICE_LOCAL vertex buffer
+
+            // DEVICE_LOCAL index buffer 
+
+            TransferToDeviceLocal(configuration, stagingBuffers);
+        }
+
+        void TransferToDeviceLocal(IMgGraphicsConfiguration configuration, StagingLevel stagingBuffers)
+        {
+            // TRANSFER DATA
+            IMgCommandBuffer copyCmd = null;
+            IMgBuffer dstBuffer = null;
+
+            var cmdBufInfo = new MgCommandBufferBeginInfo { };
+
+            var err = copyCmd.BeginCommandBuffer(cmdBufInfo);
+            Debug.Assert(err == Result.SUCCESS);
+
+            ulong vertexOffset = 0UL;
+            stagingBuffers.Vertices.Transfer(
+                copyCmd,
+                dstBuffer,
+                vertexOffset);
+
+            ulong indexOffset = 0UL;
+            stagingBuffers.Indices.Transfer(
+                copyCmd,
+                dstBuffer,
+                indexOffset);
+
+            err = copyCmd.EndCommandBuffer();
+            Debug.Assert(err == Result.SUCCESS);
+
+            var fenceCreateInfo = new MgFenceCreateInfo { };
+            err = configuration.Device.CreateFence(fenceCreateInfo, null, out IMgFence fence);
+            Debug.Assert(err == Result.SUCCESS);
+            var submitInfo = new MgSubmitInfo
+            {
+                CommandBuffers = new[] { copyCmd }
+            };
+
+            // Submit to the queue
+            err = configuration.Queue.QueueSubmit(new[] { submitInfo }, fence);
+            Debug.Assert(err == Result.SUCCESS);
+
+            // Mg.OpenGL
+            err = configuration.Queue.QueueWaitIdle();
+            Debug.Assert(err == Result.SUCCESS);
+
+            // Wait for the fence to signal that command buffer has finished executing
+            err = configuration.Device.WaitForFences(new[] { fence }, true, ulong.MaxValue);
+            Debug.Assert(err == Result.SUCCESS);
+
+            stagingBuffers.Vertices.Destroy(configuration.Device);
+            stagingBuffers.Indices.Destroy(configuration.Device);
         }
 
         public void BuildCommandBuffers(
