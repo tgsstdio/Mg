@@ -1,4 +1,5 @@
 ﻿using Magnesium;
+using Magnesium.Utilities;
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -54,6 +55,7 @@ namespace OffscreenDemo
         private IMgDescriptorSetLayout mDescriptorSetLayout;
         private IMgPipelineLayout mPipelineLayout;
         private IMgPipeline mPipeline;
+
         public void Initialize(IMgGraphicsConfiguration configuration, IMgEffectFramework framework)
         {
             var device = configuration.Device;
@@ -64,13 +66,21 @@ namespace OffscreenDemo
             mPipeline = BuildPipeline(device, mPipelineLayout, framework, mTrianglePath);
         }
 
+        public class DrawItemBufferInfo
+        {
+            public IMgBuffer Buffer { get; set; }
+            public ulong ByteOffset { get; set; }
+        }
+
         class DrawItem
         {
             public IMgEffectFramework Framework { get; set; }
-            public IMgCommandBuffer[] drawCmdBuffers { get; set; }
+            public int First { get; set; }
+            public int Count { get; set; }
+            public IMgCommandBuffer[] CommandBuffers { get; set; }
             public IMgDescriptorSet DescriptorSet { get; set; }
-            public IMgBuffer Vertices { get; set; }
-            public IMgBuffer Indices { get; set; }
+            public DrawItemBufferInfo Vertices { get; set; }
+            public DrawItemBufferInfo Indices { get; set; }
             public uint IndexCount { get; set; }
         }
 
@@ -81,13 +91,53 @@ namespace OffscreenDemo
             public Vector3 color;
         };
 
-        class StagingLevel
+        [StructLayout(LayoutKind.Sequential)]
+        struct UniformBufferObject
         {
-            public MgStagingBuffer Vertices { get; set; }
-            public MgStagingBuffer Indices { get; set; }
+            public Matrix4 projectionMatrix;
+            public Matrix4 modelMatrix;
+            public Matrix4 viewMatrix;
+        };
+
+        private int mVertexDataPosition;
+        private int mIndexDataPosition;
+        private int mUniformDataPosition;
+        void AllocateMemorySlots(MgBlockAllocationList slots)
+        {
+            var structSize = Marshal.SizeOf(typeof(TriangleVertex));
+            var vertices = new MgBlockAllocationInfo
+            {
+                Size = (ulong) (3 * structSize),
+                ElementByteSize = (uint) structSize,
+                MemoryPropertyFlags = MgMemoryPropertyFlagBits.DEVICE_LOCAL_BIT,
+                Usage = MgBufferUsageFlagBits.VERTEX_BUFFER_BIT 
+                    | MgBufferUsageFlagBits.TRANSFER_DST_BIT
+            };
+            mVertexDataPosition = slots.Insert(vertices);
+
+            var indexElementSize = (uint) sizeof(uint);
+            var indices = new MgBlockAllocationInfo
+            {
+                Size = (ulong) (3 * indexElementSize),
+                ElementByteSize = indexElementSize,
+                Usage = MgBufferUsageFlagBits.INDEX_BUFFER_BIT
+                | MgBufferUsageFlagBits.TRANSFER_DST_BIT,
+            };
+            mIndexDataPosition = slots.Insert(indices);
+
+            var uniformSize = (uint)Marshal.SizeOf(typeof(UniformBufferObject));
+            var uniforms = new MgBlockAllocationInfo
+            {
+                Size = (ulong) uniformSize,
+                ElementByteSize = uniformSize,
+                MemoryPropertyFlags = MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT
+                | MgMemoryPropertyFlagBits.HOST_COHERENT_BIT,                
+                Usage = MgBufferUsageFlagBits.UNIFORM_BUFFER_BIT,
+            };
+            mUniformDataPosition = slots.Insert(indices);
         }
 
-        void PrepareVertices(IMgGraphicsConfiguration configuration)
+        void PrepareVertices(IMgGraphicsConfiguration configuration, IMgCommandBuffer copyCmd, MgOptimizedMesh mesh)
         {
             var corners = new []
             {
@@ -114,41 +164,39 @@ namespace OffscreenDemo
             UInt32[] indexBuffer = { 0, 1, 2 };
             var indexBufferSize = (ulong) indexBuffer.Length * sizeof(UInt32);
 
-            var stagingBuffers = new StagingLevel
+            // DEVICE_LOCAL vertex buffer
+            var vertexDest = mesh.Allocations[mVertexDataPosition];
+            var vertexInstance = mesh.Instances[vertexDest.InstanceIndex];
+            var vertices = new MgStagingBuffer(configuration, vertexBufferSize)
             {
-                Vertices = new MgStagingBuffer(configuration, vertexBufferSize),
-                Indices = new MgStagingBuffer(configuration, indexBufferSize),
+                DstBuffer = vertexInstance.Buffer,
+                DstOffset = vertexDest.Offset
             };
 
-            // DEVICE_LOCAL vertex buffer
-
             // DEVICE_LOCAL index buffer 
+            var indexDest = mesh.Allocations[mIndexDataPosition];
+            var indexInstance = mesh.Instances[indexDest.InstanceIndex];
+            var indices = new MgStagingBuffer(configuration, indexBufferSize)
+            {
+                DstBuffer = indexInstance.Buffer,
+                DstOffset = indexDest.Offset
+            };
 
-            TransferToDeviceLocal(configuration, stagingBuffers);
+            TransferToDeviceLocal(configuration, copyCmd, new[] { vertices, indices } );
         }
 
-        void TransferToDeviceLocal(IMgGraphicsConfiguration configuration, StagingLevel stagingBuffers)
+        void TransferToDeviceLocal(IMgGraphicsConfiguration configuration, IMgCommandBuffer copyCmd, MgStagingBuffer[] stagingBuffers)
         {
             // TRANSFER DATA
-            IMgCommandBuffer copyCmd = null;
-            IMgBuffer dstBuffer = null;
-
             var cmdBufInfo = new MgCommandBufferBeginInfo { };
 
             var err = copyCmd.BeginCommandBuffer(cmdBufInfo);
             Debug.Assert(err == Result.SUCCESS);
 
-            ulong vertexOffset = 0UL;
-            stagingBuffers.Vertices.Transfer(
-                copyCmd,
-                dstBuffer,
-                vertexOffset);
-
-            ulong indexOffset = 0UL;
-            stagingBuffers.Indices.Transfer(
-                copyCmd,
-                dstBuffer,
-                indexOffset);
+            foreach (var stage in stagingBuffers)
+            {
+                stage.Transfer(copyCmd);
+            }
 
             err = copyCmd.EndCommandBuffer();
             Debug.Assert(err == Result.SUCCESS);
@@ -173,8 +221,10 @@ namespace OffscreenDemo
             err = configuration.Device.WaitForFences(new[] { fence }, true, ulong.MaxValue);
             Debug.Assert(err == Result.SUCCESS);
 
-            stagingBuffers.Vertices.Destroy(configuration.Device);
-            stagingBuffers.Indices.Destroy(configuration.Device);
+            foreach (var stage in stagingBuffers)
+            {
+                stage.Destroy(configuration.Device);
+            }
         }
 
         public void BuildCommandBuffers(

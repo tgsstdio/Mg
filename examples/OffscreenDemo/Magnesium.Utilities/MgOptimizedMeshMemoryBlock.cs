@@ -2,7 +2,7 @@
 
 namespace Magnesium.Utilities
 {
-    public class MgOptimizedMeshMemoryBlock
+    public class MgOptimizedMeshInstance
     {
         public IMgBuffer Buffer { get; set; }
         public IMgDeviceMemory DeviceMemory { get; set; }

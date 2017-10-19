@@ -5,16 +5,16 @@ namespace Magnesium.Utilities
     public class MgOptimizedMesh
     {
         public MgOptimizedMesh(
-            MgOptimizedMeshMemoryBlock[] blocks,
-            MgOptimizedMeshAttribute[] attributes
+            MgOptimizedMeshInstance[] instances,
+            MgOptimizedMeshAllocation[] allocation
         )
         {
-            Instances = blocks;
-            Allocations = attributes;
+            Instances = instances;
+            Allocations = allocation;
         }
 
-        public MgOptimizedMeshMemoryBlock[] Instances { get; private set; }
-        public MgOptimizedMeshAttribute[] Allocations { get; private set; }
+        public MgOptimizedMeshInstance[] Instances { get; private set; }
+        public MgOptimizedMeshAllocation[] Allocations { get; private set; }
 
         private bool mIsDisposed = false;
         public void Destroy(IMgDevice device, IMgAllocationCallbacks allocator)

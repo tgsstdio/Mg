@@ -1,5 +1,4 @@
-﻿using Magnesium;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -173,13 +172,12 @@ namespace Magnesium.Utilities
             var pCreateInfo = new MgBufferCreateInfo
             {
                 SharingMode = createInfo.SharingMode,
-                QueueFamilyIndexCount = createInfo.QueueFamilyIndexCount,
                 QueueFamilyIndices = createInfo.QueueFamilyIndices,
                 Size = overallSize,
                 Usage = bufferUsage,                
             };
 
-            var err = mConfiguration.Device.CreateBuffer(pCreateInfo, createInfo.AllocationCallbacks, out IMgBuffer pBuffer);
+            var err = mConfiguration.Device.CreateBuffer(pCreateInfo, null, out IMgBuffer pBuffer);
             if (err != Result.SUCCESS)
             {
                 instance = null;
@@ -188,7 +186,7 @@ namespace Magnesium.Utilities
 
             mConfiguration.Device.GetBufferMemoryRequirements(pBuffer, out MgMemoryRequirements pMemReqs);
 
-            if (mConfiguration.Partition.GetMemoryType(pMemReqs.MemoryTypeBits, deviceMemoryProperties, out uint typeIndex))
+            if (mConfiguration.MemoryProperties.GetMemoryType(pMemReqs.MemoryTypeBits, deviceMemoryProperties, out uint typeIndex))
             {
                 instance = new MgBufferInstance
                 {
@@ -204,7 +202,7 @@ namespace Magnesium.Utilities
             else
             {
                 // CLEAN UP
-                pBuffer.DestroyBuffer(mConfiguration.Device, createInfo.AllocationCallbacks);
+                pBuffer.DestroyBuffer(mConfiguration.Device, null);
                 instance = null;
                 return false;
             }

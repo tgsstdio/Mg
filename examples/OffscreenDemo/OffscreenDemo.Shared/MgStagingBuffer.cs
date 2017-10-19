@@ -7,6 +7,8 @@ namespace OffscreenDemo
 {
     public class MgStagingBuffer
     {
+        public IMgBuffer DstBuffer { get; set; }
+        public ulong DstOffset { get; set; }
         public IMgBuffer SrcBuffer { get; private set; }
         public IMgDeviceMemory SrcDeviceMemory { get; private set; }
         public ulong AllocationSize { get; private set; }
@@ -53,30 +55,21 @@ namespace OffscreenDemo
             SrcDeviceMemory = outMemory;
         }
     
-        public void Transfer(IMgCommandBuffer copyCmd, IMgBuffer dstBuffer, ulong dstOffset)
+        public void Transfer(IMgCommandBuffer copyCmd)
         {
-            //var cmdBufInfo = new MgCommandBufferBeginInfo{ };
-
-            //var err = copyCmd.BeginCommandBuffer(cmdBufInfo);
-            //Debug.Assert(err == Result.SUCCESS);
-
-            // Vertex buffer
             copyCmd.CmdCopyBuffer(
                 SrcBuffer,
-                dstBuffer,
+                DstBuffer,
                 new[]
                 {
                     new MgBufferCopy
                     {
                         SrcOffset = 0UL,
-                        DstOffset = dstOffset,
+                        DstOffset = DstOffset,
                         Size = AllocationSize,
                     }
                 }
             );
-
-            //err = copyCmd.EndCommandBuffer();
-            //Debug.Assert(err == Result.SUCCESS);
         }
 
         public void Destroy(IMgDevice device)

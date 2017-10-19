@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Magnesium\Magnesium.csproj" />
+    <ProjectReference Include="..\Magnesium.Utilities\Magnesium.Utilities.csproj" />
   </ItemGroup>
 
 </Project>

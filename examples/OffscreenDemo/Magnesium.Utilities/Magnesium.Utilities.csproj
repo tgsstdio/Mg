@@ -35,15 +35,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Magnesium, Version=5.2.8.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Magnesium.5.2.8\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -59,7 +54,7 @@
     <Compile Include="MgMeshSegment.cs" />
     <Compile Include="MgMeshSegmentAttribute.cs" />
     <Compile Include="MgOptimizedMesh.cs" />
-    <Compile Include="MgOptimizedMeshAttribute.cs" />
+    <Compile Include="MgOptimizedMeshAllocation.cs" />
     <Compile Include="MgOptimizedMeshBuilder.cs" />
     <Compile Include="MgOptimizedMeshCreateInfo.cs" />
     <Compile Include="MgOptimizedMeshLayoutVerifier.cs" />
@@ -71,6 +66,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Magnesium\Magnesium.csproj">
+      <Project>{9f9ac448-9d17-43e5-8889-285426290891}</Project>
+      <Name>Magnesium</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
 </Project>

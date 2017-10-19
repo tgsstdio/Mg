@@ -45,9 +45,9 @@ namespace Magnesium.Utilities
             return new MgOptimizedMesh(blocks, attributes);
         }
 
-        private MgOptimizedMeshAttribute[] RemapAttributes(MgBufferInstance[] bufferInstances, MgOptimizedMeshCreateInfo createInfo)
+        private MgOptimizedMeshAllocation[] RemapAttributes(MgBufferInstance[] bufferInstances, MgOptimizedMeshCreateInfo createInfo)
         {
-            var attributes = new MgOptimizedMeshAttribute[createInfo.Allocations.Length];
+            var attributes = new MgOptimizedMeshAllocation[createInfo.Allocations.Length];
 
             for(var i = 0U; i < bufferInstances.Length; i += 1)
             {
@@ -55,11 +55,11 @@ namespace Magnesium.Utilities
 
                 foreach (var mapping in instance.Mappings)
                 {
-                    attributes[mapping.Index] = new MgOptimizedMeshAttribute
+                    attributes[mapping.Index] = new MgOptimizedMeshAllocation
                     {
                        Index = mapping.Index,
-                       BlockIndex = i,
-                       ByteOffset = mapping.Offset,
+                       InstanceIndex = i,
+                       Offset = mapping.Offset,
                        Size = mapping.Size,
                        Usage = mapping.Usage,                       
                     };
@@ -82,9 +82,9 @@ namespace Magnesium.Utilities
             }
         }
 
-        private MgOptimizedMeshMemoryBlock[] AllocateBlocks(MgBufferInstance[] bufferInstances, MgOptimizedMeshCreateInfo createInfo)
+        private MgOptimizedMeshInstance[] AllocateBlocks(MgBufferInstance[] bufferInstances, MgOptimizedMeshCreateInfo createInfo)
         {
-            var memoryBlocks = new List<MgOptimizedMeshMemoryBlock>();
+            var memoryBlocks = new List<MgOptimizedMeshInstance>();
             foreach (var instance in bufferInstances)
             {
                 var pAllocateInfo = new MgMemoryAllocateInfo
@@ -94,7 +94,7 @@ namespace Magnesium.Utilities
                 };
 
                 var err = mConfiguration.Device.AllocateMemory(pAllocateInfo, 
-                    createInfo.AllocationCallbacks,
+                    null,
                     out IMgDeviceMemory pMemory);
 
                 if (err != Result.SUCCESS)
@@ -109,7 +109,7 @@ namespace Magnesium.Utilities
                     children.Add(mapping.Index);
                 }
 
-                var block = new MgOptimizedMeshMemoryBlock
+                var block = new MgOptimizedMeshInstance
                 {
                     Buffer = instance.Buffer,
                     DeviceMemory = pMemory,
