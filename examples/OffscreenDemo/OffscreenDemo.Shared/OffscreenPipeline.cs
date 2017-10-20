@@ -66,24 +66,6 @@ namespace OffscreenDemo
             mPipeline = BuildPipeline(device, mPipelineLayout, framework, mTrianglePath);
         }
 
-        public class DrawItemBufferInfo
-        {
-            public IMgBuffer Buffer { get; set; }
-            public ulong ByteOffset { get; set; }
-        }
-
-        class DrawItem
-        {
-            public IMgEffectFramework Framework { get; set; }
-            public int First { get; set; }
-            public int Count { get; set; }
-            public IMgCommandBuffer[] CommandBuffers { get; set; }
-            public IMgDescriptorSet DescriptorSet { get; set; }
-            public DrawItemBufferInfo Vertices { get; set; }
-            public DrawItemBufferInfo Indices { get; set; }
-            public uint IndexCount { get; set; }
-        }
-
         [StructLayout(LayoutKind.Sequential)]
         struct TriangleVertex
         {
@@ -102,7 +84,7 @@ namespace OffscreenDemo
         private int mVertexDataPosition;
         private int mIndexDataPosition;
         private int mUniformDataPosition;
-        void AllocateMemorySlots(MgBlockAllocationList slots)
+        public void Reserve(MgBlockAllocationList slots)
         {
             var structSize = Marshal.SizeOf(typeof(TriangleVertex));
             var vertices = new MgStorageBlockAllocationInfo
@@ -137,7 +119,32 @@ namespace OffscreenDemo
             mUniformDataPosition = slots.Insert(indices);
         }
 
-        void PrepareVertices(IMgGraphicsConfiguration configuration, IMgCommandBuffer copyCmd, MgOptimizedStorage mesh)
+        public MgCommandBuildOrder GenerateBuildOrder(MgOptimizedStorage storage)
+        {
+            var vertexDest = storage.Allocations[mVertexDataPosition];
+            var vertexInstance = storage.Blocks[vertexDest.BlockIndex];
+
+            var indexDest = storage.Allocations[mIndexDataPosition];
+            var indexInstance = storage.Blocks[indexDest.BlockIndex];
+
+            return new MgCommandBuildOrder
+            {
+                Vertices = new MgCommandBuildOrderBufferInfo
+                {
+                    Buffer = vertexInstance.Buffer,
+                    ByteOffset = vertexDest.Offset,
+                },
+                Indices = new MgCommandBuildOrderBufferInfo
+                {
+                    Buffer = indexInstance.Buffer,
+                    ByteOffset = indexDest.Offset,
+                },
+                IndexCount = 3,
+                InstanceCount = 1,
+            };
+        }
+
+        public void Populate(MgOptimizedStorage storage, IMgGraphicsConfiguration configuration, IMgCommandBuffer copyCmd)
         {
             var corners = new []
             {
@@ -165,8 +172,8 @@ namespace OffscreenDemo
             var indexBufferSize = (ulong) indexBuffer.Length * sizeof(UInt32);
 
             // DEVICE_LOCAL vertex buffer
-            var vertexDest = mesh.Allocations[mVertexDataPosition];
-            var vertexInstance = mesh.Blocks[vertexDest.BlockIndex];
+            var vertexDest = storage.Allocations[mVertexDataPosition];
+            var vertexInstance = storage.Blocks[vertexDest.BlockIndex];
             var vertices = new MgStagingBuffer(configuration, vertexBufferSize)
             {
                 DstBuffer = vertexInstance.Buffer,
@@ -174,19 +181,16 @@ namespace OffscreenDemo
             };
 
             // DEVICE_LOCAL index buffer 
-            var indexDest = mesh.Allocations[mIndexDataPosition];
-            var indexInstance = mesh.Blocks[indexDest.BlockIndex];
+            var indexDest = storage.Allocations[mIndexDataPosition];
+            var indexInstance = storage.Blocks[indexDest.BlockIndex];
             var indices = new MgStagingBuffer(configuration, indexBufferSize)
             {
                 DstBuffer = indexInstance.Buffer,
                 DstOffset = indexDest.Offset
             };
 
-            TransferToDeviceLocal(configuration, copyCmd, new[] { vertices, indices } );
-        }
+            var stagingBuffers = new[] { vertices, indices };
 
-        void TransferToDeviceLocal(IMgGraphicsConfiguration configuration, IMgCommandBuffer copyCmd, MgStagingBuffer[] stagingBuffers)
-        {
             // TRANSFER DATA
             var cmdBufInfo = new MgCommandBufferBeginInfo { };
 
@@ -228,20 +232,21 @@ namespace OffscreenDemo
         }
 
         public void BuildCommandBuffers(
-            IMgEffectFramework framework,             
-            IMgCommandBuffer[] drawCmdBuffers,
-            IMgDescriptorSet descriptorSet,
-            IMgBuffer vertices,
-            IMgBuffer indices,
-            uint indexCount
-         )
-        {
-            var colorFormat = framework.RenderpassInfo.Attachments[0].Format;
+            MgCommandBuildOrder order
+            //IMgEffectFramework framework,             
+            //IMgCommandBuffer[] drawCmdBuffers,
+            //IMgDescriptorSet descriptorSet,
+            //IMgBuffer vertices,
+            //IMgBuffer indices,
+            //uint indexCount
+        )
+        {            
+            var colorFormat = order.Framework.RenderpassInfo.Attachments[0].Format;
 
             var renderPassBeginInfo = new MgRenderPassBeginInfo
             {
-                RenderPass = framework.Renderpass,
-                RenderArea = framework.Scissor,
+                RenderPass = order.Framework.Renderpass,
+                RenderArea = order.Framework.Scissor,
                 ClearValues = new MgClearValue[]
                 {
                     MgClearValue.FromColorAndFormat(colorFormat, new MgColor4f(0f, 0f, 0f, 0f)),
@@ -249,11 +254,12 @@ namespace OffscreenDemo
                 },
             };
 
-            for (var i = 0; i < drawCmdBuffers.Length; ++i)
+            for (var i = 0; i < order.Count; ++i)
             {
-                renderPassBeginInfo.Framebuffer = framework.Framebuffers[i];
+                int index = order.First + i;
+                renderPassBeginInfo.Framebuffer = order.Framework.Framebuffers[index];
 
-                var cmdBuf = drawCmdBuffers[i];
+                var cmdBuf = order.CommandBuffers[index];
 
                 var cmdBufInfo = new MgCommandBufferBeginInfo { };
                 var err = cmdBuf.BeginCommandBuffer(cmdBufInfo);
@@ -262,19 +268,19 @@ namespace OffscreenDemo
                 cmdBuf.CmdBeginRenderPass(renderPassBeginInfo, MgSubpassContents.INLINE);
 
 
-                cmdBuf.CmdSetViewport(0, new[] {framework.Viewport});
+                cmdBuf.CmdSetViewport(0, new[] {order.Framework.Viewport});
 
-                cmdBuf.CmdSetScissor(0, new[] { framework.Scissor });
+                cmdBuf.CmdSetScissor(0, new[] { order.Framework.Scissor });
 
-                cmdBuf.CmdBindDescriptorSets(MgPipelineBindPoint.GRAPHICS, mPipelineLayout, 0, new[] { descriptorSet }, null);
+                cmdBuf.CmdBindDescriptorSets(MgPipelineBindPoint.GRAPHICS, mPipelineLayout, 0, new[] { order.DescriptorSet }, null);
 
                 cmdBuf.CmdBindPipeline(MgPipelineBindPoint.GRAPHICS, mPipeline);
 
-                cmdBuf.CmdBindVertexBuffers(0, new[] { vertices }, new[] { 0UL });
+                cmdBuf.CmdBindVertexBuffers(0, new[] { order.Vertices.Buffer }, new[] { order.Vertices.ByteOffset });
 
-                cmdBuf.CmdBindIndexBuffer(indices, 0, MgIndexType.UINT32);
+                cmdBuf.CmdBindIndexBuffer(order.Indices.Buffer, order.Indices.ByteOffset, MgIndexType.UINT32);
 
-                cmdBuf.CmdDrawIndexed(indexCount, 1, 0, 0, 1);
+                cmdBuf.CmdDrawIndexed(order.IndexCount, order.InstanceCount, 0, 0, 0);
 
                 cmdBuf.CmdEndRenderPass();
 

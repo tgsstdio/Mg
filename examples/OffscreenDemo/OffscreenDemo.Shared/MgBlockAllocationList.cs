@@ -23,5 +23,10 @@ namespace OffscreenDemo
         {
             mItems.Clear();
         }
+
+        public MgStorageBlockAllocationInfo[] ToArray()
+        {
+            return mItems.ToArray();
+        }
     }
 }

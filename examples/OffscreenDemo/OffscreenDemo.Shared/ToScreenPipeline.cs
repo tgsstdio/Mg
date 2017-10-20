@@ -2,6 +2,8 @@
 using Magnesium;
 using System.Diagnostics;
 using System.IO;
+using Magnesium.Utilities;
+using System.Runtime.InteropServices;
 
 namespace OffscreenDemo
 {
@@ -13,6 +15,7 @@ namespace OffscreenDemo
         {
             mPath = path;
         }
+
 
         private IMgDescriptorSetLayout mDescriptorSetLayout;
         private IMgPipelineLayout mPipelineLayout;
@@ -70,29 +73,115 @@ namespace OffscreenDemo
             return pLayout;
         }
 
-        static void BuildCommandBuffers(
-            IMgEffectFramework framework,
-            IMgCommandBuffer[] drawCmdBuffers,
-            IMgDevice device,
-            IMgPipeline pipeline,
-            IMgPipelineLayout pipelineLayout,
-            IMgDescriptorSet descSet,
-            IMgBuffer vertices,
-            IMgBuffer indices,
-            uint indexCount
+        [StructLayout(LayoutKind.Sequential)]
+        struct VertexData
+        {
+            public Vector3 pos;
+            public Vector2 uv;
+            public Vector3 normal;
+        };
+
+        public void Populate()
+        {
+            // Setup vertices for a single uv-mapped quad made from two triangles
+            VertexData[] quadCorners =
+            {
+                new VertexData
+                {
+                    pos = new Vector3(  1f,  1f, 0f ),
+                    uv = new Vector2( 1.0f, 1.0f ),
+                    normal = new Vector3( 0.0f, 0.0f, -1.0f )
+                },
+
+                new VertexData
+                {
+                    pos = new Vector3(   -1.0f,  1.0f, 0f ),
+                    uv = new Vector2(  0.0f, 1.0f ),
+                    normal = new Vector3( 0.0f, 0.0f, -1.0f  )
+                },
+
+                new VertexData
+                {
+                    pos = new Vector3(  -1.0f, -1.0f, 0f ),
+                    uv = new Vector2( 0.0f, 0.0f ),
+                    normal = new Vector3( 0.0f, 0.0f, -1.0f )
+                },
+
+
+                new VertexData
+                {
+                    pos = new Vector3( 1.0f, -1.0f, 0f ),
+                    uv = new Vector2( 1.0f, 0.0f ),
+                    normal = new Vector3( 0.0f, 0.0f, -1.0f )
+                },
+            };
+
+            // Setup indices
+            var indices = new uint[] { 0, 1, 2, 2, 3, 0 };
+            indexCount = (uint)indices.Length;
+
+        }
+
+        public void Reserve(MgBlockAllocationList slots)
+        {
+            throw new NotImplementedException();
+
+            // Vertex buffer
+            {
+                var bufferSize = (uint)(Marshal.SizeOf<VertexData>() * quadCorners.Length);
+                vertexBuffer = new BufferInfo(
+                    mManager.Configuration.Device,
+                    mManager.Configuration.MemoryProperties,
+                    MgBufferUsageFlagBits.VERTEX_BUFFER_BIT,
+                    MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT | MgMemoryPropertyFlagBits.HOST_COHERENT_BIT,
+                    bufferSize);
+                vertexBuffer.SetData<VertexData>(bufferSize, quadCorners, 0, quadCorners.Length);
+            }
+
+
+            // Index buffer
+            {
+                var bufferSize = indexCount * sizeof(uint);
+                indexBuffer = new BufferInfo(
+                    mManager.Configuration.Device,
+                    mManager.Configuration.MemoryProperties,
+                    MgBufferUsageFlagBits.INDEX_BUFFER_BIT,
+                    MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT | MgMemoryPropertyFlagBits.HOST_COHERENT_BIT,
+                    bufferSize);
+                indexBuffer.SetData(bufferSize, indices, 0, (int)indexCount);
+
+            }
+        }
+
+        public void BuildCommandBuffers(object secondOrder)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void BuildCommandBuffers(
+            MgCommandBuildOrder order
+            //IMgEffectFramework framework,
+            //IMgCommandBuffer[] drawCmdBuffers,
+            //IMgDevice device,
+            //IMgPipeline pipeline,
+            //IMgPipelineLayout pipelineLayout,
+            //IMgDescriptorSet descSet,
+            //IMgBuffer vertices,
+            //IMgBuffer indices,
+            //uint indexCount
         )
         {
             var cmdBufInfo = new MgCommandBufferBeginInfo
             {
-
+                
             };
 
-            var colorFormat = framework.RenderpassInfo.Attachments[0].Format;
+            var colorFormat = order.Framework.RenderpassInfo.Attachments[0].Format;
 
             var renderPassBeginInfo = new MgRenderPassBeginInfo
             {
-                RenderPass = framework.Renderpass,
-                RenderArea = framework.Scissor,
+                RenderPass = order.Framework.Renderpass,
+                RenderArea = order.Framework.Scissor,
                 ClearValues = new MgClearValue[]
                 {
                     MgClearValue.FromColorAndFormat(colorFormat, new MgColor4f(0f, 0f, 0f, 0f)),
@@ -100,57 +189,37 @@ namespace OffscreenDemo
                 },
             };
 
-            //uint cmdBufferCount;
-            //MgCommandBufferAllocateInfo cmdBufAllocateInfo;
-            //InitCommandBuffers(framework, out drawCmdBuffers, out cmdBufferCount, out cmdBufAllocateInfo);
-
-            Debug.Assert(device != null);
-
-            for (var i = 0; i < framework.Framebuffers.Length; ++i)
+            for (var i = 0; i < order.Count; ++i)
             {
-                // Set target frame buffer
-                renderPassBeginInfo.Framebuffer = framework.Framebuffers[i];
+                var index = order.First + i;
 
-                var cmdBuf = drawCmdBuffers[i];
+                // Set target frame buffer
+                renderPassBeginInfo.Framebuffer = order.Framework.Framebuffers[index];
+
+                var cmdBuf = order.CommandBuffers[index];
 
                 var err = cmdBuf.BeginCommandBuffer(cmdBufInfo);
                 Debug.Assert(err == Result.SUCCESS);
 
                 cmdBuf.CmdBeginRenderPass(renderPassBeginInfo, MgSubpassContents.INLINE);
 
-                cmdBuf.CmdSetViewport(0, new[] { framework.Viewport });
+                cmdBuf.CmdSetViewport(0, new[] { order.Framework.Viewport });
 
-                cmdBuf.CmdSetScissor(0, new[] { framework.Scissor });
+                cmdBuf.CmdSetScissor(0, new[] { order.Framework.Scissor });
 
-                cmdBuf.CmdBindDescriptorSets(MgPipelineBindPoint.GRAPHICS, pipelineLayout, 0, new [] { descSet }, null);
-                cmdBuf.CmdBindPipeline(MgPipelineBindPoint.GRAPHICS, pipeline);
+                cmdBuf.CmdBindDescriptorSets(MgPipelineBindPoint.GRAPHICS, mPipelineLayout, 0, new [] { order.DescriptorSet }, null);
+                cmdBuf.CmdBindPipeline(MgPipelineBindPoint.GRAPHICS, mPipeline);
 
-                cmdBuf.CmdBindVertexBuffers(0, new[] { vertices }, new[] { 0UL });
-                cmdBuf.CmdBindIndexBuffer(indices, 0, MgIndexType.UINT32);
+                cmdBuf.CmdBindVertexBuffers(0, new[] { order.Vertices.Buffer }, new[] { order.Vertices.ByteOffset });
+                cmdBuf.CmdBindIndexBuffer(order.Indices.Buffer, order.Indices.ByteOffset, MgIndexType.UINT32);
 
-                cmdBuf.CmdDrawIndexed(indexCount, 1, 0, 0, 0);
+                cmdBuf.CmdDrawIndexed(order.IndexCount, order.InstanceCount, 0, 0, 0);
 
                 cmdBuf.CmdEndRenderPass();
 
                 err = cmdBuf.EndCommandBuffer();
                 Debug.Assert(err == Result.SUCCESS);
             }
-        }
-
-        private static void InitCommandBuffers(IMgDevice device, IMgEffectFramework framework, IMgCommandBuffer[] drawCmdBuffers, uint cmdBufferCount, IMgCommandPool pool)
-        {
-            // cmdBufferCount = (uint)framework.Framebuffers.Length;
-           // drawCmdBuffers = new IMgCommandBuffer[cmdBufferCount];
-
-            var cmdBufAllocateInfo = new MgCommandBufferAllocateInfo
-            {
-                CommandBufferCount = cmdBufferCount,
-                CommandPool = pool,
-                Level = MgCommandBufferLevel.PRIMARY,
-            };
-
-            var err = device.AllocateCommandBuffers(cmdBufAllocateInfo, drawCmdBuffers);
-            Debug.Assert(err == Result.SUCCESS);
         }
 
         private static IMgPipeline BuildPipeline(
@@ -324,6 +393,16 @@ namespace OffscreenDemo
             }
 
             return vertSM;
+        }
+
+        public MgCommandBuildOrder GenerateBuildOrder(MgOptimizedStorage storage)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Populate(MgOptimizedStorage storage, IMgGraphicsConfiguration configuration, IMgCommandBuffer copyCmd)
+        {
+            throw new NotImplementedException();
         }
     }
 }

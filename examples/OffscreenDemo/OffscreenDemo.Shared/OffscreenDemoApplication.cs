@@ -1,5 +1,7 @@
 ﻿using System;
 using Magnesium;
+using Magnesium.Utilities;
+using System.Diagnostics;
 
 namespace OffscreenDemo
 {
@@ -7,11 +9,13 @@ namespace OffscreenDemo
     {
         private OffscreenPipeline mRenderToTexture;
         private IScreenQuadPipeline mToScreen;
+        private MgOptimizedStorageBuilder mBuilder;
 
-        public OffscreenDemoApplication(OffscreenPipeline renderToTexture, IScreenQuadPipeline toScreen)
+        public OffscreenDemoApplication(MgOptimizedStorageBuilder builder, OffscreenPipeline renderToTexture, IScreenQuadPipeline toScreen)
         {
             mRenderToTexture = renderToTexture;
             mToScreen = toScreen;
+            mBuilder = builder;
         }
 
         public MgGraphicsDeviceCreateInfo Initialize()
@@ -34,7 +38,7 @@ namespace OffscreenDemo
             // 1. init offscreen device           
             var deviceLocal = new MgOffscreenDeviceLocalMemory(configuration);
             var colorOne = new MgOffscreenColorImageBuffer(
-                configuration, 
+                configuration,
                 deviceLocal,
                 COLOR_FORMAT,
                 WIDTH,
@@ -50,10 +54,10 @@ namespace OffscreenDemo
             {
                 Width = 1280,
                 Height = 720,
-                ColorAttachments = new []
+                ColorAttachments = new[]
                 {
                     new MgOffscreenColorAttachmentInfo
-                    {                        
+                    {
                         Format = COLOR_FORMAT,
                         LoadOp = MgAttachmentLoadOp.CLEAR,
                         StoreOp = MgAttachmentStoreOp.STORE,
@@ -78,14 +82,94 @@ namespace OffscreenDemo
             // 3. init post processing pipeline
             mToScreen.Initialize(configuration, offscreen);
 
-            // 4. init triangle 
+            var pool = CreateCommandPool(configuration);
 
-            // 5. init screen quad
+            var storage = ReserveStorageSlots(configuration, pool);
+
+            PopulateRenderingSlots(configuration, pool, storage);
+
+            // 4. uniforms 
+            PopulateUniformSlots(configuration, pool, storage);
+
+            PopulateDescriptorSets();
 
             // 6. init command buffers
-           // mRenderToTexture.BuildCommandBuffers(offscreen, )
+
+            var noOfCommandBuffers = offscreen.Framebuffers.Length + screen.Framebuffers.Length;
+            var commandBuffers = new IMgCommandBuffer[noOfCommandBuffers];
+
+            var pAllocateInfo = new MgCommandBufferAllocateInfo
+            {
+                CommandBufferCount = (uint)noOfCommandBuffers,
+                CommandPool = pool,
+                Level = MgCommandBufferLevel.PRIMARY,
+            };
+            var err = configuration.Device.AllocateCommandBuffers(pAllocateInfo, commandBuffers);
+            Debug.Assert(err == Result.SUCCESS);
+
+            var firstOrder = mRenderToTexture.GenerateBuildOrder(storage);
+            // SAME ARRAY 
+            firstOrder.CommandBuffers = commandBuffers;
+            firstOrder.First = 0;
+            firstOrder.Count = offscreen.Framebuffers.Length;            
+
+            mRenderToTexture.BuildCommandBuffers(firstOrder);
+
+            var secondOrder = mToScreen.GenerateBuildOrder(storage);
+            // SAME ARRAY
+            secondOrder.CommandBuffers = commandBuffers;
+            secondOrder.First = firstOrder.Count;
+            secondOrder.Count = screen.Framebuffers.Length;
+
+            mToScreen.BuildCommandBuffers(secondOrder);
 
             throw new NotImplementedException();
+        }
+
+        private static IMgCommandPool CreateCommandPool(IMgGraphicsConfiguration configuration)
+        {
+            var poolCreateInfo = new MgCommandPoolCreateInfo
+            {
+
+            };
+            var err = configuration.Device.CreateCommandPool(poolCreateInfo, null, out IMgCommandPool pool);
+            Debug.Assert(err == Result.SUCCESS);
+            return pool;
+        }
+
+        private MgOptimizedStorage ReserveStorageSlots(IMgGraphicsConfiguration configuration, IMgCommandPool pool)
+        {
+            // 4. init triangle 
+
+            var slots = new MgBlockAllocationList();
+            mRenderToTexture.Reserve(slots);
+
+            // 5. init screen quad
+            mToScreen.Reserve(slots);
+
+            var storageCreateInfo = new MgOptimizedStorageCreateInfo
+            {
+                Allocations = slots.ToArray(),
+            };
+            return mBuilder.Build(storageCreateInfo);
+        }
+
+        private void PopulateRenderingSlots(IMgGraphicsConfiguration configuration, IMgCommandPool pool, MgOptimizedStorage storage)
+        {
+            IMgCommandBuffer[] copyCmds = new IMgCommandBuffer[1];
+            var pAllocateInfo = new MgCommandBufferAllocateInfo
+            {
+                CommandBufferCount = 1,
+                CommandPool = pool,
+                Level = MgCommandBufferLevel.PRIMARY,
+            };
+            var err = configuration.Device.AllocateCommandBuffers(pAllocateInfo, copyCmds);
+            Debug.Assert(err == Result.SUCCESS);
+
+            IMgCommandBuffer copyCmd = copyCmds[0];
+            mRenderToTexture.Populate(storage, configuration, copyCmd);
+            mToScreen.Populate(storage, configuration, copyCmd);
+            configuration.Device.FreeCommandBuffers(pool, copyCmds);
         }
 
         public IMgSemaphore[] Render(IMgQueue queue, uint layerNo)

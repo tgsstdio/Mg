@@ -1,6 +1,4 @@
-﻿using Magnesium;
-
-namespace Magnesium.Utilities
+﻿namespace Magnesium.Utilities
 {
     public class MgOptimizedStorageBlock
     {
