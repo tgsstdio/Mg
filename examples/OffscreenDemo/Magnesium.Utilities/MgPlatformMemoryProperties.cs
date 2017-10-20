@@ -2,9 +2,9 @@
 
 namespace Magnesium.Utilities
 {
-    public struct MgMemoryCombination
+    public struct MgPlatformMemoryProperties
     {
         public MgBufferUsageFlagBits Usage { get; set; }
-        public MgBufferUsageFlagBits SeparateMemoryRequired { get; set; }
+        public MgBufferUsageFlagBits SeparateBlockRequired { get; set; }
     }
 }

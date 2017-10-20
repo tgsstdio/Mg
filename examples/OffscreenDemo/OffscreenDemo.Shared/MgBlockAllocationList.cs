@@ -5,14 +5,14 @@ namespace OffscreenDemo
 {
     public class MgBlockAllocationList
     {
-        private List<MgBlockAllocationInfo> mItems;
+        private List<MgStorageBlockAllocationInfo> mItems;
 
         public MgBlockAllocationList()
         {
-            mItems = new List<MgBlockAllocationInfo>();
+            mItems = new List<MgStorageBlockAllocationInfo>();
         }
 
-        public int Insert(MgBlockAllocationInfo info)
+        public int Insert(MgStorageBlockAllocationInfo info)
         {
             int count = mItems.Count;
             mItems.Add(info);

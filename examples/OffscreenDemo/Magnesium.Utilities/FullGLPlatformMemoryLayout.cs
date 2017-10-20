@@ -5,14 +5,14 @@ namespace Magnesium.Utilities
     public class FullGLPlatformMemoryLayout : IMgPlatformMemoryLayout
     {
         private readonly Dictionary<MgBufferUsageFlagBits, MgBufferUsageFlagBits> mPreTransforms;
-        private MgMemoryCombination[] mCombinations;
+        private MgPlatformMemoryProperties[] mCombinations;
         public FullGLPlatformMemoryLayout()
         {
             mPreTransforms = new Dictionary<MgBufferUsageFlagBits, MgBufferUsageFlagBits>();
             mCombinations = new[] {
-                new MgMemoryCombination{
+                new MgPlatformMemoryProperties{
                     Usage = (MgBufferUsageFlagBits) 0xffff,
-                    SeparateMemoryRequired = MgBufferUsageFlagBits.INDEX_BUFFER_BIT,
+                    SeparateBlockRequired = MgBufferUsageFlagBits.INDEX_BUFFER_BIT,
                 }
             };
         }
@@ -25,7 +25,7 @@ namespace Magnesium.Utilities
             }
         }
 
-        public MgMemoryCombination[] Combinations
+        public MgPlatformMemoryProperties[] Combinations
         {
             get
             {

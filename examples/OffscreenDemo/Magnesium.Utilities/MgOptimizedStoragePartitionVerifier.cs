@@ -4,11 +4,11 @@ using System.Diagnostics;
 
 namespace Magnesium.Utilities
 {
-    public class MgOptimizedMeshSegmentVerifier : IMgOptimizedMeshSegmentVerifier
+    public class MgOptimizedStoragePartitionVerifier : IMgOptimizedStoragePartitionVerifier
     {
         private MgBufferUsageFlagBits[] mPackingOrder;
         private IMgGraphicsConfiguration mConfiguration;
-        public MgOptimizedMeshSegmentVerifier(IMgGraphicsConfiguration configuration)
+        public MgOptimizedStoragePartitionVerifier(IMgGraphicsConfiguration configuration)
         {
             mConfiguration = configuration;
             mPackingOrder = new MgBufferUsageFlagBits[]
@@ -25,12 +25,12 @@ namespace Magnesium.Utilities
             };
         }
 
-        public MgBufferInstance[] Revise(MgMeshSegment[] segments, MgOptimizedMeshCreateInfo createInfo)
+        public MgStorageBufferInstance[] Revise(MgStorageBlockInfo[] segments, MgOptimizedStorageCreateInfo createInfo)
         {
-            var output = new List<MgBufferInstance>();
+            var output = new List<MgStorageBufferInstance>();
             foreach (var sector in segments)
             {
-                if (DoPack(sector, createInfo, out MgBufferInstance firstOutput))
+                if (DoPack(sector, createInfo, out MgStorageBufferInstance firstOutput))
                 {
                     output.Add(firstOutput);
                 }
@@ -43,13 +43,13 @@ namespace Magnesium.Utilities
             return output.ToArray();
         }
 
-        private void OntoSecondChance(List<MgBufferInstance> output, MgMeshSegment sector, MgOptimizedMeshCreateInfo createInfo)
+        private void OntoSecondChance(List<MgStorageBufferInstance> output, MgStorageBlockInfo sector, MgOptimizedStorageCreateInfo createInfo)
         {
-            MgMeshSegment[] slices = SubdivideByMemoryPropertyFlags(sector, createInfo.Allocations);
+            MgStorageBlockInfo[] slices = SubdivideByMemoryPropertyFlags(sector, createInfo.Allocations);
 
             foreach (var second in slices)
             {
-                if (DoPack(second, createInfo, out MgBufferInstance secondOutput))
+                if (DoPack(second, createInfo, out MgStorageBufferInstance secondOutput))
                 {
                     output.Add(secondOutput);
                 }
@@ -60,13 +60,13 @@ namespace Magnesium.Utilities
             }
         }
 
-        private void OntoFinalChance(List<MgBufferInstance> output, MgMeshSegment second, MgOptimizedMeshCreateInfo createInfo)
+        private void OntoFinalChance(List<MgStorageBufferInstance> output, MgStorageBlockInfo second, MgOptimizedStorageCreateInfo createInfo)
         {
             var individuals = SplitToSingleBuffers(second);
 
             foreach (var single in individuals)
             {
-                if (DoPack(single, createInfo, out MgBufferInstance thirdOutput))
+                if (DoPack(single, createInfo, out MgStorageBufferInstance thirdOutput))
                 {
                     output.Add(thirdOutput);
                 }
@@ -77,15 +77,15 @@ namespace Magnesium.Utilities
             }
         }
 
-        private MgMeshSegment[] SplitToSingleBuffers(MgMeshSegment second)
+        private MgStorageBlockInfo[] SplitToSingleBuffers(MgStorageBlockInfo second)
         {
-            var slices = new List<MgMeshSegment>();
+            var slices = new List<MgStorageBlockInfo>();
             foreach(var attr in second.Attributes)
             {
-                var slice = new MgMeshSegment
+                var slice = new MgStorageBlockInfo
                 {
                     Usage = attr.Usage,
-                    Attributes = new List<MgMeshSegmentAttribute>(),
+                    Attributes = new List<MgStorageBlockAttribute>(),
                 };
                 slice.Attributes.Add(attr);
                 slices.Add(slice);
@@ -93,20 +93,20 @@ namespace Magnesium.Utilities
             return slices.ToArray();
         }
 
-        private MgMeshSegment[] SubdivideByMemoryPropertyFlags(MgMeshSegment sector, MgBlockAllocationInfo[] allocations)
+        private MgStorageBlockInfo[] SubdivideByMemoryPropertyFlags(MgStorageBlockInfo sector, MgStorageBlockAllocationInfo[] allocations)
         {
             // EXACT MATCH ONLY 
-            var groups = new Dictionary<MgMemoryPropertyFlagBits, MgMeshSegment>();    
+            var groups = new Dictionary<MgMemoryPropertyFlagBits, MgStorageBlockInfo>();    
             foreach (var attr in sector.Attributes)
             {
                 var allocation = allocations[attr.Index];
-                MgMeshSegment found;
+                MgStorageBlockInfo found;
                 if (!groups.TryGetValue(allocation.MemoryPropertyFlags, out found))
                 {
-                    found = new MgMeshSegment
+                    found = new MgStorageBlockInfo
                     {
                         Usage = attr.Usage,
-                        Attributes = new List<MgMeshSegmentAttribute>(),
+                        Attributes = new List<MgStorageBlockAttribute>(),
                     };
                     groups.Add(allocation.MemoryPropertyFlags, found);
                 }
@@ -114,12 +114,12 @@ namespace Magnesium.Utilities
             }
 
             var noOfGroups = groups.Keys.Count;
-            var segments = new MgMeshSegment[noOfGroups];
+            var segments = new MgStorageBlockInfo[noOfGroups];
             groups.Values.CopyTo(segments, 0);
             return segments;
         }
 
-        private bool DoPack(MgMeshSegment sector, MgOptimizedMeshCreateInfo createInfo, out MgBufferInstance instance)
+        private bool DoPack(MgStorageBlockInfo sector, MgOptimizedStorageCreateInfo createInfo, out MgStorageBufferInstance instance)
         {
             MgBufferUsageFlagBits bufferUsage = 0;
             MgMemoryPropertyFlagBits deviceMemoryProperties = 0;
@@ -152,12 +152,12 @@ namespace Magnesium.Utilities
             }          
 
             ulong overallSize = 0;
-            var mappings = new List<MgBufferOffsetMapping>();
+            var mappings = new List<MgStorageBufferOffset>();
             foreach(var element in sortedList.Values)
             {
                 var attr = createInfo.Allocations[element];
 
-                var mapping = new MgBufferOffsetMapping
+                var mapping = new MgStorageBufferOffset
                 {
                     Index = element,
                     Offset = UpperBounded(overallSize, attr.ElementByteSize),
@@ -188,7 +188,7 @@ namespace Magnesium.Utilities
 
             if (mConfiguration.MemoryProperties.GetMemoryType(pMemReqs.MemoryTypeBits, deviceMemoryProperties, out uint typeIndex))
             {
-                instance = new MgBufferInstance
+                instance = new MgStorageBufferInstance
                 {
                     Buffer = pBuffer,
                     Usage = bufferUsage,

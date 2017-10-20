@@ -6,12 +6,12 @@ namespace Magnesium.Utilities
     public class VkPlatformMemoryLayout : IMgPlatformMemoryLayout
     {
         private readonly Dictionary<MgBufferUsageFlagBits, MgBufferUsageFlagBits> mPreTransforms;
-        private MgMemoryCombination[] mCombinations;
+        private MgPlatformMemoryProperties[] mCombinations;
         public VkPlatformMemoryLayout()
         {
             mPreTransforms = new Dictionary<MgBufferUsageFlagBits, MgBufferUsageFlagBits>();
             mCombinations = new[] {
-                new MgMemoryCombination{ Usage = (MgBufferUsageFlagBits) 0xffff, SeparateMemoryRequired = 0 }
+                new MgPlatformMemoryProperties{ Usage = (MgBufferUsageFlagBits) 0xffff, SeparateBlockRequired = 0 }
             };
         }
 
@@ -23,7 +23,7 @@ namespace Magnesium.Utilities
             }
         }
 
-        public MgMemoryCombination[] Combinations {
+        public MgPlatformMemoryProperties[] Combinations {
             get
             {
                 return mCombinations;

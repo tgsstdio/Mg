@@ -44,22 +44,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FullGLPlatformMemoryLayout.cs" />
-    <Compile Include="IMgOptimizedMeshSegmenter.cs" />
-    <Compile Include="IMgOptimizedMeshSegmentVerifier.cs" />
+    <Compile Include="IMgOptimizedStoragePartitioner.cs" />
+    <Compile Include="IMgOptimizedStoragePartitionVerifier.cs" />
     <Compile Include="IMgPlatformMemoryLayout.cs" />
-    <Compile Include="MgBlockAllocationInfo.cs" />
-    <Compile Include="MgBufferInstance.cs" />
-    <Compile Include="MgBufferOffsetMapping.cs" />
-    <Compile Include="MgMemoryCombination.cs" />
-    <Compile Include="MgMeshSegment.cs" />
-    <Compile Include="MgMeshSegmentAttribute.cs" />
-    <Compile Include="MgOptimizedMesh.cs" />
-    <Compile Include="MgOptimizedMeshAllocation.cs" />
-    <Compile Include="MgOptimizedMeshBuilder.cs" />
-    <Compile Include="MgOptimizedMeshCreateInfo.cs" />
-    <Compile Include="MgOptimizedMeshLayoutVerifier.cs" />
-    <Compile Include="MgOptimizedMeshMemoryBlock.cs" />
-    <Compile Include="MgOptimizedMeshSegmenter.cs" />
+    <Compile Include="MgStorageBlockAllocationInfo.cs" />
+    <Compile Include="MgStorageBufferInstance.cs" />
+    <Compile Include="MgStorageBufferOffset.cs" />
+    <Compile Include="MgPlatformMemoryProperties.cs" />
+    <Compile Include="MgStorageBlockInfo.cs" />
+    <Compile Include="MgStorageBlockAttribute.cs" />
+    <Compile Include="MgOptimizedStorage.cs" />
+    <Compile Include="MgOptimizedStorageAllocation.cs" />
+    <Compile Include="MgOptimizedStorageBuilder.cs" />
+    <Compile Include="MgOptimizedStorageCreateInfo.cs" />
+    <Compile Include="MgOptimizedStoragePartitionVerifier.cs" />
+    <Compile Include="MgOptimizedStorageBlock.cs" />
+    <Compile Include="MgOptimizedStoragePartitioner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VkPlatformMemoryLayout.cs" />
     <Compile Include="WGLPlatformMemoryLayout.cs" />

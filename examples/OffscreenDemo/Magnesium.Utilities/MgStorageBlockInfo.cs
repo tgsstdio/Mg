@@ -2,9 +2,9 @@
 
 namespace Magnesium.Utilities
 {
-    public class MgMeshSegment
+    public class MgStorageBlockInfo
     {
         public MgBufferUsageFlagBits Usage { get; internal set; }
-        public List<MgMeshSegmentAttribute> Attributes { get; set; }
+        public List<MgStorageBlockAttribute> Attributes { get; set; }
     }    
 }

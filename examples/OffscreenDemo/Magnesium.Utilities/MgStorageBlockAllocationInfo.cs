@@ -2,7 +2,7 @@
 
 namespace Magnesium.Utilities
 {
-    public class MgBlockAllocationInfo
+    public class MgStorageBlockAllocationInfo
     {
         public MgBufferUsageFlagBits Usage { get; set; }
         public ulong Size { get; set; }

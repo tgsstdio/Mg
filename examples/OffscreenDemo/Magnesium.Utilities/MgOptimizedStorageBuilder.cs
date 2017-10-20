@@ -3,15 +3,15 @@ using System.Collections.Generic;
 
 namespace Magnesium.Utilities
 {
-    public class MgOptimizedMeshBuilder
+    public class MgOptimizedStorageBuilder
     {
         private IMgGraphicsConfiguration mConfiguration;
-        private IMgOptimizedMeshSegmenter mSplitter;
-        private IMgOptimizedMeshSegmentVerifier mVerifier;
-        public MgOptimizedMeshBuilder(
+        private IMgOptimizedStoragePartitioner mSplitter;
+        private IMgOptimizedStoragePartitionVerifier mVerifier;
+        public MgOptimizedStorageBuilder(
             IMgGraphicsConfiguration config,
-            IMgOptimizedMeshSegmenter segmenter,
-            IMgOptimizedMeshSegmentVerifier verifier
+            IMgOptimizedStoragePartitioner segmenter,
+            IMgOptimizedStoragePartitionVerifier verifier
         )
         {
             mConfiguration = config;
@@ -19,7 +19,7 @@ namespace Magnesium.Utilities
             mVerifier = verifier;
         }
 
-        public MgOptimizedMesh Build(MgOptimizedMeshCreateInfo createInfo)
+        public MgOptimizedStorage Build(MgOptimizedStorageCreateInfo createInfo)
         {
             // setup 
             Validate(createInfo);
@@ -30,24 +30,24 @@ namespace Magnesium.Utilities
             return InitializeMesh(createInfo, bufferInstances);
         }
 
-        public MgOptimizedMesh Build(MgOptimizedMeshCreateInfo createInfo, MgBufferInstance[] bufferInstances)
+        public MgOptimizedStorage Build(MgOptimizedStorageCreateInfo createInfo, MgStorageBufferInstance[] bufferInstances)
         {
             Validate(createInfo);
             return InitializeMesh(createInfo, bufferInstances);
         }
 
-        private MgOptimizedMesh InitializeMesh(MgOptimizedMeshCreateInfo createInfo, MgBufferInstance[] bufferInstances)
+        private MgOptimizedStorage InitializeMesh(MgOptimizedStorageCreateInfo createInfo, MgStorageBufferInstance[] bufferInstances)
         {
             var attributes = RemapAttributes(bufferInstances, createInfo);
 
             var blocks = AllocateBlocks(bufferInstances, createInfo);
 
-            return new MgOptimizedMesh(blocks, attributes);
+            return new MgOptimizedStorage(blocks, attributes);
         }
 
-        private MgOptimizedMeshAllocation[] RemapAttributes(MgBufferInstance[] bufferInstances, MgOptimizedMeshCreateInfo createInfo)
+        private MgOptimizedStorageAllocation[] RemapAttributes(MgStorageBufferInstance[] bufferInstances, MgOptimizedStorageCreateInfo createInfo)
         {
-            var attributes = new MgOptimizedMeshAllocation[createInfo.Allocations.Length];
+            var attributes = new MgOptimizedStorageAllocation[createInfo.Allocations.Length];
 
             for(var i = 0U; i < bufferInstances.Length; i += 1)
             {
@@ -55,10 +55,10 @@ namespace Magnesium.Utilities
 
                 foreach (var mapping in instance.Mappings)
                 {
-                    attributes[mapping.Index] = new MgOptimizedMeshAllocation
+                    attributes[mapping.Index] = new MgOptimizedStorageAllocation
                     {
-                       Index = mapping.Index,
-                       InstanceIndex = i,
+                       AllocationIndex = mapping.Index,
+                       BlockIndex = i,
                        Offset = mapping.Offset,
                        Size = mapping.Size,
                        Usage = mapping.Usage,                       
@@ -69,7 +69,7 @@ namespace Magnesium.Utilities
             return attributes;
         }
 
-        private void Validate(MgOptimizedMeshCreateInfo createInfo)
+        private void Validate(MgOptimizedStorageCreateInfo createInfo)
         {
             if (createInfo.Allocations == null)
             {
@@ -82,9 +82,9 @@ namespace Magnesium.Utilities
             }
         }
 
-        private MgOptimizedMeshInstance[] AllocateBlocks(MgBufferInstance[] bufferInstances, MgOptimizedMeshCreateInfo createInfo)
+        private MgOptimizedStorageBlock[] AllocateBlocks(MgStorageBufferInstance[] bufferInstances, MgOptimizedStorageCreateInfo createInfo)
         {
-            var memoryBlocks = new List<MgOptimizedMeshInstance>();
+            var memoryBlocks = new List<MgOptimizedStorageBlock>();
             foreach (var instance in bufferInstances)
             {
                 var pAllocateInfo = new MgMemoryAllocateInfo
@@ -109,7 +109,7 @@ namespace Magnesium.Utilities
                     children.Add(mapping.Index);
                 }
 
-                var block = new MgOptimizedMeshInstance
+                var block = new MgOptimizedStorageBlock
                 {
                     Buffer = instance.Buffer,
                     DeviceMemory = pMemory,

@@ -105,7 +105,7 @@ namespace OffscreenDemo
         void AllocateMemorySlots(MgBlockAllocationList slots)
         {
             var structSize = Marshal.SizeOf(typeof(TriangleVertex));
-            var vertices = new MgBlockAllocationInfo
+            var vertices = new MgStorageBlockAllocationInfo
             {
                 Size = (ulong) (3 * structSize),
                 ElementByteSize = (uint) structSize,
@@ -116,7 +116,7 @@ namespace OffscreenDemo
             mVertexDataPosition = slots.Insert(vertices);
 
             var indexElementSize = (uint) sizeof(uint);
-            var indices = new MgBlockAllocationInfo
+            var indices = new MgStorageBlockAllocationInfo
             {
                 Size = (ulong) (3 * indexElementSize),
                 ElementByteSize = indexElementSize,
@@ -126,7 +126,7 @@ namespace OffscreenDemo
             mIndexDataPosition = slots.Insert(indices);
 
             var uniformSize = (uint)Marshal.SizeOf(typeof(UniformBufferObject));
-            var uniforms = new MgBlockAllocationInfo
+            var uniforms = new MgStorageBlockAllocationInfo
             {
                 Size = (ulong) uniformSize,
                 ElementByteSize = uniformSize,
@@ -137,7 +137,7 @@ namespace OffscreenDemo
             mUniformDataPosition = slots.Insert(indices);
         }
 
-        void PrepareVertices(IMgGraphicsConfiguration configuration, IMgCommandBuffer copyCmd, MgOptimizedMesh mesh)
+        void PrepareVertices(IMgGraphicsConfiguration configuration, IMgCommandBuffer copyCmd, MgOptimizedStorage mesh)
         {
             var corners = new []
             {
@@ -166,7 +166,7 @@ namespace OffscreenDemo
 
             // DEVICE_LOCAL vertex buffer
             var vertexDest = mesh.Allocations[mVertexDataPosition];
-            var vertexInstance = mesh.Instances[vertexDest.InstanceIndex];
+            var vertexInstance = mesh.Blocks[vertexDest.BlockIndex];
             var vertices = new MgStagingBuffer(configuration, vertexBufferSize)
             {
                 DstBuffer = vertexInstance.Buffer,
@@ -175,7 +175,7 @@ namespace OffscreenDemo
 
             // DEVICE_LOCAL index buffer 
             var indexDest = mesh.Allocations[mIndexDataPosition];
-            var indexInstance = mesh.Instances[indexDest.InstanceIndex];
+            var indexInstance = mesh.Blocks[indexDest.BlockIndex];
             var indices = new MgStagingBuffer(configuration, indexBufferSize)
             {
                 DstBuffer = indexInstance.Buffer,

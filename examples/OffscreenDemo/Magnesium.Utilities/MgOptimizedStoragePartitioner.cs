@@ -3,23 +3,23 @@ using System.Collections.Generic;
 
 namespace Magnesium.Utilities
 {
-    public class MgOptimizedMeshSegmenter : IMgOptimizedMeshSegmenter
+    public class MgOptimizedStoragePartitioner : IMgOptimizedStoragePartitioner
     {
         private IMgPlatformMemoryLayout mLayout;
-        public MgOptimizedMeshSegmenter(IMgPlatformMemoryLayout layout)
+        public MgOptimizedStoragePartitioner(IMgPlatformMemoryLayout layout)
         {
             mLayout = layout;
         }
 
-        public MgMeshSegment[] Setup(MgBlockAllocationInfo[] attributes)
+        public MgStorageBlockInfo[] Setup(MgStorageBlockAllocationInfo[] attributes)
         {
-            var layouts = new List<MgMeshSegment>();
+            var layouts = new List<MgStorageBlockInfo>();
 
             MgBufferUsageFlagBits?[] unallocatedAttributes = TransformAttributes(attributes);
 
             foreach (var combination in mLayout.Combinations)
             {
-                MgMeshSegment currentLayout = null;
+                MgStorageBlockInfo currentLayout = null;
                 for (var i = 0U; i < unallocatedAttributes.Length; i += 1)
                 {
                     var attr = unallocatedAttributes[i];
@@ -29,14 +29,14 @@ namespace Magnesium.Utilities
                         var mask = (attr.Value & combination.Usage);
                         if (mask == attr.Value)
                         {
-                            MgMeshSegment destination = null;
+                            MgStorageBlockInfo destination = null;
 
                             if (currentLayout == null)
                             {
-                                currentLayout = new MgMeshSegment
+                                currentLayout = new MgStorageBlockInfo
                                 {
                                     Usage = mask,
-                                    Attributes = new List<MgMeshSegmentAttribute>(),
+                                    Attributes = new List<MgStorageBlockAttribute>(),
                                 };
                                 layouts.Add(currentLayout);
                                 destination = currentLayout;
@@ -44,14 +44,14 @@ namespace Magnesium.Utilities
                             else
                             {
                                 // CREATE ADDITIONAL BUFFER IF NEEDED
-                                if ((attr.Value & combination.SeparateMemoryRequired) == attr.Value
+                                if ((attr.Value & combination.SeparateBlockRequired) == attr.Value
                                     // IF CURRENT LAYOUT ALREADY HAS OCCUPIED, THEN CREATE NEW SEGMENT
                                     && (currentLayout.Usage & attr.Value) == attr.Value)
                                 {
-                                    var temp = new MgMeshSegment
+                                    var temp = new MgStorageBlockInfo
                                     {
                                         Usage = mask,
-                                        Attributes = new List<MgMeshSegmentAttribute>(),
+                                        Attributes = new List<MgStorageBlockAttribute>(),
                                     };
                                     layouts.Add(temp);
                                     destination = temp;
@@ -65,7 +65,7 @@ namespace Magnesium.Utilities
                                 }
                             }
 
-                            var location = new MgMeshSegmentAttribute
+                            var location = new MgStorageBlockAttribute
                             {
                                 Index = i,
                                 Usage = attr.Value,
@@ -81,7 +81,7 @@ namespace Magnesium.Utilities
             return layouts.ToArray();
         }
 
-        private MgBufferUsageFlagBits?[] TransformAttributes(MgBlockAllocationInfo[] attributes)
+        private MgBufferUsageFlagBits?[] TransformAttributes(MgStorageBlockAllocationInfo[] attributes)
         {
             var unallocatedAttributes = new MgBufferUsageFlagBits?[attributes.Length];
             for (var i = 0; i < unallocatedAttributes.Length; i += 1)

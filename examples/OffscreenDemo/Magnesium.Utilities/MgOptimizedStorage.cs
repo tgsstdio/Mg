@@ -1,20 +1,18 @@
-﻿using Magnesium;
-
-namespace Magnesium.Utilities
+﻿namespace Magnesium.Utilities
 {
-    public class MgOptimizedMesh
+    public class MgOptimizedStorage
     {
-        public MgOptimizedMesh(
-            MgOptimizedMeshInstance[] instances,
-            MgOptimizedMeshAllocation[] allocation
+        public MgOptimizedStorage(
+            MgOptimizedStorageBlock[] blocks,
+            MgOptimizedStorageAllocation[] allocations
         )
         {
-            Instances = instances;
-            Allocations = allocation;
+            Blocks = blocks;
+            Allocations = allocations;
         }
 
-        public MgOptimizedMeshInstance[] Instances { get; private set; }
-        public MgOptimizedMeshAllocation[] Allocations { get; private set; }
+        public MgOptimizedStorageBlock[] Blocks { get; private set; }
+        public MgOptimizedStorageAllocation[] Allocations { get; private set; }
 
         private bool mIsDisposed = false;
         public void Destroy(IMgDevice device, IMgAllocationCallbacks allocator)
@@ -22,9 +20,9 @@ namespace Magnesium.Utilities
             if (mIsDisposed)
                 return;
 
-            if (Instances != null)
+            if (Blocks != null)
             {
-                foreach(var block in Instances)
+                foreach(var block in Blocks)
                 {
                     if (block != null)
                     {

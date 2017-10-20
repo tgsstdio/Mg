@@ -2,7 +2,7 @@
 
 namespace Magnesium.Utilities
 {
-    public class MgBufferOffsetMapping
+    public class MgStorageBufferOffset
     {
         public uint Index { get; set; }
         public ulong Size { get; set; }

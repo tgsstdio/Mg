@@ -2,9 +2,9 @@
 
 namespace Magnesium.Utilities
 {
-    public class MgOptimizedMeshCreateInfo
+    public class MgOptimizedStorageCreateInfo
     {
-        public MgBlockAllocationInfo[] Allocations { get; set; }
+        public MgStorageBlockAllocationInfo[] Allocations { get; set; }
         public MgSharingMode SharingMode { get; internal set; }
         public uint[] QueueFamilyIndices { get; internal set; }
     }

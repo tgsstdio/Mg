@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Magnesium;
+﻿using System.Collections.Generic;
 
 namespace Magnesium.Utilities
 {
     public class WGLPlatformMemoryLayout : IMgPlatformMemoryLayout
     {
         private Dictionary<MgBufferUsageFlagBits, MgBufferUsageFlagBits> mPreTransforms;
-        private MgMemoryCombination[] mCombinations;
+        private MgPlatformMemoryProperties[] mCombinations;
 
         public WGLPlatformMemoryLayout()
         {
@@ -28,17 +23,17 @@ namespace Magnesium.Utilities
 
             mCombinations = new []
             {
-                new MgMemoryCombination
+                new MgPlatformMemoryProperties
                 {
                     Usage = MgBufferUsageFlagBits.INDEX_BUFFER_BIT,
-                    SeparateMemoryRequired = MgBufferUsageFlagBits.INDEX_BUFFER_BIT,
+                    SeparateBlockRequired = MgBufferUsageFlagBits.INDEX_BUFFER_BIT,
                 },
-                new MgMemoryCombination
+                new MgPlatformMemoryProperties
                 {
                     Usage = MgBufferUsageFlagBits.INDIRECT_BUFFER_BIT,
-                    SeparateMemoryRequired = (MgBufferUsageFlagBits) 0,
+                    SeparateBlockRequired = (MgBufferUsageFlagBits) 0,
                 },
-                new MgMemoryCombination
+                new MgPlatformMemoryProperties
                 {
                     Usage = MgBufferUsageFlagBits.UNIFORM_BUFFER_BIT
                     | MgBufferUsageFlagBits.VERTEX_BUFFER_BIT
@@ -47,7 +42,7 @@ namespace Magnesium.Utilities
                     | MgBufferUsageFlagBits.TRANSFER_DST_BIT
                     | MgBufferUsageFlagBits.TRANSFER_SRC_BIT 
                     | MgBufferUsageFlagBits.UNIFORM_TEXEL_BUFFER_BIT
-                    , SeparateMemoryRequired = MgBufferUsageFlagBits.UNIFORM_BUFFER_BIT,
+                    , SeparateBlockRequired = MgBufferUsageFlagBits.UNIFORM_BUFFER_BIT,
                 },
             };
         }
@@ -60,7 +55,7 @@ namespace Magnesium.Utilities
             }
         }
 
-        public MgMemoryCombination[] Combinations
+        public MgPlatformMemoryProperties[] Combinations
         {
             get
             {
