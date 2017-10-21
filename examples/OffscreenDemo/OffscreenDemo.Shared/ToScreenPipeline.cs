@@ -81,7 +81,7 @@ namespace OffscreenDemo
             public Vector3 normal;
         };
 
-        public void Populate()
+        public void Populate(MgOptimizedStorage storage, IMgGraphicsConfiguration configuration)
         {
             // Setup vertices for a single uv-mapped quad made from two triangles
             VertexData[] quadCorners =
@@ -116,40 +116,173 @@ namespace OffscreenDemo
                 },
             };
 
+            // DEVICE_LOCAL vertex buffer
+            SetData(storage, configuration.Device, mVertexDataPosition, quadCorners, 0, quadCorners.Length);
+
             // Setup indices
             var indices = new uint[] { 0, 1, 2, 2, 3, 0 };
-            indexCount = (uint)indices.Length;
 
+            SetIndicesU32(storage, configuration.Device, mIndexDataPosition, indices, 0, indices.Length);
         }
 
-        public void Reserve(MgBlockAllocationList slots)
+        public Result SetData<TData>(
+            MgOptimizedStorage storage,
+            IMgDevice device,
+            int location,
+            TData[] srcData,
+            int srcFirst,
+            int count)
+            where TData : struct
         {
-            throw new NotImplementedException();
+            ValidateParameters(device, srcData);
 
-            // Vertex buffer
+            int stride = Marshal.SizeOf(typeof(TData));
+
+            var allocationInfo = storage.Allocations[location];
+            ulong sizeInBytes = (ulong)(count * stride);
+            ValidateRange(allocationInfo, sizeInBytes);
+
+            var block = storage.Blocks[allocationInfo.BlockIndex];
+
+            var err = block.DeviceMemory.MapMemory(
+                device,
+                allocationInfo.Offset,
+                allocationInfo.Size,
+                0, out IntPtr dest);
+            if (err != Result.SUCCESS)
             {
-                var bufferSize = (uint)(Marshal.SizeOf<VertexData>() * quadCorners.Length);
-                vertexBuffer = new BufferInfo(
-                    mManager.Configuration.Device,
-                    mManager.Configuration.MemoryProperties,
-                    MgBufferUsageFlagBits.VERTEX_BUFFER_BIT,
-                    MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT | MgMemoryPropertyFlagBits.HOST_COHERENT_BIT,
-                    bufferSize);
-                vertexBuffer.SetData<VertexData>(bufferSize, quadCorners, 0, quadCorners.Length);
+                return err;
             }
 
+            // Copy the struct to unmanaged memory.	
+            int offset = 0;
+            for (int i = 0; i < count; ++i)
+            {
+                IntPtr localDest = IntPtr.Add(dest, offset);
+                Marshal.StructureToPtr(srcData[i + srcFirst], localDest, false);
+                offset += stride;
+            }
+
+            block.DeviceMemory.UnmapMemory(device);
+
+            return Result.SUCCESS;
+        }
+
+        private static void ValidateParameters<TData>(IMgDevice device, TData[] srcData) where TData : struct
+        {
+            if (device == null)
+                throw new ArgumentNullException("device");
+
+            if (srcData == null)
+                throw new ArgumentNullException("srcData");
+        }
+
+        private Result SetIndicesU32(
+            MgOptimizedStorage storage,
+            IMgDevice device, 
+            int location,
+            uint[] srcData,
+            int first,
+            int count)
+        {
+            ValidateParameters(device, srcData);
+
+            int stride = Marshal.SizeOf(typeof(uint));
+
+            var allocationInfo = storage.Allocations[location];
+            ulong sizeInBytes = (ulong)(count * stride);
+            ValidateRange(allocationInfo, sizeInBytes);
+
+            var block = storage.Blocks[allocationInfo.BlockIndex];
+
+            var err = block.DeviceMemory.MapMemory(
+                device,
+                allocationInfo.Offset,
+                allocationInfo.Size,
+                0, out IntPtr dest);
+
+            if (err != Result.SUCCESS)
+            {
+                return err;
+            }
+
+            var localData = new byte[sizeInBytes];
+
+            var startOffset = first * stride;
+            var totalBytesToCopy = (int)sizeInBytes;
+            Buffer.BlockCopy(srcData, startOffset, localData, 0, totalBytesToCopy);
+
+            Marshal.Copy(localData, first, dest, totalBytesToCopy);
+
+            block.DeviceMemory.UnmapMemory(device);
+
+            return Result.SUCCESS;
+        }
+
+        private static void ValidateRange(MgOptimizedStorageAllocation allocationInfo, ulong sizeInBytes)
+        {
+            if (allocationInfo.Size < sizeInBytes)
+            {
+                throw new ArgumentOutOfRangeException("sizeInBytes");
+            }
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        struct UniformBufferObject
+        {
+            public Vector3 viewPos;
+            public float lodBias;
+            public Matrix4 projection;
+            public Matrix4 model;
+        }
+
+        private int mVertexDataPosition;
+        private int mIndexDataPosition;
+        private int mUniformDataPosition;
+        public void Reserve(MgBlockAllocationList slots)
+        {
+            // Vertex buffer
+            {
+                var structSize = Marshal.SizeOf(typeof(VertexData));
+                var vertices = new MgStorageBlockAllocationInfo
+                {
+                    Size = (ulong)(4 * structSize),
+                    ElementByteSize = (uint)structSize,
+                    MemoryPropertyFlags =
+                        MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT
+                        | MgMemoryPropertyFlagBits.HOST_COHERENT_BIT,
+                    Usage = MgBufferUsageFlagBits.VERTEX_BUFFER_BIT,
+                };
+                mVertexDataPosition = slots.Insert(vertices);
+            }
+
+            // index buffer
+            {
+                var indexElementSize = (uint)sizeof(uint);
+                var indices = new MgStorageBlockAllocationInfo
+                {
+                    Size = (ulong)(6 * indexElementSize),
+                    ElementByteSize = indexElementSize,
+                    MemoryPropertyFlags = 
+                        MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT
+                        | MgMemoryPropertyFlagBits.HOST_COHERENT_BIT,
+                    Usage = MgBufferUsageFlagBits.INDEX_BUFFER_BIT,
+                };
+                mIndexDataPosition = slots.Insert(indices);
+            }
 
             // Index buffer
             {
-                var bufferSize = indexCount * sizeof(uint);
-                indexBuffer = new BufferInfo(
-                    mManager.Configuration.Device,
-                    mManager.Configuration.MemoryProperties,
-                    MgBufferUsageFlagBits.INDEX_BUFFER_BIT,
-                    MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT | MgMemoryPropertyFlagBits.HOST_COHERENT_BIT,
-                    bufferSize);
-                indexBuffer.SetData(bufferSize, indices, 0, (int)indexCount);
-
+                var uniformSize = (uint)Marshal.SizeOf(typeof(UniformBufferObject));
+                var uniforms = new MgStorageBlockAllocationInfo
+                {
+                    Size = (ulong)uniformSize,
+                    ElementByteSize = uniformSize,
+                    MemoryPropertyFlags = MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT
+                    | MgMemoryPropertyFlagBits.HOST_COHERENT_BIT,
+                    Usage = MgBufferUsageFlagBits.UNIFORM_BUFFER_BIT,
+                };
+                mUniformDataPosition = slots.Insert(uniforms);
             }
         }
 

@@ -116,7 +116,7 @@ namespace OffscreenDemo
                 | MgMemoryPropertyFlagBits.HOST_COHERENT_BIT,                
                 Usage = MgBufferUsageFlagBits.UNIFORM_BUFFER_BIT,
             };
-            mUniformDataPosition = slots.Insert(indices);
+            mUniformDataPosition = slots.Insert(uniforms);
         }
 
         public MgCommandBuildOrder GenerateBuildOrder(MgOptimizedStorage storage)
