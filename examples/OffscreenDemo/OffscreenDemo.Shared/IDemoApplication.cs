@@ -13,7 +13,7 @@ namespace OffscreenDemo
 
         IMgSemaphore[] Render(IMgQueue queue, uint layerNo);
 
-        void ReleaseManagedResources();
-        void ReleaseUnmanagedResources();
+        void ReleaseManagedResources(IMgGraphicsConfiguration configuration);
+        void ReleaseUnmanagedResources(IMgGraphicsConfiguration configuration);
     }
 }

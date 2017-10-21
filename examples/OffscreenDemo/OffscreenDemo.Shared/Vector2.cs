@@ -29,13 +29,11 @@ namespace OffscreenDemo
         /// <summary>
         /// The x coordinate of this <see cref="Vector2"/>.
         /// </summary>
-        [DataMember]
         public float X;
 
         /// <summary>
         /// The y coordinate of this <see cref="Vector2"/>.
         /// </summary>
-        [DataMember]
         public float Y;
 
         #endregion

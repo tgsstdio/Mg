@@ -1,4 +1,5 @@
 ﻿using LightInject;
+using Magnesium.Utilities;
 using OpenTK;
 using System;
 
@@ -36,7 +37,24 @@ namespace OffscreenDemo
 
                     using (var scope = container.BeginScope())
                     {
+                        // GAME START
                         container.Register<Example>(new PerScopeLifetime());
+                        container.Register<IDemoApplication, OffscreenDemoApplication>(new PerScopeLifetime());
+
+                        container.Register<IMgPlatformMemoryLayout, VkPlatformMemoryLayout>(new PerScopeLifetime());
+                        container.Register<IMgOptimizedStoragePartitioner, MgOptimizedStoragePartitioner>(new PerScopeLifetime());
+                        container.Register<IMgOptimizedStoragePartitionVerifier, MgOptimizedStoragePartitionVerifier>(new PerScopeLifetime());
+                        container.Register<MgOptimizedStorageBuilder>(new PerScopeLifetime());
+
+                        container.Register<OffscreenPipeline>(new PerScopeLifetime());
+                        container.Register<IOffscreenPipelineMediaPath, VkOffscreenDemoShaderPath>(new PerScopeLifetime());
+
+                        container.Register<ToScreenPipeline>(new PerScopeLifetime());
+                        container.Register<IToScreenPipelineMediaPath, VkToScreenPipelinePath>(new PerScopeLifetime());
+
+                        // GAME END
+
+
                         container.Register<Magnesium.IMgGraphicsDevice, Magnesium.MgDefaultGraphicsDevice>(new PerScopeLifetime());
                         container.Register<Magnesium.IMgGraphicsDeviceContext, Magnesium.MgDefaultGraphicsDeviceContext>(new PerScopeLifetime());
                         container.Register<Magnesium.IMgPresentationLayer, Magnesium.MgPresentationLayer>(new PerScopeLifetime());
@@ -57,23 +75,24 @@ namespace OffscreenDemo
                                 },
                                 Magnesium.MgInstanceExtensionOptions.ALL);
                             using (var graphicsConfiguration = container.GetInstance<Magnesium.IMgGraphicsConfiguration>())
+                            using (var secondLevel = scope.BeginScope())
+                            using (var gameWindow = new GameWindow(window))
+                            using (var example = container.GetInstance<Example>())
                             {
-                                using (var secondLevel = scope.BeginScope())
+                                try
                                 {
-                                    using (var gameWindow = new GameWindow(window))
-                                    using (var example = container.GetInstance<Example>())
+                                    gameWindow.RenderFrame += (sender, e) =>
                                     {
-                                        gameWindow.RenderFrame += (sender, e) =>
-                                        {
-                                            example.Render();
-                                        };
+                                        example.Render();
+                                    };
 
-                                        gameWindow.Run(60, 60);
-
-                                        example.Dispose();
-                                    }
+                                    gameWindow.Run(60, 60);
                                 }
-                            }
+                                finally
+                                {
+                                    example.Dispose();
+                                }
+                            }                            
                         }
                     }
                 }

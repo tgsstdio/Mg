@@ -3,7 +3,7 @@ using System.IO;
 
 namespace OffscreenDemo
 {
-    public interface IOffscreenDemoShaderPath
+    public interface IOffscreenPipelineMediaPath
     {
         Stream OpenVertexShader();
         Stream OpenFragmentShader();

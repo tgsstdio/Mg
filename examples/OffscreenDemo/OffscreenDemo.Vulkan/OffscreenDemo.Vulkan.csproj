@@ -50,6 +50,8 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VkOffscreenDemoShaderPath.cs" />
+    <Compile Include="VkToScreenPipelinePath.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -68,6 +70,10 @@
     <ProjectReference Include="..\..\..\Magnesium\Magnesium.csproj">
       <Project>{9f9ac448-9d17-43e5-8889-285426290891}</Project>
       <Name>Magnesium</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Magnesium.Utilities\Magnesium.Utilities.csproj">
+      <Project>{cb108602-e69b-4fa1-922a-096a4d1f349f}</Project>
+      <Name>Magnesium.Utilities</Name>
     </ProjectReference>
     <ProjectReference Include="..\OffscreenDemo.Shared\OffscreenDemo.Shared.csproj">
       <Project>{eb230183-e335-412c-94f1-70adfb6cee41}</Project>

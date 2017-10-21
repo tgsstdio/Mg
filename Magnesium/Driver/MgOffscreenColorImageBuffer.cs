@@ -11,19 +11,10 @@ namespace Magnesium
 
         public MgOffscreenColorImageBuffer(
             IMgGraphicsConfiguration configuration,
-            IMgOffscreenDeviceLocalMemory deviceLocal,
-            MgFormat format, 
-            uint width,
-            uint height)
+            IMgOffscreenDeviceLocalMemory deviceLocal)
         {
             mConfiguration = configuration;
             mDeviceLocal = deviceLocal;
-
-            Width = width;
-            Height = height;
-            Format = format;
-
-            Setup();
         }
 
         public MgFormat Format { get; private set; }
@@ -35,11 +26,18 @@ namespace Magnesium
         private IMgImageView mImageView;
         public IMgImageView View { get => mImageView; private set => mImageView = value; }
 
-        private void Setup()
+        public void Initialize(
+            MgFormat format,
+            uint width,
+            uint height)
         {
+            Width = width;
+            Height = height;
+            Format = format;
+
             // BASED ON 
             // https://github.com/SaschaWillems/Vulkan/blob/master/offscreen/offscreen.cpp
-            
+
             // Color attachment
             var image = new MgImageCreateInfo
             {
@@ -101,7 +99,6 @@ namespace Magnesium
         // Free all Vulkan resources used by the swap chain
         private bool mIsDisposed = false;
         private IMgImage mOffscreenImage;
-
 
         protected virtual void Dispose(bool disposing)
         {

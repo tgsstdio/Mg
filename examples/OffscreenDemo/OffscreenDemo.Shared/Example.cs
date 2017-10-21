@@ -1,4 +1,5 @@
 ﻿using System;
+using Magnesium;
 
 namespace OffscreenDemo
 {
@@ -52,7 +53,7 @@ namespace OffscreenDemo
 
             if (disposing)
             {
-                mApp.ReleaseManagedResources();
+                mApp.ReleaseManagedResources(mManager.Configuration);
             }
 
             ReleaseUnmanagedResources();
@@ -60,9 +61,10 @@ namespace OffscreenDemo
             mIsDisposed = true;
         }
 
+
         private void ReleaseUnmanagedResources()
         {
-            mApp.ReleaseUnmanagedResources();
+            mApp.ReleaseUnmanagedResources(mManager.Configuration);
             mManager.Dispose();
         }
 

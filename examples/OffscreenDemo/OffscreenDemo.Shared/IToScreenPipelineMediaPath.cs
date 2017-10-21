@@ -1,9 +1,8 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace OffscreenDemo
 {
-    public interface IToScreenPipelinePath
+    public interface IToScreenPipelineMediaPath
     {
         Stream OpenVertexShader();
         Stream OpenFragmentShader();

@@ -7,15 +7,14 @@ using System.Runtime.InteropServices;
 
 namespace OffscreenDemo
 {
-    class ToScreenPipeline : IScreenQuadPipeline
+    public class ToScreenPipeline
     {
-        private IToScreenPipelinePath mPath;
+        private IToScreenPipelineMediaPath mPath;
 
-        public ToScreenPipeline(IToScreenPipelinePath path)
+        public ToScreenPipeline(IToScreenPipelineMediaPath path)
         {
             mPath = path;
         }
-
 
         private IMgDescriptorSetLayout mDescriptorSetLayout;
         private IMgPipelineLayout mPipelineLayout;
@@ -358,7 +357,7 @@ namespace OffscreenDemo
         private static IMgPipeline BuildPipeline(
             IMgDevice device,
             IMgEffectFramework framework,
-            IToScreenPipelinePath path,
+            IToScreenPipelineMediaPath path,
             IMgPipelineLayout pipelineLayout
         )
         {

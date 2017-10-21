@@ -85,10 +85,9 @@ namespace Magnesium
         }
 
         private IMgGraphicsConfiguration mConfiguration;
-        public MgOffscreenGraphicDevice(IMgGraphicsConfiguration configuration, MgOffscreenGraphicsDeviceCreateInfo createInfo)
+        public MgOffscreenGraphicDevice(IMgGraphicsConfiguration configuration)
         {
             mConfiguration = configuration;
-            Initialize(createInfo);
         }
 
         private void ReleaseUnmanagedResources()
@@ -106,17 +105,17 @@ namespace Magnesium
             }
         }
 
-        private void Initialize(MgOffscreenGraphicsDeviceCreateInfo createInfo)
+        public void Initialize(MgOffscreenGraphicsDeviceCreateInfo createInfo)
         {
             // color attachments 
             if (createInfo == null)
                 throw new ArgumentNullException("createInfo");
 
-            var descriptions = new List<MgAttachmentDescription>();
+            var attachments = new List<MgAttachmentDescription>();
             var subpassColorAttachments = new List<MgAttachmentReference>();
             var frameBufferAttachments = new List<IMgImageView>();
 
-            var attachmentIndex = 0U;
+
 
             if (createInfo.ColorAttachments != null)
             {
@@ -135,13 +134,14 @@ namespace Magnesium
                         InitialLayout = MgImageLayout.COLOR_ATTACHMENT_OPTIMAL,
                         FinalLayout = MgImageLayout.COLOR_ATTACHMENT_OPTIMAL,
                     };
-                    descriptions.Add(attachment);
 
+                    var attachmentIndex = (uint)attachments.Count;
                     var itemReference = new MgAttachmentReference
                     {
                         Attachment = attachmentIndex,
                         Layout = MgImageLayout.COLOR_ATTACHMENT_OPTIMAL,
                     };
+                    attachments.Add(attachment);
 
                     subpassColorAttachments.Add(itemReference);
 
@@ -167,20 +167,21 @@ namespace Magnesium
                     InitialLayout = MgImageLayout.DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
                     FinalLayout = MgImageLayout.DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
                 };
-                descriptions.Add(attachment);
 
+                var attachmentIndex = (uint)attachments.Count;
                 depthStencilAttachment = new MgAttachmentReference
                 {
                     Attachment = attachmentIndex,
                     Layout = item.Layout,
                 };
+                attachments.Add(attachment);
 
                 frameBufferAttachments.Add(item.View);
             }
 
             var pCreateInfo = new MgRenderPassCreateInfo
             {
-                Attachments = descriptions.ToArray(),
+                Attachments = attachments.ToArray(),
                 Subpasses = new MgSubpassDescription[]
                 {
                     new MgSubpassDescription

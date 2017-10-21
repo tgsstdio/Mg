@@ -6,11 +6,9 @@ namespace Magnesium
     public class MgOffscreenDepthStencilContext : IDisposable
     {
         private IMgGraphicsConfiguration mConfiguration;
-        public MgOffscreenDepthStencilContext(IMgGraphicsConfiguration configuration, MgFormat format, uint width, uint height)
+        public MgOffscreenDepthStencilContext(IMgGraphicsConfiguration configuration)
         {
             mConfiguration = configuration;
-            
-            Setup(format, width, height);
         }
 
         private IMgImageView mDepthView;
@@ -63,7 +61,7 @@ namespace Magnesium
             }
         }
 
-        private void Setup(MgFormat depthFormat, uint width, uint height)
+        public void Initialize(MgFormat depthFormat, uint width, uint height)
         {
             // Color attachment
             var image = new MgImageCreateInfo

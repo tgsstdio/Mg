@@ -6,10 +6,10 @@ using System.Runtime.InteropServices;
 
 namespace OffscreenDemo
 {
-    public class OffscreenPipeline : IScreenQuadPipeline
+    public class OffscreenPipeline
     {
-        private IOffscreenDemoShaderPath mTrianglePath;
-        public OffscreenPipeline(IOffscreenDemoShaderPath path)
+        private IOffscreenPipelineMediaPath mTrianglePath;
+        public OffscreenPipeline(IOffscreenPipelineMediaPath path)
         {
             mTrianglePath = path;
         }
@@ -293,7 +293,7 @@ namespace OffscreenDemo
             IMgDevice device,
             IMgPipelineLayout pipelineLayout,
             IMgEffectFramework framework,
-            IOffscreenDemoShaderPath path)
+            IOffscreenPipelineMediaPath path)
         {
             using (var vertFs = path.OpenVertexShader())
             using (var fragFs = path.OpenFragmentShader())
