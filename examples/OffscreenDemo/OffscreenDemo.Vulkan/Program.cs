@@ -15,7 +15,7 @@ namespace OffscreenDemo
                 using (var container = new ServiceContainer())
                 using (var window = new NativeWindow())
                 {
-                    window.Title = "TextureDemo - KTX Texture demo";
+                    window.Title = "Offscreen Demo ";
                     window.Visible = true;
 
 
@@ -67,7 +67,7 @@ namespace OffscreenDemo
                             driver.Initialize(
                                 new Magnesium.MgApplicationInfo
                                 {
-                                    ApplicationName = "TextureDemo",
+                                    ApplicationName = "OffscreenDemo",
                                     ApiVersion = Magnesium.MgApplicationInfo.GenerateApiVersion(1, 0, 30),
                                     ApplicationVersion = 1,
                                     EngineName = "Magnesium",
@@ -81,6 +81,7 @@ namespace OffscreenDemo
                             {
                                 try
                                 {
+                                    example.Initialize();
                                     gameWindow.RenderFrame += (sender, e) =>
                                     {
                                         example.Render();

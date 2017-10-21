@@ -66,6 +66,19 @@ namespace OffscreenDemo
             mPipeline = BuildPipeline(device, mPipelineLayout, framework, mTrianglePath);
         }
 
+        internal void ReleaseUnmanagedResources(IMgGraphicsConfiguration configuration)
+        {
+            var device = configuration.Device;
+            Debug.Assert(device != null);
+
+            if (mPipeline != null)
+                mPipeline.DestroyPipeline(device, null);
+            if (mPipelineLayout != null)
+                mPipelineLayout.DestroyPipelineLayout(device, null);
+            if (mDescriptorSetLayout != null)
+                mDescriptorSetLayout.DestroyDescriptorSetLayout(device, null);
+        }
+
         [StructLayout(LayoutKind.Sequential)]
         struct TriangleVertex
         {

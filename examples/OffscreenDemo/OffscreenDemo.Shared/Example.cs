@@ -11,7 +11,10 @@ namespace OffscreenDemo
         {
             mManager = manager;
             mApp = app;
+        }
 
+        public void Initialize()
+        {
             var createInfo = mApp.Initialize();
 
             mManager.Initialize(createInfo);

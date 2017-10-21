@@ -6,12 +6,12 @@ namespace OffscreenDemo
     {
         public Stream OpenFragmentShader()
         {
-            throw new System.NotImplementedException();
+            return File.Open("Shaders/texture1.frag.spv", FileMode.Open);
         }
 
         public Stream OpenVertexShader()
         {
-            throw new System.NotImplementedException();
+            return File.Open("Shaders/texture1.vert.spv", FileMode.Open);
         }
     }
 }

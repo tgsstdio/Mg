@@ -30,6 +30,19 @@ namespace OffscreenDemo
             mPipeline = BuildPipeline(device, framework, mPath, mPipelineLayout);
         }
 
+        internal void ReleaseUnmanagedResources(IMgGraphicsConfiguration configuration)
+        {
+            var device = configuration.Device;
+            Debug.Assert(device != null);
+
+            if (mPipeline != null)
+                mPipeline.DestroyPipeline(device, null);
+            if (mPipelineLayout != null)
+                mPipelineLayout.DestroyPipelineLayout(device, null);
+            if (mDescriptorSetLayout != null)
+                mDescriptorSetLayout.DestroyDescriptorSetLayout(device, null);
+        }
+
         private static IMgDescriptorSetLayout SetupDescriptorSetLayout(IMgDevice device)
         {
             var descriptorLayout = new MgDescriptorSetLayoutCreateInfo

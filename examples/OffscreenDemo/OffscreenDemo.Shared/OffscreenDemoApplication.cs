@@ -28,7 +28,7 @@ namespace OffscreenDemo
             };
         }
 
-        class DemoAppResources
+        class UnmanagedResources
         {
             public MgOffscreenDeviceLocalMemory DeviceLocal { get; internal set; }
             public MgOffscreenColorImageBuffer ColorOne { get; internal set; }
@@ -51,7 +51,7 @@ namespace OffscreenDemo
             }
         }
 
-        private DemoAppResources mResources;
+        private UnmanagedResources mUnmanagedResources;
         public void Prepare(IMgGraphicsConfiguration configuration, IMgGraphicsDevice screen)
         {
             const uint WIDTH = 1280;
@@ -59,24 +59,25 @@ namespace OffscreenDemo
             const MgFormat COLOR_FORMAT = MgFormat.R8G8B8A8_UNORM;
             const MgFormat DEPTH_FORMAT = MgFormat.D32_SFLOAT;
 
-            mResources = new DemoAppResources();
+            mUnmanagedResources = new UnmanagedResources();
 
-            mResources.DepthOne = new MgOffscreenDepthStencilContext(configuration);
-            mResources.DepthOne.Initialize(DEPTH_FORMAT, WIDTH, HEIGHT);
+            mUnmanagedResources.DepthOne = new MgOffscreenDepthStencilContext(configuration);
+            mUnmanagedResources.DepthOne.Initialize(DEPTH_FORMAT, WIDTH, HEIGHT);
 
             // 1. init offscreen device           
-            mResources.DeviceLocal = new MgOffscreenDeviceLocalMemory(configuration);
+                // TODO IOC this component somehow
+            mUnmanagedResources.DeviceLocal = new MgOffscreenDeviceLocalMemory(configuration);
 
-            mResources.ColorOne = new MgOffscreenColorImageBuffer(
+            mUnmanagedResources.ColorOne = new MgOffscreenColorImageBuffer(
                 configuration,
-                mResources.DeviceLocal);
+                mUnmanagedResources.DeviceLocal);
 
-            mResources.ColorOne.Initialize(
+            mUnmanagedResources.ColorOne.Initialize(
                 COLOR_FORMAT,
                 WIDTH,
                 HEIGHT);
 
-            mResources.Offscreen = new Magnesium.MgOffscreenGraphicDevice(configuration);
+            mUnmanagedResources.Offscreen = new Magnesium.MgOffscreenGraphicDevice(configuration);
 
             var createInfo = new MgOffscreenGraphicsDeviceCreateInfo
             {
@@ -89,7 +90,7 @@ namespace OffscreenDemo
                         Format = COLOR_FORMAT,
                         LoadOp = MgAttachmentLoadOp.CLEAR,
                         StoreOp = MgAttachmentStoreOp.STORE,
-                        View = mResources.ColorOne.View
+                        View = mUnmanagedResources.ColorOne.View
                     }
                 },
                 DepthStencilAttachment = new MgOffscreenDepthStencilAttachmentInfo
@@ -99,20 +100,19 @@ namespace OffscreenDemo
                     StoreOp = MgAttachmentStoreOp.STORE,
                     StencilLoadOp = MgAttachmentLoadOp.DONT_CARE,
                     StencilStoreOp = MgAttachmentStoreOp.DONT_CARE,
-                    View = mResources.DepthOne.View,
+                    View = mUnmanagedResources.DepthOne.View,
                     Layout = MgImageLayout.GENERAL,
                 }
             };
 
-            mResources.Offscreen.Initialize(createInfo);
+            mUnmanagedResources.Offscreen.Initialize(createInfo);
+
+            // 2. init offscreen pipeline
+            mRenderToTexture.Initialize(configuration, mUnmanagedResources.Offscreen);
+
+            // 3. init post processing pipeline
+            mToScreen.Initialize(configuration, screen);
             /**
-
-// 2. init offscreen pipeline
-mRenderToTexture.Initialize(configuration, offscreen);
-
-// 3. init post processing pipeline
-mToScreen.Initialize(configuration, offscreen);
-
 var pool = CreateCommandPool(configuration);
 
 var storage = ReserveStorageSlots(configuration, pool);
@@ -131,9 +131,9 @@ var commandBuffers = new IMgCommandBuffer[noOfCommandBuffers];
 
 var pAllocateInfo = new MgCommandBufferAllocateInfo
 {
-    CommandBufferCount = (uint)noOfCommandBuffers,
-    CommandPool = pool,
-    Level = MgCommandBufferLevel.PRIMARY,
+CommandBufferCount = (uint)noOfCommandBuffers,
+CommandPool = pool,
+Level = MgCommandBufferLevel.PRIMARY,
 };
 var err = configuration.Device.AllocateCommandBuffers(pAllocateInfo, commandBuffers);
 Debug.Assert(err == Result.SUCCESS);
@@ -289,8 +289,11 @@ mToScreen.BuildCommandBuffers(secondOrder);
 
         public void ReleaseUnmanagedResources(IMgGraphicsConfiguration configuration)
         {
-            Debug.Assert(mResources != null);
-            mResources.Dispose(configuration);
+            Debug.Assert(mUnmanagedResources != null);
+            mUnmanagedResources.Dispose(configuration);
+
+            mRenderToTexture.ReleaseUnmanagedResources(configuration);
+            mToScreen.ReleaseUnmanagedResources(configuration);
         }
     }
 }
