@@ -110,8 +110,8 @@ namespace Magnesium
                 Height = createInfo.Height,
                 X = 0,
                 Y = 0,
-                MinDepth = 0f,
-                MaxDepth = 1f,
+                MinDepth = createInfo.MinDepth,
+                MaxDepth = createInfo.MaxDepth,
             };
             mDeviceCreated = true;
         }

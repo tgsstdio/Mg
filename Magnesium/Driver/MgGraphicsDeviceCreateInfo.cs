@@ -11,6 +11,9 @@ namespace Magnesium
         public MgDeviceFormatSetting RenderPass { get; set; }
 
         public MgSampleCountFlagBits Samples { get; set; }
+
+        public float MinDepth { get; set; }
+        public float MaxDepth { get; set; }
 	}
 }
 
