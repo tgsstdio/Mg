@@ -9,7 +9,7 @@ namespace OffscreenDemo
 
         void Prepare(IMgGraphicsConfiguration configuration, IMgGraphicsDevice screen);
 
-        void Update();
+        void Update(IMgGraphicsConfiguration configuration);
 
         IMgSemaphore[] Render(IMgQueue queue, uint layerNo);
 

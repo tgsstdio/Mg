@@ -33,7 +33,7 @@ namespace OffscreenDemo
             if (!mPrepared)
                 return;
 
-            mApp.Update();
+            mApp.Update(mManager.Configuration);
             RenderFrame();
         }
 

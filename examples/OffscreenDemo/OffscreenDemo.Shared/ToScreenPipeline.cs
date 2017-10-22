@@ -11,9 +11,11 @@ namespace OffscreenDemo
     {
         private IToScreenPipelineMediaPath mPath;
 
+        private float mZoom;
         public ToScreenPipeline(IToScreenPipelineMediaPath path)
         {
             mPath = path;
+            mZoom = -2.5f;
         }
 
         private static IMgDescriptorSetLayout SetupDescriptorSetLayout(IMgDevice device)
@@ -197,6 +199,32 @@ namespace OffscreenDemo
             device.UpdateDescriptorSets(writeDescriptorSets, null);
         }
 
+        internal MgCommandBuildOrder GenerateBuildOrder(MgOptimizedStorageContainer container)
+        {
+            var vertexDest = container.Map.Allocations[mVertexDataPosition];
+            var vertexInstance = container.Storage.Blocks[vertexDest.BlockIndex];
+
+            var indexDest = container.Map.Allocations[mIndexDataPosition];
+            var indexInstance = container.Storage.Blocks[indexDest.BlockIndex];
+
+            return new MgCommandBuildOrder
+            {
+                Vertices = new MgCommandBuildOrderBufferInfo
+                {
+                    Buffer = vertexInstance.Buffer,
+                    ByteOffset = vertexDest.Offset,
+                },
+                Indices = new MgCommandBuildOrderBufferInfo
+                {
+                    Buffer = indexInstance.Buffer,
+                    ByteOffset = indexDest.Offset,
+                },
+                DescriptorSet = mDescriptorSet,                
+                IndexCount = 3,
+                InstanceCount = 1,
+            };
+        }
+
         internal void ReleaseUnmanagedResources(IMgGraphicsConfiguration configuration)
         {
             var device = configuration.Device;
@@ -330,6 +358,58 @@ namespace OffscreenDemo
             return Result.SUCCESS;
         }
 
+        public static float DegreesToRadians(float degrees)
+        {
+            const double degToRad = System.Math.PI / 180.0;
+            return (float)(degrees * degToRad);
+        }
+
+
+        private UniformBufferObject mUBOVS;
+        internal void UpdateUniformBuffers(IMgGraphicsConfiguration configuration, MgOptimizedStorageContainer storageContainer, IMgEffectFramework framework)
+        {
+            // Vertex shader
+            mUBOVS.projection = Matrix4.CreatePerspectiveFieldOfView(
+                DegreesToRadians(60.0f),
+                framework.Viewport.Width / (framework.Viewport.Height),
+                framework.Viewport.MinDepth,
+                framework.Viewport.MaxDepth
+            );
+            // uboVS.projection = Matrix4.Identity;
+            //uboVS.projection = Matrix4.CreateTranslation(1f,0f,0.5f);
+
+            //var viewMatrix = Matrix4.CreateTranslation( 0f, 0f, mZoom);
+
+            ////uboVS.model = viewMatrix * glm::translate(glm::mat4(), cameraPos);
+            //var rotateX = Matrix4.RotateX(rotation.x);
+            //var rotateY = Matrix4.RotateY(rotation.y);
+            //var rotateZ = Matrix4.RotateZ(rotation.Z);
+            ////uboVS.model = glm::rotate(uboVS.model, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+            ////uboVS.model = glm::rotate(uboVS.model, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+            ////uboVS.model = glm::rotate(uboVS.model, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+            //uboVS.model = rotateZ * rotateY * rotateX * viewMatrix;
+
+            mUBOVS.lodBias = 0.5f;
+
+            mUBOVS.model = Matrix4.Identity;
+
+            mUBOVS.viewPos = new Vector3(0f, 0f, mZoom);
+            //sum += 0.001f;
+
+            //if (sum > 1f)
+            //{
+            //    sum = 0;
+            //}
+
+            var allocationInfo = storageContainer.Map.Allocations[mUniformDataPosition];
+            var uniformInstance = storageContainer.Storage.Blocks[allocationInfo.BlockIndex];
+
+            var err = uniformInstance.DeviceMemory.MapMemory(configuration.Device, allocationInfo.Offset, allocationInfo.Size, 0, out IntPtr pData);
+            Debug.Assert(err == Result.SUCCESS);
+            Marshal.StructureToPtr(mUBOVS, pData, false);
+            uniformInstance.DeviceMemory.UnmapMemory(configuration.Device);
+        }
+
         private static void ValidateParameters<TData>(IMgDevice device, TData[] srcData) where TData : struct
         {
             if (device == null)
@@ -446,11 +526,6 @@ namespace OffscreenDemo
                 };
                 mUniformDataPosition = slots.Insert(uniforms);
             }
-        }
-
-        public void BuildCommandBuffers(object secondOrder)
-        {
-            throw new NotImplementedException();
         }
 
         public void BuildCommandBuffers(

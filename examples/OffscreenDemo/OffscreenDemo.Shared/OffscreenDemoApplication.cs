@@ -25,6 +25,8 @@ namespace OffscreenDemo
                 Samples = MgSampleCountFlagBits.COUNT_1_BIT,
                 Width = 1280,
                 Height = 720,
+                MinDepth = 0.001f,
+                MaxDepth = 256.0f,
             };
         }
 
@@ -36,19 +38,35 @@ namespace OffscreenDemo
             public MgOffscreenGraphicDevice Offscreen { get; internal set; }
             public IMgCommandPool Pool { get; internal set; }
             public MgOptimizedStorageContainer StorageContainer { get; internal set; }
+            public MgCommandBuildOrder[] Orders { get; internal set; }
 
             public void Dispose(IMgGraphicsConfiguration configuration)
             {
+                var device = configuration.Device;
+                Debug.Assert(device != null);
+
                 if (StorageContainer != null)
                 {
                     if (StorageContainer.Storage != null)
                     {
-                        StorageContainer.Storage.Destroy(configuration.Device, null);
+                        StorageContainer.Storage.Destroy(device, null);
                     }
                 }
 
                 if (Pool != null)
+                {
+                    if (Orders != null)
+                    {
+                        foreach(var order in Orders)
+                        {
+                            device.FreeCommandBuffers(Pool, order.CommandBuffers);
+                            order.CommandBuffers = null;
+                        }
+                    }
+
                     Pool.DestroyCommandPool(configuration.Device, null);
+                    Pool = null;
+                }
 
                 if (Offscreen != null)
                     Offscreen.Dispose();
@@ -64,6 +82,7 @@ namespace OffscreenDemo
             }
         }
 
+        private IMgGraphicsDevice mGraphics;
         private UnmanagedResources mUnmanagedResources;
         public void Prepare(IMgGraphicsConfiguration configuration, IMgGraphicsDevice screen)
         {
@@ -72,13 +91,14 @@ namespace OffscreenDemo
             const MgFormat COLOR_FORMAT = MgFormat.R8G8B8A8_UNORM;
             const MgFormat DEPTH_FORMAT = MgFormat.D32_SFLOAT;
 
+            mGraphics = screen;
             mUnmanagedResources = new UnmanagedResources();
 
             mUnmanagedResources.DepthOne = new MgOffscreenDepthStencilContext(configuration);
             mUnmanagedResources.DepthOne.Initialize(DEPTH_FORMAT, WIDTH, HEIGHT);
 
             // 1. init offscreen device           
-                // TODO IOC this component somehow
+            // TODO IOC this component somehow
             mUnmanagedResources.DeviceLocal = new MgOffscreenDeviceLocalMemory(configuration);
 
             mUnmanagedResources.ColorOne = new MgOffscreenColorImageBuffer(
@@ -115,7 +135,9 @@ namespace OffscreenDemo
                     StencilStoreOp = MgAttachmentStoreOp.DONT_CARE,
                     View = mUnmanagedResources.DepthOne.View,
                     Layout = MgImageLayout.GENERAL,
-                }
+                },
+                MinDepth = 1.0f,
+                MaxDepth = 256.0f,
             };
 
             mUnmanagedResources.Offscreen.Initialize(createInfo);
@@ -134,40 +156,60 @@ namespace OffscreenDemo
 
             // 4. uniforms 
             PopulateUniformSlots(configuration, mUnmanagedResources.StorageContainer, mUnmanagedResources.ColorOne.View);
-            /**
-// PopulateDescriptorSets();
 
-// 6. init command buffers
+            // 6. init command buffers
+            mUnmanagedResources.Orders = BuildCommandBuffers(configuration, mUnmanagedResources.Offscreen, screen, mUnmanagedResources.Pool, mUnmanagedResources.StorageContainer);
+        }
 
-var noOfCommandBuffers = offscreen.Framebuffers.Length + screen.Framebuffers.Length;
-var commandBuffers = new IMgCommandBuffer[noOfCommandBuffers];
+        private MgCommandBuildOrder[] BuildCommandBuffers(
+            IMgGraphicsConfiguration configuration,
+            IMgEffectFramework offscreen,
+            IMgEffectFramework toScreen,
+            IMgCommandPool cmdPool,
+            MgOptimizedStorageContainer container
+        )
+        {
+            int firstSection = offscreen.Framebuffers.Length;
+            int secondSection = toScreen.Framebuffers.Length;
+            var noOfCommandBuffers = firstSection + toScreen.Framebuffers.Length;
+            var commandBuffers = new IMgCommandBuffer[noOfCommandBuffers];
 
-var pAllocateInfo = new MgCommandBufferAllocateInfo
-{
-CommandBufferCount = (uint)noOfCommandBuffers,
-CommandPool = pool,
-Level = MgCommandBufferLevel.PRIMARY,
-};
-var err = configuration.Device.AllocateCommandBuffers(pAllocateInfo, commandBuffers);
-Debug.Assert(err == Result.SUCCESS);
+            var pAllocateInfo = new MgCommandBufferAllocateInfo
+            {
+                CommandBufferCount = (uint)noOfCommandBuffers,
+                CommandPool = cmdPool,
+                Level = MgCommandBufferLevel.PRIMARY,
+            };
+            var err = configuration.Device.AllocateCommandBuffers(pAllocateInfo, commandBuffers);
+            Debug.Assert(err == Result.SUCCESS);
 
-var firstOrder = mRenderToTexture.GenerateBuildOrder(storage);
-// SAME ARRAY 
-firstOrder.CommandBuffers = commandBuffers;
-firstOrder.First = 0;
-firstOrder.Count = offscreen.Framebuffers.Length;            
+            var firstOrder = mRenderToTexture.GenerateBuildOrder(container);
+            var index = 0;
+            index = AppendOrder(firstOrder, offscreen, firstSection, commandBuffers, index);
 
-mRenderToTexture.BuildCommandBuffers(firstOrder);
+            mRenderToTexture.BuildCommandBuffers(firstOrder);
 
-var secondOrder = mToScreen.GenerateBuildOrder(storage);
-// SAME ARRAY
-secondOrder.CommandBuffers = commandBuffers;
-secondOrder.First = firstOrder.Count;
-secondOrder.Count = screen.Framebuffers.Length;
+            var secondOrder = mToScreen.GenerateBuildOrder(container);
+            index = AppendOrder(secondOrder, toScreen, secondSection, commandBuffers, index);
 
-mToScreen.BuildCommandBuffers(secondOrder);
+            mToScreen.BuildCommandBuffers(secondOrder);
 
-**/
+            return new[] { firstOrder, secondOrder };
+        }
+
+        private static int AppendOrder(MgCommandBuildOrder order, IMgEffectFramework framework, int count, IMgCommandBuffer[] source, int index)
+        {
+            order.Framework = framework;
+            order.CommandBuffers = new IMgCommandBuffer[count];
+            for (var i = 0; i < count; i += 1)
+            {
+                order.CommandBuffers[i] = source[index];
+                index += 1;
+            }
+
+            order.First = 0;
+            order.Count = count;
+            return index;
         }
 
         private void PopulateUniformSlots(IMgGraphicsConfiguration configuration, MgOptimizedStorageContainer container, IMgImageView view)
@@ -296,9 +338,10 @@ mToScreen.BuildCommandBuffers(secondOrder);
             return new IMgSemaphore[] { };
         }
 
-        public void Update()
+        public void Update(IMgGraphicsConfiguration configuration)
         {
-
+            mRenderToTexture.UpdateUniformBuffers(configuration, mUnmanagedResources.StorageContainer, mUnmanagedResources.Offscreen);
+            mToScreen.UpdateUniformBuffers(configuration, mUnmanagedResources.StorageContainer, mGraphics);
         }
 
         public void ReleaseManagedResources(IMgGraphicsConfiguration configuration)

@@ -35,6 +35,8 @@ namespace Magnesium
         public uint Height { get; set; }
         public MgOffscreenColorAttachmentInfo[] ColorAttachments { get; set; }
         public MgOffscreenDepthStencilAttachmentInfo DepthStencilAttachment { get; set; }
+        public float MinDepth { get; set; }
+        public float MaxDepth { get; set; }
     }
 
     public class MgOffscreenGraphicDevice : IMgEffectFramework
@@ -231,8 +233,8 @@ namespace Magnesium
                 Y = 0,
                 Width = createInfo.Width,
                 Height = createInfo.Height,
-                MinDepth = 0,
-                MaxDepth = 1000f,
+                MinDepth = createInfo.MinDepth,
+                MaxDepth = createInfo.MaxDepth,
             };
 
         }

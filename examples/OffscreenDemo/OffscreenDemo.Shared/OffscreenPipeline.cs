@@ -192,13 +192,13 @@ namespace OffscreenDemo
             mUniformDataPosition = slots.Insert(uniforms);
         }
 
-        public MgCommandBuildOrder GenerateBuildOrder(MgOptimizedStorage storage, MgOptimizedStorageMap storageMap)
+        public MgCommandBuildOrder GenerateBuildOrder(MgOptimizedStorageContainer container)
         {
-            var vertexDest = storageMap.Allocations[mVertexDataPosition];
-            var vertexInstance = storage.Blocks[vertexDest.BlockIndex];
+            var vertexDest = container.Map.Allocations[mVertexDataPosition];
+            var vertexInstance = container.Storage.Blocks[vertexDest.BlockIndex];
 
-            var indexDest = storageMap.Allocations[mIndexDataPosition];
-            var indexInstance = storage.Blocks[indexDest.BlockIndex];
+            var indexDest = container.Map.Allocations[mIndexDataPosition];
+            var indexInstance = container.Storage.Blocks[indexDest.BlockIndex];
 
             return new MgCommandBuildOrder
             {
@@ -212,6 +212,7 @@ namespace OffscreenDemo
                     Buffer = indexInstance.Buffer,
                     ByteOffset = indexDest.Offset,
                 },
+                DescriptorSet = mDescriptorSet,
                 IndexCount = 3,
                 InstanceCount = 1,
             };
@@ -290,10 +291,8 @@ namespace OffscreenDemo
             var uniformInstance = container.Storage.Blocks[allocationInfo.BlockIndex];
 
             var err = uniformInstance.DeviceMemory.MapMemory(configuration.Device, allocationInfo.Offset, allocationInfo.Size, 0, out IntPtr pData);
-
+            Debug.Assert(err == Result.SUCCESS);
             Marshal.StructureToPtr(mUBOVS, pData, false);
-            // Unmap after data has been copied
-            // Note: Since we requested a host coherent memory type for the uniform buffer, the write is instantly visible to the GPU
             uniformInstance.DeviceMemory.UnmapMemory(configuration.Device);
         }
 
@@ -392,12 +391,6 @@ namespace OffscreenDemo
 
         public void BuildCommandBuffers(
             MgCommandBuildOrder order
-            //IMgEffectFramework framework,             
-            //IMgCommandBuffer[] drawCmdBuffers,
-            //IMgDescriptorSet descriptorSet,
-            //IMgBuffer vertices,
-            //IMgBuffer indices,
-            //uint indexCount
         )
         {            
             var colorFormat = order.Framework.RenderpassInfo.Attachments[0].Format;
