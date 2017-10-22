@@ -132,12 +132,12 @@ namespace OffscreenDemo
             mUniformDataPosition = slots.Insert(uniforms);
         }
 
-        public MgCommandBuildOrder GenerateBuildOrder(MgOptimizedStorage storage)
+        public MgCommandBuildOrder GenerateBuildOrder(MgOptimizedStorage storage, MgOptimizedStorageMap storageMap)
         {
-            var vertexDest = storage.Allocations[mVertexDataPosition];
+            var vertexDest = storageMap.Allocations[mVertexDataPosition];
             var vertexInstance = storage.Blocks[vertexDest.BlockIndex];
 
-            var indexDest = storage.Allocations[mIndexDataPosition];
+            var indexDest = storageMap.Allocations[mIndexDataPosition];
             var indexInstance = storage.Blocks[indexDest.BlockIndex];
 
             return new MgCommandBuildOrder
@@ -157,7 +157,7 @@ namespace OffscreenDemo
             };
         }
 
-        public void Populate(MgOptimizedStorage storage, IMgGraphicsConfiguration configuration, IMgCommandBuffer copyCmd)
+        public void Populate(MgOptimizedStorageContainer container, IMgGraphicsConfiguration configuration, IMgCommandBuffer copyCmd)
         {
             var corners = new []
             {
@@ -185,22 +185,22 @@ namespace OffscreenDemo
             var indexBufferSize = (ulong) indexBuffer.Length * sizeof(UInt32);
 
             // DEVICE_LOCAL vertex buffer
-            var vertexDest = storage.Allocations[mVertexDataPosition];
-            var vertexInstance = storage.Blocks[vertexDest.BlockIndex];
-            var vertices = new MgStagingBuffer(configuration, vertexBufferSize)
-            {
-                DstBuffer = vertexInstance.Buffer,
-                DstOffset = vertexDest.Offset
-            };
+            var vertexDest = container.Map.Allocations[mVertexDataPosition];
+            var vertexInstance = container.Storage.Blocks[vertexDest.BlockIndex];
+            var vertices = new MgStagingBuffer(            
+                vertexInstance.Buffer,
+                vertexDest.Offset
+            );
+            vertices.Initialize(configuration, vertexBufferSize);
 
             // DEVICE_LOCAL index buffer 
-            var indexDest = storage.Allocations[mIndexDataPosition];
-            var indexInstance = storage.Blocks[indexDest.BlockIndex];
-            var indices = new MgStagingBuffer(configuration, indexBufferSize)
-            {
-                DstBuffer = indexInstance.Buffer,
-                DstOffset = indexDest.Offset
-            };
+            var indexDest = container.Map.Allocations[mIndexDataPosition];
+            var indexInstance = container.Storage.Blocks[indexDest.BlockIndex];
+            var indices = new MgStagingBuffer(
+                indexInstance.Buffer,
+                indexDest.Offset
+            );
+            indices.Initialize(configuration, indexBufferSize);
 
             var stagingBuffers = new[] { vertices, indices };
 

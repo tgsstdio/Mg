@@ -25,7 +25,7 @@ namespace Magnesium.Utilities
             };
         }
 
-        public MgStorageBufferInstance[] Revise(MgStorageBlockInfo[] segments, MgOptimizedStorageCreateInfo createInfo)
+        public MgStorageBufferInstance[] Revise(MgOptimizedStorageCreateInfo createInfo, MgStorageBlockInfo[] segments)
         {
             var output = new List<MgStorageBufferInstance>();
             foreach (var sector in segments)

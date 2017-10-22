@@ -93,7 +93,7 @@ namespace OffscreenDemo
             public Vector3 normal;
         };
 
-        public void Populate(MgOptimizedStorage storage, IMgGraphicsConfiguration configuration)
+        public void Populate(MgOptimizedStorageContainer container, IMgGraphicsConfiguration configuration, IMgCommandBuffer copyCmd)
         {
             // Setup vertices for a single uv-mapped quad made from two triangles
             VertexData[] quadCorners =
@@ -129,16 +129,16 @@ namespace OffscreenDemo
             };
 
             // DEVICE_LOCAL vertex buffer
-            SetData(storage, configuration.Device, mVertexDataPosition, quadCorners, 0, quadCorners.Length);
+            SetData(container, configuration.Device, mVertexDataPosition, quadCorners, 0, quadCorners.Length);
 
             // Setup indices
             var indices = new uint[] { 0, 1, 2, 2, 3, 0 };
 
-            SetIndicesU32(storage, configuration.Device, mIndexDataPosition, indices, 0, indices.Length);
+            SetIndicesU32(container, configuration.Device, mIndexDataPosition, indices, 0, indices.Length);
         }
 
         public Result SetData<TData>(
-            MgOptimizedStorage storage,
+            MgOptimizedStorageContainer containter,
             IMgDevice device,
             int location,
             TData[] srcData,
@@ -150,11 +150,11 @@ namespace OffscreenDemo
 
             int stride = Marshal.SizeOf(typeof(TData));
 
-            var allocationInfo = storage.Allocations[location];
+            var allocationInfo = containter.Map.Allocations[location];
             ulong sizeInBytes = (ulong)(count * stride);
             ValidateRange(allocationInfo, sizeInBytes);
 
-            var block = storage.Blocks[allocationInfo.BlockIndex];
+            var block = containter.Storage.Blocks[allocationInfo.BlockIndex];
 
             var err = block.DeviceMemory.MapMemory(
                 device,
@@ -190,7 +190,7 @@ namespace OffscreenDemo
         }
 
         private Result SetIndicesU32(
-            MgOptimizedStorage storage,
+            MgOptimizedStorageContainer container,
             IMgDevice device, 
             int location,
             uint[] srcData,
@@ -201,11 +201,11 @@ namespace OffscreenDemo
 
             int stride = Marshal.SizeOf(typeof(uint));
 
-            var allocationInfo = storage.Allocations[location];
+            var allocationInfo = container.Map.Allocations[location];
             ulong sizeInBytes = (ulong)(count * stride);
             ValidateRange(allocationInfo, sizeInBytes);
 
-            var block = storage.Blocks[allocationInfo.BlockIndex];
+            var block = container.Storage.Blocks[allocationInfo.BlockIndex];
 
             var err = block.DeviceMemory.MapMemory(
                 device,
@@ -540,14 +540,5 @@ namespace OffscreenDemo
             return vertSM;
         }
 
-        public MgCommandBuildOrder GenerateBuildOrder(MgOptimizedStorage storage)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Populate(MgOptimizedStorage storage, IMgGraphicsConfiguration configuration, IMgCommandBuffer copyCmd)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

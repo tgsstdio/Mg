@@ -19,34 +19,31 @@ namespace Magnesium.Utilities
             mVerifier = verifier;
         }
 
-        public MgOptimizedStorage Build(MgOptimizedStorageCreateInfo createInfo)
+        public MgOptimizedStorageContainer Build(MgOptimizedStorageCreateInfo createInfo)
+        {
+            var bufferInstances = PrepareInstances(createInfo);
+            var storageMap = MapAllocations(createInfo, bufferInstances);
+            var storage = AllocateBlocks(bufferInstances);
+
+            return new MgOptimizedStorageContainer
+            {
+                Storage = storage,
+                Map = storageMap,
+            };
+        }
+
+        public MgStorageBufferInstance[] PrepareInstances(MgOptimizedStorageCreateInfo createInfo)
         {
             // setup 
             Validate(createInfo);
             var optimalLayout = mSplitter.Setup(createInfo.Allocations);
 
-            var bufferInstances = mVerifier.Revise(optimalLayout, createInfo);
-
-            return InitializeMesh(createInfo, bufferInstances);
+            return mVerifier.Revise(createInfo, optimalLayout);
         }
 
-        public MgOptimizedStorage Build(MgOptimizedStorageCreateInfo createInfo, MgStorageBufferInstance[] bufferInstances)
+        public MgOptimizedStorageMap MapAllocations(MgOptimizedStorageCreateInfo createInfo, MgStorageBufferInstance[] bufferInstances)
         {
             Validate(createInfo);
-            return InitializeMesh(createInfo, bufferInstances);
-        }
-
-        private MgOptimizedStorage InitializeMesh(MgOptimizedStorageCreateInfo createInfo, MgStorageBufferInstance[] bufferInstances)
-        {
-            var attributes = RemapAttributes(bufferInstances, createInfo);
-
-            var blocks = AllocateBlocks(bufferInstances, createInfo);
-
-            return new MgOptimizedStorage(blocks, attributes);
-        }
-
-        private MgOptimizedStorageAllocation[] RemapAttributes(MgStorageBufferInstance[] bufferInstances, MgOptimizedStorageCreateInfo createInfo)
-        {
             var attributes = new MgOptimizedStorageAllocation[createInfo.Allocations.Length];
 
             for(var i = 0U; i < bufferInstances.Length; i += 1)
@@ -66,7 +63,7 @@ namespace Magnesium.Utilities
                 }    
             }
 
-            return attributes;
+            return new MgOptimizedStorageMap { Allocations = attributes };
         }
 
         private void Validate(MgOptimizedStorageCreateInfo createInfo)
@@ -82,7 +79,7 @@ namespace Magnesium.Utilities
             }
         }
 
-        private MgOptimizedStorageBlock[] AllocateBlocks(MgStorageBufferInstance[] bufferInstances, MgOptimizedStorageCreateInfo createInfo)
+        public MgOptimizedStorage AllocateBlocks(MgStorageBufferInstance[] bufferInstances)
         {
             var memoryBlocks = new List<MgOptimizedStorageBlock>();
             foreach (var instance in bufferInstances)
@@ -127,7 +124,7 @@ namespace Magnesium.Utilities
 
                 memoryBlocks.Add(block);
             }
-            return memoryBlocks.ToArray();
+            return new MgOptimizedStorage(memoryBlocks.ToArray());
         }
     }
 }

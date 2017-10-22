@@ -2,6 +2,6 @@
 {
     public interface IMgOptimizedStoragePartitionVerifier
     {
-        MgStorageBufferInstance[] Revise(MgStorageBlockInfo[] segments, MgOptimizedStorageCreateInfo createInfo);
+        MgStorageBufferInstance[] Revise(MgOptimizedStorageCreateInfo createInfo, MgStorageBlockInfo[] segments);
     }
 }

@@ -3,16 +3,13 @@
     public class MgOptimizedStorage
     {
         public MgOptimizedStorage(
-            MgOptimizedStorageBlock[] blocks,
-            MgOptimizedStorageAllocation[] allocations
+            MgOptimizedStorageBlock[] blocks
         )
         {
             Blocks = blocks;
-            Allocations = allocations;
         }
 
         public MgOptimizedStorageBlock[] Blocks { get; private set; }
-        public MgOptimizedStorageAllocation[] Allocations { get; private set; }
 
         private bool mIsDisposed = false;
         public void Destroy(IMgDevice device, IMgAllocationCallbacks allocator)

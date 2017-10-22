@@ -47,6 +47,8 @@
     <Compile Include="IMgOptimizedStoragePartitioner.cs" />
     <Compile Include="IMgOptimizedStoragePartitionVerifier.cs" />
     <Compile Include="IMgPlatformMemoryLayout.cs" />
+    <Compile Include="MgOptimizedStorageContainer.cs" />
+    <Compile Include="MgOptimizedStorageMap.cs" />
     <Compile Include="MgStorageBlockAllocationInfo.cs" />
     <Compile Include="MgStorageBufferInstance.cs" />
     <Compile Include="MgStorageBufferOffset.cs" />

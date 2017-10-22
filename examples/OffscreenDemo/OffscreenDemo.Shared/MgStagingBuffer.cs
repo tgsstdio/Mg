@@ -14,9 +14,14 @@ namespace OffscreenDemo
         public ulong AllocationSize { get; private set; }
 
         public MgStagingBuffer(
-          IMgGraphicsConfiguration configuration
-          , ulong allocationSize
-        )
+          IMgBuffer dstBuffer
+          , ulong offset)
+        {
+            DstBuffer = dstBuffer;
+            DstOffset = offset;
+        }
+
+        public void Initialize(IMgGraphicsConfiguration configuration, ulong allocationSize)
         {
             var indexbufferInfo = new MgBufferCreateInfo
             {
@@ -33,8 +38,9 @@ namespace OffscreenDemo
                  outMemReqs.MemoryTypeBits
                  , MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT | MgMemoryPropertyFlagBits.HOST_COHERENT_BIT
                  , out uint outTypeIndex);
-            Debug.Assert(!isValid);
+            Debug.Assert(isValid);
 
+            AllocationSize = outMemReqs.Size;
             var memAlloc = new MgMemoryAllocateInfo
             {
                 AllocationSize = AllocationSize,
@@ -50,11 +56,11 @@ namespace OffscreenDemo
             , 0);
             Debug.Assert(err == Result.SUCCESS);
 
-            AllocationSize = outMemReqs.Size;
+
             SrcBuffer = outBuffer;
             SrcDeviceMemory = outMemory;
         }
-    
+
         public void Transfer(IMgCommandBuffer copyCmd)
         {
             copyCmd.CmdCopyBuffer(
