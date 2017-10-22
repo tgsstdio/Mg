@@ -131,11 +131,10 @@ namespace OffscreenDemo
             mUnmanagedResources.StorageContainer = ReserveStorageSlots(configuration, mUnmanagedResources.Pool);
 
             PopulateRenderingSlots(configuration, mUnmanagedResources.Pool, mUnmanagedResources.StorageContainer);
+
+            // 4. uniforms 
+            PopulateUniformSlots(configuration, mUnmanagedResources.StorageContainer, mUnmanagedResources.ColorOne.View);
             /**
-
-// 4. uniforms 
-//  PopulateUniformSlots(configuration, pool, storage);
-
 // PopulateDescriptorSets();
 
 // 6. init command buffers
@@ -169,6 +168,12 @@ secondOrder.Count = screen.Framebuffers.Length;
 mToScreen.BuildCommandBuffers(secondOrder);
 
 **/
+        }
+
+        private void PopulateUniformSlots(IMgGraphicsConfiguration configuration, MgOptimizedStorageContainer container, IMgImageView view)
+        {
+            mRenderToTexture.SetupUniforms(configuration, container);
+            mToScreen.SetupUniforms(configuration, container, view);
         }
 
         private static IMgImageView InitializeImageView(IMgGraphicsConfiguration configuration, IMgImage image, MgFormat format, MgImageAspectFlagBits aspectMask)

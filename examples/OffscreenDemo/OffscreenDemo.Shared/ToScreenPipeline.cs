@@ -16,33 +16,6 @@ namespace OffscreenDemo
             mPath = path;
         }
 
-        private IMgDescriptorSetLayout mDescriptorSetLayout;
-        private IMgPipelineLayout mPipelineLayout;
-        private IMgPipeline mPipeline;
-
-        public void Initialize(IMgGraphicsConfiguration configuration, IMgEffectFramework framework)
-        {
-            var device = configuration.Device;
-            Debug.Assert(device != null);
-
-            mDescriptorSetLayout = SetupDescriptorSetLayout(device);
-            mPipelineLayout = SetupPipelineLayout(device, mDescriptorSetLayout);
-            mPipeline = BuildPipeline(device, framework, mPath, mPipelineLayout);
-        }
-
-        internal void ReleaseUnmanagedResources(IMgGraphicsConfiguration configuration)
-        {
-            var device = configuration.Device;
-            Debug.Assert(device != null);
-
-            if (mPipeline != null)
-                mPipeline.DestroyPipeline(device, null);
-            if (mPipelineLayout != null)
-                mPipelineLayout.DestroyPipelineLayout(device, null);
-            if (mDescriptorSetLayout != null)
-                mDescriptorSetLayout.DestroyDescriptorSetLayout(device, null);
-        }
-
         private static IMgDescriptorSetLayout SetupDescriptorSetLayout(IMgDevice device)
         {
             var descriptorLayout = new MgDescriptorSetLayoutCreateInfo
@@ -83,6 +56,183 @@ namespace OffscreenDemo
             var err = device.CreatePipelineLayout(pPipelineLayoutCreateInfo, null, out IMgPipelineLayout pLayout);
             Debug.Assert(err == Result.SUCCESS);
             return pLayout;
+        }
+
+        private static IMgDescriptorPool SetupDescriptorPool(IMgDevice device)
+        {
+            // Example uses one ubo and one image sampler
+            var descriptorPoolInfo = new MgDescriptorPoolCreateInfo
+            {
+                MaxSets = 2,
+                PoolSizes = new[]
+                {
+                    new MgDescriptorPoolSize
+                    {
+                        Type = MgDescriptorType.UNIFORM_BUFFER,
+                        DescriptorCount = 1,
+                    },
+                    new MgDescriptorPoolSize
+                    {
+                        Type = MgDescriptorType.COMBINED_IMAGE_SAMPLER,
+                        DescriptorCount = 1,
+                    },
+                },
+            };
+
+            var err = device.CreateDescriptorPool(descriptorPoolInfo, null, out IMgDescriptorPool descriptorPool);
+            Debug.Assert(err == Result.SUCCESS);
+            return descriptorPool;
+        }
+
+        private static IMgDescriptorSet SetupDescriptorSet(IMgDevice device, IMgDescriptorPool pool, IMgDescriptorSetLayout layout)
+        {
+            var allocInfo = new MgDescriptorSetAllocateInfo
+            {
+                DescriptorPool = pool,
+                DescriptorSetCount = 1,
+                SetLayouts = new IMgDescriptorSetLayout[] { layout },
+            };
+
+            var err = device.AllocateDescriptorSets(allocInfo, out IMgDescriptorSet[] descriptorSets);
+            Debug.Assert(err == Result.SUCCESS);
+            return descriptorSets[0];
+        }
+
+        private static IMgSampler SetupSampler(IMgDevice device)
+        {
+            var samplerCreateInfo = new MgSamplerCreateInfo
+            {
+                MagFilter = MgFilter.LINEAR,
+                MinFilter = MgFilter.LINEAR,
+                MipmapMode = MgSamplerMipmapMode.LINEAR,
+                AddressModeU = MgSamplerAddressMode.REPEAT,
+                AddressModeV = MgSamplerAddressMode.REPEAT,
+                AddressModeW = MgSamplerAddressMode.REPEAT,
+                MipLodBias = 0.0f,
+                CompareOp = MgCompareOp.NEVER,
+                MinLod = 0.0f,
+                BorderColor = MgBorderColor.FLOAT_OPAQUE_WHITE,
+                MaxLod = 1f,
+                MaxAnisotropy = 1f,
+                AnisotropyEnable = false,
+            };
+
+            var err = device.CreateSampler(samplerCreateInfo, null, out IMgSampler pSampler);
+            return pSampler;
+        }
+
+        private IMgDescriptorSetLayout mDescriptorSetLayout;
+        private IMgPipelineLayout mPipelineLayout;
+        private IMgPipeline mPipeline;
+        private IMgDescriptorPool mDescriptorPool;
+        private IMgDescriptorSet mDescriptorSet;
+        private IMgSampler mSampler;
+
+        public void Initialize(IMgGraphicsConfiguration configuration, IMgEffectFramework framework)
+        {
+            var device = configuration.Device;
+            Debug.Assert(device != null);
+
+            mDescriptorSetLayout = SetupDescriptorSetLayout(device);
+            mPipelineLayout = SetupPipelineLayout(device, mDescriptorSetLayout);
+            mPipeline = BuildPipeline(device, framework, mPath, mPipelineLayout);
+            mDescriptorPool = SetupDescriptorPool(device);
+            mDescriptorSet = SetupDescriptorSet(device, mDescriptorPool, mDescriptorSetLayout);
+            mSampler = SetupSampler(device);
+        }
+
+        public void SetupUniforms(IMgGraphicsConfiguration configuration, MgOptimizedStorageContainer container, IMgImageView view)
+        {
+            var device = configuration.Device;
+            Debug.Assert(device != null);
+
+            PrepareDescriptorSet(device, mDescriptorSet, container, mUniformDataPosition, view, mSampler);
+        }
+
+        public static void PrepareDescriptorSet(IMgDevice device, IMgDescriptorSet dest, MgOptimizedStorageContainer container, int location, IMgImageView view, IMgSampler sampler)
+        {
+            var allocationInfo = container.Map.Allocations[location];
+            var block = container.Storage.Blocks[allocationInfo.BlockIndex];
+
+            var structSize = (ulong)Marshal.SizeOf(typeof(UniformBufferObject));
+
+            var writeDescriptorSets = new[]
+            {
+			    // Binding 0 : Vertex shader uniform buffer
+                new MgWriteDescriptorSet
+                {
+                    DstSet = dest,
+                    DescriptorType = MgDescriptorType.UNIFORM_BUFFER,
+                    DstBinding = 0,
+                    DescriptorCount = 1,
+                    BufferInfo = new []
+                    {
+                        new MgDescriptorBufferInfo
+                        {
+                            Buffer = block.Buffer,
+                            Offset = allocationInfo.Offset,
+                            Range = structSize,
+                        },
+                    }
+                },
+                // Binding 1 : Fragment shader texture sampler
+                new MgWriteDescriptorSet
+                {
+                    DstSet = dest,
+                    DescriptorType = MgDescriptorType.COMBINED_IMAGE_SAMPLER,
+                    DstBinding = 1,
+                    DescriptorCount = 1,
+                    ImageInfo = new []
+                    {
+                        new MgDescriptorImageInfo
+                        {
+                            ImageLayout = MgImageLayout.GENERAL,
+                            ImageView = view,
+                            Sampler = sampler,
+                        }
+                    }
+                },
+            };
+
+            device.UpdateDescriptorSets(writeDescriptorSets, null);
+        }
+
+        internal void ReleaseUnmanagedResources(IMgGraphicsConfiguration configuration)
+        {
+            var device = configuration.Device;
+            Debug.Assert(device != null);
+
+            if (mSampler != null)
+            {
+                mSampler.DestroySampler(device, null);
+                mSampler = null;
+            }
+
+            if (mDescriptorPool != null)
+            {
+                if (mDescriptorSet != null)
+                {
+                    device.FreeDescriptorSets(mDescriptorPool, new[] { mDescriptorSet });
+                    mDescriptorSet = null;
+                }
+
+                mDescriptorPool.DestroyDescriptorPool(device, null);
+                mDescriptorPool = null;
+            }
+            if (mPipeline != null)
+            {
+                mPipeline.DestroyPipeline(device, null);
+                mPipeline = null;
+            }
+            if (mPipelineLayout != null)
+            {
+                mPipelineLayout.DestroyPipelineLayout(device, null);
+                mPipelineLayout = null;
+            }
+            if (mDescriptorSetLayout != null)            {
+                mDescriptorSetLayout.DestroyDescriptorSetLayout(device, null);
+                mDescriptorSetLayout = null;
+            }
         }
 
         [StructLayout(LayoutKind.Sequential)]

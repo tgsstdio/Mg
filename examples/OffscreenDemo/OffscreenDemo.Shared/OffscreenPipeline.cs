@@ -52,9 +52,47 @@ namespace OffscreenDemo
             return pipelineLayout;
         }
 
+        public static IMgDescriptorPool SetupDescriptorPool(IMgGraphicsConfiguration configuration)
+        {
+            var descriptorPoolInfo = new MgDescriptorPoolCreateInfo
+            {
+                PoolSizes = new MgDescriptorPoolSize[]
+                {
+                    new MgDescriptorPoolSize
+                    {
+                        Type = MgDescriptorType.UNIFORM_BUFFER,
+                        DescriptorCount = 1,
+                    },
+                },
+                MaxSets = 1,
+            };
+            var err = configuration.Device.CreateDescriptorPool(descriptorPoolInfo, null, out IMgDescriptorPool descriptorPool);
+            Debug.Assert(err == Result.SUCCESS);
+            return descriptorPool;
+        }
+
+        private static IMgDescriptorSet AllocateDescriptorSet(IMgGraphicsConfiguration configuration, IMgDescriptorPool pool, IMgDescriptorSetLayout setLayout)
+        {
+            // Allocate a new descriptor set from the global descriptor pool
+            var allocInfo = new MgDescriptorSetAllocateInfo
+            {
+                DescriptorPool = pool,
+                DescriptorSetCount = 1,
+                SetLayouts = new[] { setLayout },
+            };
+
+            var err = configuration.Device.AllocateDescriptorSets(allocInfo, out IMgDescriptorSet[] dSets);
+            Debug.Assert(err == Result.SUCCESS);
+
+            var result = dSets[0];
+            return result;
+        }
+
         private IMgDescriptorSetLayout mDescriptorSetLayout;
         private IMgPipelineLayout mPipelineLayout;
         private IMgPipeline mPipeline;
+        private IMgDescriptorPool mDescriptorPool;
+        private IMgDescriptorSet mDescriptorSet;
 
         public void Initialize(IMgGraphicsConfiguration configuration, IMgEffectFramework framework)
         {
@@ -64,6 +102,8 @@ namespace OffscreenDemo
             mDescriptorSetLayout = SetupDescriptorSetLayout(device);
             mPipelineLayout = SetupPipelineLayout(device, mDescriptorSetLayout);
             mPipeline = BuildPipeline(device, mPipelineLayout, framework, mTrianglePath);
+            mDescriptorPool = SetupDescriptorPool(configuration);
+            mDescriptorSet = AllocateDescriptorSet(configuration, mDescriptorPool, mDescriptorSetLayout);
         }
 
         internal void ReleaseUnmanagedResources(IMgGraphicsConfiguration configuration)
@@ -71,12 +111,32 @@ namespace OffscreenDemo
             var device = configuration.Device;
             Debug.Assert(device != null);
 
+            if (mDescriptorPool != null)
+            {
+                if (mDescriptorSet != null)
+                {
+                    device.FreeDescriptorSets(mDescriptorPool, new[] { mDescriptorSet });
+                    mDescriptorSet = null;
+                }
+
+                mDescriptorPool.DestroyDescriptorPool(device, null);
+                mDescriptorPool = null;
+            }
             if (mPipeline != null)
+            {
                 mPipeline.DestroyPipeline(device, null);
+                mPipeline = null;
+            }
             if (mPipelineLayout != null)
+            {
                 mPipelineLayout.DestroyPipelineLayout(device, null);
+                mPipelineLayout = null;
+            }
             if (mDescriptorSetLayout != null)
+            {
                 mDescriptorSetLayout.DestroyDescriptorSetLayout(device, null);
+                mDescriptorSetLayout = null;
+            }
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -155,6 +215,92 @@ namespace OffscreenDemo
                 IndexCount = 3,
                 InstanceCount = 1,
             };
+        }
+
+        public void SetupUniforms(
+            IMgGraphicsConfiguration configuration,
+            MgOptimizedStorageContainer container
+        )
+        {
+            SetupDescriptorSet(configuration, mDescriptorSet, container, mUniformDataPosition);
+        }
+
+        public static void SetupDescriptorSet(
+            IMgGraphicsConfiguration configuration,
+            IMgDescriptorSet dest,
+            MgOptimizedStorageContainer src,
+            int allocationIndex)
+        {
+
+            var allocationInfo = src.Map.Allocations[allocationIndex];
+            var uniformInstance = src.Storage.Blocks[allocationInfo.BlockIndex];
+
+            var structSize = Marshal.SizeOf(typeof(UniformBufferObject));
+            var descriptor = new MgDescriptorBufferInfo
+            {
+                Buffer = uniformInstance.Buffer,
+                Offset = allocationInfo.Offset,
+                Range = (ulong)structSize,
+            };
+
+            configuration.Device.UpdateDescriptorSets(
+                new[]
+                {
+                    // Binding 0 : Uniform buffer
+                    new MgWriteDescriptorSet
+                    {
+                        DstSet = dest,
+                        DescriptorCount = 1,
+                        DescriptorType =  MgDescriptorType.UNIFORM_BUFFER,
+                        BufferInfo = new []
+                        {
+                            descriptor,
+                        },
+                        DstBinding = 0,
+                    },
+                }, null);            
+        }
+
+        private UniformBufferObject mUBOVS;
+        public void UpdateUniformBuffers(IMgGraphicsConfiguration configuration, MgOptimizedStorageContainer container, IMgEffectFramework framework)
+        {
+            // Update matrices
+            mUBOVS.projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(
+                DegreesToRadians(60.0f),
+                (framework.Viewport.Width / framework.Viewport.Height),
+                framework.Viewport.MinDepth,
+                framework.Viewport.MaxDepth);
+
+            const float ZOOM = -2.5f;
+
+            mUBOVS.viewMatrix = Matrix4.CreateTranslation(0, 0, ZOOM);
+
+            // TODO : track down rotation
+            mUBOVS.modelMatrix = Matrix4.Identity;
+            //uboVS.modelMatrix = glm::rotate(uboVS.modelMatrix, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+            //uboVS.modelMatrix = glm::rotate(uboVS.modelMatrix, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+            //uboVS.modelMatrix = glm::rotate(uboVS.modelMatrix, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+
+
+            var structSize = (ulong)Marshal.SizeOf(typeof(UniformBufferObject));
+
+            // Map uniform buffer and update it
+
+            var allocationInfo = container.Map.Allocations[mUniformDataPosition];
+            var uniformInstance = container.Storage.Blocks[allocationInfo.BlockIndex];
+
+            var err = uniformInstance.DeviceMemory.MapMemory(configuration.Device, allocationInfo.Offset, allocationInfo.Size, 0, out IntPtr pData);
+
+            Marshal.StructureToPtr(mUBOVS, pData, false);
+            // Unmap after data has been copied
+            // Note: Since we requested a host coherent memory type for the uniform buffer, the write is instantly visible to the GPU
+            uniformInstance.DeviceMemory.UnmapMemory(configuration.Device);
+        }
+
+        public static float DegreesToRadians(float degrees)
+        {
+            const double degToRad = System.Math.PI / 180.0;
+            return (float)(degrees * degToRad);
         }
 
         public void Populate(MgOptimizedStorageContainer container, IMgGraphicsConfiguration configuration, IMgCommandBuffer copyCmd)
