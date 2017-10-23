@@ -220,7 +220,7 @@ namespace OffscreenDemo
                     ByteOffset = indexDest.Offset,
                 },
                 DescriptorSet = mDescriptorSet,                
-                IndexCount = 3,
+                IndexCount = 6,
                 InstanceCount = 1,
             };
         }
@@ -372,7 +372,7 @@ namespace OffscreenDemo
             mUBOVS.projection = Matrix4.CreatePerspectiveFieldOfView(
                 DegreesToRadians(60.0f),
                 framework.Viewport.Width / (framework.Viewport.Height),
-                framework.Viewport.MinDepth,
+                0.0001f,
                 framework.Viewport.MaxDepth
             );
             // uboVS.projection = Matrix4.Identity;
@@ -519,7 +519,7 @@ namespace OffscreenDemo
                 var uniforms = new MgStorageBlockAllocationInfo
                 {
                     Size = (ulong)uniformSize,
-                    ElementByteSize = uniformSize,
+                    ElementByteSize = 0,
                     MemoryPropertyFlags = MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT
                     | MgMemoryPropertyFlagBits.HOST_COHERENT_BIT,
                     Usage = MgBufferUsageFlagBits.UNIFORM_BUFFER_BIT,
@@ -554,8 +554,8 @@ namespace OffscreenDemo
                 RenderArea = order.Framework.Scissor,
                 ClearValues = new MgClearValue[]
                 {
-                    MgClearValue.FromColorAndFormat(colorFormat, new MgColor4f(0f, 0f, 0f, 0f)),
-                    new MgClearValue { DepthStencil = new MgClearDepthStencilValue(1024f, 0) }
+                    MgClearValue.FromColorAndFormat(colorFormat, new MgColor4f(1f, 1f, 0f, 0f)),
+                    new MgClearValue { DepthStencil = new MgClearDepthStencilValue(order.Framework.Viewport.MaxDepth, 0) }
                 },
             };
 
@@ -637,40 +637,40 @@ namespace OffscreenDemo
                         {
                             VertexBindingDescriptions = new[]
                             {
-                            new MgVertexInputBindingDescription
-                            {
-                                Binding = 0,
-                                InputRate = MgVertexInputRate.VERTEX,
-                                Stride = 32U,
-                            }
-                        },
+                                new MgVertexInputBindingDescription
+                                {
+                                    Binding = 0,
+                                    InputRate = MgVertexInputRate.VERTEX,
+                                    Stride = (uint) Marshal.SizeOf(typeof(VertexData)),
+                                }
+                            },
                             VertexAttributeDescriptions = new[]
                             {
-                            // Location 0 : Position
-                            new MgVertexInputAttributeDescription
-                            {
-                                Binding = 0,
-                                Location = 0,
-                                Format = MgFormat.R32G32B32_SFLOAT,
-                                Offset = 0U,
+                                // Location 0 : Position
+                                new MgVertexInputAttributeDescription
+                                {
+                                    Binding = 0,
+                                    Location = 0,
+                                    Format = MgFormat.R32G32B32_SFLOAT,
+                                    Offset = (uint) Marshal.OffsetOf(typeof(VertexData),"pos"),
+                                },
+                                // Location 1 : Texture coordinates
+                                new MgVertexInputAttributeDescription
+                                {
+                                    Binding = 0,
+                                    Location = 1,
+                                    Format = MgFormat.R32G32_SFLOAT,
+                                    Offset = (uint) Marshal.OffsetOf(typeof(VertexData),"uv"),
+                                },
+                                // Location 2 : Vertex normal
+                                new MgVertexInputAttributeDescription
+                                {
+                                    Binding = 0,
+                                    Location = 2,
+                                    Format = MgFormat.R32G32B32_SFLOAT,
+                                    Offset = (uint) Marshal.OffsetOf(typeof(VertexData),"normal"),
+                                },
                             },
-                            // Location 1 : Texture coordinates
-                            new MgVertexInputAttributeDescription
-                            {
-                                Binding = 0,
-                                Location = 1,
-                                Format = MgFormat.R32G32_SFLOAT,
-                                Offset = 12U,
-                            },
-                            // Location 2 : Vertex normal
-                            new MgVertexInputAttributeDescription
-                            {
-                                Binding = 0,
-                                Location = 2,
-                                Format = MgFormat.R32G32B32_SFLOAT,
-                                Offset = 20U,
-                            },
-                        },
                         },
 
                         InputAssemblyState = new MgPipelineInputAssemblyStateCreateInfo
@@ -690,12 +690,12 @@ namespace OffscreenDemo
                         {
                             Attachments = new[]
                             {
-                            new MgPipelineColorBlendAttachmentState
-                            {
-                                ColorWriteMask = MgColorComponentFlagBits.ALL_BITS,
-                                BlendEnable = false,
-                            },
-                        }
+                                new MgPipelineColorBlendAttachmentState
+                                {
+                                    ColorWriteMask = MgColorComponentFlagBits.ALL_BITS,
+                                    BlendEnable = false,
+                                },
+                            }
                         },
 
                         MultisampleState = new MgPipelineMultisampleStateCreateInfo

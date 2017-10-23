@@ -133,8 +133,8 @@ namespace Magnesium
                         StencilLoadOp = MgAttachmentLoadOp.DONT_CARE,
                         StencilStoreOp = MgAttachmentStoreOp.DONT_CARE,
                         // these settings might have to change
-                        InitialLayout = MgImageLayout.COLOR_ATTACHMENT_OPTIMAL,
-                        FinalLayout = MgImageLayout.COLOR_ATTACHMENT_OPTIMAL,
+                        InitialLayout = MgImageLayout.UNDEFINED,
+                        FinalLayout = MgImageLayout.SHADER_READ_ONLY_OPTIMAL,
                     };
 
                     var attachmentIndex = (uint)attachments.Count;
@@ -163,10 +163,10 @@ namespace Magnesium
                     Samples = MgSampleCountFlagBits.COUNT_1_BIT,
                     LoadOp = item.LoadOp,
                     StoreOp = item.StoreOp,
-                    StencilLoadOp = MgAttachmentLoadOp.DONT_CARE,
-                    StencilStoreOp = MgAttachmentStoreOp.DONT_CARE,
+                    StencilLoadOp = item.StencilLoadOp,
+                    StencilStoreOp = item.StencilStoreOp,
                     // these settings might have to change
-                    InitialLayout = MgImageLayout.DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                    InitialLayout = MgImageLayout.UNDEFINED,
                     FinalLayout = MgImageLayout.DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
                 };
 
@@ -194,6 +194,29 @@ namespace Magnesium
                        DepthStencilAttachment = depthStencilAttachment,
                     }                 
                 },
+                Dependencies = new []
+                {
+                    new MgSubpassDependency
+                    {
+                        SrcSubpass = uint.MaxValue,
+                        DstSubpass = 0U,
+                        SrcStageMask = MgPipelineStageFlagBits.BOTTOM_OF_PIPE_BIT,
+                        DstStageMask = MgPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT,
+                        SrcAccessMask = MgAccessFlagBits.MEMORY_READ_BIT,
+                        DstAccessMask = MgAccessFlagBits.COLOR_ATTACHMENT_READ_BIT | MgAccessFlagBits.COLOR_ATTACHMENT_WRITE_BIT,
+                        DependencyFlags = MgDependencyFlagBits.VK_DEPENDENCY_BY_REGION_BIT,
+                    },
+                    new MgSubpassDependency
+                    {
+                        SrcSubpass = 0U,
+                        DstSubpass = uint.MaxValue,
+                        SrcStageMask = MgPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT,
+                        DstStageMask = MgPipelineStageFlagBits.BOTTOM_OF_PIPE_BIT,
+                        SrcAccessMask = MgAccessFlagBits.COLOR_ATTACHMENT_READ_BIT | MgAccessFlagBits.COLOR_ATTACHMENT_WRITE_BIT,
+                        DstAccessMask = MgAccessFlagBits.MEMORY_READ_BIT,
+                        DependencyFlags = MgDependencyFlagBits.VK_DEPENDENCY_BY_REGION_BIT,
+                    },
+                }
             };
             var err = mConfiguration.Device.CreateRenderPass(pCreateInfo, null, out IMgRenderPass pass);
             Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");

@@ -210,6 +210,9 @@ namespace Magnesium.Utilities
 
         public static ulong UpperBounded(ulong value, ulong multiple)
         {
+            if (multiple == 0)
+                return value;
+
             var remainder = value % multiple;
 
             if (remainder == 0)

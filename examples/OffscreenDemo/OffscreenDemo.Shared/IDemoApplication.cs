@@ -11,7 +11,7 @@ namespace OffscreenDemo
 
         void Update(IMgGraphicsConfiguration configuration);
 
-        IMgSemaphore[] Render(IMgQueue queue, uint layerNo);
+        IMgSemaphore[] Render(IMgQueue queue, uint layerNo, IMgSemaphore semaphore);
 
         void ReleaseManagedResources(IMgGraphicsConfiguration configuration);
         void ReleaseUnmanagedResources(IMgGraphicsConfiguration configuration);

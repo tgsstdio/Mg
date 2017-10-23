@@ -39,9 +39,14 @@ namespace OffscreenDemo
                     {
                         // GAME START
                         container.Register<Example>(new PerScopeLifetime());
-                        container.Register<IDemoApplication, OffscreenDemoApplication>(new PerScopeLifetime());
 
-                        container.Register<IMgPlatformMemoryLayout, VkPlatformMemoryLayout>(new PerScopeLifetime());
+                        // container.Register<IDemoApplication, OffscreenDemoApplication>(new PerScopeLifetime());
+                        container.Register<IDemoApplication, TriangleDemoApplication>(new PerScopeLifetime());
+
+                        // container.Register<IMgPlatformMemoryLayout, VkPlatformMemoryLayout>(new PerScopeLifetime());
+                        container.Register<IMgPlatformMemoryLayout, VkDebugVertexPlatformMemoryLayout>(new PerScopeLifetime());
+
+                        
                         container.Register<IMgOptimizedStoragePartitioner, MgOptimizedStoragePartitioner>(new PerScopeLifetime());
                         container.Register<IMgOptimizedStoragePartitionVerifier, MgOptimizedStoragePartitionVerifier>(new PerScopeLifetime());
                         container.Register<MgOptimizedStorageBuilder>(new PerScopeLifetime());

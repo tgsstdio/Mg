@@ -44,6 +44,8 @@ namespace TextureDemo
                 },
                 Width = 1280,
                 Height = 720,
+                MinDepth = 0,
+                MaxDepth = 1,
             };
 
             mManager.Initialize(createInfo);
@@ -481,7 +483,7 @@ namespace TextureDemo
                 //};
                 cmdBuf.CmdSetScissor(0, new [] { mManager.Graphics.Scissor });
 
-                cmdBuf.CmdBindDescriptorSets( MgPipelineBindPoint.GRAPHICS, mPipelineLayout, 0, 1, mDescriptorSets, null);
+                cmdBuf.CmdBindDescriptorSets( MgPipelineBindPoint.GRAPHICS, mPipelineLayout, 0, mDescriptorSets, null);
                 cmdBuf.CmdBindPipeline( MgPipelineBindPoint.GRAPHICS, mSolidPipeline);
 
                 cmdBuf.CmdBindVertexBuffers(0, new[] { vertexBuffer.InternalBuffer }, new[] { 0UL });

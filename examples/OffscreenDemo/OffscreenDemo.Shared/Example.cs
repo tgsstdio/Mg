@@ -73,9 +73,9 @@ namespace OffscreenDemo
 
         private void RenderFrame()
         {
-            var layerNo = mManager.Layer.BeginDraw(mManager.PostPresentCommand, null);
+            var layerNo = mManager.Layer.BeginDraw(mManager.PostPresentCommand, mManager.PresentComplete);
 
-            var signals = mApp.Render(mManager.Configuration.Queue, layerNo);
+            var signals = mApp.Render(mManager.Configuration.Queue, layerNo, mManager.PresentComplete);
 
             mManager.Layer.EndDraw(new[] { layerNo }, mManager.PrePresentCommand, signals);
         }

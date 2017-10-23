@@ -25,7 +25,7 @@ namespace OffscreenDemo
                 Samples = MgSampleCountFlagBits.COUNT_1_BIT,
                 Width = 1280,
                 Height = 720,
-                MinDepth = 0.001f,
+                MinDepth = 0f,
                 MaxDepth = 256.0f,
             };
         }
@@ -39,11 +39,27 @@ namespace OffscreenDemo
             public IMgCommandPool Pool { get; internal set; }
             public MgOptimizedStorageContainer StorageContainer { get; internal set; }
             public MgCommandBuildOrder[] Orders { get; internal set; }
+            public IMgSemaphore FirstStage { get; internal set; }
+            public IMgSemaphore[] SecondStage { get; internal set; }
 
             public void Dispose(IMgGraphicsConfiguration configuration)
             {
                 var device = configuration.Device;
                 Debug.Assert(device != null);
+
+                if (SecondStage != null)
+                {
+                    foreach(var stage in SecondStage)
+                    {
+                        stage.DestroySemaphore(device, null);
+                    }
+                }
+
+                if (FirstStage != null)
+                {
+                    FirstStage.DestroySemaphore(device, null);
+                    FirstStage = null;
+                }
 
                 if (StorageContainer != null)
                 {
@@ -86,8 +102,8 @@ namespace OffscreenDemo
         private UnmanagedResources mUnmanagedResources;
         public void Prepare(IMgGraphicsConfiguration configuration, IMgGraphicsDevice screen)
         {
-            const uint WIDTH = 1280;
-            const uint HEIGHT = 720;
+            const uint WIDTH = 512;
+            const uint HEIGHT = 512;
             const MgFormat COLOR_FORMAT = MgFormat.R8G8B8A8_UNORM;
             const MgFormat DEPTH_FORMAT = MgFormat.D32_SFLOAT;
 
@@ -159,6 +175,27 @@ namespace OffscreenDemo
 
             // 6. init command buffers
             mUnmanagedResources.Orders = BuildCommandBuffers(configuration, mUnmanagedResources.Offscreen, screen, mUnmanagedResources.Pool, mUnmanagedResources.StorageContainer);
+
+            // semaphores
+            mUnmanagedResources.FirstStage = GenerateSemaphore(configuration);
+
+            int length = mGraphics.Framebuffers.Length;
+            mUnmanagedResources.SecondStage = new IMgSemaphore[length];
+            for(var i = 0; i < length; i += 1)
+            {
+                mUnmanagedResources.SecondStage[i] = GenerateSemaphore(configuration);
+            }
+        }
+
+        private IMgSemaphore GenerateSemaphore(IMgGraphicsConfiguration configuration)
+        {
+            var createInfo = new MgSemaphoreCreateInfo
+            {
+                
+            };
+            var err = configuration.Device.CreateSemaphore(createInfo, null, out IMgSemaphore temp);
+            Debug.Assert(err == Result.SUCCESS);
+            return temp;
         }
 
         private MgCommandBuildOrder[] BuildCommandBuffers(
@@ -316,26 +353,66 @@ namespace OffscreenDemo
             configuration.Device.FreeCommandBuffers(pool, copyCmds);
         }
 
-        public IMgSemaphore[] Render(IMgQueue queue, uint layerNo)
+        public IMgSemaphore[] Render(IMgQueue queue, uint layerNo, IMgSemaphore semaphore)
         {
-            //throw new NotImplementedException();
-
             //// Command buffer to be sumitted to the queue
 
-            //var submitInfos = new[]
-            //{
-            //    new MgSubmitInfo
-            //    {
-            //        // ADD COMMANDS HERE
-            //        CommandBuffers = null,
-            //    }
-            //};
+            var first = mUnmanagedResources.Orders[0];
+            var second = mUnmanagedResources.Orders[1];
+
+
+
+            var firstInfo = new[]
+            {
+                new MgSubmitInfo
+                {
+                    // ADD COMMANDS HERE                    
+                     WaitSemaphores = new []
+                     {
+                        new MgSubmitInfoWaitSemaphoreInfo
+                        {
+                            WaitDstStageMask = MgPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT,
+                            WaitSemaphore = semaphore,
+                        },
+                    },
+                    CommandBuffers = new [] { first.CommandBuffers[0] },
+                    SignalSemaphores = new [] { mUnmanagedResources.FirstStage },
+                },
+            };
+
+            var err = queue.QueueSubmit(firstInfo, null);
+            Debug.Assert(err == Result.SUCCESS);
+
+            IMgSemaphore isDone = mUnmanagedResources.SecondStage[layerNo];
+
+            var secondInfo = new [] {
+                new MgSubmitInfo
+                {
+                    WaitSemaphores = new []
+                    {
+                        new MgSubmitInfoWaitSemaphoreInfo
+                        {
+                            WaitDstStageMask = MgPipelineStageFlagBits.ALL_COMMANDS_BIT,
+                            WaitSemaphore = mUnmanagedResources.FirstStage,
+                        },
+                    },
+                    CommandBuffers = new [] { second.CommandBuffers[layerNo] },
+                    SignalSemaphores = new []
+                    {
+                        isDone
+                    }
+                }
+            };
 
             //// Submit to queue
-            //var err = mManager.Configuration.Queue.QueueSubmit(submitInfos, null);
-            //Debug.Assert(err == Result.SUCCESS);
+            err = queue.QueueSubmit(secondInfo, null);
+            Debug.Assert(err == Result.SUCCESS);
 
-            return new IMgSemaphore[] { };
+            err = queue.QueueWaitIdle();
+            Debug.Assert(err == Result.SUCCESS);
+
+            return new IMgSemaphore[] { isDone };
+           // return new IMgSemaphore[] { };
         }
 
         public void Update(IMgGraphicsConfiguration configuration)

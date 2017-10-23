@@ -126,22 +126,22 @@ namespace Magnesium
 
             }
 
-			// SWIZZLE 
-			MgColor4f finalColor = colorx;
-			switch (format)
-			{
-				case MgFormat.B8G8R8_UNORM:
-				case MgFormat.B8G8R8_SINT:
-                case MgFormat.B8G8R8_UINT:
-				case MgFormat.B8G8R8A8_SINT:
-				case MgFormat.B8G8R8A8_UINT:
-				case MgFormat.B8G8R8A8_UNORM:
-					finalColor.R = colorx.B;
-					finalColor.B = colorx.R;
-					break;
-			}
+            // SWIZZLE 
+            MgColor4f finalColor = colorx;
+            //switch (format)
+            //{
+            //	case MgFormat.B8G8R8_UNORM:
+            //	case MgFormat.B8G8R8_SINT:
+            //             case MgFormat.B8G8R8_UINT:
+            //	case MgFormat.B8G8R8A8_SINT:
+            //	case MgFormat.B8G8R8A8_UINT:
+            //	case MgFormat.B8G8R8A8_UNORM:
+            //		finalColor.R = colorx.B;
+            //		finalColor.B = colorx.R;
+            //		break;
+            //}
 
-			switch (category)
+            switch (category)
 			{
 				case MgClearColorCategory.INT:
 					return new MgClearValue { Color = new MgClearColorValue(new MgVec4i((int)(finalColor.R * factor), (int)(finalColor.G * factor), (int)(finalColor.B * factor), (int)(finalColor.A * factor))) };

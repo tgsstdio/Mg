@@ -80,6 +80,16 @@ namespace OffscreenDemo
 
             SetupGraphicsDevice(createInfo);
             SetupPresentationBarrierCommands();
+            SetupSemaphores();
+        }
+
+        private void SetupSemaphores()
+        {
+            var semaphoreCreateInfo = new MgSemaphoreCreateInfo { };
+            // Semaphore used to ensures that image presentation is complete before starting to submit again
+            var err = mConfiguration.Device.CreateSemaphore(semaphoreCreateInfo, null, out IMgSemaphore pSemaphore);
+            Debug.Assert(err == Result.SUCCESS);
+            PresentComplete = pSemaphore;
         }
 
         private void SetupGraphicsDevice(MgGraphicsDeviceCreateInfo createInfo)
@@ -153,7 +163,7 @@ namespace OffscreenDemo
             }
         }
 
-        public IMgGraphicsConfiguration MConfiguration { get => mConfiguration; set => mConfiguration = value; }
+        public IMgSemaphore PresentComplete { get; private set; }
 
         // Command buffers for submitting present barriers
         private void SetupPresentationBarrierCommands()
@@ -182,6 +192,7 @@ namespace OffscreenDemo
 
         public void Dispose()
         {
+
             if (mGraphicsDevice != null)
             {
                 mGraphicsDevice.Dispose();
@@ -194,6 +205,9 @@ namespace OffscreenDemo
 
             if (mConfiguration != null)
             {
+                if (PresentComplete != null)
+                    PresentComplete.DestroySemaphore(mConfiguration.Device, null);
+
                 var commandPool = mConfiguration.Partition.CommandPool;
                 if (commandPool != null)
                 {

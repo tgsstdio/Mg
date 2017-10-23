@@ -7,7 +7,6 @@ namespace Magnesium
     {
         private IMgGraphicsConfiguration mConfiguration;
         private IMgOffscreenDeviceLocalMemory mDeviceLocal;
-        private IMgDeviceMemory mOffscreenMemory;
 
         public MgOffscreenColorImageBuffer(
             IMgGraphicsConfiguration configuration,
@@ -57,7 +56,8 @@ namespace Magnesium
                 // We will sample directly from the color attachment
                 Usage =
                     MgImageUsageFlagBits.COLOR_ATTACHMENT_BIT
-                    | MgImageUsageFlagBits.SAMPLED_BIT
+                    | MgImageUsageFlagBits.SAMPLED_BIT,
+                InitialLayout = MgImageLayout.COLOR_ATTACHMENT_OPTIMAL,                
             };
 
             var err = mConfiguration.Device.CreateImage(image, null, out IMgImage offscreenImage);

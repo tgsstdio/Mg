@@ -79,7 +79,8 @@ namespace Magnesium
                 // TODO : multisampling
                 Samples = MgSampleCountFlagBits.COUNT_1_BIT,
                 Tiling = MgImageTiling.OPTIMAL,
-                Usage = MgImageUsageFlagBits.DEPTH_STENCIL_ATTACHMENT_BIT
+                Usage = MgImageUsageFlagBits.DEPTH_STENCIL_ATTACHMENT_BIT,
+                InitialLayout = MgImageLayout.COLOR_ATTACHMENT_OPTIMAL,                
             };
 
             var err = mConfiguration.Device.CreateImage(image, null, out IMgImage offscreenImage);
@@ -116,7 +117,7 @@ namespace Magnesium
                     BaseArrayLayer = 0,
                     LayerCount = 1,
                 },
-                Image = offscreenImage,
+                Image = offscreenImage,                
             };
             err = mConfiguration.Device.CreateImageView(colorImageView, null, out IMgImageView offscreenView);
             Debug.Assert(err == Result.SUCCESS);
