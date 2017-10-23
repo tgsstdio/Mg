@@ -163,7 +163,7 @@ namespace OffscreenDemo
             var vertices = new MgStorageBlockAllocationInfo
             {
                 Size = (ulong) (3 * structSize),
-                ElementByteSize = (uint) structSize,
+                ElementByteSize = 4,
                 MemoryPropertyFlags = MgMemoryPropertyFlagBits.DEVICE_LOCAL_BIT,
                 Usage = MgBufferUsageFlagBits.VERTEX_BUFFER_BIT 
                     | MgBufferUsageFlagBits.TRANSFER_DST_BIT
@@ -174,7 +174,7 @@ namespace OffscreenDemo
             var indices = new MgStorageBlockAllocationInfo
             {
                 Size = (ulong) (3 * indexElementSize),
-                ElementByteSize = indexElementSize,
+                ElementByteSize = 4,
                 Usage = MgBufferUsageFlagBits.INDEX_BUFFER_BIT
                 | MgBufferUsageFlagBits.TRANSFER_DST_BIT,
             };
@@ -184,7 +184,7 @@ namespace OffscreenDemo
             var uniforms = new MgStorageBlockAllocationInfo
             {
                 Size = (ulong) uniformSize,
-                ElementByteSize = uniformSize,
+                ElementByteSize = 0,
                 MemoryPropertyFlags = MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT
                 | MgMemoryPropertyFlagBits.HOST_COHERENT_BIT,                
                 Usage = MgBufferUsageFlagBits.UNIFORM_BUFFER_BIT,
@@ -268,9 +268,9 @@ namespace OffscreenDemo
             // Update matrices
             mUBOVS.projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(
                 DegreesToRadians(60.0f),
-                (framework.Viewport.Width / framework.Viewport.Height),
-                framework.Viewport.MinDepth,
-                framework.Viewport.MaxDepth);
+                framework.Viewport.Width / framework.Viewport.Height,
+                0.01f,
+                256f);
 
             const float ZOOM = -2.5f;
 
@@ -337,6 +337,7 @@ namespace OffscreenDemo
                 vertexDest.Offset
             );
             vertices.Initialize(configuration, vertexBufferSize);
+            vertices.CopyStructs(configuration.Device, corners);
 
             // DEVICE_LOCAL index buffer 
             var indexDest = container.Map.Allocations[mIndexDataPosition];
@@ -346,6 +347,7 @@ namespace OffscreenDemo
                 indexDest.Offset
             );
             indices.Initialize(configuration, indexBufferSize);
+            indices.CopyIndices32(configuration.Device, indexBuffer);
 
             var stagingBuffers = new[] { vertices, indices };
 
@@ -401,8 +403,8 @@ namespace OffscreenDemo
                 RenderArea = order.Framework.Scissor,
                 ClearValues = new MgClearValue[]
                 {
-                    MgClearValue.FromColorAndFormat(colorFormat, new MgColor4f(0f, 0f, 0f, 0f)),
-                    new MgClearValue { DepthStencil = new MgClearDepthStencilValue( 1.0f, 0) },
+                    MgClearValue.FromColorAndFormat(colorFormat, new MgColor4f(0.1f, 0.2f, 0.3f, 1f)),
+                    new MgClearValue { DepthStencil = new MgClearDepthStencilValue(order.Framework.Viewport.MaxDepth, 0) },
                 },
             };
 
@@ -423,6 +425,27 @@ namespace OffscreenDemo
                 cmdBuf.CmdSetViewport(0, new[] {order.Framework.Viewport});
 
                 cmdBuf.CmdSetScissor(0, new[] { order.Framework.Scissor });
+
+                //cmdBuf.CmdSetViewport(0,
+                //    new[] {
+                //        new MgViewport {
+                //            Height = (float) order.Framework.Scissor.Extent.Height,
+                //            Width = (float) order.Framework.Scissor.Extent.Width,
+                //            MinDepth = 0.0f,
+                //            MaxDepth = 1.0f,
+                //        }
+                //    }
+                //);
+
+                // Update dynamic scissor state
+                //cmdBuf.CmdSetScissor(0,
+                //    new[] {
+                //        new MgRect2D {
+                //            Extent = new MgExtent2D { Width = order.Framework.Scissor.Extent.Width, Height = order.Framework.Scissor.Extent.Height },
+                //            Offset = new MgOffset2D { X = 0, Y = 0 },
+                //        }
+                //    }
+                //);
 
                 cmdBuf.CmdBindDescriptorSets(MgPipelineBindPoint.GRAPHICS, mPipelineLayout, 0, new[] { order.DescriptorSet }, null);
 
@@ -495,7 +518,7 @@ namespace OffscreenDemo
                             new MgVertexInputBindingDescription
                             {
                                 Binding = 0,
-                                Stride = 24U,
+                                Stride = (uint) Marshal.SizeOf(typeof(TriangleVertex)),
                                 InputRate = MgVertexInputRate.VERTEX,
                             }
                         },
@@ -512,7 +535,7 @@ namespace OffscreenDemo
                             new MgVertexInputAttributeDescription
                             {
                                 // Attribute location 1: Color
-                                Binding = 1,
+                                Binding = 0,
                                 Location = 1,
                                 Format = MgFormat.R32G32B32_SFLOAT,
                                 Offset = 12U,
