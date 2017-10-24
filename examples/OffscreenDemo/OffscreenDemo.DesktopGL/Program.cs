@@ -35,6 +35,11 @@ namespace OffscreenDemo.DesktopGL
                         MgOptimizedStoragePartitionVerifier>(new PerScopeLifetime());
                     container.Register<MgOptimizedStorageBuilder>(new PerScopeLifetime());
 
+                    container.Register<IOffscreenPipelineMediaPath,
+                        GLOffscreenDemoShaderPath>(new PerScopeLifetime());
+                    container.Register<IToScreenPipelineMediaPath,
+                        GLToScreenPipelinePath>(new PerScopeLifetime());
+
                     ApplyMagnesiumRegistrations(container);
                     ApplyDesktopGLRegistrations(container);
 

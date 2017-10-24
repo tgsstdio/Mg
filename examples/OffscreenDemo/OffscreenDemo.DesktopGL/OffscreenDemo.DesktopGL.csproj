@@ -54,6 +54,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GLOffscreenDemoShaderPath.cs" />
+    <Compile Include="GLToScreenPipelinePath.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -61,6 +63,12 @@
     <None Include="App.config" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
+    <None Include="Shaders\triangle.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Shaders\triangle.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Magnesium.OpenGL.DesktopGL\Magnesium.OpenGL.DesktopGL.csproj">
@@ -74,6 +82,10 @@
     <ProjectReference Include="..\..\..\Magnesium\Magnesium.csproj">
       <Project>{9f9ac448-9d17-43e5-8889-285426290891}</Project>
       <Name>Magnesium</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Magnesium.Utilities\Magnesium.Utilities.csproj">
+      <Project>{CB108602-E69B-4FA1-922A-096A4D1F349F}</Project>
+      <Name>Magnesium.Utilities</Name>
     </ProjectReference>
     <ProjectReference Include="..\OffscreenDemo.Shared\OffscreenDemo.Shared.csproj">
       <Project>{eb230183-e335-412c-94f1-70adfb6cee41}</Project>
