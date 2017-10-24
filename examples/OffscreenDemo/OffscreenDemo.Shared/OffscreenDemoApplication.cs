@@ -26,7 +26,7 @@ namespace OffscreenDemo
                 Width = 1280,
                 Height = 720,
                 MinDepth = 0f,
-                MaxDepth = 256.0f,
+                MaxDepth = 1f,
             };
         }
 
@@ -102,8 +102,8 @@ namespace OffscreenDemo
         private UnmanagedResources mUnmanagedResources;
         public void Prepare(IMgGraphicsConfiguration configuration, IMgGraphicsDevice screen)
         {
-            const uint WIDTH = 512;
-            const uint HEIGHT = 512;
+            const uint WIDTH = 256;
+            const uint HEIGHT = 128;
             const MgFormat COLOR_FORMAT = MgFormat.R8G8B8A8_UNORM;
             const MgFormat DEPTH_FORMAT = MgFormat.D32_SFLOAT;
 
@@ -130,8 +130,8 @@ namespace OffscreenDemo
 
             var createInfo = new MgOffscreenGraphicsDeviceCreateInfo
             {
-                Width = 1280,
-                Height = 720,
+                Width = WIDTH,
+                Height = HEIGHT,
                 ColorAttachments = new[]
                 {
                     new MgOffscreenColorAttachmentInfo
@@ -152,8 +152,8 @@ namespace OffscreenDemo
                     View = mUnmanagedResources.DepthOne.View,
                     Layout = MgImageLayout.GENERAL,
                 },
-                MinDepth = 1.0f,
-                MaxDepth = 256.0f,
+                MinDepth = 0f,
+                MaxDepth = 1f,
             };
 
             mUnmanagedResources.Offscreen.Initialize(createInfo);
@@ -360,8 +360,6 @@ namespace OffscreenDemo
             var first = mUnmanagedResources.Orders[0];
             var second = mUnmanagedResources.Orders[1];
 
-
-
             var firstInfo = new[]
             {
                 new MgSubmitInfo
@@ -392,7 +390,7 @@ namespace OffscreenDemo
                     {
                         new MgSubmitInfoWaitSemaphoreInfo
                         {
-                            WaitDstStageMask = MgPipelineStageFlagBits.ALL_COMMANDS_BIT,
+                            WaitDstStageMask = MgPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT,
                             WaitSemaphore = mUnmanagedResources.FirstStage,
                         },
                     },
@@ -428,9 +426,10 @@ namespace OffscreenDemo
 
         public void ReleaseUnmanagedResources(IMgGraphicsConfiguration configuration)
         {
-            Debug.Assert(mUnmanagedResources != null);
-            mUnmanagedResources.Dispose(configuration);
-
+            if (mUnmanagedResources != null)
+            {
+                mUnmanagedResources.Dispose(configuration);
+            }
             mRenderToTexture.ReleaseUnmanagedResources(configuration);
             mToScreen.ReleaseUnmanagedResources(configuration);
         }

@@ -404,7 +404,7 @@ namespace OffscreenDemo
                 ClearValues = new MgClearValue[]
                 {
                     MgClearValue.FromColorAndFormat(colorFormat, new MgColor4f(0.1f, 0.2f, 0.3f, 1f)),
-                    new MgClearValue { DepthStencil = new MgClearDepthStencilValue(order.Framework.Viewport.MaxDepth, 0) },
+                    new MgClearValue { DepthStencil = new MgClearDepthStencilValue(1.0f, 0) },
                 },
             };
 

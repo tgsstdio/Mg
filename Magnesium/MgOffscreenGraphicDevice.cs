@@ -4,41 +4,6 @@ using System.Diagnostics;
 
 namespace Magnesium
 {
-    public class MgOffscreenAttachmentInfo
-    {
-        public IMgImageView View { get; set; }
-        public MgAttachmentDescription Description { get; set; }
-    }
-
-    public class MgOffscreenColorAttachmentInfo
-    {
-        public IMgImageView View { get; set; }
-        public MgFormat Format { get; set; }
-        public MgAttachmentLoadOp LoadOp { get; set; }
-        public MgAttachmentStoreOp StoreOp { get; set; }
-    }
-
-    public class MgOffscreenDepthStencilAttachmentInfo
-    {
-        public IMgImageView View { get; set; }
-        public MgImageLayout Layout { get; set; }
-        public MgFormat Format { get; set; }
-        public MgAttachmentLoadOp LoadOp { get; set; }
-        public MgAttachmentStoreOp StoreOp { get; set; }
-        public MgAttachmentLoadOp StencilLoadOp { get; set; }
-        public MgAttachmentStoreOp StencilStoreOp { get; set; }
-    }
-
-    public class MgOffscreenGraphicsDeviceCreateInfo
-    {
-        public uint Width { get; set; }
-        public uint Height { get; set; }
-        public MgOffscreenColorAttachmentInfo[] ColorAttachments { get; set; }
-        public MgOffscreenDepthStencilAttachmentInfo DepthStencilAttachment { get; set; }
-        public float MinDepth { get; set; }
-        public float MaxDepth { get; set; }
-    }
-
     public class MgOffscreenGraphicDevice : IMgEffectFramework
     {
         private MgRect2D mScissor;
@@ -109,9 +74,7 @@ namespace Magnesium
 
         public void Initialize(MgOffscreenGraphicsDeviceCreateInfo createInfo)
         {
-            // color attachments 
-            if (createInfo == null)
-                throw new ArgumentNullException("createInfo");
+            ValidateParameters(createInfo);
 
             var attachments = new List<MgAttachmentDescription>();
             var subpassColorAttachments = new List<MgAttachmentReference>();
@@ -192,9 +155,9 @@ namespace Magnesium
                        ColorAttachments = subpassColorAttachments.ToArray(),
                        ResolveAttachments = null,
                        DepthStencilAttachment = depthStencilAttachment,
-                    }                 
+                    }
                 },
-                Dependencies = new []
+                Dependencies = new[]
                 {
                     new MgSubpassDependency
                     {
@@ -226,10 +189,10 @@ namespace Magnesium
             var frameBufferCreateInfo = new MgFramebufferCreateInfo
             {
                 RenderPass = mRenderPass,
-                Attachments = frameBufferAttachments.ToArray(),                
+                Attachments = frameBufferAttachments.ToArray(),
                 Width = createInfo.Width,
                 Height = createInfo.Height,
-                Layers = 1,                
+                Layers = 1,
             };
 
             err = mConfiguration.Device.CreateFramebuffer(frameBufferCreateInfo, null, out IMgFramebuffer fBuf);
@@ -260,6 +223,23 @@ namespace Magnesium
                 MaxDepth = createInfo.MaxDepth,
             };
 
+        }
+
+        private static void ValidateParameters(MgOffscreenGraphicsDeviceCreateInfo createInfo)
+        {
+            // color attachments 
+            if (createInfo == null)
+                throw new ArgumentNullException("createInfo");
+
+            if (createInfo.MinDepth < 0f || createInfo.MinDepth > 1f)
+            {
+                throw new ArgumentOutOfRangeException("createInfo.MinDepth");
+            }
+
+            if (createInfo.MaxDepth < 0f || createInfo.MaxDepth > 1f)
+            {
+                throw new ArgumentOutOfRangeException("createInfo.MaxDepth");
+            }
         }
 
         ~MgOffscreenGraphicDevice()

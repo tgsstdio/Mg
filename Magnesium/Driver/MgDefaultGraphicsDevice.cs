@@ -65,22 +65,9 @@ namespace Magnesium
             mContext.ReleaseDepthStencil();
 		}
 
-        public void Create(IMgCommandBuffer setupCmdBuffer, IMgImageBufferCollection imageCollection, MgGraphicsDeviceCreateInfo createInfo)
+        public void Create(IMgCommandBuffer setupCmdBuffer, IMgSwapchainCollection imageCollection, MgGraphicsDeviceCreateInfo createInfo)
         {
-            if (setupCmdBuffer == null)
-            {
-                throw new ArgumentNullException(nameof(setupCmdBuffer));
-            }
-
-            if (createInfo == null)
-            {
-                throw new ArgumentNullException(nameof(createInfo));
-            }
-
-            if (imageCollection == null)
-            {
-                throw new ArgumentNullException(nameof(imageCollection));
-            }
+            ValidateParameters(setupCmdBuffer, imageCollection, createInfo);
 
             mContext.Initialize(createInfo);
 
@@ -114,6 +101,34 @@ namespace Magnesium
                 MaxDepth = createInfo.MaxDepth,
             };
             mDeviceCreated = true;
+        }
+
+        private static void ValidateParameters(IMgCommandBuffer setupCmdBuffer, IMgSwapchainCollection imageCollection, MgGraphicsDeviceCreateInfo createInfo)
+        {
+            if (setupCmdBuffer == null)
+            {
+                throw new ArgumentNullException("setupCmdBuffer");
+            }
+
+            if (createInfo == null)
+            {
+                throw new ArgumentNullException("createInfo");
+            }
+
+            if (imageCollection == null)
+            {
+                throw new ArgumentNullException("imageCollection");
+            }
+
+            if (createInfo.MinDepth < 0f || createInfo.MinDepth > 1f)
+            {
+                throw new ArgumentOutOfRangeException("createInfo.MinDepth");
+            }
+
+            if (createInfo.MaxDepth < 0f || createInfo.MaxDepth > 1f)
+            {
+                throw new ArgumentOutOfRangeException("createInfo.MaxDepth");
+            }
         }
 
         public MgViewport Viewport {

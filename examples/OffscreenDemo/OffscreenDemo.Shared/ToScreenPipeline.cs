@@ -372,8 +372,8 @@ namespace OffscreenDemo
             mUBOVS.projection = Matrix4.CreatePerspectiveFieldOfView(
                 DegreesToRadians(60.0f),
                 framework.Viewport.Width / (framework.Viewport.Height),
-                0.0001f,
-                framework.Viewport.MaxDepth
+                0.001f,
+                256f
             );
             // uboVS.projection = Matrix4.Identity;
             //uboVS.projection = Matrix4.CreateTranslation(1f,0f,0.5f);

@@ -19,7 +19,7 @@ namespace Magnesium
             }
         }
 
-        public void Create(IMgImageBufferCollection imageCollection, IMgRenderPass pass, IMgImageView depthStencilView, uint width, uint height)
+        public void Create(IMgSwapchainCollection imageCollection, IMgRenderPass pass, IMgImageView depthStencilView, uint width, uint height)
         {
             Debug.Assert(mGraphicsConfiguration.Partition != null);
 
