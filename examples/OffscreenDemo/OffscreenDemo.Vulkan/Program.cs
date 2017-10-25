@@ -45,8 +45,9 @@ namespace OffscreenDemo
 
                         container.Register<IMgPlatformMemoryLayout, VkPlatformMemoryLayout>(new PerScopeLifetime());
                         //container.Register<IMgPlatformMemoryLayout, VkDebugVertexPlatformMemoryLayout>(new PerScopeLifetime());
+                        container.Register<Magnesium.MgOffscreenDeviceFactory>(new PerScopeLifetime());
+                        container.Register<Magnesium.IMgOffscreenDeviceEntrypoint, Magnesium.MgDefaultOffscreenDeviceEntrypoint>(new PerScopeLifetime());
 
-                        
                         container.Register<IMgOptimizedStoragePartitioner, MgOptimizedStoragePartitioner>(new PerScopeLifetime());
                         container.Register<IMgOptimizedStoragePartitionVerifier, MgOptimizedStoragePartitionVerifier>(new PerScopeLifetime());
                         container.Register<MgOptimizedStorageBuilder>(new PerScopeLifetime());
@@ -58,7 +59,6 @@ namespace OffscreenDemo
                         container.Register<IToScreenPipelineMediaPath, VkToScreenPipelinePath>(new PerScopeLifetime());
 
                         // GAME END
-
 
                         container.Register<Magnesium.IMgGraphicsDevice, Magnesium.MgDefaultGraphicsDevice>(new PerScopeLifetime());
                         container.Register<Magnesium.IMgGraphicsDeviceContext, Magnesium.MgDefaultGraphicsDeviceContext>(new PerScopeLifetime());

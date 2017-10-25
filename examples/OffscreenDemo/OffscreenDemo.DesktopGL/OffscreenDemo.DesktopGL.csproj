@@ -63,6 +63,12 @@
     <None Include="App.config" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
+    <None Include="Shaders\texture1.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Shaders\texture1.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Shaders\triangle.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -78,6 +84,10 @@
     <ProjectReference Include="..\..\..\Magnesium.OpenGL\Magnesium.OpenGL.csproj">
       <Project>{84924a0f-0d4c-4b0c-b16a-4f26dd838af2}</Project>
       <Name>Magnesium.OpenGL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Magnesium.PresentationSurfaces.OpenTK\Magnesium.PresentationSurfaces.OpenTK.csproj">
+      <Project>{0d74bcd6-2669-451f-81ff-488eecc07686}</Project>
+      <Name>Magnesium.PresentationSurfaces.OpenTK</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Magnesium\Magnesium.csproj">
       <Project>{9f9ac448-9d17-43e5-8889-285426290891}</Project>

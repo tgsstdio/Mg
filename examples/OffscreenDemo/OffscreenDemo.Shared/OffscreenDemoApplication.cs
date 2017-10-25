@@ -10,12 +10,19 @@ namespace OffscreenDemo
         private OffscreenPipeline mRenderToTexture;
         private ToScreenPipeline mToScreen;
         private MgOptimizedStorageBuilder mBuilder;
+        private MgOffscreenDeviceFactory mOffscreenFactory;
 
-        public OffscreenDemoApplication(MgOptimizedStorageBuilder builder, OffscreenPipeline renderToTexture, ToScreenPipeline toScreen)
+        public OffscreenDemoApplication(
+            MgOptimizedStorageBuilder builder,
+            OffscreenPipeline renderToTexture,
+            ToScreenPipeline toScreen,
+            MgOffscreenDeviceFactory offscreenFactory
+            )
         {
             mRenderToTexture = renderToTexture;
             mToScreen = toScreen;
             mBuilder = builder;
+            mOffscreenFactory = offscreenFactory;
         }
 
         public MgGraphicsDeviceCreateInfo Initialize()
@@ -33,9 +40,9 @@ namespace OffscreenDemo
         class UnmanagedResources
         {
             public MgOffscreenDeviceLocalMemory DeviceLocal { get; internal set; }
-            public MgOffscreenColorImageBuffer ColorOne { get; internal set; }
-            public MgOffscreenDepthStencilContext DepthOne { get; internal set; }
-            public MgOffscreenGraphicDevice Offscreen { get; internal set; }
+            public IMgOffscreenDeviceAttachment ColorOne { get; internal set; }
+            public IMgOffscreenDeviceAttachment DepthOne { get; internal set; }
+            public IMgEffectFramework Offscreen { get; internal set; }
             public IMgCommandPool Pool { get; internal set; }
             public MgOptimizedStorageContainer StorageContainer { get; internal set; }
             public MgCommandBuildOrder[] Orders { get; internal set; }
@@ -110,25 +117,14 @@ namespace OffscreenDemo
             mGraphics = screen;
             mUnmanagedResources = new UnmanagedResources();
 
-            mUnmanagedResources.DepthOne = new MgOffscreenDepthStencilContext(configuration);
-            mUnmanagedResources.DepthOne.Initialize(DEPTH_FORMAT, WIDTH, HEIGHT);
+            mUnmanagedResources.DepthOne = mOffscreenFactory.CreateDepthStencilAttachment(DEPTH_FORMAT, WIDTH, HEIGHT);
 
             // 1. init offscreen device           
             // TODO IOC this component somehow
-            mUnmanagedResources.DeviceLocal = new MgOffscreenDeviceLocalMemory(configuration);
 
-            mUnmanagedResources.ColorOne = new MgOffscreenColorImageBuffer(
-                configuration,
-                mUnmanagedResources.DeviceLocal);
+            mUnmanagedResources.ColorOne = mOffscreenFactory.CreateColorAttachment(COLOR_FORMAT, WIDTH, HEIGHT);
 
-            mUnmanagedResources.ColorOne.Initialize(
-                COLOR_FORMAT,
-                WIDTH,
-                HEIGHT);
-
-            mUnmanagedResources.Offscreen = new Magnesium.MgOffscreenGraphicDevice(configuration);
-
-            var createInfo = new MgOffscreenGraphicsDeviceCreateInfo
+            var createInfo = new MgOffscreenDeviceCreateInfo
             {
                 Width = WIDTH,
                 Height = HEIGHT,
@@ -156,7 +152,7 @@ namespace OffscreenDemo
                 MaxDepth = 1f,
             };
 
-            mUnmanagedResources.Offscreen.Initialize(createInfo);
+            mUnmanagedResources.Offscreen = mOffscreenFactory.CreateOffscreenDevice(createInfo);
 
             // 2. init offscreen pipeline
             mRenderToTexture.Initialize(configuration, mUnmanagedResources.Offscreen);

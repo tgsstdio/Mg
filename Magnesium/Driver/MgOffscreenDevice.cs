@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace Magnesium
 {
-    public class MgOffscreenGraphicDevice : IMgEffectFramework
+    public class MgOffscreenDevice : IMgEffectFramework
     {
         private MgRect2D mScissor;
         public MgRect2D Scissor
@@ -52,7 +52,7 @@ namespace Magnesium
         }
 
         private IMgGraphicsConfiguration mConfiguration;
-        public MgOffscreenGraphicDevice(IMgGraphicsConfiguration configuration)
+        public MgOffscreenDevice(IMgGraphicsConfiguration configuration)
         {
             mConfiguration = configuration;
         }
@@ -72,7 +72,7 @@ namespace Magnesium
             }
         }
 
-        public void Initialize(MgOffscreenGraphicsDeviceCreateInfo createInfo)
+        public void Initialize(MgOffscreenDeviceCreateInfo createInfo)
         {
             ValidateParameters(createInfo);
 
@@ -225,7 +225,7 @@ namespace Magnesium
 
         }
 
-        private static void ValidateParameters(MgOffscreenGraphicsDeviceCreateInfo createInfo)
+        private static void ValidateParameters(MgOffscreenDeviceCreateInfo createInfo)
         {
             // color attachments 
             if (createInfo == null)
@@ -242,7 +242,7 @@ namespace Magnesium
             }
         }
 
-        ~MgOffscreenGraphicDevice()
+        ~MgOffscreenDevice()
         {
             Dispose(false);
         }

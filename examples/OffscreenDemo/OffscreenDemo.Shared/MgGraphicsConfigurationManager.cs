@@ -208,12 +208,15 @@ namespace OffscreenDemo
                 if (PresentComplete != null)
                     PresentComplete.DestroySemaphore(mConfiguration.Device, null);
 
-                var commandPool = mConfiguration.Partition.CommandPool;
-                if (commandPool != null)
+                if (mConfiguration.Partition != null)
                 {
-                    mConfiguration.Device.FreeCommandBuffers(
-                        commandPool,
-                        mPresentBuffers);
+                    var commandPool = mConfiguration.Partition.CommandPool;
+                    if (commandPool != null)
+                    {
+                        mConfiguration.Device.FreeCommandBuffers(
+                            commandPool,
+                            mPresentBuffers);
+                    }
                 }
 
                 mConfiguration.Dispose();

@@ -26,7 +26,6 @@ namespace Magnesium
         public IMgThreadPartition Partition {
             get
             {
-                Debug.Assert(mPartition != null);
                 return mPartition;
             }
         }

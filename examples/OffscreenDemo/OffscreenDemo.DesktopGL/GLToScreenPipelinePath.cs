@@ -6,12 +6,12 @@ namespace OffscreenDemo.DesktopGL
     {
         public Stream OpenFragmentShader()
         {
-            throw new System.NotImplementedException();
+            return File.Open("Shaders/texture1.frag", FileMode.Open);
         }
 
         public Stream OpenVertexShader()
         {
-            throw new System.NotImplementedException();
+            return File.Open("Shaders/texture1.vert", FileMode.Open);
         }
     }
 }

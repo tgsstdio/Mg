@@ -3,12 +3,13 @@ using System.Diagnostics;
 
 namespace Magnesium
 {
-    public class MgOffscreenColorImageBuffer : IDisposable
+
+    public class MgOffscreenDeviceAttachment : IMgOffscreenDeviceAttachment
     {
         private IMgGraphicsConfiguration mConfiguration;
         private IMgOffscreenDeviceLocalMemory mDeviceLocal;
 
-        public MgOffscreenColorImageBuffer(
+        public MgOffscreenDeviceAttachment(
             IMgGraphicsConfiguration configuration,
             IMgOffscreenDeviceLocalMemory deviceLocal)
         {
@@ -26,13 +27,12 @@ namespace Magnesium
         public IMgImageView View { get => mImageView; private set => mImageView = value; }
 
         public void Initialize(
-            MgFormat format,
-            uint width,
-            uint height)
+            MgOffscreenDeviceAttachmentCreateInfo createInfo
+            )
         {
-            Width = width;
-            Height = height;
-            Format = format;
+            Width = createInfo.Width;
+            Height = createInfo.Height;
+            Format = createInfo.Format;
 
             // BASED ON 
             // https://github.com/SaschaWillems/Vulkan/blob/master/offscreen/offscreen.cpp
@@ -54,10 +54,11 @@ namespace Magnesium
                 Samples = MgSampleCountFlagBits.COUNT_1_BIT,
                 Tiling = MgImageTiling.OPTIMAL,
                 // We will sample directly from the color attachment
-                Usage =
-                    MgImageUsageFlagBits.COLOR_ATTACHMENT_BIT
-                    | MgImageUsageFlagBits.SAMPLED_BIT,
-                InitialLayout = MgImageLayout.COLOR_ATTACHMENT_OPTIMAL,                
+                Usage = createInfo.Usage,
+                    //MgImageUsageFlagBits.COLOR_ATTACHMENT_BIT
+                    //| MgImageUsageFlagBits.SAMPLED_BIT,
+                InitialLayout = createInfo.ImageLayout,
+                // MgImageLayout.COLOR_ATTACHMENT_OPTIMAL,                
             };
 
             var err = mConfiguration.Device.CreateImage(image, null, out IMgImage offscreenImage);
@@ -72,7 +73,8 @@ namespace Magnesium
                 Format = Format,
                 SubresourceRange = new MgImageSubresourceRange
                 {
-                    AspectMask = MgImageAspectFlagBits.COLOR_BIT,
+                    //AspectMask = MgImageAspectFlagBits.COLOR_BIT,
+                    AspectMask = createInfo.AspectMask,
                     BaseMipLevel = 0,
                     LevelCount = 1,
                     BaseArrayLayer = 0,
@@ -85,7 +87,7 @@ namespace Magnesium
             mImageView = offscreenView;
         }
 
-        ~MgOffscreenColorImageBuffer()
+        ~MgOffscreenDeviceAttachment()
         {
             Dispose(false);
         }

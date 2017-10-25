@@ -21,20 +21,22 @@ namespace OffscreenDemo.DesktopGL
                     container.RegisterInstance<INativeWindow>(window);
 
                     container.Register<Example>(new PerScopeLifetime());
+                    container.Register<MgGraphicsConfigurationManager>(new PerScopeLifetime());
 
                     container.Register<IDemoApplication,
-                        OffscreenDemoApplication>(new PerScopeLifetime());
+                        TriangleDemoApplication>(new PerScopeLifetime());
                     container.Register<OffscreenPipeline>(new PerScopeLifetime());
                     container.Register<ToScreenPipeline>(new PerScopeLifetime());
 
                     container.Register<IMgPlatformMemoryLayout,
-                        VkPlatformMemoryLayout>(new PerScopeLifetime());
+                       FullGLPlatformMemoryLayout>(new PerScopeLifetime());
                     container.Register<IMgOptimizedStoragePartitioner,
                         MgOptimizedStoragePartitioner>(new PerScopeLifetime());
                     container.Register<IMgOptimizedStoragePartitionVerifier,
                         MgOptimizedStoragePartitionVerifier>(new PerScopeLifetime());
                     container.Register<MgOptimizedStorageBuilder>(new PerScopeLifetime());
 
+                    // APP PLATFORM IMPLEMENTATION 
                     container.Register<IOffscreenPipelineMediaPath,
                         GLOffscreenDemoShaderPath>(new PerScopeLifetime());
                     container.Register<IToScreenPipelineMediaPath,
@@ -61,6 +63,7 @@ namespace OffscreenDemo.DesktopGL
                         using (var gameWindow = new GameWindow(window))
                         using (var example = secondLevel.GetInstance<Example>())
                         {
+                            example.Initialize();
                             gameWindow.RenderFrame += (sender, e) =>
                             {
                                 example.Render();
@@ -193,11 +196,14 @@ namespace OffscreenDemo.DesktopGL
             container.Register<Magnesium.OpenGL.DesktopGL.IMgGraphicsDeviceLogger, 
                 Magnesium.OpenGL.DesktopGL.NullMgGraphicsDeviceLogger>(new PerContainerLifetime());
 
+            // PER SCOPE 
             container.Register<Magnesium.IMgGraphicsDeviceContext,
                 Magnesium.OpenGL.DesktopGL.DesktopGLGraphicsContext>(new PerScopeLifetime());
-
             container.Register<Magnesium.IMgSwapchainCollection,
                 Magnesium.OpenGL.DesktopGL.OpenTKSwapchainCollection>(new PerScopeLifetime());
+
+            container.Register<Magnesium.IMgPresentationSurface,
+                Magnesium.PresentationSurfaces.OpenTK.DesktopGLPresentationSurface>(new PerContainerLifetime());
         }
     }
 }
