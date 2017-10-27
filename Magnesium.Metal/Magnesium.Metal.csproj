@@ -227,7 +227,6 @@
     <Compile Include="Driver\AmtGraphicsDeviceContext.cs" />
     <Compile Include="Entrypoint\IAmtPhysicalDeviceFormatLookupEntrypoint.cs" />
     <Compile Include="Entrypoint\AmtDefaultPhysicalDeviceFormatLookupEntrypoint.cs" />
-    <Compile Include="Driver\AmtGraphicsDevice.cs" />
     <Compile Include="Driver\AmtDepthStencilImageView.cs" />
   </ItemGroup>
   <ItemGroup>

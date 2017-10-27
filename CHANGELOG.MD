@@ -16,7 +16,8 @@ Magnesium and its implementations uses [Semantic Versioning v2.0.0](http://semve
 	- Using one graphics device implementation for both Magnesium.Vulkan and Mg.OpenGL.DesktopGL 
 	- Removed OpenTKGraphicsDevice and its references from examples and tests
 	- Removed MgSubpassDescription.ColorAttachmentCount
-	- Added MgFormatExtensions for common MgFormat functions 
+	- Added MgFormatExtensions for common MgFormat functions e.g. IsStencilFormat
+	- Removed AmtGraphicsDevice one-for-all graphics device i.e. MgDefaultGraphicsDevice
 
 ## Version 5.2.9
  - Magnesium v5.2.9 - 10 Oct 2017 10 Oct 2017
