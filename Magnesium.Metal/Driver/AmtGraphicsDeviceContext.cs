@@ -35,18 +35,20 @@ namespace Magnesium.Metal
 			mApplicationView.DepthStencilPixelFormat = depthFormat;
 			mApplicationView.SampleCount = sampleCount;
 
-            // TODO: depth stencil texture is null, must be dynamic bounded once 
-            // initialized by application view 
-            mDepthStencilView.SetTexture(mApplicationView.DepthStencilTexture);
         }
 
-        private AmtDynamicBoundedImageView mDepthStencilView;
-        public IMgImageView SetupDepthStencil(MgGraphicsDeviceCreateInfo createInfo, IMgCommandBuffer setupCmdBuffer, MgFormat depthPassFormat)
+        private IAmtImageView mDepthStencilView;
+        public IMgImageView SetupDepthStencil(
+            MgGraphicsDeviceCreateInfo createInfo,
+            IMgCommandBuffer setupCmdBuffer,
+            MgFormat depthPassFormat)
         {
             Debug.Assert(mApplicationView != null);
 
-            mDepthStencilView = new AmtDynamicBoundedImageView();
-            return mDepthStencilView;
+            var view = new AmtDepthStencilImageView(mApplicationView);
+            view.Format = depthPassFormat;
+            mDepthStencilView = view;
+            return view;
         }
     }
 }

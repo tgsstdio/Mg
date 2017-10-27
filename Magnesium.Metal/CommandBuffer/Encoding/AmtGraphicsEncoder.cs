@@ -101,8 +101,19 @@ namespace Magnesium.Metal
 			if (subpass.DepthStencil != null)
 			{
 				var combinedTexture = subpass.DepthStencil.GetTexture();
-				descriptor.DepthAttachment.Texture = combinedTexture;
-				descriptor.StencilAttachment.Texture = combinedTexture;
+                // SET AS EITHER DEPTH OR STENCIL but not both
+
+                // NOT SURE if Metal can have mutually exclusive LoadAction & StoreAction
+                // for both depth & stencil part of the depth stencil attachment
+
+                if (subpass.DepthStencil.Format == MgFormat.S8_UINT)
+                {
+                    descriptor.StencilAttachment.Texture = combinedTexture;
+                }
+                else
+                {
+                    descriptor.DepthAttachment.Texture = combinedTexture;
+                }
 			}
 
 			stage.Encoder = cmdBuf.CreateRenderCommandEncoder(descriptor);

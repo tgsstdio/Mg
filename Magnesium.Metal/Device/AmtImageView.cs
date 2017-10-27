@@ -4,8 +4,10 @@ using Foundation;
 
 namespace Magnesium.Metal
 {
-	public class AmtImageView : IAmtImageView
-	{
+    public class AmtImageView : IAmtImageView
+    {
+        public MgFormat Format { get; private set; }
+
 		private readonly IMTLTexture mImageView;
 		public AmtImageView(MgImageViewCreateInfo pCreateInfo)
 		{
@@ -17,6 +19,7 @@ namespace Magnesium.Metal
 				throw new ArgumentNullException(nameof(pCreateInfo.Image));
 
 			var bImage = (AmtImage)pCreateInfo.Image;
+            Format = pCreateInfo.Format;
 
 			mImageView = bImage.OriginalTexture.CreateTextureView(
 				AmtFormatExtensions.GetPixelFormat(pCreateInfo.Format),
