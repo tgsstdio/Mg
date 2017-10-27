@@ -15,6 +15,8 @@ namespace Magnesium.Metal.Internals
 			mIsDisposed = true;
 		}
 
+        public MgFormat Format { get; set; }
+
 		private IMTLTexture mTexture;
 		public IMTLTexture GetTexture()
 		{
