@@ -1,4 +1,5 @@
 ﻿using System;
+using Magnesium.Metal.Internals;
 using MetalKit;
 
 namespace Magnesium.Metal
@@ -14,7 +15,7 @@ namespace Magnesium.Metal
 		public AmtSwapchainCollection(MTKView view)
 		{
 			mApplicationView = view;
-			var color = new AmtNullImageView();
+			var color = new AmtDynamicBoundedImageView();
 			mSwapchain = new AmtSwapchainKHR(view, color);
 
 			Buffers = new MgSwapchainBuffer[]
@@ -58,10 +59,17 @@ namespace Magnesium.Metal
 			private set;
 		}
 
-		public void Create(IMgCommandBuffer cmd, uint width, uint height)
+        public void Create(IMgCommandBuffer cmd,
+                           MgColorFormatOption option, 
+                           MgFormat overrideColor, 
+                           uint width, uint height)
 		{
 			Width = width;
 			Height = height;
+
+            Format =  (option == MgColorFormatOption.USE_OVERRIDE)
+                ? overrideColor
+                : MgFormat.B8G8R8A8_UNORM;   
 		}
 
 		public void Dispose()

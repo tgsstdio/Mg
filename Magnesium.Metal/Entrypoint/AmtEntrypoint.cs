@@ -8,15 +8,19 @@ namespace Magnesium.Metal
 		readonly IAmtDeviceQuery mQuery;
 		readonly IMTLDevice mLocalDevice;
 		readonly IAmtDeviceEntrypoint mDeviceEntrypoint;
+        readonly IAmtPhysicalDeviceFormatLookupEntrypoint mFormatLookup;
 
-		public AmtEntrypoint(
+        public AmtEntrypoint(
 			IMTLDevice localDevice,
 			IAmtDeviceQuery query, 
-			IAmtDeviceEntrypoint device)
+			IAmtDeviceEntrypoint device,
+            IAmtPhysicalDeviceFormatLookupEntrypoint formatLookup
+        )
 		{
 			mLocalDevice = localDevice;
 			mQuery = query;
 			mDeviceEntrypoint = device;
+            mFormatLookup = formatLookup;
 		}
 
 		public IMgAllocationCallbacks CreateAllocationCallbacks()
@@ -31,7 +35,7 @@ namespace Magnesium.Metal
 			var queueRenderer = new AmtQueueRenderer(presentQueue);
 			var queue = new AmtQueue(queueRenderer, presentQueue);
 			var device = new AmtDevice(mLocalDevice, mQuery, mDeviceEntrypoint, queue);
-			var physicalDevice = new AmtPhysicalDevice(device);
+            var physicalDevice = new AmtPhysicalDevice(device, mFormatLookup);
 			instance = new AmtInstance(physicalDevice);
 
 			return Result.SUCCESS;

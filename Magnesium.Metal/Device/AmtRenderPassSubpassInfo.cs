@@ -183,9 +183,14 @@ namespace Magnesium.Metal
 			// check subpass description for correct values 
 			var subpass = createInfo.Subpasses[subpassIndex];
 
-			ColorAttachments = new AmtRenderPassClearAttachment[subpass.ColorAttachmentCount];
+            var colorAttachmentCount = subpass.ColorAttachments != null
+                  ? (uint) subpass.ColorAttachments.Length
+                  : 0U;
+			ColorAttachments = new AmtRenderPassClearAttachment[
+                colorAttachmentCount
+            ];
 
-			for (var j = 0; j < subpass.ColorAttachmentCount; ++j)
+            for (var j = 0U; j < colorAttachmentCount; ++j)
 			{
 				var color = subpass.ColorAttachments[j];
 				var attachment = createInfo.Attachments[color.Attachment];

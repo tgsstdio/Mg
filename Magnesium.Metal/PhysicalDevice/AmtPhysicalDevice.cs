@@ -4,9 +4,13 @@ namespace Magnesium.Metal
 	public class AmtPhysicalDevice :IMgPhysicalDevice
 	{
 		private AmtDevice mDevice;
-		public AmtPhysicalDevice(AmtDevice device)
+        private IAmtPhysicalDeviceFormatLookupEntrypoint mFormatLookup;
+
+        public AmtPhysicalDevice(AmtDevice device,
+            IAmtPhysicalDeviceFormatLookupEntrypoint formatLookup)
 		{
 			mDevice = device;
+            mFormatLookup = formatLookup;
 		}
 
 		public Result CreateDevice(MgDeviceCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDevice pDevice)
@@ -76,7 +80,16 @@ namespace Magnesium.Metal
 
 		public void GetPhysicalDeviceFormatProperties(MgFormat format, out MgFormatProperties pFormatProperties)
 		{
-			throw new NotImplementedException();
+            if (!mFormatLookup.TryGetValue(format, out pFormatProperties))
+            {
+                pFormatProperties = new MgFormatProperties
+                {
+                    Format = format,
+                    BufferFeatures = 0,
+                    LinearTilingFeatures = 0,
+                    OptimalTilingFeatures = 0,
+                };
+            }
 		}
 
 		public Result GetPhysicalDeviceImageFormatProperties(MgFormat format, MgImageType type, MgImageTiling tiling, MgImageUsageFlagBits usage, MgImageCreateFlagBits flags, out MgImageFormatProperties pImageFormatProperties)

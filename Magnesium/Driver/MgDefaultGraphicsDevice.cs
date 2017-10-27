@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -174,6 +174,9 @@ namespace Magnesium
 
             if (depthOption != MgDepthFormatOption.USE_NONE)
             {
+                bool hasStencil = MgFormatExtensions.IsStencilFormat(
+                    depthStencilFormat);
+
                 attachments.Add(
                     // Depth attachment[1]
                     new MgAttachmentDescription
@@ -184,9 +187,12 @@ namespace Magnesium
                         LoadOp = MgAttachmentLoadOp.CLEAR,
                         StoreOp = MgAttachmentStoreOp.STORE,
 
-                        // TODO : activate stencil if needed
-                        StencilLoadOp = MgAttachmentLoadOp.DONT_CARE,
-                        StencilStoreOp = MgAttachmentStoreOp.DONT_CARE,
+                        StencilLoadOp = hasStencil 
+                            ? MgAttachmentLoadOp.CLEAR
+                            : MgAttachmentLoadOp.DONT_CARE,
+                        StencilStoreOp = hasStencil
+                            ? MgAttachmentStoreOp.STORE
+                            : MgAttachmentStoreOp.DONT_CARE,
 
                         InitialLayout = MgImageLayout.DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
                         FinalLayout = MgImageLayout.DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
