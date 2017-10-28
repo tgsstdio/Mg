@@ -185,6 +185,16 @@ namespace Magnesium.OpenGL.DesktopGL
 			case MgFormat.BC3_SRGB_BLOCK:
 				return (SizedInternalFormat)All.CompressedSrgbAlphaS3tcDxt5Ext;
 
+            // DEPTH FORMATS
+            case MgFormat.D24_UNORM_S8_UINT:
+                return (SizedInternalFormat)All.Depth24Stencil8;
+
+            case MgFormat.D32_SFLOAT:
+                return (SizedInternalFormat) All.DepthComponent32f;
+
+            case MgFormat.D32_SFLOAT_S8_UINT:
+                return (SizedInternalFormat)All.Depth32fStencil8;
+             
 			default:
 				throw new NotSupportedException ();
 			}

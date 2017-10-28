@@ -24,7 +24,7 @@ namespace OffscreenDemo.DesktopGL
                     container.Register<MgGraphicsConfigurationManager>(new PerScopeLifetime());
 
                     container.Register<IDemoApplication,
-                        TriangleDemoApplication>(new PerScopeLifetime());
+                        OffscreenDemoApplication>(new PerScopeLifetime());
                     container.Register<OffscreenPipeline>(new PerScopeLifetime());
                     container.Register<ToScreenPipeline>(new PerScopeLifetime());
 
@@ -35,6 +35,10 @@ namespace OffscreenDemo.DesktopGL
                     container.Register<IMgOptimizedStoragePartitionVerifier,
                         MgOptimizedStoragePartitionVerifier>(new PerScopeLifetime());
                     container.Register<MgOptimizedStorageBuilder>(new PerScopeLifetime());
+
+                    container.Register<Magnesium.MgOffscreenDeviceFactory>(new PerScopeLifetime());
+                    container.Register<Magnesium.IMgOffscreenDeviceEntrypoint, 
+                        Magnesium.OpenGL.GLOffscreenDeviceEntrypoint>(new PerScopeLifetime());
 
                     // APP PLATFORM IMPLEMENTATION 
                     container.Register<IOffscreenPipelineMediaPath,

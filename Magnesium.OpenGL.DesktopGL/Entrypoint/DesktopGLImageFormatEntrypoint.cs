@@ -19,7 +19,14 @@ namespace Magnesium.OpenGL.DesktopGL
 					GLFormat = (int) PixelFormat.RgbInteger,
 					GLType = (int) PixelType.UnsignedByte,
 				};
-			case MgFormat.R8G8B8A8_UINT:
+            case MgFormat.R8G8B8A8_UNORM:
+                return new GLInternalImageFormat
+                {
+                    InternalFormat = (int)PixelInternalFormat.Rgba8,
+                    GLFormat = (int)PixelFormat.RgbInteger,
+                    GLType = (int)PixelType.UnsignedByte,
+                };
+            case MgFormat.R8G8B8A8_UINT:
 				//case SurfaceFormat.Color:
 				return new GLInternalImageFormat
 				{
@@ -51,11 +58,7 @@ namespace Magnesium.OpenGL.DesktopGL
 				//case SurfaceFormat.Bgra4444:
 				return new GLInternalImageFormat
 				{
-					#if IOS || ANDROID
-					InternalFormat = (int) PixelInternalFormat.Rgba,
-					#else
 					InternalFormat = (int) PixelInternalFormat.Rgba4,
-					#endif
 					GLFormat = (int) PixelFormat.Rgba,
 					GLType = (int) PixelType.UnsignedShort4444,
 				};
@@ -76,7 +79,6 @@ namespace Magnesium.OpenGL.DesktopGL
 					GLType = (int) PixelType.UnsignedByte,
 				};
 			
-			#if !IOS && !ANDROID && !ANGLE
 			case MgFormat.BC1_RGB_UNORM_BLOCK:
 				return new GLInternalImageFormat
 				{				
@@ -233,41 +235,67 @@ namespace Magnesium.OpenGL.DesktopGL
 					GLFormat = (int) PixelFormat.Rgba,
 					GLType = (int) PixelType.UnsignedInt1010102,
 				};
-			#endif
-
-//			#if !(IOS || ANDROID)
-//				// 				TODO : find compatible VKFormat
-//				case SurfaceFormat.RgbPvrtc2Bpp:
-//					return new GLImageFormat
-//					{
-//						InternalFormat = (PixelInternalFormat)All.CompressedRgbPvrtc2Bppv1Img,
-//						GLFormat = (int) All.CompressedTextureFormats,
-////						GLType = PixelType.UnsignedByte, // DEFAULT
-//					};
-//				case SurfaceFormat.RgbPvrtc4Bpp:
-//				return new GLImageFormat
-//				{
-//					InternalFormat = (PixelInternalFormat)All.CompressedRgbPvrtc4Bppv1Img,
-//					GLFormat = (int) All.CompressedTextureFormats,
-////						GLType = PixelType.UnsignedByte, // DEFAULT
-//				};
-//				break;
-//				case SurfaceFormat.RgbaPvrtc2Bpp:
-//				return new GLImageFormat
-//				{				
-//					InternalFormat = (PixelInternalFormat)All.CompressedRgbaPvrtc2Bppv1Img,
-//					GLFormat = (int) All.CompressedTextureFormats,
-////						GLType = PixelType.UnsignedByte, // DEFAULT
-//				};
-//				case SurfaceFormat.RgbaPvrtc4Bpp:
-//				return new GLImageFormat
-//				{				
-//					InternalFormat = (PixelInternalFormat)All.CompressedRgbaPvrtc4Bppv1Img,
-//					GLFormat = (int) All.CompressedTextureFormats,
-////						GLType = PixelType.UnsignedByte, // DEFAULT
-//				};
-//			#endif
-			default:
+            case MgFormat.S8_UINT:
+                return new GLInternalImageFormat
+                {
+                    InternalFormat = (int)All.StencilIndex8,
+                    GLFormat = (int)PixelFormat.StencilIndex,
+                    GLType = (int)PixelType.UnsignedByte,
+                };
+            case MgFormat.D32_SFLOAT:
+                return new GLInternalImageFormat
+                {
+                    InternalFormat = (int)PixelInternalFormat.DepthComponent32f,
+                    GLFormat = (int)PixelFormat.DepthComponent,
+                    GLType = (int)PixelType.Float,
+                };
+            case MgFormat.D24_UNORM_S8_UINT:
+                return new GLInternalImageFormat
+                {
+                    InternalFormat = (int)PixelInternalFormat.Depth24Stencil8,
+                    GLFormat = (int)PixelFormat.DepthStencil,
+                    GLType = (int)PixelType.UnsignedInt248,
+                };
+            case MgFormat.D32_SFLOAT_S8_UINT:
+                return new GLInternalImageFormat
+                {
+                    InternalFormat = (int)PixelInternalFormat.Depth32fStencil8,
+                    GLFormat = (int)PixelFormat.DepthStencil,
+                    GLType = (int)PixelType.Float32UnsignedInt248Rev,
+                };
+                //			#if !(IOS || ANDROID)
+                //				// 				TODO : find compatible VKFormat
+                //				case SurfaceFormat.RgbPvrtc2Bpp:
+                //					return new GLImageFormat
+                //					{
+                //						InternalFormat = (PixelInternalFormat)All.CompressedRgbPvrtc2Bppv1Img,
+                //						GLFormat = (int) All.CompressedTextureFormats,
+                ////						GLType = PixelType.UnsignedByte, // DEFAULT
+                //					};
+                //				case SurfaceFormat.RgbPvrtc4Bpp:
+                //				return new GLImageFormat
+                //				{
+                //					InternalFormat = (PixelInternalFormat)All.CompressedRgbPvrtc4Bppv1Img,
+                //					GLFormat = (int) All.CompressedTextureFormats,
+                ////						GLType = PixelType.UnsignedByte, // DEFAULT
+                //				};
+                //				break;
+                //				case SurfaceFormat.RgbaPvrtc2Bpp:
+                //				return new GLImageFormat
+                //				{				
+                //					InternalFormat = (PixelInternalFormat)All.CompressedRgbaPvrtc2Bppv1Img,
+                //					GLFormat = (int) All.CompressedTextureFormats,
+                ////						GLType = PixelType.UnsignedByte, // DEFAULT
+                //				};
+                //				case SurfaceFormat.RgbaPvrtc4Bpp:
+                //				return new GLImageFormat
+                //				{				
+                //					InternalFormat = (PixelInternalFormat)All.CompressedRgbaPvrtc4Bppv1Img,
+                //					GLFormat = (int) All.CompressedTextureFormats,
+                ////						GLType = PixelType.UnsignedByte, // DEFAULT
+                //				};
+                //			#endif
+                default:
 				throw new NotSupportedException();
 			}
 		}

@@ -123,6 +123,7 @@
     <Compile Include="Entrypoint\DefaultGLUniformBlockNameParser.cs" />
     <Compile Include="DescriptorSets\IGLCmdShaderProgramCache.cs" />
     <Compile Include="Device\GLDescriptorSetLayout.cs" />
+    <Compile Include="Entrypoint\GLOffscreenDeviceEntrypoint.cs" />
     <Compile Include="Entrypoint\IGLCmdShaderProgramEntrypoint.cs" />
     <Compile Include="DescriptorSets\IGLDescriptorPoolResource.cs" />
     <Compile Include="DescriptorSets\IGLDescriptorSet.cs" />

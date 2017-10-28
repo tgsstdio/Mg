@@ -53,7 +53,29 @@ namespace Magnesium.OpenGL
 			case MgFormat.R32G32B32_SFLOAT:
 			case MgFormat.R32G32B32A32_SFLOAT:
 				return GLClearAttachmentType.COLOR_FLOAT;
-			default:
+
+            case MgFormat.R8_UNORM:
+            case MgFormat.R8G8_UNORM:
+            case MgFormat.R8G8B8_UNORM:
+            case MgFormat.R8G8B8A8_UNORM:
+            case MgFormat.R16_UNORM:
+            case MgFormat.R16G16_UNORM:
+            case MgFormat.R16G16B16_UNORM:
+            case MgFormat.R16G16B16A16_UNORM:
+                return GLClearAttachmentType.COLOR_UINT;
+
+
+            case MgFormat.R8_SNORM:
+            case MgFormat.R8G8_SNORM:
+            case MgFormat.R8G8B8_SNORM:
+            case MgFormat.R8G8B8A8_SNORM:
+            case MgFormat.R16_SNORM:
+            case MgFormat.R16G16_SNORM:
+            case MgFormat.R16G16B16_SNORM:
+            case MgFormat.R16G16B16A16_SNORM:
+                return GLClearAttachmentType.COLOR_INT;
+
+                default:
 				throw new NotSupportedException();
 			}
 		}
@@ -62,6 +84,7 @@ namespace Magnesium.OpenGL
 		{
 			switch (format)
 			{
+
 			case MgFormat.D16_UNORM:
 			case MgFormat.D16_UNORM_S8_UINT:
 			case MgFormat.D24_UNORM_S8_UINT:
@@ -73,15 +96,28 @@ namespace Magnesium.OpenGL
 			case MgFormat.R8G8_SINT:
 			case MgFormat.R8G8B8_SINT:
 			case MgFormat.R8G8B8A8_SINT:
-				return sbyte.MaxValue;
+            case MgFormat.R8_SNORM:
+            case MgFormat.R8G8_SNORM:
+            case MgFormat.R8G8B8_SNORM:
+            case MgFormat.R8G8B8A8_SNORM:
+                return sbyte.MaxValue;
 
-			case MgFormat.R8_UINT:
+
+            case MgFormat.R8_UNORM:
+            case MgFormat.R8G8_UNORM:
+            case MgFormat.R8G8B8_UNORM:
+            case MgFormat.R8G8B8A8_UNORM:
+            case MgFormat.R8_UINT:
 			case MgFormat.R8G8_UINT:
 			case MgFormat.R8G8B8_UINT:
 			case MgFormat.R8G8B8A8_UINT:
 				return byte.MaxValue;
 
-			case MgFormat.R16_UINT:
+            case MgFormat.R16_UNORM:
+            case MgFormat.R16G16_UNORM:
+            case MgFormat.R16G16B16_UNORM:
+            case MgFormat.R16G16B16A16_UNORM:
+            case MgFormat.R16_UINT:
 			case MgFormat.R16G16_UINT:
 			case MgFormat.R16G16B16_UINT:
 			case MgFormat.R16G16B16A16_UINT:
@@ -91,7 +127,11 @@ namespace Magnesium.OpenGL
 			case MgFormat.R16G16_SINT:
 			case MgFormat.R16G16B16_SINT:
 			case MgFormat.R16G16B16A16_SINT:
-				return short.MaxValue;
+            case MgFormat.R16_SNORM:
+            case MgFormat.R16G16_SNORM:
+            case MgFormat.R16G16B16_SNORM:
+            case MgFormat.R16G16B16A16_SNORM:
+                    return short.MaxValue;
 				
 			case MgFormat.R32_SINT:
 			case MgFormat.R32G32_SINT:

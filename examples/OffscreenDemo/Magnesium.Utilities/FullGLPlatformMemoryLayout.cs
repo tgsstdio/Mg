@@ -9,11 +9,27 @@ namespace Magnesium.Utilities
         public FullGLPlatformMemoryLayout()
         {
             mPreTransforms = new Dictionary<MgBufferUsageFlagBits, MgBufferUsageFlagBits>();
-            mCombinations = new[] {
-                new MgPlatformMemoryProperties{
-                    Usage = (MgBufferUsageFlagBits) 0xffff,
+            mCombinations = new[]
+            {
+                new MgPlatformMemoryProperties
+                {
+                    Usage = MgBufferUsageFlagBits.INDEX_BUFFER_BIT
+                    | MgBufferUsageFlagBits.TRANSFER_DST_BIT
+                    | MgBufferUsageFlagBits.TRANSFER_SRC_BIT,
                     SeparateBlockRequired = MgBufferUsageFlagBits.INDEX_BUFFER_BIT,
-                }
+                },
+                new MgPlatformMemoryProperties
+                {
+                    Usage =
+                    MgBufferUsageFlagBits.VERTEX_BUFFER_BIT
+                    | MgBufferUsageFlagBits.UNIFORM_BUFFER_BIT
+                    | MgBufferUsageFlagBits.INDIRECT_BUFFER_BIT
+                    | MgBufferUsageFlagBits.STORAGE_BUFFER_BIT
+                    | MgBufferUsageFlagBits.STORAGE_TEXEL_BUFFER_BIT
+                    | MgBufferUsageFlagBits.TRANSFER_DST_BIT
+                    | MgBufferUsageFlagBits.TRANSFER_SRC_BIT
+                    | MgBufferUsageFlagBits.UNIFORM_TEXEL_BUFFER_BIT
+                },
             };
         }
 

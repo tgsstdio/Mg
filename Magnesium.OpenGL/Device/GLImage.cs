@@ -147,7 +147,23 @@ namespace Magnesium.OpenGL.Internals
 			case MgFormat.R8G8B8_SINT:
 			case MgFormat.R8G8B8_SNORM:
 				return 3;
-			default:
+            case MgFormat.R8G8B8A8_SINT:
+            case MgFormat.R8G8B8A8_UNORM:
+            case MgFormat.R8G8B8A8_SSCALED:
+            case MgFormat.R8G8B8A8_USCALED:
+                return 4;
+            case MgFormat.D16_UNORM:
+                return 2;
+            case MgFormat.S8_UINT:
+                return 1;
+            case MgFormat.D24_UNORM_S8_UINT:
+                return 4;
+            case MgFormat.D32_SFLOAT:
+                return 4;
+            // NOT SURE ABOUT THIS
+            case MgFormat.D32_SFLOAT_S8_UINT:
+                return 5;
+            default:
 				throw new ArgumentException();
 			}
 		}
