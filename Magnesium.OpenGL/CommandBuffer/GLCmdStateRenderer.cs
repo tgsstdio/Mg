@@ -1,5 +1,6 @@
 ﻿using System;
 using Magnesium.OpenGL.Internals;
+using System.Diagnostics;
 
 namespace Magnesium.OpenGL
 {
@@ -43,10 +44,17 @@ namespace Magnesium.OpenGL
         GLClearValueState mPastClearValues;
         public void BeginRenderpass(GLCmdBeginRenderpassRecord pass)
         {
-            // Clear color plus attachment binding
-            ApplyClearBuffers(pass.ClearState, pass.Bitmask);
+            // Clear color plus attachment binding          
+            Debug.Assert(pass.Framebuffer != null);
 
-            // Framebuffer stuff here
+            if (pass.Framebuffer.IsNullFramebuffer)
+            {
+                ApplyClearBuffers(pass.ClearState, pass.Bitmask);
+            }
+            else
+            {
+                // Framebuffer stuff here
+            }
         }
 
         void ApplyClearBuffers(GLCmdClearValuesParameter clearState, GLQueueClearBufferMask combinedMask)

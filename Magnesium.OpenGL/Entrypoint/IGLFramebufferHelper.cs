@@ -26,9 +26,10 @@
 
 		void DeleteFramebuffer (int framebuffer);
 
-		void FramebufferTexture2D (int attachement, int target, int texture, int level = 0, int samples = 0);
+		void FramebufferColorAttachment(int attachement, MgImageViewType target, int texture, int level = 0, int samples = 0);
+        void FramebufferDepthStencil(MgImageViewType target, int texture, int level = 0, int samples = 0);
 
-	 	void FramebufferRenderbuffer (int attachement, int renderbuffer, int level = 0);
+        void FramebufferRenderbuffer (int attachement, int renderbuffer, int level = 0);
 
 		void GenerateMipmap (int target);
 

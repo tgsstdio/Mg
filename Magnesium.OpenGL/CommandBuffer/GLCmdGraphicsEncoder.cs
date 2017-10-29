@@ -89,14 +89,19 @@ namespace Magnesium.OpenGL.Internals
         {
             Debug.Assert(pass != null);
 
-            var glPass = (IGLRenderPass)pass.RenderPass;
+            var glPass = (GLNextRenderPass)pass.RenderPass;      
+            
+            var subPass = glPass.Subpasses[0];
 
-            var noOfAttachments = glPass.AttachmentFormats == null ? 0 : glPass.AttachmentFormats.Length;
+            var noOfAttachments = subPass.ColorAttachments == null ? 0 : subPass.ColorAttachments.Length;
             var noOfClearValues = pass.ClearValues == null ? 0 : pass.ClearValues.Length;
 
             var finalLength = Math.Min(noOfAttachments, noOfClearValues);
 
             var finalValues = new List<GLCmdClearValueArrayItem>();
+
+            // loadOp and stencilLoadOp define the load operations that 
+            // execute as part of the first subpass that uses the attachment. 
 
             GLQueueClearBufferMask combinedMask = 0;
             for (var i = 0; i < finalLength; ++i)
@@ -140,6 +145,7 @@ namespace Magnesium.OpenGL.Internals
 
             return new GLCmdBeginRenderpassRecord
             {
+                Framebuffer = (GLNextFramebuffer) pass.Framebuffer,
                 Bitmask = combinedMask,
                 ClearState = new GLCmdClearValuesParameter
                 {

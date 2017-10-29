@@ -77,7 +77,32 @@ namespace Magnesium.OpenGL.DesktopGL
 			mErrHandler.CheckGLError();
 		}
 
-		public void FramebufferTexture2D(int attachement, int target, int texture, int level = 0, int samples = 0)
+        private int TranslateViewType(MgImageViewType target)
+        {
+            switch (target)
+            {
+                case MgImageViewType.TYPE_1D:
+                    return (int)All.Texture1D;
+                case MgImageViewType.TYPE_2D:
+                    return (int)All.Texture2D;
+                default:
+                    throw new NotSupportedException();
+            }
+        }
+
+        public void FramebufferColorAttachment(int attachement, MgImageViewType target, int texture, int level = 0, int samples = 0)
+        {
+            var baseAttachment = (int)(All.ColorAttachment0 + attachement);
+            FramebufferTexture2D(baseAttachment, TranslateViewType(target), texture, level, samples);
+        }
+
+        public void FramebufferDepthStencil(MgImageViewType target, int texture, int level = 0, int samples = 0)
+        {
+            const int GL_DEPTH_STENCIL_ATTACHMENT = 0x821A;
+            FramebufferTexture2D(GL_DEPTH_STENCIL_ATTACHMENT, TranslateViewType(target), texture, level, samples);
+        }
+
+        private void FramebufferTexture2D(int attachement, int target, int texture, int level = 0, int samples = 0)
 		{
 			GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, (FramebufferAttachment)attachement, (TextureTarget)target, texture, level);
 			mErrHandler.CheckGLError();

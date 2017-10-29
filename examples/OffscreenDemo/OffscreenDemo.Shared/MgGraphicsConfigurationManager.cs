@@ -213,9 +213,13 @@ namespace OffscreenDemo
                     var commandPool = mConfiguration.Partition.CommandPool;
                     if (commandPool != null)
                     {
-                        mConfiguration.Device.FreeCommandBuffers(
-                            commandPool,
-                            mPresentBuffers);
+                        if (mPresentBuffers != null)
+                        {
+                            mConfiguration.Device.FreeCommandBuffers(
+                                commandPool,
+                                mPresentBuffers);
+                            mPresentBuffers = null;
+                        }
                     }
                 }
 

@@ -1,16 +1,20 @@
 ﻿namespace Magnesium.OpenGL.Internals
 {
-	public class GLImageView : IMgImageView
-	{
+    public class GLImageView : IGLImageView
+    {
 		public int TextureId { get; private set; }
+        public MgImageViewType ViewTarget { get; private set; }
 
-		readonly IGLDeviceImageViewEntrypoint mModule;
+        public bool IsNullImage { get => false; }
 
-		public GLImageView (int textureId, IGLDeviceImageViewEntrypoint module)
+        readonly IGLDeviceImageViewEntrypoint mModule;
+
+		public GLImageView (int textureId, MgImageViewType target, IGLDeviceImageViewEntrypoint module)
 		{
 			TextureId = textureId;
 			mModule = module;
-		}
+            ViewTarget = target;
+        }
 
 		#region IMgImageView implementation
 		private bool mIsDisposed = false;

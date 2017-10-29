@@ -21,9 +21,9 @@ namespace Magnesium.OpenGL.UnitTests
         }
 
 		private IGLDescriptorSetBinder mBinder;
-        public void CmdBindDescriptorSets(MgPipelineBindPoint pipelineBindPoint, IMgPipelineLayout layout, uint firstSet, uint descriptorSetCount, IMgDescriptorSet[] pDescriptorSets, uint[] pDynamicOffsets)
+        public void CmdBindDescriptorSets(MgPipelineBindPoint pipelineBindPoint, IMgPipelineLayout layout, uint firstSet, IMgDescriptorSet[] pDescriptorSets, uint[] pDynamicOffsets)
         {
-			mBinder.Bind(pipelineBindPoint, layout, firstSet, descriptorSetCount, pDescriptorSets, pDynamicOffsets);
+			mBinder.Bind(pipelineBindPoint, layout, firstSet, (uint) pDescriptorSets.Length, pDescriptorSets, pDynamicOffsets);
         }
 
         public void CmdBindIndexBuffer(IMgBuffer buffer, ulong offset, MgIndexType indexType)

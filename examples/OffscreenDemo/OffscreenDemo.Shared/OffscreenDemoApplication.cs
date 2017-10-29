@@ -82,8 +82,11 @@ namespace OffscreenDemo
                     {
                         foreach(var order in Orders)
                         {
-                            device.FreeCommandBuffers(Pool, order.CommandBuffers);
-                            order.CommandBuffers = null;
+                            if (order.CommandBuffers != null)
+                            {
+                                device.FreeCommandBuffers(Pool, order.CommandBuffers);
+                                order.CommandBuffers = null;
+                            }
                         }
                     }
 

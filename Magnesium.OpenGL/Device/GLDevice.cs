@@ -512,7 +512,7 @@ namespace Magnesium.OpenGL.Internals
 			}
 
 			int textureId =  mEntrypoint.ImageView.CreateImageView (originalImage, pCreateInfo);
-			pView = new GLImageView (textureId, mEntrypoint.ImageView);
+			pView = new GLImageView (textureId, pCreateInfo.ViewType, mEntrypoint.ImageView);
 			return Result.SUCCESS;
 		}
 
@@ -718,7 +718,7 @@ namespace Magnesium.OpenGL.Internals
 
 		public Result CreateRenderPass (MgRenderPassCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgRenderPass pRenderPass)
 		{
-			pRenderPass = new GLRenderPass (pCreateInfo.Attachments);
+			pRenderPass = new GLNextRenderPass (pCreateInfo);
 			return Result.SUCCESS;
 		}
 
