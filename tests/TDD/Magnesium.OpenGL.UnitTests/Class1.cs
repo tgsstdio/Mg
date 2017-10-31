@@ -7,8 +7,9 @@ namespace Magnesium.OpenGL.UnitTests
     [TestFixture]
     public class Class1
     {
-        class Extraction
+        public class MgSubpassTransactionsInfo
         {
+            public uint Subpass { get; set; }
             public uint[] Loads { get; set; }
             public uint[] Stores { get; set; }
         }
@@ -35,9 +36,9 @@ namespace Magnesium.OpenGL.UnitTests
          * If an attachment is not used by any subpass, then loadOp, storeOp, stencilStoreOp, and stencilLoadOp are ignored,
          * and the attachment’s memory contents will not be modified by execution of a render pass instance.
          **/
-        class Extractor
+        class MgSubpassTransactionExtractor
         {
-            struct MapAttachment
+            private struct MapAttachment
             {
                 public uint First { get; set; }
                 public uint Last { get; set; }
@@ -49,13 +50,13 @@ namespace Magnesium.OpenGL.UnitTests
                 map[attachment].Last = subpass;
             }
 
-            public Extraction[] Extract(Magnesium.MgRenderPassCreateInfo createInfo)
+            public MgSubpassTransactionsInfo[] ExtracSubpassTransactions(Magnesium.MgRenderPassCreateInfo createInfo)
             {
                 var noOfAttachments = createInfo.Attachments != null ? createInfo.Attachments.Length : 0;
                 var noOfSubpasses = createInfo.Subpasses != null ? createInfo.Subpasses.Length : 0;
 
                 var map = new MapAttachment[noOfAttachments];
-                var output = new Extraction[noOfSubpasses];
+                var output = new MgSubpassTransactionsInfo[noOfSubpasses];
 
                 for (var i = 0; i < noOfAttachments; i += 1)
                 {
@@ -66,7 +67,7 @@ namespace Magnesium.OpenGL.UnitTests
                 for (var i = 0U; i < noOfSubpasses; i += 1)
                 {
                     var currentSubpass = createInfo.Subpasses[i];
-                    output[i] = new Extraction { };
+                    output[i] = new MgSubpassTransactionsInfo { Subpass = i };
 
                     foreach(var reference in currentSubpass.ColorAttachments)
                     {
@@ -77,12 +78,12 @@ namespace Magnesium.OpenGL.UnitTests
                         Poll(map, i ,currentSubpass.DepthStencilAttachment.Attachment);
 
                     var loads = new List<uint>();
-                    for (var j = 0; j < noOfAttachments; j += 1)
+                    for (var j = 0U; j < noOfAttachments; j += 1)
                     {
                         var first = map[j].First;
                         if (first != uint.MaxValue && first == map[j].Last)
                         {
-                            loads.Add(first);
+                            loads.Add(j);
                         }
                     }
                     output[i].Loads = loads.ToArray();
@@ -91,13 +92,12 @@ namespace Magnesium.OpenGL.UnitTests
                 for (var i = 0U; i < noOfSubpasses; i += 1)
                 {
                     var stores = new List<uint>();
-                    for (var j = 0; j < noOfAttachments; j += 1)
+                    for (var j = 0U; j < noOfAttachments; j += 1)
                     {
-                        stores.Clear();
                         var last = map[j].Last;
-                        if (last != uint.MaxValue)
+                        if (last != uint.MaxValue && i == last)
                         {
-                            stores.Add(last);
+                            stores.Add(j);
                         }
                     }
                     output[i].Stores = stores.ToArray();
@@ -108,7 +108,7 @@ namespace Magnesium.OpenGL.UnitTests
         }
 
         [TestCase]
-        public void TestMethod()
+        public void Subpass_0()
         {
             // calculate the first subpass for each attachment and work out when to apply it
 
@@ -138,14 +138,195 @@ namespace Magnesium.OpenGL.UnitTests
                 }
             };
 
-            var extractor = new Extractor();
-            var actual = extractor.Extract(createInfo);
+            var extractor = new MgSubpassTransactionExtractor();
+            var actual = extractor.ExtracSubpassTransactions(createInfo);
             Assert.IsNotNull(actual);
             Assert.AreEqual(1, actual.Length);
             var first = actual[0];
             Assert.IsNotNull(first);
+            Assert.AreEqual(0, first.Subpass);
             Assert.IsNotNull(first.Loads);
+            Assert.AreEqual(1, first.Loads.Length);
             Assert.IsNotNull(first.Stores);
+            Assert.AreEqual(1, first.Stores.Length);
+        }
+
+        [TestCase]
+        public void Subpass_1()
+        {
+            // calculate the first subpass for each attachment and work out when to apply it
+
+            var createInfo = new Magnesium.MgRenderPassCreateInfo
+            {
+                Attachments = new MgAttachmentDescription[]
+                {
+                    new MgAttachmentDescription
+                    {
+                        LoadOp = MgAttachmentLoadOp.CLEAR,
+                    },
+                    new MgAttachmentDescription
+                    {
+                        LoadOp = MgAttachmentLoadOp.CLEAR,
+                    }
+                },
+
+                Subpasses = new MgSubpassDescription[]
+                {
+                    new MgSubpassDescription
+                    {
+                        ColorAttachments = new []
+                        {
+                            new MgAttachmentReference
+                            {
+                                Attachment = 0,
+                                Layout = MgImageLayout.COLOR_ATTACHMENT_OPTIMAL,
+                            }
+                        },
+                    },
+                    new MgSubpassDescription
+                    {
+                        ColorAttachments = new []
+                        {
+                            new MgAttachmentReference
+                            {
+                                Attachment = 0,
+                                Layout = MgImageLayout.COLOR_ATTACHMENT_OPTIMAL,
+                            },
+                            new MgAttachmentReference
+                            {
+                                Attachment = 1,
+                                Layout = MgImageLayout.COLOR_ATTACHMENT_OPTIMAL,
+                            }
+                        },
+                    }
+                }
+            };
+
+            var extractor = new MgSubpassTransactionExtractor();
+            var actual = extractor.ExtracSubpassTransactions(createInfo);
+            Assert.IsNotNull(actual);
+            Assert.AreEqual(2, actual.Length);
+
+            {
+                var first = actual[0];
+                Assert.IsNotNull(first);
+                Assert.AreEqual(0, first.Subpass);
+                Assert.IsNotNull(first.Loads);
+                Assert.AreEqual(1, first.Loads.Length);
+                Assert.AreEqual(0, first.Loads[0]);
+                Assert.IsNotNull(first.Stores);
+                Assert.AreEqual(0, first.Stores.Length);
+            }
+
+            {
+                var second = actual[1];
+                Assert.IsNotNull(second);
+                Assert.AreEqual(1, second.Subpass);
+                Assert.IsNotNull(second.Loads);
+                Assert.AreEqual(1, second.Loads.Length);
+                Assert.AreEqual(1, second.Loads[0]);
+                Assert.IsNotNull(second.Stores);
+                Assert.AreEqual(2, second.Stores.Length);
+                Assert.AreEqual(0, second.Stores[0]);
+                Assert.AreEqual(1, second.Stores[1]);
+            }
+        }
+
+        [TestCase]
+        public void Subpass_2()
+        {
+            // calculate the first subpass for each attachment and work out when to apply it
+
+            var createInfo = new Magnesium.MgRenderPassCreateInfo
+            {
+                Attachments = new MgAttachmentDescription[]
+                {
+                    new MgAttachmentDescription
+                    {
+                        LoadOp = MgAttachmentLoadOp.CLEAR,
+                    },
+                    new MgAttachmentDescription
+                    {
+                        LoadOp = MgAttachmentLoadOp.CLEAR,
+                    },
+                    new MgAttachmentDescription
+                    {
+                        LoadOp = MgAttachmentLoadOp.CLEAR,
+                    }
+                },
+
+                Subpasses = new MgSubpassDescription[]
+                {
+                    new MgSubpassDescription
+                    {
+                        ColorAttachments = new []
+                        {
+                            new MgAttachmentReference
+                            {
+                                Attachment = 0,
+                                Layout = MgImageLayout.COLOR_ATTACHMENT_OPTIMAL,
+                            }
+                        },
+                        DepthStencilAttachment = new MgAttachmentReference
+                        {
+                            Attachment = 2,
+                            Layout = MgImageLayout.DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                        }
+                    },
+                    new MgSubpassDescription
+                    {
+                        ColorAttachments = new []
+                        {
+                            new MgAttachmentReference
+                            {
+                                Attachment = 0,
+                                Layout = MgImageLayout.COLOR_ATTACHMENT_OPTIMAL,
+                            },
+                            new MgAttachmentReference
+                            {
+                                Attachment = 1,
+                                Layout = MgImageLayout.COLOR_ATTACHMENT_OPTIMAL,
+                            }
+                        },
+                        DepthStencilAttachment = new MgAttachmentReference
+                        {
+                            Attachment = 2,
+                            Layout = MgImageLayout.DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                        }
+                    }
+                }
+            };
+
+            var extractor = new MgSubpassTransactionExtractor();
+            var actual = extractor.ExtracSubpassTransactions(createInfo);
+            Assert.IsNotNull(actual);
+            Assert.AreEqual(2, actual.Length);
+
+            {
+                var first = actual[0];
+                Assert.IsNotNull(first);
+                Assert.AreEqual(0, first.Subpass);
+                Assert.IsNotNull(first.Loads);
+                Assert.AreEqual(2, first.Loads.Length);
+                Assert.AreEqual(0, first.Loads[0]);
+                Assert.AreEqual(2, first.Loads[1]);
+                Assert.IsNotNull(first.Stores);
+                Assert.AreEqual(0, first.Stores.Length);
+            }
+
+            {
+                var second = actual[1];
+                Assert.IsNotNull(second);
+                Assert.AreEqual(1, second.Subpass);
+                Assert.IsNotNull(second.Loads);
+                Assert.AreEqual(1, second.Loads.Length);
+                Assert.AreEqual(1, second.Loads[0]);
+                Assert.IsNotNull(second.Stores);
+                Assert.AreEqual(3, second.Stores.Length);
+                Assert.AreEqual(0, second.Stores[0]);
+                Assert.AreEqual(1, second.Stores[1]);
+                Assert.AreEqual(2, second.Stores[2]);
+            }
         }
     }
 }
