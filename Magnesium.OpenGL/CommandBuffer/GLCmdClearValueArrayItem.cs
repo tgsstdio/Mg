@@ -4,7 +4,7 @@ namespace Magnesium.OpenGL.Internals
 {
 	public struct GLCmdClearValueArrayItem : IEquatable<GLCmdClearValueArrayItem>
 	{
-		public GLClearAttachmentInfo Attachment { get; set; }
+		public GLRenderPassClearAttachment Attachment { get; set; }
 		public MgClearValue Value { get; set; }
         public MgColor4f Color { get; set; }
 

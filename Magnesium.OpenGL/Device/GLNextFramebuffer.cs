@@ -59,7 +59,7 @@ namespace Magnesium.OpenGL
             }
         }
 
-        private GLNextFramebufferSubpassInfo GenerateFramebuffer(MgFramebufferCreateInfo createInfo, GLNextRenderPassSubpassInfo srcSubpass)
+        private GLNextFramebufferSubpassInfo GenerateFramebuffer(MgFramebufferCreateInfo createInfo, MgSubpassTransactionsInfo srcSubpass)
         {
             mSelector.Helper.GenFramebuffer(out int framebuffer);
 
@@ -70,7 +70,7 @@ namespace Magnesium.OpenGL
 
                 for (var j = 0; j < noOfColorAttachments; ++j)
                 {
-                    var srcViewIndex = srcSubpass.ColorAttachments[j].Index;
+                    var srcViewIndex = srcSubpass.ColorAttachments[j];
                     var bSrcView = (IGLImageView) createInfo.Attachments[srcViewIndex];
 
                     const int LEVEL = 0;
@@ -79,9 +79,8 @@ namespace Magnesium.OpenGL
                 }
             }
 
-            if (srcSubpass.DepthStencil != null)
             {
-                var srcViewIndex = srcSubpass.DepthStencil.Index;
+                var srcViewIndex = srcSubpass.DepthAttachment.Value;
                 var bSrcView = (IGLImageView)createInfo.Attachments[srcViewIndex];
 
                 const int LEVEL = 0;

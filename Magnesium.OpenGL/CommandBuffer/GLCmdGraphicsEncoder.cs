@@ -93,8 +93,8 @@ namespace Magnesium.OpenGL.Internals
             
             var subPass = glPass.Subpasses[0];
 
-            var noOfAttachments = subPass.ColorAttachments == null ? 0 : subPass.ColorAttachments.Length;
-            var noOfClearValues = pass.ClearValues == null ? 0 : pass.ClearValues.Length;
+            var noOfAttachments = glPass.AttachmentFormats != null ? glPass.AttachmentFormats.Length : 0;
+            var noOfClearValues = pass.ClearValues != null ? pass.ClearValues.Length : 0;
 
             var finalLength = Math.Min(noOfAttachments, noOfClearValues);
 
@@ -154,25 +154,27 @@ namespace Magnesium.OpenGL.Internals
             };
         }
 
-        public static MgColor4f ExtractColorUi(GLClearAttachmentInfo attachment, MgVec4Ui initialValue)
+        public static MgColor4f ExtractColorUi(GLRenderPassClearAttachment attachment, MgVec4Ui initialValue)
         {
+            var denominator = attachment.GetDivisor();
             return new MgColor4f
             {
-                R = Math.Min((float)initialValue.X, attachment.Divisor) / attachment.Divisor,
-                G = Math.Min((float)initialValue.Y, attachment.Divisor) / attachment.Divisor,
-                B = Math.Min((float)initialValue.Z, attachment.Divisor) / attachment.Divisor,
-                A = Math.Min((float)initialValue.W, attachment.Divisor) / attachment.Divisor,
+                R = Math.Min((float)initialValue.X, denominator) / denominator,
+                G = Math.Min((float)initialValue.Y, denominator) / denominator,
+                B = Math.Min((float)initialValue.Z, denominator) / denominator,
+                A = Math.Min((float)initialValue.W, denominator) / denominator,
             };
         }
 
-        public static MgColor4f ExtractColorI(GLClearAttachmentInfo attachment, MgVec4i initialValue)
+        public static MgColor4f ExtractColorI(GLRenderPassClearAttachment attachment, MgVec4i initialValue)
         {
+            var denominator = attachment.GetDivisor();
             return new MgColor4f
             {
-                R = Math.Max(Math.Min((float)initialValue.X, attachment.Divisor), -attachment.Divisor) / attachment.Divisor,
-                G = Math.Max(Math.Min((float)initialValue.Y, attachment.Divisor), -attachment.Divisor) / attachment.Divisor,
-                B = Math.Max(Math.Min((float)initialValue.Z, attachment.Divisor), -attachment.Divisor) / attachment.Divisor,
-                A = Math.Max(Math.Min((float)initialValue.W, attachment.Divisor), -attachment.Divisor) / attachment.Divisor,
+                R = Math.Max(Math.Min((float)initialValue.X, denominator), -denominator) / denominator,
+                G = Math.Max(Math.Min((float)initialValue.Y, denominator), -denominator) / denominator,
+                B = Math.Max(Math.Min((float)initialValue.Z, denominator), -denominator) / denominator,
+                A = Math.Max(Math.Min((float)initialValue.W, denominator), -denominator) / denominator,
             };
         }
 

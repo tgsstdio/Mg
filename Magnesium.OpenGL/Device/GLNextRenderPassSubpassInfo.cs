@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Collections.Generic;
 
 namespace Magnesium.OpenGL.Internals
 {
@@ -128,44 +129,71 @@ namespace Magnesium.OpenGL.Internals
             }
         }
 
-        public GLNextRenderPassSubpassInfo(MgRenderPassCreateInfo createInfo, uint subpassIndex)
+        public GLNextRenderPassSubpassInfo(MgRenderPassCreateInfo createInfo, MgSubpassTransactionsInfo[] transactions, uint subpassIndex)
         {
             mSubpass = subpassIndex;
 
             // check subpass description for correct values 
             var subpass = createInfo.Subpasses[subpassIndex];
+            var transaction = transactions[subpassIndex];
 
-            mColorAttachments = new GLRenderPassClearAttachment[subpass.ColorAttachmentCount];
-            for (var i = 0; i < subpass.ColorAttachmentCount; ++i)
-            {
-                var color = subpass.ColorAttachments[i];
-                var desc = createInfo.Attachments[color.Attachment];
+            mColorAttachments = InitializeColorAttachments(createInfo, subpass, transaction);
+            mDepthStencil = InitializeDepthStencil(createInfo, subpass, transaction);
+        }
 
-                mColorAttachments[i] = new GLRenderPassClearAttachment
-                {
-                    Index = color.Attachment,
-                    Format = desc.Format,
-                    LoadOp = desc.LoadOp,
-                    StencilLoadOp = desc.StencilLoadOp,
-                    AttachmentType = GetAttachmentType(desc.Format),
-                    DivisorType = GetAttachmentDivisor(desc.Format),
-                };
-            }
-
+        private static GLRenderPassClearAttachment InitializeDepthStencil(MgRenderPassCreateInfo createInfo, MgSubpassDescription subpass, MgSubpassTransactionsInfo transaction)
+        {
             var depthStencil = subpass.DepthStencilAttachment;
             if (depthStencil != null)
             {
-                var desc = createInfo.Attachments[depthStencil.Attachment];
-                mDepthStencil = new GLRenderPassClearAttachment
+                foreach (var match in transaction.Loads)
                 {
-                    Index = depthStencil.Attachment,
-                    Format = desc.Format,
-                    LoadOp = desc.LoadOp,
-                    StencilLoadOp = desc.StencilLoadOp,
-                    AttachmentType = GetAttachmentType(desc.Format),
-                    DivisorType = GetAttachmentDivisor(desc.Format),
-                };
+                    // load operations can only happen once when the attachment is first used by a subpass
+                    if (depthStencil.Attachment == match)
+                    {
+                        return Populate(createInfo, depthStencil);
+                    }
+                }
             }
+            return null;
+        }
+
+        private static GLRenderPassClearAttachment[] InitializeColorAttachments(MgRenderPassCreateInfo createInfo, MgSubpassDescription subpass, MgSubpassTransactionsInfo transaction)
+        {
+            var firstInteractions = new List<GLRenderPassClearAttachment>();
+            var possibleColors = subpass.ColorAttachments != null ? subpass.ColorAttachments.Length : 0;
+
+            for (var i = 0; i < possibleColors; i += 1)
+            {
+                var current = subpass.ColorAttachments[i];
+
+                foreach (var match in transaction.Loads)
+                {
+                    // load operations can only happen once when the attachment is first used by a subpass
+                    if (current.Attachment == match)
+                    {
+                        var attachment = Populate(createInfo, current);
+                        firstInteractions.Add(attachment);
+                        break;
+                    }
+                }
+            }
+            return firstInteractions.ToArray();
+        }
+
+        private static GLRenderPassClearAttachment Populate(MgRenderPassCreateInfo createInfo, MgAttachmentReference current)
+        {
+            var desc = createInfo.Attachments[current.Attachment];
+            var attachment = new GLRenderPassClearAttachment
+            {
+                Index = current.Attachment,
+                Format = desc.Format,
+                LoadOp = desc.LoadOp,
+                StencilLoadOp = desc.StencilLoadOp,
+                AttachmentType = GetAttachmentType(desc.Format),
+                DivisorType = GetAttachmentDivisor(desc.Format),
+            };
+            return attachment;
         }
     }
 }
