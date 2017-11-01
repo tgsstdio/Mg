@@ -79,6 +79,7 @@ namespace Magnesium.OpenGL
                 }
             }
 
+            if (srcSubpass.DepthAttachment.HasValue)
             {
                 var srcViewIndex = srcSubpass.DepthAttachment.Value;
                 var bSrcView = (IGLImageView)createInfo.Attachments[srcViewIndex];
