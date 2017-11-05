@@ -15,7 +15,7 @@ layout (location = 0) out vec4 outFragColor;
 
 void fragFunc() 
 {
-	vec4 color = texture(samplerColor, inUV, inLodBias);
+	vec4 color = texture2D(samplerColor, inUV);
 
 	vec3 N = normalize(inNormal);
 	vec3 L = normalize(inLightVec);
@@ -24,5 +24,5 @@ void fragFunc()
 	vec3 diffuse = max(dot(N, L), 0.0) * vec3(1.0);
 	float specular = pow(max(dot(R, V), 0.0), 16.0) * color.a;
 
-	outFragColor = vec4(inUV, 0, 1.0);
+	outFragColor = color;
 }

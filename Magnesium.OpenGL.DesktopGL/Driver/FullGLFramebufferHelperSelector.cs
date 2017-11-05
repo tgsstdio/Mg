@@ -30,7 +30,7 @@ namespace Magnesium.OpenGL.DesktopGL
 			else
 			{
 				throw new PlatformNotSupportedException(
-					"MonoGame requires either ARB_framebuffer_object or EXT_framebuffer_object." +
+					"Magnesium requires either ARB_framebuffer_object or EXT_framebuffer_object." +
 					"Try updating your graphics drivers.");
 			}
 		}

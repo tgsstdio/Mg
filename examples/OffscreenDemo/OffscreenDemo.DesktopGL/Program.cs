@@ -25,11 +25,16 @@ namespace OffscreenDemo.DesktopGL
 
                     container.Register<IDemoApplication,
                         OffscreenDemoApplication>(new PerScopeLifetime());
+                    //container.Register<IDemoApplication,
+                    //    TriangleDemoApplication>(new PerScopeLifetime());
                     container.Register<OffscreenPipeline>(new PerScopeLifetime());
                     container.Register<ToScreenPipeline>(new PerScopeLifetime());
 
-                    container.Register<IMgPlatformMemoryLayout,
-                       FullGLPlatformMemoryLayout>(new PerScopeLifetime());
+                    //container.Register<IMgPlatformMemoryLayout,
+                    //   FullGLPlatformMemoryLayout>(new PerScopeLifetime());
+                    container.Register<IMgPlatformMemoryLayout, 
+                        VkDebugVertexPlatformMemoryLayout >(new PerScopeLifetime());
+
                     container.Register<IMgOptimizedStoragePartitioner,
                         MgOptimizedStoragePartitioner>(new PerScopeLifetime());
                     container.Register<IMgOptimizedStoragePartitionVerifier,
@@ -73,7 +78,7 @@ namespace OffscreenDemo.DesktopGL
                                 example.Render();
                             };
 
-                            gameWindow.Run(60, 60);
+                            gameWindow.Run(10, 10);
                         }                                                
                     }                    
                 }

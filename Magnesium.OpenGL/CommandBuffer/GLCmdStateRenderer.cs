@@ -58,7 +58,11 @@ namespace Magnesium.OpenGL
             else
             {
                 // Framebuffer stuff here
-                ApplyDrawBuffers(pass.ClearState, pass.Framebuffer.Subpasses[0]);
+                // mFramebuffer.Helper.BindFramebuffer(pass.Framebuffer.Subpasses[0].Framebuffer);
+               // ApplyDrawBuffers(pass.ClearState, pass.Framebuffer.Subpasses[0]);
+
+                mFramebuffer.Helper.BindFramebuffer(pass.Framebuffer.Subpasses[0].Framebuffer);
+                ApplyClearBuffers(pass.ClearState, pass.Bitmask);
             }
         }
         
@@ -75,18 +79,20 @@ namespace Magnesium.OpenGL
 
                     if (state.Attachment.LoadOp == MgAttachmentLoadOp.CLEAR)
                     {
-                        if (state.Attachment.AttachmentType == GLClearAttachmentType.COLOR_FLOAT)
-                        {
-                            mClear.ClearFramebufferfv(i, state.Value.Color.Float32);
-                        }
-                        else if (state.Attachment.AttachmentType == GLClearAttachmentType.COLOR_INT)
-                        {
-                            mClear.ClearFramebufferiv(i, state.Value.Color.Int32);
-                        }
-                        else if (state.Attachment.AttachmentType == GLClearAttachmentType.COLOR_UINT)
-                        {
-                            mClear.ClearFramebufferuiv(i, state.Value.Color.Uint32);
-                        }
+                        mClear.ClearFramebufferfv(i, state.Color);
+
+                        //if (state.Attachment.AttachmentType == GLClearAttachmentType.COLOR_FLOAT)
+                        //{
+                        //    mClear.ClearFramebufferfv(i, state.Value.Color.Float32);
+                        //}
+                        //else if (state.Attachment.AttachmentType == GLClearAttachmentType.COLOR_INT)
+                        //{
+                        //    mClear.ClearFramebufferiv(i, state.Value.Color.Int32);
+                        //}
+                        //else if (state.Attachment.AttachmentType == GLClearAttachmentType.COLOR_UINT)
+                        //{
+                        //    mClear.ClearFramebufferuiv(i, state.Value.Color.Uint32);
+                        //}
                     }
 
                     if (state.Attachment.StencilLoadOp == MgAttachmentLoadOp.CLEAR)
@@ -97,6 +103,7 @@ namespace Magnesium.OpenGL
                         }
                     }
                 }
+                mClear.ClearBuffers( GLQueueClearBufferMask.Color | GLQueueClearBufferMask.Depth | GLQueueClearBufferMask.Stencil);
             }
         }
 

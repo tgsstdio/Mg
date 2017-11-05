@@ -30,8 +30,8 @@ namespace OffscreenDemo
             return new MgGraphicsDeviceCreateInfo
             {
                 Samples = MgSampleCountFlagBits.COUNT_1_BIT,
-                Width = 1280,
-                Height = 720,
+                Width = 512,
+                Height = 512,
                 MinDepth = 0f,
                 MaxDepth = 1f,
             };
@@ -113,8 +113,8 @@ namespace OffscreenDemo
         public void Prepare(IMgGraphicsConfiguration configuration, IMgGraphicsDevice screen)
         {
             const uint WIDTH = 256;
-            const uint HEIGHT = 128;
-            const MgFormat COLOR_FORMAT = MgFormat.R8G8B8A8_UNORM;
+            const uint HEIGHT = 256;
+            const MgFormat COLOR_FORMAT = MgFormat.R32G32B32A32_SFLOAT;
             const MgFormat DEPTH_FORMAT = MgFormat.D32_SFLOAT;
 
             mGraphics = screen;

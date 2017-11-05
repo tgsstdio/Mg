@@ -22,43 +22,43 @@ namespace Magnesium.OpenGL.DesktopGL
 		public void GenRenderbuffer(out int renderbuffer)
 		{
 			GL.GenRenderbuffers(1, out renderbuffer);
-			mErrHandler.CheckGLError();
+			mErrHandler.LogGLError("GenRenderbuffer");
 		}
 
 		public void BindRenderbuffer(int renderbuffer)
 		{
 			GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, renderbuffer);
-			mErrHandler.CheckGLError();
+			mErrHandler.LogGLError("BindRenderbuffer");
 		}
 
 		public void DeleteRenderbuffer(int renderbuffer)
 		{
 			GL.DeleteRenderbuffers(1, ref renderbuffer);
-			mErrHandler.CheckGLError();
+			mErrHandler.LogGLError("DeleteRenderbuffer");
 		}
 
 		public void RenderbufferStorageMultisample(int samples, int internalFormat, int width, int height)
 		{
 			GL.RenderbufferStorageMultisample(RenderbufferTarget.Renderbuffer, samples, (RenderbufferStorage)internalFormat, width, height);
-			mErrHandler.CheckGLError();
+			mErrHandler.LogGLError("RenderbufferStorageMultisample");
 		}
 
 		public void GenFramebuffer(out int framebuffer)
 		{
 			GL.GenFramebuffers(1, out framebuffer);
-			mErrHandler.CheckGLError();
+			mErrHandler.LogGLError("GenFramebuffer");
 		}
 
 		public void BindFramebuffer(int framebuffer)
 		{
 			GL.BindFramebuffer(FramebufferTarget.Framebuffer, framebuffer);
-			mErrHandler.CheckGLError();
+			mErrHandler.LogGLError("BindFramebuffer");
 		}
 
 		public void BindReadFramebuffer(int readFramebuffer)
 		{
 			GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, readFramebuffer);
-			mErrHandler.CheckGLError();
+			mErrHandler.LogGLError("BindReadFramebuffer");
 		}
 
 		public void InvalidateDrawFramebuffer()
@@ -74,7 +74,7 @@ namespace Magnesium.OpenGL.DesktopGL
 		public void DeleteFramebuffer(int framebuffer)
 		{
 			GL.DeleteFramebuffers(1, ref framebuffer);
-			mErrHandler.CheckGLError();
+			mErrHandler.LogGLError("DeleteFramebuffer");
 		}
 
         private int TranslateViewType(MgImageViewType target)
@@ -105,33 +105,29 @@ namespace Magnesium.OpenGL.DesktopGL
         private void FramebufferTexture2D(int attachement, int target, int texture, int level = 0, int samples = 0)
 		{
 			GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, (FramebufferAttachment)attachement, (TextureTarget)target, texture, level);
-			mErrHandler.CheckGLError();
+			mErrHandler.LogGLError("FramebufferTexture2D");
 		}
 
 		public void FramebufferRenderbuffer(int attachement, int renderbuffer, int level = 0)
 		{
 			GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, (FramebufferAttachment)attachement, RenderbufferTarget.Renderbuffer, renderbuffer);
-			mErrHandler.CheckGLError();
+			mErrHandler.LogGLError("FramebufferRenderbuffer");
 		}
 
 		public void GenerateMipmap(int target)
 		{
 			GL.GenerateMipmap((GenerateMipmapTarget)target);
-			mErrHandler.CheckGLError();
-		}
+			mErrHandler.LogGLError("GenerateMipmap");
+        }
 
 		public void BlitFramebuffer(int iColorAttachment, int width, int height)
 		{
-
 			GL.ReadBuffer(ReadBufferMode.ColorAttachment0 + iColorAttachment);
-			mErrHandler.CheckGLError();
+			mErrHandler.LogGLError("BlitFramebuffer.ReadBuffer");
 			GL.DrawBuffer(DrawBufferMode.ColorAttachment0 + iColorAttachment);
-			mErrHandler.CheckGLError();
-
+			mErrHandler.LogGLError("BlitFramebuffer.DrawBuffer");
 			GL.BlitFramebuffer(0, 0, width, height, 0, 0, width, height, ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest);
-
-			mErrHandler.CheckGLError();
-
+            mErrHandler.LogGLError("BlitFramebuffer.BlitFramebuffer");
 		}
 
 		public void CheckFramebufferStatus()
