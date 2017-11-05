@@ -9,7 +9,13 @@ namespace Magnesium.OpenGL.DesktopGL
 
     public class FullGLCmdStencilEntrypoint : IGLCmdStencilEntrypoint
 	{
-		#region IDepthStencilCapabilities implementation
+        #region IDepthStencilCapabilities implementation
+
+        private IGLErrorHandler mErrHandler;
+        public FullGLCmdStencilEntrypoint(IGLErrorHandler errHandler)
+        {
+            mErrHandler = errHandler;
+        }
 
 		public GLGraphicsPipelineStencilState GetDefaultEnums ()
 		{
@@ -57,29 +63,15 @@ namespace Magnesium.OpenGL.DesktopGL
 		{
 			GL.Disable(EnableCap.StencilTest);
 			mIsStencilBufferEnabled = true;
-
-			{
-				var error = GL.GetError ();
-				if (error != ErrorCode.NoError)
-				{
-					Debug.WriteLine ("EnableStencilBuffer : " + error);
-				}
-			}
+            mErrHandler.LogGLError("EnableStencilBuffer");
 		}
 
 		public void DisableStencilBuffer()
 		{
 			GL.Enable(EnableCap.StencilTest);
 			mIsStencilBufferEnabled = false;
-
-			{
-				var error = GL.GetError ();
-				if (error != ErrorCode.NoError)
-				{
-					Debug.WriteLine ("DisableStencilBuffer : " + error);
-				}
-			}
-		}
+            mErrHandler.LogGLError("DisableStencilBuffer");
+        }
 
 		private bool mIsStencilBufferEnabled;
 		public bool IsStencilBufferEnabled {
@@ -107,15 +99,8 @@ namespace Magnesium.OpenGL.DesktopGL
             }
 
 			GL.StencilMaskSeparate(glFaces, mask);
-
-			{
-				var error = GL.GetError ();
-				if (error != ErrorCode.NoError)
-				{
-					Debug.WriteLine ("SetStencilWriteMask : " + error);
-				}
-			}
-		}
+            mErrHandler.LogGLError("SetStencilWriteMask");
+        }
 
 		public void SetFrontFaceCullStencilFunction (MgCompareOp func, int referenceStencil, uint compare)
 		{
@@ -126,13 +111,7 @@ namespace Magnesium.OpenGL.DesktopGL
 				referenceStencil,
 				compare);
 
-			{
-				var error = GL.GetError ();
-				if (error != ErrorCode.NoError)
-				{
-					Debug.WriteLine ("SetFrontFaceCullStencilFunction : " + error);
-				}
-			}
+            mErrHandler.LogGLError("SetFrontFaceCullStencilFunction");
 		}
 
 		public void SetBackFaceCullStencilFunction(MgCompareOp func, int referenceStencil, uint compare)
@@ -143,15 +122,8 @@ namespace Magnesium.OpenGL.DesktopGL
 				GetStencilFunc (func),
 				referenceStencil,
 				compare);
-
-			{
-				var error = GL.GetError ();
-				if (error != ErrorCode.NoError)
-				{
-					Debug.WriteLine ("SetBackFaceCullStencilFunction : " + error);
-				}
-			}
-		}
+            mErrHandler.LogGLError("SetBackFaceCullStencilFunction");
+        }
 
         private static GLStencilFunction GetStencilFunc(MgCompareOp function)
 		{
@@ -187,7 +159,8 @@ namespace Magnesium.OpenGL.DesktopGL
 			GL.StencilOpSeparate(stencilFaceFront, GetStencilOp(stencilFail),
 				GetStencilOp(stencilDepthBufferFail),
 				GetStencilOp(stencilPass));
-		}
+            mErrHandler.LogGLError("SetFrontFaceStencilOperation");
+        }
 
 		public void SetBackFaceStencilOperation(
 			MgStencilOp counterClockwiseStencilFail,
@@ -198,15 +171,8 @@ namespace Magnesium.OpenGL.DesktopGL
 			GL.StencilOpSeparate(stencilFaceBack, GetStencilOp(counterClockwiseStencilFail),
 				GetStencilOp(counterClockwiseStencilDepthBufferFail),
 				GetStencilOp(counterClockwiseStencilPass));	
-
-			{
-				var error = GL.GetError ();
-				if (error != ErrorCode.NoError)
-				{
-					Debug.WriteLine ("SetBackFaceStencilOperation : " + error);
-				}
-			}
-		}
+            mErrHandler.LogGLError("SetBackFaceStencilOperation");
+        }
 
 		public void SetStencilFunction(
 			MgCompareOp stencilFunction,
@@ -217,15 +183,8 @@ namespace Magnesium.OpenGL.DesktopGL
 				GetStencilFunc (stencilFunction),
 				referenceStencil,
 				compare);
-
-			{
-				var error = GL.GetError ();
-				if (error != ErrorCode.NoError)
-				{
-					Debug.WriteLine ("SetStencilFunction : " + error);
-				}
-			}
-		}
+            mErrHandler.LogGLError("SetStencilFunction");
+        }
 
 		public void SetStencilOperation(
 			MgStencilOp stencilFail,
@@ -235,15 +194,8 @@ namespace Magnesium.OpenGL.DesktopGL
 			GL.StencilOp (GetStencilOp(stencilFail),
 				GetStencilOp(stencilDepthBufferFail),
 				GetStencilOp(stencilPass));
-
-			{
-				var error = GL.GetError ();
-				if (error != ErrorCode.NoError)
-				{
-					Debug.WriteLine ("SetStencilOperation : " + error);
-				}
-			}
-		}
+            mErrHandler.LogGLError("SetStencilOperation");
+        }
 
 		private static StencilOp GetStencilOp(MgStencilOp operation)
 		{

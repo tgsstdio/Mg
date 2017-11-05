@@ -102,13 +102,19 @@ namespace Magnesium
                 case MgFormat.R8G8_UNORM:
                 case MgFormat.R8G8B8_UNORM:
                 case MgFormat.R8G8B8A8_UNORM:
+                case MgFormat.B8G8R8_UNORM:
+                case MgFormat.B8G8R8A8_UNORM:
+                    factor = byte.MaxValue;
+                    category = MgClearColorCategory.UINT;
+                    break;
+
                 case MgFormat.R16_UNORM:
                 case MgFormat.R16G16_UNORM:
                 case MgFormat.R16G16B16_UNORM:
                 case MgFormat.R16G16B16A16_UNORM:
-
-                case MgFormat.B8G8R8_UNORM:
-                case MgFormat.B8G8R8A8_UNORM:
+                    factor = ushort.MaxValue;
+                    category = MgClearColorCategory.UINT;
+                    break;
 
                 case MgFormat.R32_SFLOAT:
                 case MgFormat.R32G32_SFLOAT:

@@ -34,6 +34,16 @@ namespace Magnesium.OpenGL.Internals
                 case MgFormat.R64G64_SINT:
                 case MgFormat.R64G64B64_SINT:
                 case MgFormat.R64G64B64A64_SINT:
+
+                case MgFormat.R8_SNORM:
+                case MgFormat.R8G8_SNORM:
+                case MgFormat.R8G8B8_SNORM:
+                case MgFormat.R8G8B8A8_SNORM:
+                case MgFormat.B8G8R8A8_SNORM:
+                case MgFormat.R16_SNORM:
+                case MgFormat.R16G16_SNORM:
+                case MgFormat.R16G16B16_SNORM:
+                case MgFormat.R16G16B16A16_SNORM:                
                     return GLClearAttachmentType.COLOR_INT;
 
                 case MgFormat.R8_UINT:
@@ -46,6 +56,16 @@ namespace Magnesium.OpenGL.Internals
                 case MgFormat.R16G16B16A16_UINT:
                 case MgFormat.R32_UINT:
                 case MgFormat.R64_UINT:
+
+                case MgFormat.R8_UNORM:
+                case MgFormat.R8G8_UNORM:
+                case MgFormat.R8G8B8_UNORM:
+                case MgFormat.R8G8B8A8_UNORM:
+                case MgFormat.B8G8R8A8_UNORM:
+                case MgFormat.R16_UNORM:
+                case MgFormat.R16G16_UNORM:
+                case MgFormat.R16G16B16_UNORM:
+                case MgFormat.R16G16B16A16_UNORM:
                     return GLClearAttachmentType.COLOR_UINT;
 
                 case MgFormat.R32_SFLOAT:
@@ -73,24 +93,40 @@ namespace Magnesium.OpenGL.Internals
                 case MgFormat.R8G8_SINT:
                 case MgFormat.R8G8B8_SINT:
                 case MgFormat.R8G8B8A8_SINT:
+                case MgFormat.R8_SNORM:
+                case MgFormat.R8G8_SNORM:
+                case MgFormat.R8G8B8_SNORM:
+                case MgFormat.R8G8B8A8_SNORM:
                     return GLClearAttachmentDivisor.SIGNED_BYTE;
 
                 case MgFormat.R8_UINT:
                 case MgFormat.R8G8_UINT:
                 case MgFormat.R8G8B8_UINT:
                 case MgFormat.R8G8B8A8_UINT:
+                case MgFormat.R8_UNORM:
+                case MgFormat.R8G8_UNORM:
+                case MgFormat.R8G8B8_UNORM:
+                case MgFormat.R8G8B8A8_UNORM:
                     return GLClearAttachmentDivisor.UNSIGNED_BYTE;
 
                 case MgFormat.R16_UINT:
                 case MgFormat.R16G16_UINT:
                 case MgFormat.R16G16B16_UINT:
                 case MgFormat.R16G16B16A16_UINT:
+                case MgFormat.R16_UNORM:
+                case MgFormat.R16G16_UNORM:
+                case MgFormat.R16G16B16_UNORM:
+                case MgFormat.R16G16B16A16_UNORM:
                     return GLClearAttachmentDivisor.UNSIGNED_SHORT;
 
                 case MgFormat.R16_SINT:
                 case MgFormat.R16G16_SINT:
                 case MgFormat.R16G16B16_SINT:
                 case MgFormat.R16G16B16A16_SINT:
+                case MgFormat.R16_SNORM:
+                case MgFormat.R16G16_SNORM:
+                case MgFormat.R16G16B16_SNORM:
+                case MgFormat.R16G16B16A16_SNORM:
                     return GLClearAttachmentDivisor.SIGNED_SHORT;
 
                 case MgFormat.R32_SINT:

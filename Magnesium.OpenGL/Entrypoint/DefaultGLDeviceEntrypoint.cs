@@ -22,7 +22,8 @@ namespace Magnesium.OpenGL
             IGLFenceEntrypoint fence,
             IGLCmdShaderProgramEntrypoint shaderProgram,
             IGLDescriptorSetEntrypoint descriptorSet,
-            IGLUniformBlockEntrypoint uniformBlocks
+            IGLUniformBlockEntrypoint uniformBlocks,
+            IGLFramebufferHelperSelector framebuffer
         )
 		{
 			VBO = vbo;
@@ -42,6 +43,7 @@ namespace Magnesium.OpenGL
             ShaderProgram = shaderProgram;
             DescriptorSet = descriptorSet;
             UniformBlocks = uniformBlocks;
+            Framebuffer = framebuffer;
 		}
 
 		#region IGLDeviceCapabilities implementation
@@ -132,6 +134,12 @@ namespace Magnesium.OpenGL
         }
 
         public IGLDescriptorSetEntrypoint DescriptorSet
+        {
+            get;
+            private set;
+        }
+
+        public IGLFramebufferHelperSelector Framebuffer
         {
             get;
             private set;

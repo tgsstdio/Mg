@@ -4,7 +4,13 @@ namespace Magnesium.OpenGL.DesktopGL
 {
 	public class FullGLCmdClearEntrypoint : IGLCmdClearEntrypoint
 	{
-		#region ICmdClearCapabilities implementation
+        #region ICmdClearCapabilities implementation
+
+        private IGLErrorHandler mErrHandler;
+        public FullGLCmdClearEntrypoint(IGLErrorHandler handler)
+        {
+            mErrHandler = handler;
+        }
 
 		public GLClearValueState Initialize ()
 		{
@@ -42,7 +48,31 @@ namespace Magnesium.OpenGL.DesktopGL
 			GL.ClearColor (clearValue.R, clearValue.G, clearValue.B, clearValue.A);
 		}
 
-		#endregion
-	}
+        public void ClearFramebufferiv(uint index, MgVec4i clearValue)
+        {
+            GL.ClearBuffer(ClearBuffer.Color, (int)index, new[] { clearValue.X, clearValue.Y, clearValue.Z, clearValue.W });
+            mErrHandler.LogGLError("ClearFramebufferiv");
+        }
+
+        public void ClearFramebufferuiv(uint index, MgVec4Ui clearValue)
+        {
+            GL.ClearBuffer(ClearBuffer.Color, (int)index, new[] { clearValue.X, clearValue.Y, clearValue.Z, clearValue.W });
+            mErrHandler.LogGLError("ClearFramebufferuiv");
+        }
+
+        public void ClearFramebufferfv(uint index, MgColor4f clearValue)
+        {
+            GL.ClearBuffer(ClearBuffer.Color, (int)index, new[] { clearValue.R, clearValue.G, clearValue.B, clearValue.A });
+            mErrHandler.LogGLError("ClearFramebufferfv");
+        }
+
+        public void ClearFramebufferDepthStencil(MgClearDepthStencilValue clearValue)
+        {
+            GL.ClearBuffer(ClearBufferCombined.DepthStencil, 0, clearValue.Depth, (int) clearValue.Stencil);
+            mErrHandler.LogGLError("ClearFramebufferDepthStencil");
+        }
+
+        #endregion
+    }
 }
 

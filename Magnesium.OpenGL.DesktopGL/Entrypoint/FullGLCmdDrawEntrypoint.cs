@@ -5,7 +5,12 @@ namespace Magnesium.OpenGL.DesktopGL
 {
 	public class FullGLCmdDrawEntrypoint : IGLCmdDrawEntrypoint
 	{
-		#region ICmdDrawCapabilities implementation
+        #region ICmdDrawCapabilities implementation
+        private IGLErrorHandler mErrHandler;
+        public FullGLCmdDrawEntrypoint(IGLErrorHandler handler)
+        {
+            mErrHandler = handler;
+        }
 
 		public static PrimitiveType GetPrimitiveType (MgPrimitiveTopology topology)
 		{
@@ -63,7 +68,8 @@ namespace Magnesium.OpenGL.DesktopGL
 			}
 
 			GL.DrawArraysInstancedBaseInstance (GetPrimitiveType (topology), (int)first, (int)count, (int)instanceCount, firstInstance);
-		}
+            mErrHandler.LogGLError("DrawArrays");
+        }
 
 		static All GetIndexBufferType (MgIndexType indexType)
 		{
@@ -118,7 +124,9 @@ namespace Magnesium.OpenGL.DesktopGL
 			}
 
 			GL.MultiDrawElementsIndirect ((PrimitiveType)GetPrimitiveType (topology), (DrawElementsType) GetIndexBufferType (indexType), indirect, (int)count, (int)stride);
-		}
+            mErrHandler.LogGLError("DrawIndexedIndirect");
+
+        }
 
 		public void DrawArraysIndirect (MgPrimitiveTopology topology, IntPtr indirect, uint count, uint stride)
 		{
@@ -153,7 +161,8 @@ namespace Magnesium.OpenGL.DesktopGL
 			}
 
 			GL.MultiDrawArraysIndirect (GetPrimitiveType (topology), indirect, (int)count, (int)stride);
-		}
+            mErrHandler.LogGLError("DrawArraysIndirect");
+        }
 
 		static DrawElementsType GetElementType (MgIndexType indexType)
 		{
@@ -195,7 +204,8 @@ namespace Magnesium.OpenGL.DesktopGL
 			}
 
 			GL.DrawElementsInstancedBaseVertex (GetPrimitiveType (topology), (int)count, GetElementType (indexType), GetByteOffset(first, indexType), (int)instanceCount, vertexOffset);
-		}
+            mErrHandler.LogGLError("DrawIndexed");
+        }
 		#endregion
 	}
 }

@@ -19,6 +19,7 @@
         IGLCmdShaderProgramEntrypoint ShaderProgram { get; }
         IGLUniformBlockEntrypoint UniformBlocks { get; }
         IGLDescriptorSetEntrypoint DescriptorSet { get; }
+        IGLFramebufferHelperSelector Framebuffer { get; }
     }
 }
 

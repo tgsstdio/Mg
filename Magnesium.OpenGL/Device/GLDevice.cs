@@ -711,8 +711,8 @@ namespace Magnesium.OpenGL.Internals
 
 		public Result CreateFramebuffer (MgFramebufferCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgFramebuffer pFramebuffer)
 		{
-            IGLFramebufferHelperSelector selector = null;
-			pFramebuffer = new GLFramebuffer (selector, pCreateInfo);
+            IGLFramebufferHelperSelector selector = mEntrypoint.Framebuffer;
+			pFramebuffer = new GLNextFramebuffer (selector, pCreateInfo);
 			return Result.SUCCESS;
 		}
 

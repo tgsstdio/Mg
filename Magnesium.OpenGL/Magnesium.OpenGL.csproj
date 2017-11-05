@@ -109,9 +109,9 @@
     <Compile Include="DescriptorSets\GLInternalCacheArrayMapper.cs" />
     <Compile Include="DescriptorSets\GLInternalCacheBlockBinding.cs" />
     <Compile Include="DescriptorSets\GLNextDescriptorSet.cs" />
+    <Compile Include="Device\GLClearAttachmentDivisor.cs" />
     <Compile Include="Device\GLNextFramebuffer.cs" />
     <Compile Include="Device\GLNextRenderPass.cs" />
-    <Compile Include="Device\GLNextRenderPassSubpassInfo.cs" />
     <Compile Include="Device\GLRenderPassClearAttachment.cs" />
     <Compile Include="Device\IGLImage.cs" />
     <Compile Include="Device\IGLImageView.cs" />
@@ -162,7 +162,6 @@
     <Compile Include="Device\IGLSwapchainKHR.cs" />
     <Compile Include="Device\GLImageDescriptor.cs" />
     <Compile Include="Device\GLVariableBind.cs" />
-    <Compile Include="Device\GLFramebuffer.cs" />
     <Compile Include="Device\GLImage.cs" />
     <Compile Include="Device\GLImageArraySubresource.cs" />
     <Compile Include="Device\GLImageLevelSubresource.cs" />

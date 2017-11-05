@@ -14,7 +14,8 @@ namespace Magnesium.OpenGL
         private readonly IGLCmdScissorsEntrypoint mScissor;
         private readonly IGLCmdDrawEntrypoint mRender;
         private readonly IGLErrorHandler mErrHandler;
-        private readonly IGLCmdClearEntrypoint mClear; 
+        private readonly IGLCmdClearEntrypoint mClear;
+        private readonly IGLFramebufferHelperSelector mFramebuffer;
 
         public GLCmdStateRenderer(
             IGLCmdBlendEntrypoint blend,
@@ -25,7 +26,8 @@ namespace Magnesium.OpenGL
             IGLCmdScissorsEntrypoint scissor,
             IGLCmdDrawEntrypoint render,
             IGLCmdClearEntrypoint clear,
-            IGLErrorHandler errHandler
+            IGLErrorHandler errHandler,
+            IGLFramebufferHelperSelector framebuffer
         )
         {
             mCache = cache;
@@ -37,6 +39,7 @@ namespace Magnesium.OpenGL
             mRender = render;
             mClear = clear;
             mErrHandler = errHandler;
+            mFramebuffer = framebuffer;
         }
 
         #region BeginRenderPass methods
@@ -49,11 +52,51 @@ namespace Magnesium.OpenGL
 
             if (pass.Framebuffer.IsNullFramebuffer)
             {
+                mFramebuffer.Helper.BindFramebuffer(0);
                 ApplyClearBuffers(pass.ClearState, pass.Bitmask);
             }
             else
             {
                 // Framebuffer stuff here
+                ApplyDrawBuffers(pass.ClearState, pass.Framebuffer.Subpasses[0]);
+            }
+        }
+        
+        void ApplyDrawBuffers(GLCmdClearValuesParameter clearState, GLNextFramebufferSubpassInfo subpassInfo)
+        {
+            var noOfAttachments = clearState.Attachments.Length;
+            if (noOfAttachments > 0)
+            {
+                mFramebuffer.Helper.BindFramebuffer(subpassInfo.Framebuffer);
+
+                for (var i = 0U; i < noOfAttachments; i += 1)
+                {
+                    var state = clearState.Attachments[i];
+
+                    if (state.Attachment.LoadOp == MgAttachmentLoadOp.CLEAR)
+                    {
+                        if (state.Attachment.AttachmentType == GLClearAttachmentType.COLOR_FLOAT)
+                        {
+                            mClear.ClearFramebufferfv(i, state.Value.Color.Float32);
+                        }
+                        else if (state.Attachment.AttachmentType == GLClearAttachmentType.COLOR_INT)
+                        {
+                            mClear.ClearFramebufferiv(i, state.Value.Color.Int32);
+                        }
+                        else if (state.Attachment.AttachmentType == GLClearAttachmentType.COLOR_UINT)
+                        {
+                            mClear.ClearFramebufferuiv(i, state.Value.Color.Uint32);
+                        }
+                    }
+
+                    if (state.Attachment.StencilLoadOp == MgAttachmentLoadOp.CLEAR)
+                    {
+                        if (state.Attachment.AttachmentType == GLClearAttachmentType.DEPTH_STENCIL)
+                        {
+                            mClear.ClearFramebufferDepthStencil(state.Value.DepthStencil);
+                        }
+                    }
+                }
             }
         }
 

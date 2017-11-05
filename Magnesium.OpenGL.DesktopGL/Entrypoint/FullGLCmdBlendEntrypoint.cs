@@ -6,22 +6,26 @@ namespace Magnesium.OpenGL.DesktopGL
 {
 	public class FullGLCmdBlendEntrypoint : IGLCmdBlendEntrypoint
 	{
-		#region IBlendCapabilities implementation
+        #region IBlendCapabilities implementation
+
+        private IGLErrorHandler mErrHandler;
+        public FullGLCmdBlendEntrypoint(IGLErrorHandler errHandler)
+        {
+            mErrHandler = errHandler;
+        }
 
 		public void EnableLogicOp (bool logicOpEnable)
 		{
-			if (logicOpEnable)
-				GL.Enable (EnableCap.ColorLogicOp);
-			else 
-				GL.Disable (EnableCap.ColorLogicOp);
-
-			{
-				var error = GL.GetError ();
-				if (error != ErrorCode.NoError)
-				{
-					Debug.WriteLine ("EnableLogicOp : " + error);
-				}
-			}
+            if (logicOpEnable)
+            {
+                GL.Enable(EnableCap.ColorLogicOp);
+                mErrHandler.LogGLError("EnableLogicOp.Enable");
+            }
+            else
+            {
+                GL.Disable(EnableCap.ColorLogicOp);
+                mErrHandler.LogGLError("EnableLogicOp.Disable");
+            }
 		}
 
 		private static LogicOp GetGLLogicOp(MgLogicOp logicOp)
@@ -69,15 +73,8 @@ namespace Magnesium.OpenGL.DesktopGL
 		public void LogicOp (MgLogicOp logicOp)
 		{
 			GL.LogicOp (GetGLLogicOp (logicOp));
-
-			{
-				var error = GL.GetError ();
-				if (error != ErrorCode.NoError)
-				{
-					Debug.WriteLine ("LogicOp : " + error);
-				}
-			}
-		}
+            mErrHandler.LogGLError("LogicOp");
+        }
 
 		private static int GetColorAttachmentId(uint index)
 		{
@@ -146,12 +143,7 @@ namespace Magnesium.OpenGL.DesktopGL
 			}
 		}
 
-		public bool IsEnabled (uint index)
-		{
-			throw new System.NotImplementedException ();
-		}
-
-		public GLGraphicsPipelineBlendColorState Initialize (uint noOfAttachments)
+        public GLGraphicsPipelineBlendColorState Initialize (uint noOfAttachments)
 		{
 			var initialState = new GLGraphicsPipelineBlendColorState {
 				LogicOpEnable = false,
@@ -187,19 +179,16 @@ namespace Magnesium.OpenGL.DesktopGL
 
 		public void EnableBlending (uint index, bool blendEnabled)
 		{
-			if (blendEnabled)
-				GL.Enable (IndexedEnableCap.Blend, index);
-
-			else
-				GL.Disable (IndexedEnableCap.Blend, index);
-
-			{
-				var error = GL.GetError ();
-				if (error != ErrorCode.NoError)
-				{
-					Debug.WriteLine ("EnableBlending : " + error);
-				}
-			}
+            if (blendEnabled)
+            {
+                GL.Enable(IndexedEnableCap.Blend, index);
+                mErrHandler.LogGLError("EnableBlending.Enable");
+            }
+            else
+            {
+                GL.Disable(IndexedEnableCap.Blend, index);
+                mErrHandler.LogGLError("EnableBlending.Disable");
+            }
 		}
 
 		public void SetColorMask (uint index, MgColorComponentFlagBits colorMask)
@@ -210,7 +199,8 @@ namespace Magnesium.OpenGL.DesktopGL
 				(colorMask & MgColorComponentFlagBits.G_BIT) == MgColorComponentFlagBits.G_BIT,
 				(colorMask & MgColorComponentFlagBits.B_BIT) == MgColorComponentFlagBits.B_BIT,
 				(colorMask & MgColorComponentFlagBits.A_BIT) == MgColorComponentFlagBits.A_BIT);
-		}
+            mErrHandler.LogGLError("SetColorMask");
+        }
 
 		private BlendingFactorSrc GetBlendFactorSrc (MgBlendFactor blend)
 		{
@@ -258,19 +248,13 @@ namespace Magnesium.OpenGL.DesktopGL
 				GetBlendFactorDest(dstColor), 
 				GetBlendFactorSrc(srcAlpha), 
 				GetBlendFactorDest(destAlpha));
-
-			{
-				var error = GL.GetError ();
-				if (error != ErrorCode.NoError)
-				{
-					Debug.WriteLine ("ApplyBlendSeparateFunction : " + error);
-				}
-			}
-		}
+            mErrHandler.LogGLError("ApplyBlendSeparateFunction");
+        }
 
         public void SetBlendConstants(MgColor4f blendConstants)
         {
             GL.BlendColor(blendConstants.R, blendConstants.G, blendConstants.B, blendConstants.A);
+            mErrHandler.LogGLError("SetBlendConstants");
         }
 
         #endregion

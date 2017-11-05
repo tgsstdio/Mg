@@ -5,12 +5,14 @@ namespace Magnesium.OpenGL.DesktopGL
 {
 	public class FullGLCmdShaderProgramCache : IGLCmdShaderProgramCache
 	{
-		#region IShaderProgramCache implementation
-		public FullGLCmdShaderProgramCache ()
+        #region IShaderProgramCache implementation
+        private IGLErrorHandler mErrHandler;
+		public FullGLCmdShaderProgramCache (IGLErrorHandler errHandler)
 		{
 			mProgramID = 0;
 			mVBO = 0;
-		}
+            mErrHandler = errHandler;
+        }
 
 		private int mProgramID;
 		public int ProgramID {
@@ -22,7 +24,8 @@ namespace Magnesium.OpenGL.DesktopGL
 				{
 					mProgramID = value;
 					GL.UseProgram (mProgramID);
-				}
+                    mErrHandler.LogGLError("UseProgram");
+                }
 			}
 		}
 
@@ -36,7 +39,8 @@ namespace Magnesium.OpenGL.DesktopGL
 				{
 					mVBO = value;
 					GL.BindVertexArray (mVBO);
-				}
+                    mErrHandler.LogGLError("BindVertexArray");
+                }
 			}
 		}
 

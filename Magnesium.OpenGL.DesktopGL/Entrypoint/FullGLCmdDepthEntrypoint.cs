@@ -1,12 +1,17 @@
 ﻿using OpenTK.Graphics.OpenGL;
 using System;
-using System.Diagnostics;
 
 namespace Magnesium.OpenGL.DesktopGL
 {
-	public class FullGLCmdDepthEntrypoint : IGLCmdDepthEntrypoint
+    public class FullGLCmdDepthEntrypoint : IGLCmdDepthEntrypoint
 	{
-		#region IDepthCapabilities implementation
+        #region IDepthCapabilities implementation
+
+        private IGLErrorHandler mErrHandler;
+        public FullGLCmdDepthEntrypoint(IGLErrorHandler handler)
+        {
+            mErrHandler = handler;
+        }
 
 		public GLGraphicsPipelineDepthState GetDefaultEnums ()
 		{
@@ -32,29 +37,15 @@ namespace Magnesium.OpenGL.DesktopGL
 		{
 			GL.Enable(EnableCap.DepthTest);
 			mIsDepthBufferEnabled = true;
-
-			{
-				var error = GL.GetError ();
-				if (error != ErrorCode.NoError)
-				{
-					Debug.WriteLine ("EnableDepthBuffer : " + error);
-				}
-			}
+            mErrHandler.LogGLError("EnableDepthBuffer");
 		}
 
 		public void DisableDepthBuffer ()
 		{
 			GL.Disable(EnableCap.DepthTest);
 			mIsDepthBufferEnabled = false;
-
-			{
-				var error = GL.GetError ();
-				if (error != ErrorCode.NoError)
-				{
-					Debug.WriteLine ("DisableDepthBuffer : " + error);
-				}
-			}
-		}
+            mErrHandler.LogGLError("DisableDepthBuffer");
+        }
 
 		private static DepthFunction GetDepthFunction(MgCompareOp compare)
 		{
@@ -84,29 +75,15 @@ namespace Magnesium.OpenGL.DesktopGL
 		public void SetDepthBufferFunc(MgCompareOp func)
 		{
 			GL.DepthFunc (GetDepthFunction (func));
-
-			{
-				var error = GL.GetError ();
-				if (error != ErrorCode.NoError)
-				{
-					Debug.WriteLine ("SetDepthBufferFunc : " + error);
-				}
-			}
-		}
+            mErrHandler.LogGLError("SetDepthBufferFunc");
+        }
 
 		public void SetDepthMask (bool isMaskOn)
 		{
 			// for writing to depth buffer
 			GL.DepthMask(isMaskOn);
-
-			{
-				var error = GL.GetError ();
-				if (error != ErrorCode.NoError)
-				{
-					Debug.WriteLine ("SetDepthMask : " + error);
-				}
-			}
-		}
+            mErrHandler.LogGLError("SetDepthMask");
+        }
 
 		public void SetClipControl(bool usingLowerLeftCorner, bool zeroToOneRange)
 		{
@@ -116,14 +93,7 @@ namespace Magnesium.OpenGL.DesktopGL
         public void SetDepthBounds(float min, float max)
         {
             GL.Ext.DepthBounds(min, max);
-
-            {
-                var error = GL.GetError();
-                if (error != ErrorCode.NoError)
-                {
-                    Debug.WriteLine("SetDepthBounds : " + error);
-                }
-            }
+            mErrHandler.LogGLError("SetDepthBounds");
         }
         #endregion
     }

@@ -7,8 +7,6 @@ namespace Magnesium.OpenGL
 		void EnableLogicOp (bool logicOpEnable);
 		void LogicOp (MgLogicOp logicOp);
 	
-		bool IsEnabled(uint index);
-
 		GLGraphicsPipelineBlendColorState Initialize(uint noOfAttachments);
 
 		void EnableBlending (uint index, bool value);

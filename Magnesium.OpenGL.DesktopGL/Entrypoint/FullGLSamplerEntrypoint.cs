@@ -86,73 +86,76 @@ namespace Magnesium.OpenGL.DesktopGL
 
 		public int CreateSampler ()
 		{
-			return GL.GenSampler ();
-		}
+            var result = GL.GenSampler ();
+            mErrHandler.LogGLError("CreateSampler");
+            return result;
+        }
 
 		public void DeleteSampler (int samplerId)
 		{
 			int id = samplerId;
 			GL.DeleteSamplers (1, ref id);
-		}
+            mErrHandler.LogGLError("DeleteSampler");
+        }
 
 		public void SetTextureWrapS (int samplerId, MgSamplerAddressMode addressModeU)
 		{
 			GL.SamplerParameter (samplerId, SamplerParameterName.TextureWrapS, (int) GetAddressMode(addressModeU));
-			mErrHandler.LogGLError ("SamplerParameter (TextureWrapS)");
+			mErrHandler.LogGLError ("SetTextureWrapS");
 		}
 
 		public void SetTextureWrapT (int samplerId, MgSamplerAddressMode addressModeV)
 		{
 			GL.SamplerParameter (samplerId, SamplerParameterName.TextureWrapT, (int) GetAddressMode(addressModeV));
-			mErrHandler.LogGLError ("SamplerParameter (TextureWrapT)");
+			mErrHandler.LogGLError ("SetTextureWrapT");
 		}
 
 		public void SetTextureWrapR (int samplerId, MgSamplerAddressMode addressModeW)
 		{
 			GL.SamplerParameter (samplerId, SamplerParameterName.TextureWrapR, (int) GetAddressMode(addressModeW));
-			mErrHandler.LogGLError ("SamplerParameter (TextureWrapR)");
+			mErrHandler.LogGLError ("SetTextureWrapR");
 		}
 
 		public void SetTextureMinLod (int samplerId, float minLod)
 		{
 			GL.SamplerParameter (samplerId, SamplerParameterName.TextureMinLod, minLod);
-			mErrHandler.LogGLError ("SamplerParameter (TextureMinLod)");
+			mErrHandler.LogGLError ("SetTextureMinLod");
 		}
 
 		public void SetTextureMaxLod (int samplerId, float maxLod)
 		{
 			GL.SamplerParameter (samplerId, SamplerParameterName.TextureMaxLod, maxLod);
-			mErrHandler.LogGLError ("SamplerParameter (TextureMaxLod)");
+			mErrHandler.LogGLError ("SetTextureMaxLod");
 		}
 
 		public void SetTextureMinFilter (int samplerId, MgFilter minFilter, MgSamplerMipmapMode mipmapMode)
 		{
 			GL.SamplerParameter (samplerId, SamplerParameterName.TextureMinFilter, (int) GetMinFilterValue(minFilter, mipmapMode));
-			mErrHandler.LogGLError ("SamplerParameter (TextureMinFilter)");
+			mErrHandler.LogGLError ("SetTextureMinFilter");
 		}
 
 		public void SetTextureMagFilter (int samplerId, MgFilter magFilter)
 		{
 			GL.SamplerParameter (samplerId, SamplerParameterName.TextureMagFilter, (int) GetMagFilterValue(magFilter));
-			mErrHandler.LogGLError ("SamplerParameter (TextureMagFilter)");
+			mErrHandler.LogGLError ("SetTextureMagFilter");
 		}
 
 		public void SetTextureCompareFunc (int samplerId, MgCompareOp compareOp)
 		{
 			GL.SamplerParameter (samplerId, SamplerParameterName.TextureCompareFunc, (int) GetCompareOp(compareOp) );
-			mErrHandler.LogGLError ("SamplerParameter (TextureCompareFunc)");
+			mErrHandler.LogGLError ("SetTextureCompareFunc");
 		}
 
 		public void SetTextureBorderColorF (int samplerId, float[] color)
 		{
 			GL.SamplerParameter (samplerId, SamplerParameterName.TextureBorderColor, color);
-			mErrHandler.LogGLError ("SamplerParameter (TextureBorderColorF)");
+			mErrHandler.LogGLError ("SetTextureBorderColorF");
 		}
 
 		public void SetTextureBorderColorI (int samplerId, int[] color)
 		{
 			GL.SamplerParameter (samplerId, SamplerParameterName.TextureBorderColor, color);
-			mErrHandler.LogGLError ("SamplerParameter (TextureBorderColorI)");
+			mErrHandler.LogGLError ("SetTextureBorderColorI");
 		}
 		#endregion
 	}

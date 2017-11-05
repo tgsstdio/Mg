@@ -23,7 +23,7 @@ namespace Magnesium.OpenGL.DesktopGL
 			}
 			catch (Exception ex)
 			{
-				Debug.WriteLine("MonoGameGLException at " + location + " - " + ex.Message);
+				Debug.WriteLine("Mg.OpenGL.DesktopGL error at " + location + " - " + ex.Message);
 			}
 		}
 

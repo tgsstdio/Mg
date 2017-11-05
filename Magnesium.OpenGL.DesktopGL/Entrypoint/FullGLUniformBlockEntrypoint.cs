@@ -25,8 +25,7 @@ namespace Magnesium.OpenGL.DesktopGL
                 };
             var props = new int[queries.Length];
             GL.GetProgramResource(programId, ProgramInterface.UniformBlock, activeIndex, queries.Length, queries, props.Length, out length, props);
-
-            mErrHandler.CheckGLError();
+            mErrHandler.LogGLError("GetActiveUniformBlockInfo");
 
             int stageIndex = 2;
             MgShaderStageFlagBits stage = props[stageIndex] != 0 ? (MgShaderStageFlagBits.FRAGMENT_BIT) : 0;
@@ -55,20 +54,14 @@ namespace Magnesium.OpenGL.DesktopGL
         public string GetActiveUniformBlockName(int programId, int activeIndex)
         {
             var name = GL.GetActiveUniformBlockName(programId, activeIndex);
-            mErrHandler.CheckGLError();
+            mErrHandler.LogGLError("GetActiveUniformBlockName");
             return name;
-        }
-
-        public int GetMaxNoOfBindingPoints()
-        {
-            throw new NotImplementedException();
         }
 
         public int GetNoOfActiveUniformBlocks(int programId)
         {
-            int noOfUniformBlocks = 0;
-            GL.GetProgram(programId, GetProgramParameterName.ActiveUniformBlocks, out noOfUniformBlocks);
-            mErrHandler.CheckGLError();
+            GL.GetProgram(programId, GetProgramParameterName.ActiveUniformBlocks, out int noOfUniformBlocks);
+            mErrHandler.LogGLError("GetNoOfActiveUniformBlocks");
             return noOfUniformBlocks;
         }
     }
