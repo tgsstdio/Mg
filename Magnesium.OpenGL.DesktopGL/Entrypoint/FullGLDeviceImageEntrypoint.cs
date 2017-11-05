@@ -201,6 +201,9 @@ namespace Magnesium.OpenGL.DesktopGL
 
             case MgFormat.D32_SFLOAT_S8_UINT:
                 return (SizedInternalFormat)All.Depth32fStencil8;
+
+            case MgFormat.D16_UNORM:
+                return (SizedInternalFormat)All.DepthComponent16;
              
 			default:
 				throw new NotSupportedException ();

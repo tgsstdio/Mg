@@ -52,11 +52,12 @@ namespace Magnesium.OpenGL.DesktopGL
 			int textureId = GL.GenTexture();
 			mErrHandler.LogGLError ("CreateImageView.GenTexture");
 
-			GL.TextureView​(
+            PixelInternalFormat internalViewFormat = (PixelInternalFormat)internalFormat.InternalFormat;
+            GL.TextureView​(
 				textureId,
 				textureTarget,
 				image.OriginalTextureId,
-				(PixelInternalFormat) internalFormat.InternalFormat,
+                internalViewFormat,
 				(int) pCreateInfo.SubresourceRange.BaseMipLevel,
 				(int) pCreateInfo.SubresourceRange.LevelCount,
 				(int) pCreateInfo.SubresourceRange.BaseArrayLayer​,

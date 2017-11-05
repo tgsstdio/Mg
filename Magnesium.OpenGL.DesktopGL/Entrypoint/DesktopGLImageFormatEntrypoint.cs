@@ -263,6 +263,14 @@ namespace Magnesium.OpenGL.DesktopGL
                     GLFormat = (int)PixelFormat.DepthStencil,
                     GLType = (int)PixelType.Float32UnsignedInt248Rev,
                 };
+            case MgFormat.D16_UNORM:
+                return new GLInternalImageFormat
+                {
+                    InternalFormat = (int)PixelInternalFormat.DepthComponent16,
+                    GLFormat = (int)PixelFormat.DepthComponent,
+                    GLType = (int)PixelType.UnsignedShort,
+                };
+
                 //			#if !(IOS || ANDROID)
                 //				// 				TODO : find compatible VKFormat
                 //				case SurfaceFormat.RgbPvrtc2Bpp:

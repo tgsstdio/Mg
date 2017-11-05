@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OffscreenDemo.DesktopGL", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Magnesium.Utilities", "Magnesium.Utilities\Magnesium.Utilities.csproj", "{CB108602-E69B-4FA1-922A-096A4D1F349F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleFBO", "SimpleFBO\SimpleFBO.csproj", "{46D17E02-1458-4F25-B36E-3DD5283D5D1B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -153,6 +155,18 @@ Global
 		{CB108602-E69B-4FA1-922A-096A4D1F349F}.Release|x64.Build.0 = Release|Any CPU
 		{CB108602-E69B-4FA1-922A-096A4D1F349F}.Release|x86.ActiveCfg = Release|Any CPU
 		{CB108602-E69B-4FA1-922A-096A4D1F349F}.Release|x86.Build.0 = Release|Any CPU
+		{46D17E02-1458-4F25-B36E-3DD5283D5D1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46D17E02-1458-4F25-B36E-3DD5283D5D1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46D17E02-1458-4F25-B36E-3DD5283D5D1B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{46D17E02-1458-4F25-B36E-3DD5283D5D1B}.Debug|x64.Build.0 = Debug|Any CPU
+		{46D17E02-1458-4F25-B36E-3DD5283D5D1B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{46D17E02-1458-4F25-B36E-3DD5283D5D1B}.Debug|x86.Build.0 = Debug|Any CPU
+		{46D17E02-1458-4F25-B36E-3DD5283D5D1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46D17E02-1458-4F25-B36E-3DD5283D5D1B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46D17E02-1458-4F25-B36E-3DD5283D5D1B}.Release|x64.ActiveCfg = Release|Any CPU
+		{46D17E02-1458-4F25-B36E-3DD5283D5D1B}.Release|x64.Build.0 = Release|Any CPU
+		{46D17E02-1458-4F25-B36E-3DD5283D5D1B}.Release|x86.ActiveCfg = Release|Any CPU
+		{46D17E02-1458-4F25-B36E-3DD5283D5D1B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
