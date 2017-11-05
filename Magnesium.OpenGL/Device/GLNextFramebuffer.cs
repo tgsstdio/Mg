@@ -43,8 +43,8 @@ namespace Magnesium.OpenGL
 
             IsNullFramebuffer = isNullFramebuffer;
 
-            if (isNullFramebuffer)
-            { 
+            if (!isNullFramebuffer)
+            {
                 var noOfSubpasses = bRenderpass.Subpasses.Length;
                 Subpasses = new GLNextFramebufferSubpassInfo[noOfSubpasses];
 
@@ -63,9 +63,9 @@ namespace Magnesium.OpenGL
         {
             mSelector.Helper.GenFramebuffer(out int framebuffer);
 
+            mSelector.Helper.BindFramebuffer(framebuffer);
             if (srcSubpass.ColorAttachments != null)
             {
-                mSelector.Helper.BindFramebuffer(framebuffer);
                 var noOfColorAttachments = srcSubpass.ColorAttachments.Length;
 
                 for (var j = 0; j < noOfColorAttachments; ++j)
