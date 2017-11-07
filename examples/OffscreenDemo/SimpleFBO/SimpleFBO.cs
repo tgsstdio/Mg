@@ -12,6 +12,8 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using Magnesium;
 using LightInject;
+using Examples.Shapes;
+using System.Runtime.InteropServices;
 
 namespace Examples.Tutorial
 {
@@ -33,6 +35,260 @@ namespace Examples.Tutorial
         private IMgOffscreenDeviceAttachment mDepthReplacement;
         private IMgEffectFramework mOffscreen;
 
+        #region CreateShaders methods
+
+        string vertexShaderSource = @"
+#version 450
+
+precision highp float;
+
+uniform mat4 projection_matrix;
+uniform mat4 modelview_matrix;
+
+layout(location = 0) in vec3 in_position;
+layout(location = 1) in vec3 in_normal;
+layout(location = 2) in vec2 in_uv;
+
+out vec3 normal;
+out vec2 texCoords;
+
+void main(void)
+{
+  //works only for orthogonal modelview
+  texCoords = in_uv;
+  normal = (modelview_matrix * vec4(in_normal, 0)).xyz;
+  
+  gl_Position = projection_matrix * modelview_matrix * vec4(in_position, 1);
+}";
+
+        string fragmentShaderSource = @"
+#version 450
+
+precision highp float;
+
+const vec3 ambient = vec3(0.1, 0.1, 0.1);
+const vec3 lightVecNormalized = normalize(vec3(0.5, 0.5, 2.0));
+const vec3 lightColor = vec3(0.0, 1.0, 0.0);
+
+in vec3 normal;
+in vec2 texCoords;
+
+out vec4 out_frag_color;
+
+void main(void)
+{
+   float diffuse = clamp(dot(lightVecNormalized, normalize(normal)), 0.0, 1.0);
+  out_frag_color = vec4(ambient + diffuse * lightColor, 1.0);
+  //  out_frag_color = vec4(0, 0, 1, 1);
+}";
+
+        int mShaderProgramHandle;
+        int mProjectionMatrixLocation;
+        int mModelviewMatrixLocation;
+
+        void CreateShaders()
+        {
+            var vertexShaderHandle = GL.CreateShader(ShaderType.VertexShader);
+            var fragmentShaderHandle = GL.CreateShader(ShaderType.FragmentShader);
+
+            GL.ShaderSource(vertexShaderHandle, vertexShaderSource);
+            GL.ShaderSource(fragmentShaderHandle, fragmentShaderSource);
+
+            GL.CompileShader(vertexShaderHandle);
+            GL.CompileShader(fragmentShaderHandle);
+
+            Console.WriteLine(GL.GetShaderInfoLog(vertexShaderHandle));
+            Console.WriteLine(GL.GetShaderInfoLog(fragmentShaderHandle));
+
+            // Create program
+            mShaderProgramHandle = GL.CreateProgram();
+
+            GL.AttachShader(mShaderProgramHandle, vertexShaderHandle);
+            GL.AttachShader(mShaderProgramHandle, fragmentShaderHandle);
+
+             GL.BindAttribLocation(mShaderProgramHandle, 0, "in_position");
+            GL.BindAttribLocation(mShaderProgramHandle, 1, "in_normal");
+            GL.BindAttribLocation(mShaderProgramHandle, 2, "in_uv");
+
+            GL.LinkProgram(mShaderProgramHandle);
+            Console.WriteLine(GL.GetProgramInfoLog(mShaderProgramHandle));
+
+            GL.DeleteShader(vertexShaderHandle);
+            GL.DeleteShader(fragmentShaderHandle);
+
+            //GL.UseProgram(mShaderProgramHandle);
+
+            GL.UseProgram(mShaderProgramHandle);
+            // Set uniforms
+            mProjectionMatrixLocation = GL.GetUniformLocation(mShaderProgramHandle, "projection_matrix");
+            mModelviewMatrixLocation = GL.GetUniformLocation(mShaderProgramHandle, "modelview_matrix");
+
+            OpenTK.Matrix4 projectionMatrix = OpenTK.Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, TEXTURE_SIZE / (float)TEXTURE_SIZE, 2.5f, 6f);
+            Matrix4 modelviewMatrix = Matrix4.LookAt(0f, 0f, 4.5f, 0f, 0f, 0f, 0f, 1f, 0f);
+           // var projectionMatrix = Matrix4.Identity;
+           // var modelviewMatrix = Matrix4.Translation(0, 0, -2.5f);
+
+            GL.UniformMatrix4(mProjectionMatrixLocation, false, ref projectionMatrix);
+            GL.UniformMatrix4(mModelviewMatrixLocation, false, ref modelviewMatrix);
+
+            GL.UseProgram(0);
+        }
+
+        #endregion
+
+        #region GenerateVAO methods 
+
+        private int mVAOHandle;
+        private int mPositionVertexBuffer;
+        private PrimitiveType mPrimitiveType;
+        private int mNoOfIndices;
+        private void GenerateVAO(DrawableShape item)
+        {
+             item.GetArraysforVBO(out PrimitiveType priType, out VertexT2fN3fV3f[] vertices, out uint[] indices);
+             mPrimitiveType = priType;
+            //var vertices = new VertexT2fN3fV3f[]
+            //{
+            //    new VertexT2fN3fV3f{ Position = new Vector3 {X = -1f, Y = 0.9f, Z = -0.9f} },
+            //    new VertexT2fN3fV3f{ Position = new Vector3 {X = -1f, Y = -2f, Z = -1f } },
+            //    new VertexT2fN3fV3f{ Position = new Vector3 {X = 0f, Y = 1f, Z = 0f } },
+            //    new VertexT2fN3fV3f{ Position = new Vector3 {X = 0f, Y = -0.9f, Z = 0.1f } },
+            //    new VertexT2fN3fV3f{ Position = new Vector3 {X = 1f, Y = -1f, Z = 0.9f } },
+            //    new VertexT2fN3fV3f{ Position = new Vector3 {X = 1f, Y = -2f, Z = 1f } },
+            //    new VertexT2fN3fV3f{ Position = new Vector3 {X = 2f, Y = 0f, Z = 0f } },
+            //    new VertexT2fN3fV3f{ Position = new Vector3 {X = 1f, Y = -1f, Z = 0f } },
+            //};
+
+            //uint[] indices = new uint[]
+            //{
+            //    0, 1,
+            //    2, 3,
+            //    4, 5,
+            //    6, 7,
+            //};
+
+            //mPrimitiveType = PrimitiveType.TriangleStrip;
+
+  
+            mNoOfIndices = indices.Length;
+
+            mPositionVertexBuffer = GenerateVertexBuffer(vertices, indices);
+
+            int[] result = new int[1];
+            GL.CreateVertexArrays(1, result);
+
+            Debug.Assert(GL.IsVertexArray(result[0]));
+
+            mVAOHandle = result[0];
+            
+            // ALWAYS OFFSET OF ZERO
+           GL.VertexArrayElementBuffer(mVAOHandle, mPositionVertexBuffer);
+
+            var indexSize = (sizeof(uint) * indices.Length);
+            var positionOffset = new IntPtr(indexSize);
+            const int BINDING_INDEX = 0;
+            GL.VertexArrayVertexBuffer(mVAOHandle, BINDING_INDEX, mPositionVertexBuffer, positionOffset, Marshal.SizeOf(typeof(VertexT2fN3fV3f)));
+
+            const int POSITION_ATTRIB = 0;
+            const int NORMAL_ATTRIB = 1;
+            const int UV_ATTRIB = 2;
+
+            GL.EnableVertexArrayAttrib( mVAOHandle, POSITION_ATTRIB);
+            GL.EnableVertexArrayAttrib( mVAOHandle, NORMAL_ATTRIB);
+            GL.EnableVertexArrayAttrib( mVAOHandle, UV_ATTRIB);
+
+            GL.VertexArrayAttribBinding(mVAOHandle, POSITION_ATTRIB, BINDING_INDEX);
+            var positionAttribOffset = sizeof(float) * 5;
+            GL.VertexArrayAttribFormat( mVAOHandle, POSITION_ATTRIB, 3, VertexAttribType.Float, false, positionAttribOffset);
+
+            GL.VertexArrayAttribBinding(mVAOHandle, NORMAL_ATTRIB, BINDING_INDEX);
+            var normalAttribOffset = sizeof(float) * 2;
+            GL.VertexArrayAttribFormat( mVAOHandle, NORMAL_ATTRIB, 3, VertexAttribType.Float, false, normalAttribOffset);
+
+            GL.VertexArrayAttribBinding(mVAOHandle, UV_ATTRIB, BINDING_INDEX);
+            var uvAttribOffset = 0;
+            GL.VertexArrayAttribFormat( mVAOHandle, UV_ATTRIB, 2, VertexAttribType.Float, false, uvAttribOffset);
+
+           // GL.DeleteVertexArrays(1, result);
+        }
+
+        private int GenerateVertexBuffer(VertexT2fN3fV3f[] vertices, uint[] indices)
+        {
+            var buffers = new int[1];
+            // ARB_direct_state_access
+            // Allows buffer objects to be initialised without binding them
+            GL.CreateBuffers(1, buffers);
+
+            var positionVboHandle = buffers[0];
+
+            var stride = Marshal.SizeOf(typeof(VertexT2fN3fV3f));
+            var indexSize = (sizeof(uint) * indices.Length);
+            var positionOffset = indexSize;
+            var positionSize = (stride * vertices.Length);
+            var totalLength = indexSize + positionSize;
+
+            BufferStorageFlags flags = BufferStorageFlags.MapWriteBit | BufferStorageFlags.MapPersistentBit | BufferStorageFlags.MapCoherentBit;
+            GL.NamedBufferStorage(positionVboHandle, totalLength, IntPtr.Zero, flags);
+
+            BufferAccessMask rangeFlags = BufferAccessMask.MapWriteBit | BufferAccessMask.MapPersistentBit | BufferAccessMask.MapCoherentBit;
+            IntPtr indexDest = GL.MapNamedBufferRange(positionVboHandle, IntPtr.Zero, indexSize, rangeFlags);
+            // Copy the struct to unmanaged memory.	
+            CopyUint32s(indexDest, indices, 0, indexSize, 0, indices.Length);
+            GL.Ext.UnmapNamedBuffer(positionVboHandle);
+
+            IntPtr vertexDest = GL.MapNamedBufferRange(positionVboHandle, new IntPtr(positionOffset), positionSize, rangeFlags);
+            CopyValueData<VertexT2fN3fV3f>(vertexDest, vertices, 0, positionSize, 0, vertices.Length);
+            GL.Ext.UnmapNamedBuffer(positionVboHandle);
+
+            //GL.DeleteBuffers(1, buffers);
+
+            return positionVboHandle;
+        }
+
+        void CopyUint32s(IntPtr dest, uint[] data, int destOffset, int sizeInBytes, int startIndex, int elementCount)
+        {
+            if (data == null)
+                throw new ArgumentNullException("data");
+
+            const int stride = sizeof(uint);
+            if (sizeInBytes < (stride * elementCount))
+            {
+                throw new ArgumentOutOfRangeException("sizeInBytes");
+            }
+
+            var localData = new byte[sizeInBytes];
+
+            var srcOffset = startIndex * stride;
+            var totalBytesToCopy = (int)sizeInBytes;
+            Buffer.BlockCopy(data, srcOffset, localData, 0, totalBytesToCopy);
+
+            IntPtr itemDest = IntPtr.Add(dest, destOffset);
+            Marshal.Copy(localData, 0, itemDest, totalBytesToCopy);
+        }
+
+        void CopyValueData<TData>(IntPtr dest, TData[] data, int destOffset, int sizeInBytes, int startIndex, int elementCount)
+        {
+            if (data == null)
+                throw new ArgumentNullException("data");
+
+            int stride = Marshal.SizeOf(typeof(TData));
+            if (sizeInBytes < (stride * elementCount))
+            {
+                throw new ArgumentOutOfRangeException("sizeInBytes");
+            }
+
+            // Map and copy
+            var itemOffset = destOffset;
+            for (var i = 0; i < elementCount; i += 1)
+            {
+                var index = i + startIndex;
+                IntPtr itemDest = IntPtr.Add(dest, itemOffset);
+                Marshal.StructureToPtr(data[index], itemDest, false);
+                itemOffset += stride;
+            }
+        }
+
+        #endregion
+
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
@@ -43,7 +299,10 @@ namespace Examples.Tutorial
                      "GL_EXT_framebuffer_object extension is required. Please update your drivers.");
             }
 
-            Object = new Shapes.TorusKnot(256, 16, 0.2, 7,8, 1, true);
+            CreateShaders();
+            Object = new Shapes.TorusKnot(256, 32, 0.2, 7,8, 1, true);
+
+            GenerateVAO(Object);
 
             GL.Enable(EnableCap.DepthTest);
             GL.ClearDepth(1.0);
@@ -233,29 +492,17 @@ namespace Examples.Tutorial
                 // GL.Viewport(vp.Offset.X, vp.Offset.Y, (int) vp.Extent.Width, (int) vp.Extent.Height);
                 GL.ViewportIndexed(0, vp.X, vp.Y, vp.Width, vp.Height);
                 //GL.Viewport(0, 0, TEXTURE_SIZE, TEXTURE_SIZE);
-
+                //  GL.UseProgram(mShaderProgramHandle);
                 // clear the screen in red, to make it very obvious what the clear affected. only the FBO, not the real framebuffer
-                GL.ClearColor(1f, 0f, 1f, 0f);
-                GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+                //GL.ClearColor(1f, 0f, 1f, 0f);
+                GL.ClearBuffer(ClearBuffer.Color, 0, new float[] { 0.7f, 0f, 0f, 0f });
+                GL.ClearBuffer(ClearBufferCombined.DepthStencil, 0, 1f, 0);
+                // GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-                OpenTK.Matrix4 perspective = OpenTK.Matrix4.CreatePerspectiveFieldOfView( MathHelper.PiOver4, TEXTURE_SIZE / (float)TEXTURE_SIZE, 2.5f, 6f );
-                GL.MatrixMode( MatrixMode.Projection );
-                GL.LoadMatrix( ref perspective );
+               // DrawImmediateMode();
 
-                Matrix4 lookat = Matrix4.LookAt( 0f, 0f, 4.5f, 0f, 0f, 0f, 0f, 1f, 0f );
-                GL.MatrixMode( MatrixMode.Modelview );
-                GL.LoadMatrix( ref lookat );
+                DrawVAO();
 
-                // draw some complex object into the FBO's textures
-                GL.Enable( EnableCap.Lighting );
-                GL.Enable( EnableCap.Light0 );
-                GL.Enable( EnableCap.ColorMaterial );
-                GL.Color3( 0f, 1f, 0f );
-                Object.Draw();
-                GL.Disable( EnableCap.ColorMaterial );
-                GL.Disable( EnableCap.Light0 );
-                GL.Disable( EnableCap.Lighting );
-                
             }
             GL.PopAttrib();
             //GL.Ext.BindFramebuffer(FramebufferTarget.FramebufferExt, 0); // disable rendering into the FBO
@@ -266,6 +513,39 @@ namespace Examples.Tutorial
 
             GL.Enable(EnableCap.Texture2D); // enable Texture Mapping
             GL.BindTexture(TextureTarget.Texture2D, 0); // bind default texture
+        }
+
+        private void DrawVAO()
+        {
+            GL.UseProgram(mShaderProgramHandle);
+
+            GL.BindVertexArray(mVAOHandle);
+          //  GL.DrawArrays(PrimitiveType.Triangles, 0, mNoOfIndices);
+            GL.DrawElementsInstancedBaseVertex(PrimitiveType.TriangleStrip, mNoOfIndices, DrawElementsType.UnsignedInt, IntPtr.Zero, 1, 0);
+            GL.UseProgram(0);
+            GL.BindVertexArray(0);
+        }
+
+        private void DrawImmediateMode()
+        {
+            OpenTK.Matrix4 perspective = OpenTK.Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, TEXTURE_SIZE / (float)TEXTURE_SIZE, 2.5f, 6f);
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.LoadMatrix(ref perspective);
+
+            Matrix4 lookat = Matrix4.LookAt(0f, 0f, 4.5f, 0f, 0f, 0f, 0f, 1f, 0f);
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadMatrix(ref lookat);
+
+            // draw some complex object into the FBO's textures
+            GL.Enable(EnableCap.Lighting);
+            GL.Enable(EnableCap.Light0);
+            GL.Enable(EnableCap.ColorMaterial);
+            GL.Color3(0f, 1f, 0f);
+            Object.Draw();
+
+            GL.Disable(EnableCap.ColorMaterial);
+            GL.Disable(EnableCap.Light0);
+            GL.Disable(EnableCap.Lighting);
         }
 
         protected override void OnUnload(EventArgs e)
@@ -288,6 +568,21 @@ namespace Examples.Tutorial
             {
                // GL.Ext.DeleteFramebuffers(1, ref FBOHandle);
                 GL.DeleteFramebuffers(1, ref FBOHandle);
+            }
+
+            if (mShaderProgramHandle != 0)
+            {
+                GL.DeleteProgram(mShaderProgramHandle);
+            }
+
+            if (mVAOHandle != 0)
+            {
+                GL.DeleteVertexArrays(1, new[] { mVAOHandle });
+            }
+
+            if (mPositionVertexBuffer != 0)
+            {
+                GL.DeleteBuffers(1, new[] { mPositionVertexBuffer });
             }
         }
 
@@ -319,6 +614,7 @@ namespace Examples.Tutorial
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
+            GL.UseProgram(0);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             GL.PushMatrix();

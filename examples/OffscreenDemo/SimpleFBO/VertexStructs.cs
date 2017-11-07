@@ -1,9 +1,11 @@
 using System;
 
 using OpenTK;
+using System.Runtime.InteropServices;
 
 namespace Examples.Shapes
 {
+    [StructLayout(LayoutKind.Sequential)]
     public struct VertexT2dN3dV3d
     {
         public Vector2d TexCoord;
@@ -18,6 +20,7 @@ namespace Examples.Shapes
         }
     }
 
+    [StructLayout(LayoutKind.Sequential)]
     public struct VertexT2fN3fV3f
     {
         public Vector2 TexCoord;
@@ -25,6 +28,7 @@ namespace Examples.Shapes
         public Vector3 Position;
     }
 
+    [StructLayout(LayoutKind.Sequential)]
     public struct VertexT2hN3hV3h
     {
         public Vector2h TexCoord;
