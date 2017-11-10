@@ -231,7 +231,7 @@ namespace Magnesium.OpenGL
                 {
                     MgDescriptorImageInfo info = desc.ImageInfo[j];
 
-                    var localSampler = (GLSampler)info.Sampler;
+                    var localSampler = (IGLSampler)info.Sampler;
                     var localView = (GLImageView)info.ImageView;
 
                     // Generate bindless texture handle 

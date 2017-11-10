@@ -61,6 +61,7 @@
     <Compile Include="MockGLStaticBufferResource.cs" />
     <Compile Include="NullDescriptorSetBinding.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TextureSlotsUnitTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

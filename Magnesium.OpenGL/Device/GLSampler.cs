@@ -2,8 +2,9 @@
 
 namespace Magnesium.OpenGL.Internals
 {
-    public class GLSampler : IMgSampler
-	{
+
+    public class GLSampler : IGLSampler
+    {
 		public int SamplerId { get; private set; }
 
 		IGLSamplerEntrypoint mEntrypoint;

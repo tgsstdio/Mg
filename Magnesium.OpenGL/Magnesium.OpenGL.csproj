@@ -115,6 +115,7 @@
     <Compile Include="Device\GLRenderPassClearAttachment.cs" />
     <Compile Include="Device\IGLImage.cs" />
     <Compile Include="Device\IGLImageView.cs" />
+    <Compile Include="Device\IGLSampler.cs" />
     <Compile Include="Device\MgSubpassTransactionExtractor.cs" />
     <Compile Include="Device\MgSubpassTransactionsInfo.cs" />
     <Compile Include="Entrypoint\DefaultGLDescriptorSetEntrypoint.cs" />
