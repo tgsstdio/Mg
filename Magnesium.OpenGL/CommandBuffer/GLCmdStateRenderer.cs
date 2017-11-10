@@ -820,6 +820,8 @@ namespace Magnesium.OpenGL
 			mPastRasterization = mRaster.Initialize ();
 
 			mPastClearValues = mClear.Initialize ();
+
+            mCache.Initialize();
 		}
 
 		public GLCmdBufferPipelineItem PreviousPipeline { get ; private set; }

@@ -4,16 +4,9 @@
 	{
 		#region IMgDescriptorPoolFactory implementation
 
-		readonly IGLImageDescriptorEntrypoint mImgDescriptor;
-
-		public FullGLDescriptorPoolEntrypoint (IGLImageDescriptorEntrypoint entrypoint)
-		{
-			mImgDescriptor = entrypoint;
-		}
-
 		public IGLNextDescriptorPool CreatePool (MgDescriptorPoolCreateInfo createInfo)
 		{
-			return new GLNextDescriptorPool(createInfo, mImgDescriptor);
+			return new GLNextDescriptorPool(createInfo);
 		}
 
 		#endregion

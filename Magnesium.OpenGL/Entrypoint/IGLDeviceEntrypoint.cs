@@ -6,7 +6,7 @@
 		IGLSamplerEntrypoint Sampler { get; }
 		IGLDeviceImageEntrypoint Image {get; }
 		IGLDeviceImageViewEntrypoint ImageView { get; }
-		IGLImageDescriptorEntrypoint ImageDescriptor { get; }
+		//IGLImageDescriptorEntrypoint ImageDescriptor { get; }
 		IGLShaderModuleEntrypoint ShaderModule { get; }
 		IGLDescriptorPoolEntrypoint DescriptorPool { get; }
 		IGLBufferEntrypoint Buffers { get;}

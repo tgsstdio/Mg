@@ -7,7 +7,7 @@ namespace Magnesium.OpenGL
 		uint MaxSets { get; }
 		IDictionary<uint, IGLDescriptorSet> AllocatedSets { get; }
 
-		IGLDescriptorPoolResource<GLImageDescriptor> CombinedImageSamplers { get; }
+		IGLDescriptorPoolResource<GLTextureSlot> CombinedImageSamplers { get; }
 		IGLDescriptorPoolResource<GLBufferDescriptor> UniformBuffers { get; }
 		IGLDescriptorPoolResource<GLBufferDescriptor> StorageBuffers { get; }
 

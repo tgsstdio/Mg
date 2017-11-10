@@ -48,6 +48,7 @@
     <Compile Include="ArrayPoolTests.cs" />
     <Compile Include="BlockTokenizerTest.cs" />
     <Compile Include="BuildPointDirectoryTest.cs" />
+    <Compile Include="MockTextureCentralEntrypoint.cs" />
     <Compile Include="SubpassTransactionsUnitTests.cs" />
     <Compile Include="CollatorTest.cs" />
     <Compile Include="FreePoolResourcesTest.cs" />

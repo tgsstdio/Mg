@@ -17,7 +17,7 @@ namespace Magnesium.OpenGL.UnitTests
             set;
         }
 
-        public IGLDescriptorPoolResource<GLImageDescriptor> CombinedImageSamplers
+        public IGLDescriptorPoolResource<GLTextureSlot> CombinedImageSamplers
         {
             get;
             set;

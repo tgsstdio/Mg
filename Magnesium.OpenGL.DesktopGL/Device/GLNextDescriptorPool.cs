@@ -12,11 +12,11 @@ namespace Magnesium.OpenGL.DesktopGL
 		private readonly ConcurrentBag<IGLDescriptorSet> mAvailableSets;
 		public IDictionary<uint, IGLDescriptorSet> AllocatedSets { get; private set; }
 
-		public IGLDescriptorPoolResource<GLImageDescriptor> CombinedImageSamplers { get; private set;}
+		public IGLDescriptorPoolResource<GLTextureSlot> CombinedImageSamplers { get; private set;}
 		public IGLDescriptorPoolResource<GLBufferDescriptor> StorageBuffers { get; private set; }
 		public IGLDescriptorPoolResource<GLBufferDescriptor> UniformBuffers { get; private set;}
 
-		public GLNextDescriptorPool(MgDescriptorPoolCreateInfo createInfo, IGLImageDescriptorEntrypoint entrypoint)
+		public GLNextDescriptorPool(MgDescriptorPoolCreateInfo createInfo)
 		{
 			MaxSets = createInfo.MaxSets;
 			mAvailableSets = new ConcurrentBag<IGLDescriptorSet>();
@@ -49,7 +49,7 @@ namespace Magnesium.OpenGL.DesktopGL
 				}
 			}
 
-			SetupCombinedImageSamplers(entrypoint, noOfCombinedImageSamplers);
+			SetupCombinedImageSamplers(noOfCombinedImageSamplers);
 			SetupUniformBlocks(noOfUniformBlocks);
 			SetupStorageBuffers(noOfStorageBuffers);
 		}
@@ -80,27 +80,21 @@ namespace Magnesium.OpenGL.DesktopGL
 				buffers);
 		}
 
-		void SetupCombinedImageSamplers(IGLImageDescriptorEntrypoint entrypoint, uint noOfCombinedImageSamplers)
+		void SetupCombinedImageSamplers(uint noOfCombinedImageSamplers)
 		{
-			var cis = new GLImageDescriptor[noOfCombinedImageSamplers];
+			var cis = new GLTextureSlot[noOfCombinedImageSamplers];
 			for (var i = 0; i < noOfCombinedImageSamplers; i += 1)
 			{
-				cis[i] = new GLImageDescriptor(entrypoint);
+				cis[i] = new GLTextureSlot();
 			}
-			CombinedImageSamplers = new GLPoolResource<GLImageDescriptor>(
+			CombinedImageSamplers = new GLPoolResource<GLTextureSlot>(
 				noOfCombinedImageSamplers,
 				cis);
 		}
 
 		public void DestroyDescriptorPool(IMgDevice device, IMgAllocationCallbacks allocator)
 		{
-			foreach (var img in CombinedImageSamplers.Items)
-			{
-				if (img != null)
-				{
-					img.Destroy();
-				}
-			}
+
 		}
 
 		public void ResetResource(GLDescriptorPoolResourceInfo resourceInfo)

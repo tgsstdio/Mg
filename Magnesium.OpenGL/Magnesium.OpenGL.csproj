@@ -109,6 +109,8 @@
     <Compile Include="DescriptorSets\GLInternalCacheArrayMapper.cs" />
     <Compile Include="DescriptorSets\GLInternalCacheBlockBinding.cs" />
     <Compile Include="DescriptorSets\GLNextDescriptorSet.cs" />
+    <Compile Include="DescriptorSets\IGLTextureGallery.cs" />
+    <Compile Include="DescriptorSets\MgTextureCentral.cs" />
     <Compile Include="Device\GLClearAttachmentDivisor.cs" />
     <Compile Include="Device\GLNextFramebuffer.cs" />
     <Compile Include="Device\GLNextRenderPass.cs" />
@@ -118,6 +120,7 @@
     <Compile Include="Device\IGLSampler.cs" />
     <Compile Include="Device\MgSubpassTransactionExtractor.cs" />
     <Compile Include="Device\MgSubpassTransactionsInfo.cs" />
+    <Compile Include="DescriptorSets\GLTextureSlot.cs" />
     <Compile Include="Entrypoint\DefaultGLDescriptorSetEntrypoint.cs" />
     <Compile Include="DescriptorSets\GLNextDescriptorSetBinder.cs" />
     <Compile Include="DescriptorSets\GLNextPipelineLayout.cs" />
@@ -147,6 +150,7 @@
     <Compile Include="Entrypoint\IGLBlitOperationEntrypoint.cs" />
     <Compile Include="Entrypoint\IGLFenceEntrypoint.cs" />
     <Compile Include="Entrypoint\IGLUniformBlockEntrypoint.cs" />
+    <Compile Include="Entrypoint\IGLTextureGalleryEntrypoint.cs" />
     <Compile Include="PhysicalDevice\GLMemoryBufferExtensions.cs" />
     <Compile Include="PhysicalDevice\GLMemoryBufferType.cs" />
     <Compile Include="Entrypoint\IGLPhysicalDeviceFormatLookupEntrypoint.cs" />
@@ -161,7 +165,6 @@
     <Compile Include="Device\IGLDeviceMemory.cs" />
     <Compile Include="Device\GLUniformBinding.cs" />
     <Compile Include="Device\IGLSwapchainKHR.cs" />
-    <Compile Include="Device\GLImageDescriptor.cs" />
     <Compile Include="Device\GLVariableBind.cs" />
     <Compile Include="Device\GLImage.cs" />
     <Compile Include="Device\GLImageArraySubresource.cs" />
@@ -174,7 +177,6 @@
     <Compile Include="Entrypoint\IGLShaderModuleEntrypoint.cs" />
     <Compile Include="Entrypoint\IGLDeviceImageViewEntrypoint.cs" />
     <Compile Include="Entrypoint\IGLDeviceImageEntrypoint.cs" />
-    <Compile Include="Entrypoint\IGLImageDescriptorEntrypoint.cs" />
     <Compile Include="Entrypoint\IGLCmdVBOEntrypoint.cs" />
     <Compile Include="Device\IGLBuffer.cs" />
     <Compile Include="Entrypoint\IGLBufferEntrypoint.cs" />

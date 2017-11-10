@@ -115,7 +115,6 @@
     <Compile Include="Device\FullGLBuffer.cs" />
     <Compile Include="Entrypoint\FullGLShaderModuleEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLDescriptorPoolEntrypoint.cs" />
-    <Compile Include="Entrypoint\FullGLImageDescriptorEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLSamplerEntrypoint.cs" />
     <Compile Include="Entrypoint\DesktopGLImageFormatEntrypoint.cs" />
     <Compile Include="Driver\FullGLCmdClearEntrypoint.cs" />

@@ -11,8 +11,20 @@ namespace Magnesium.OpenGL.UnitTests
         public void NullTest_01()
         {
             var shaderEntrypoint = new MockGLCmdShaderProgramEntrypoint();
-            var shaderCache = new GLNextCmdShaderProgramCache(shaderEntrypoint);
+            var gallery = new MockGLTextureGallery();
+            var shaderCache = new GLNextCmdShaderProgramCache(shaderEntrypoint, gallery);
 
+            Assert.DoesNotThrow(() => { shaderCache.BindDescriptorSets(null); });
+        }
+
+        [Test]
+        public void Initialize_01()
+        {
+            var shaderEntrypoint = new MockGLCmdShaderProgramEntrypoint();
+            var gallery = new MockGLTextureGallery();
+            var shaderCache = new GLNextCmdShaderProgramCache(shaderEntrypoint, gallery);
+
+            shaderCache.Initialize();
             Assert.DoesNotThrow(() => { shaderCache.BindDescriptorSets(null); });
         }
 
@@ -20,7 +32,8 @@ namespace Magnesium.OpenGL.UnitTests
         public void NullTest_02()
         {
             var shaderEntrypoint = new MockGLCmdShaderProgramEntrypoint();
-            var shaderCache = new GLNextCmdShaderProgramCache(shaderEntrypoint);
+            var gallery = new MockGLTextureGallery();
+            var shaderCache = new GLNextCmdShaderProgramCache(shaderEntrypoint, gallery);
 
             Assert.DoesNotThrow(() => {
                 var param = new Internals.GLCmdDescriptorSetParameter
@@ -42,7 +55,8 @@ namespace Magnesium.OpenGL.UnitTests
         public void EmptyDescriptorSet_01()
         {
             var shaderEntrypoint = new MockGLCmdShaderProgramEntrypoint();
-            var shaderCache = new GLNextCmdShaderProgramCache(shaderEntrypoint);
+            var gallery = new MockGLTextureGallery();
+            var shaderCache = new GLNextCmdShaderProgramCache(shaderEntrypoint, gallery);
 
             var pipelineLayout = new MockGLPipelineLayout();
             var ds = new MockGLDescriptorSet
@@ -73,7 +87,8 @@ namespace Magnesium.OpenGL.UnitTests
         public void Pass_01()
         {
             var shaderEntrypoint = new MockGLCmdShaderProgramEntrypoint();
-            var shaderCache = new GLNextCmdShaderProgramCache(shaderEntrypoint);
+            var gallery = new MockGLTextureGallery();
+            var shaderCache = new GLNextCmdShaderProgramCache(shaderEntrypoint, gallery);
 
             var pipelineLayout = new MockGLPipelineLayout
             {
@@ -252,6 +267,21 @@ namespace Magnesium.OpenGL.UnitTests
             Assert.AreEqual(blockEntries.Length, shaderEntrypoint.UniformOffsets.Length);
             Assert.IsNotNull(shaderEntrypoint.UniformSizes);
             Assert.AreEqual(blockEntries.Length, shaderEntrypoint.UniformSizes.Length);
+        }
+
+        private class MockGLTextureGallery : IGLTextureGallery
+        {
+            public GLTextureSlot[] AvailableSlots => throw new System.NotImplementedException();
+
+            public void Bind(GLTextureSlot[] descriptors)
+            {
+        
+            }
+
+            public void Initialize()
+            {
+               
+            }
         }
     }
 }

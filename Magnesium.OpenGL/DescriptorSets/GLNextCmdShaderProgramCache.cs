@@ -1,7 +1,7 @@
 ﻿using Magnesium.OpenGL.Internals;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-
 namespace Magnesium.OpenGL
 {
 	public class GLNextCmdShaderProgramCache : IGLNextCmdShaderProgramCache
@@ -10,7 +10,8 @@ namespace Magnesium.OpenGL
 		private int mProgramID;
 		private uint mVAO;
         private GLCmdDescriptorSetParameter[] mBoundDescriptorSets;
-        public GLNextCmdShaderProgramCache(IGLCmdShaderProgramEntrypoint graphics)
+        private IGLTextureGallery mGallery;
+        public GLNextCmdShaderProgramCache(IGLCmdShaderProgramEntrypoint graphics, IGLTextureGallery gallery)
 		{
 			mEntrypoint = graphics;
 			mProgramID = 0;
@@ -23,6 +24,13 @@ namespace Magnesium.OpenGL
             mUniformBuffers = new uint[0];
             mUniformOffsets = new IntPtr[0];
             mUniformSizes = new IntPtr[0];
+
+            mGallery = gallery;
+        }
+
+        public void Initialize()
+        {
+            mGallery.Initialize();
         }
 
 		public int ProgramID
@@ -157,16 +165,14 @@ namespace Magnesium.OpenGL
 			IGLNextDescriptorPool parentPool = ds.Parent;
             Debug.Assert(parentPool != null);
 
+            var images = new List<GLTextureSlot>();
             for (var i = resource.Ticket.First; i <= resource.Ticket.Last; i += 1)
 			{
-				var image = parentPool.CombinedImageSamplers.Items[i];
-
-				if (image.SamplerHandle.HasValue)
-				{
-					mEntrypoint.BindCombinedImageSampler(ProgramID, (int) resource.Binding, image.SamplerHandle.Value);
-				}
+                images.Add(parentPool.CombinedImageSamplers.Items[i]);
 			}
-		}
+
+            mGallery.Bind(images.ToArray());
+        }
 
 		uint BindStorageBuffer(IGLDescriptorSet ds, GLDescriptorPoolResourceInfo resource, uint[] dynamicOffsets, uint offsetIndex)
 		{

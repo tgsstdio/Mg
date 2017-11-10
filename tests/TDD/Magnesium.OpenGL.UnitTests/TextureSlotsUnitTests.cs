@@ -1,208 +1,13 @@
 ﻿using NUnit.Framework;
-using System.Collections.Generic;
 using Magnesium.OpenGL.Internals;
 
 namespace Magnesium.OpenGL.UnitTests
 {
-    class MgTextureSlot
-    {
-        public uint Binding { get; set; }
-        public IGLImageView View { get; set; }
-        public IGLSampler Sampler { get; set; }
-    }
+
 
     class MgTextureDescriptorSet
     {
-        public MgTextureSlot[] Descriptors { get; set; }
-    }
-
-    interface IMgTextureCentralEntrypoint
-    {
-        int GetMaximumNumberOfTextureUnits();
-
-        void BindView(uint binding, MgImageViewType viewType, int texture);
-        void UnbindView(uint binding);
-        void BindSampler(uint binding, int sampler);
-        void UnbindSampler(uint binding);
-    }
-
-    class MgTextureCentral
-    {
-        private IMgTextureCentralEntrypoint mEntrypoint;
-        public MgTextureCentral(IMgTextureCentralEntrypoint entrypoint)
-        {
-            mEntrypoint = entrypoint;
-            AvailableSlots = new MgTextureSlot[0];
-        }
-
-        public void Initialize()
-        {
-            var maxSlots = mEntrypoint.GetMaximumNumberOfTextureUnits();
-            AvailableSlots = new MgTextureSlot[maxSlots];
-            for (var i = 0U; i < maxSlots; i += 1)
-            {
-                AvailableSlots[i] = new MgTextureSlot
-                {
-                    Binding = i,
-                    Sampler = null,
-                    View = null,
-                };
-                // REMOVE ALL EXISTING BINDINGS 
-                mEntrypoint.UnbindView(i);
-                mEntrypoint.UnbindSampler(i);
-            }
-        }
-
-        public MgTextureSlot[] AvailableSlots { get; private set; }
-
-        public void Bind(MgTextureDescriptorSet dSet)
-        {
-            foreach(var srcDescriptor in dSet.Descriptors)
-            {
-                var destBinding = srcDescriptor.Binding;
-
-                if (destBinding < (uint) AvailableSlots.Length)
-                {
-                    var dest = AvailableSlots[destBinding];
-
-                    UpdateViewIfNeeded(srcDescriptor, destBinding, dest);
-
-                    UpdateSamplerIfNeeded(dest, destBinding, srcDescriptor);
-                }
-            }
-        }
-
-        private void UpdateSamplerIfNeeded(MgTextureSlot dest, uint destBinding, MgTextureSlot srcDescriptor)
-        {
-            bool needsUpdate = false;
-            if (dest.Sampler != null)
-            {
-                if (srcDescriptor.Sampler != null
-                    && dest.Sampler.SamplerId != srcDescriptor.Sampler.SamplerId)
-                {
-                    mEntrypoint.BindSampler(destBinding, srcDescriptor.Sampler.SamplerId);
-                    needsUpdate = true;
-                }
-                else if (srcDescriptor.Sampler == null)
-                {
-                    mEntrypoint.UnbindSampler(destBinding);
-                    needsUpdate = true;
-                }
-            }
-            else if (srcDescriptor.Sampler != null)
-            {
-                mEntrypoint.BindSampler(destBinding, srcDescriptor.Sampler.SamplerId);
-                needsUpdate = true;
-            }
-
-            if (needsUpdate)
-            {
-                dest.Sampler = srcDescriptor.Sampler;
-            }
-        }
-
-        private void UpdateViewIfNeeded(MgTextureSlot srcDescriptor, uint destBinding, MgTextureSlot dest)
-        {
-            bool needsUpdate = false;
-            if (dest.View != null)
-            {
-                if (
-                    srcDescriptor.View != null
-                    && (
-                        dest.View.ViewTarget != srcDescriptor.View.ViewTarget
-                    ||  dest.View.TextureId != srcDescriptor.View.TextureId
-                    )
-                )
-                {
-                    var view = srcDescriptor.View;
-                    mEntrypoint.BindView(destBinding, view.ViewTarget, view.TextureId);
-                    needsUpdate = true;
-                }
-                else if (srcDescriptor.View == null)
-                {
-                    mEntrypoint.UnbindView(destBinding);
-                    needsUpdate = true;
-                }
-            }
-            else if (srcDescriptor.View != null)
-            {
-                var view = srcDescriptor.View;
-                mEntrypoint.BindView(destBinding, view.ViewTarget, view.TextureId);
-                needsUpdate = true;
-            }
-
-            if (needsUpdate)
-            {
-                dest.View = srcDescriptor.View;
-            }
-        }
-    }
-
-    public class MockTextureCentralEntrypoint : IMgTextureCentralEntrypoint
-    {
-        public class ViewInfo
-        {
-            public MgImageViewType? ViewType { get; set; }
-            public int TextureId { get; set; }
-        }
-
-        public Dictionary<uint, ViewInfo> Views = new Dictionary<uint, ViewInfo>();
-        public void BindView(uint binding, MgImageViewType viewType, int texture)
-        {
-            if (Views.TryGetValue(binding, out ViewInfo view))
-            {
-                view.TextureId = texture;
-                view.ViewType = viewType;
-            }
-            else
-            {
-                Views.Add(binding, new ViewInfo { TextureId = texture, ViewType = viewType });
-            }            
-        }
-
-        public void UnbindView(uint binding)
-        {
-            if (Views.TryGetValue(binding, out ViewInfo view))
-            {
-                view.TextureId = 0;
-                view.ViewType = null;
-            }
-            else
-            {
-                Views.Add(binding, new ViewInfo { TextureId = 0, ViewType = null });
-            }
-        }
-
-        public Dictionary<uint, int> Samplers = new Dictionary<uint, int>();
-        public void BindSampler(uint binding, int sampler)
-        {
-            if (Samplers.ContainsKey(binding))
-            {
-                Samplers[binding] = sampler;
-            }
-            else
-            {
-                Samplers.Add(binding, sampler);
-            }            
-        }
-
-        public int MaxSlots { get; set; }
-        public int GetMaximumNumberOfTextureUnits()
-        {
-            return MaxSlots;
-        }
-
-        public void UnbindSampler(uint binding)
-        {
-            if (Samplers.ContainsKey(binding))
-            {
-                Samplers[binding] = 0;
-            }
-            else
-            {
-                Samplers.Add(binding, 0);
-            }
-        }
+        public GLTextureSlot[] Descriptors { get; set; }
     }
 
     [TestFixture]
@@ -212,7 +17,7 @@ namespace Magnesium.OpenGL.UnitTests
         public void ConstructorTest()
         {
             var entrypoint = new MockTextureCentralEntrypoint();
-            var central = new MgTextureCentral(entrypoint);
+            var central = new GLTextureGallery(entrypoint);
 
             const int EXPECTED = 0;
             Assert.IsNotNull(central.AvailableSlots);
@@ -223,7 +28,7 @@ namespace Magnesium.OpenGL.UnitTests
         public void InitializeTest()
         {
             var entrypoint = new MockTextureCentralEntrypoint();
-            var central = new MgTextureCentral(entrypoint);
+            var central = new GLTextureGallery(entrypoint);
 
             const int EXPECTED = 13;
             entrypoint.MaxSlots = EXPECTED;
@@ -234,7 +39,7 @@ namespace Magnesium.OpenGL.UnitTests
             AssertEmptyEntrypoint(entrypoint, EXPECTED);
         }
 
-        private static void AssertInitializedCentral(MgTextureCentral central, int EXPECTED)
+        private static void AssertInitializedCentral(GLTextureGallery central, int EXPECTED)
         {
             Assert.IsNotNull(central.AvailableSlots);
             Assert.AreEqual(EXPECTED, central.AvailableSlots.Length);
@@ -296,7 +101,7 @@ namespace Magnesium.OpenGL.UnitTests
         public void EmptySetWithSampler()
         {
             var entrypoint = new MockTextureCentralEntrypoint();
-            var central = new MgTextureCentral(entrypoint);
+            var central = new GLTextureGallery(entrypoint);
 
             const int MAX_SLOTS = 7;
             entrypoint.MaxSlots = MAX_SLOTS;
@@ -317,7 +122,7 @@ namespace Magnesium.OpenGL.UnitTests
             {
                 Descriptors = new[]
                 {
-                    new MgTextureSlot
+                    new GLTextureSlot
                     {
                         Binding = BINDING,
                         Sampler = sampler
@@ -325,7 +130,7 @@ namespace Magnesium.OpenGL.UnitTests
                 }
             };
 
-            central.Bind(delta);
+            central.Bind(delta.Descriptors);
 
             AssertBindOk(entrypoint, delta);
         }
@@ -334,7 +139,7 @@ namespace Magnesium.OpenGL.UnitTests
         public void EmptySetWithTexture()
         {
             var entrypoint = new MockTextureCentralEntrypoint();
-            var central = new MgTextureCentral(entrypoint);
+            var central = new GLTextureGallery(entrypoint);
 
             const int MAX_SLOTS = 7;
             entrypoint.MaxSlots = MAX_SLOTS;
@@ -356,7 +161,7 @@ namespace Magnesium.OpenGL.UnitTests
             {
                 Descriptors = new[]
                 {
-                    new MgTextureSlot
+                    new GLTextureSlot
                     {
                         Binding = BINDING,
                         View = view
@@ -364,7 +169,7 @@ namespace Magnesium.OpenGL.UnitTests
                 }
             };
 
-            central.Bind(localSet);
+            central.Bind(localSet.Descriptors);
 
             AssertBindOk(entrypoint, localSet);
         }
@@ -373,7 +178,7 @@ namespace Magnesium.OpenGL.UnitTests
         public void UnbindTexture()
         {
             var entrypoint = new MockTextureCentralEntrypoint();
-            var central = new MgTextureCentral(entrypoint);
+            var central = new GLTextureGallery(entrypoint);
 
             const int MAX_SLOTS = 7;
             entrypoint.MaxSlots = MAX_SLOTS;
@@ -403,7 +208,7 @@ namespace Magnesium.OpenGL.UnitTests
             {
                 Descriptors = new[]
                 {
-                    new MgTextureSlot
+                    new GLTextureSlot
                     {
                         Binding = BINDING,
                         Sampler = sampler,
@@ -412,14 +217,14 @@ namespace Magnesium.OpenGL.UnitTests
                 }
             };
 
-            central.Bind(preload);
+            central.Bind(preload.Descriptors);
             AssertBindOk(entrypoint, preload);
 
             var delta = new MgTextureDescriptorSet
             {
                 Descriptors = new[]
                 {
-                    new MgTextureSlot
+                    new GLTextureSlot
                     {
                         Binding = BINDING,
                         Sampler = sampler,
@@ -428,7 +233,7 @@ namespace Magnesium.OpenGL.UnitTests
                 }
             };
 
-            central.Bind(delta);
+            central.Bind(delta.Descriptors);
             AssertBindOk(entrypoint, delta);
         }
 
@@ -436,7 +241,7 @@ namespace Magnesium.OpenGL.UnitTests
         public void UnbindSampler()
         {
             var entrypoint = new MockTextureCentralEntrypoint();
-            var central = new MgTextureCentral(entrypoint);
+            var central = new GLTextureGallery(entrypoint);
 
             const int MAX_SLOTS = 7;
             entrypoint.MaxSlots = MAX_SLOTS;
@@ -466,7 +271,7 @@ namespace Magnesium.OpenGL.UnitTests
             {
                 Descriptors = new[]
                 {
-                    new MgTextureSlot
+                    new GLTextureSlot
                     {
                         Binding = BINDING,
                         Sampler = sampler,
@@ -475,14 +280,14 @@ namespace Magnesium.OpenGL.UnitTests
                 }
             };
 
-            central.Bind(preload);
+            central.Bind(preload.Descriptors);
             AssertBindOk(entrypoint, preload);
 
             var delta = new MgTextureDescriptorSet
             {
                 Descriptors = new[]
                 {
-                    new MgTextureSlot
+                    new GLTextureSlot
                     {
                         Binding = BINDING,
                         Sampler = null,
@@ -491,7 +296,7 @@ namespace Magnesium.OpenGL.UnitTests
                 }
             };
 
-            central.Bind(delta);
+            central.Bind(delta.Descriptors);
             AssertBindOk(entrypoint, delta);
         }
 
@@ -499,7 +304,7 @@ namespace Magnesium.OpenGL.UnitTests
         public void UnbindAll()
         {
             var entrypoint = new MockTextureCentralEntrypoint();
-            var central = new MgTextureCentral(entrypoint);
+            var central = new GLTextureGallery(entrypoint);
 
             const int MAX_SLOTS = 7;
             entrypoint.MaxSlots = MAX_SLOTS;
@@ -529,7 +334,7 @@ namespace Magnesium.OpenGL.UnitTests
             {
                 Descriptors = new[]
                 {
-                    new MgTextureSlot
+                    new GLTextureSlot
                     {
                         Binding = BINDING,
                         Sampler = sampler,
@@ -538,14 +343,14 @@ namespace Magnesium.OpenGL.UnitTests
                 }
             };
 
-            central.Bind(preload);
+            central.Bind(preload.Descriptors);
             AssertBindOk(entrypoint, preload);
 
             var delta = new MgTextureDescriptorSet
             {
                 Descriptors = new[]
                 {
-                    new MgTextureSlot
+                    new GLTextureSlot
                     {
                         Binding = BINDING,
                         Sampler = null,
@@ -554,7 +359,7 @@ namespace Magnesium.OpenGL.UnitTests
                 }
             };
 
-            central.Bind(delta);
+            central.Bind(delta.Descriptors);
             AssertBindOk(entrypoint, delta);
         }
 

@@ -10,7 +10,7 @@ namespace Magnesium.OpenGL
 			IGLSamplerEntrypoint sampler,
 			IGLDeviceImageEntrypoint image,
 			IGLDeviceImageViewEntrypoint imageView,
-			IGLImageDescriptorEntrypoint imageDescriptor,
+			//IGLImageDescriptorEntrypoint imageDescriptor,
 			IGLShaderModuleEntrypoint shaderModule,
 			IGLDescriptorPoolEntrypoint descriptorPool,
 			IGLBufferEntrypoint buffers,
@@ -30,7 +30,7 @@ namespace Magnesium.OpenGL
 			Sampler = sampler;
 			Image = image;
 			ImageView = imageView;
-			ImageDescriptor = imageDescriptor;
+			//ImageDescriptor = imageDescriptor;
 			ShaderModule = shaderModule;
 			DescriptorPool = descriptorPool;
 			Buffers = buffers;
@@ -73,10 +73,10 @@ namespace Magnesium.OpenGL
 			private set;
 		}
 
-		public IGLImageDescriptorEntrypoint ImageDescriptor {
-			get;
-			private set;
-		}
+		//public IGLImageDescriptorEntrypoint ImageDescriptor {
+		//	get;
+		//	private set;
+		//}
 
 		public IGLShaderModuleEntrypoint ShaderModule {
 			get;

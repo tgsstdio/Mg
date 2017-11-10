@@ -6,10 +6,8 @@ namespace Magnesium.OpenGL
 {
 	public class DefaultGLDescriptorSetEntrypoint : IGLDescriptorSetEntrypoint
 	{
-        private readonly IGLImageDescriptorEntrypoint mImage;
-        public DefaultGLDescriptorSetEntrypoint(IGLImageDescriptorEntrypoint image)
+        public DefaultGLDescriptorSetEntrypoint()
         {
-            mImage = image;
         }
 
 		#region AllocateDescriptorSets methods
@@ -232,15 +230,10 @@ namespace Magnesium.OpenGL
                     MgDescriptorImageInfo info = desc.ImageInfo[j];
 
                     var localSampler = (IGLSampler)info.Sampler;
-                    var localView = (GLImageView)info.ImageView;
-
-                    // Generate bindless texture handle 
-                    // FIXME : messy as F***
-
-                    var texHandle = mImage.CreateHandle(localView.TextureId, localSampler.SamplerId);
+                    var localView = (IGLImageView)info.ImageView;
 
                     var index = first + j;
-                    parentPool.CombinedImageSamplers.Items[index].Replace(texHandle);
+                    parentPool.CombinedImageSamplers.Items[index].Replace(desc.DstBinding, localView, localSampler);
                 }
             }
         }
