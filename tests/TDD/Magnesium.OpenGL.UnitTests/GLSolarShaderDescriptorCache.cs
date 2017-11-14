@@ -1,9 +1,14 @@
-﻿namespace Magnesium.OpenGL
+﻿using System.Collections.Generic;
+using System.Diagnostics;
+
+namespace Magnesium.OpenGL.UnitTests
 {
-    public class GLTextureGallery : IGLTextureGallery
+    class GLSolarShaderDescriptorCache : IGLFutureShaderDescriptorCache
     {
         private IGLTextureGalleryEntrypoint mEntrypoint;
-        public GLTextureGallery(IGLTextureGalleryEntrypoint entrypoint)
+        private GLTextureSlot[] AvailableSlots;
+
+        public GLSolarShaderDescriptorCache(IGLTextureGalleryEntrypoint entrypoint)
         {
             mEntrypoint = entrypoint;
             AvailableSlots = new GLTextureSlot[0];
@@ -22,15 +27,28 @@
                     View = null,
                 };
                 // REMOVE ALL EXISTING BINDINGS 
-                    // NOT SURE WHICH VALUE SHOULD BE USED
+                // NOT SURE WHICH VALUE SHOULD BE USED
                 mEntrypoint.UnbindView(i, MgImageViewType.TYPE_2D);
                 mEntrypoint.UnbindSampler(i);
             }
         }
 
-        public GLTextureSlot[] AvailableSlots { get; private set; }
+        public void Bind(IGLFutureDescriptorSet ds, GLDescriptorPoolResourceInfo resource)
+        {
+            var parentPool = (GLSolarDescriptorPool) ds.Parent;
+            Debug.Assert(parentPool != null);
 
-        public void Bind(GLTextureSlot[] descriptors)
+            var images = new List<GLTextureSlot>();
+            for (var i = resource.Ticket.First; i <= resource.Ticket.Last; i += 1)
+			{
+                images.Add(parentPool.CombinedImageSamplers.Items[i]);
+			}
+
+            BindImages(images.ToArray());
+        }
+
+
+        void BindImages(GLTextureSlot[] descriptors)
         {
             foreach (var srcDescriptor in descriptors)
             {
@@ -112,6 +130,4 @@
             }
         }
     }
-
 }
-

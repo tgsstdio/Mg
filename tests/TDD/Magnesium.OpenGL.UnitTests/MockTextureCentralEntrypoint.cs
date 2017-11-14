@@ -6,7 +6,7 @@ namespace Magnesium.OpenGL.UnitTests
     {
         public class ViewInfo
         {
-            public MgImageViewType? ViewType { get; set; }
+            public MgImageViewType ViewType { get; set; }
             public int TextureId { get; set; }
         }
 
@@ -24,16 +24,16 @@ namespace Magnesium.OpenGL.UnitTests
             }            
         }
 
-        public void UnbindView(uint binding)
+        public void UnbindView(uint binding, MgImageViewType viewType)
         {
             if (Views.TryGetValue(binding, out ViewInfo view))
             {
                 view.TextureId = 0;
-                view.ViewType = null;
+                view.ViewType = viewType;
             }
             else
             {
-                Views.Add(binding, new ViewInfo { TextureId = 0, ViewType = null });
+                Views.Add(binding, new ViewInfo { TextureId = 0, ViewType = viewType });
             }
         }
 

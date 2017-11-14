@@ -5,7 +5,8 @@ namespace Magnesium.OpenGL
 	{
 		CombinedImageSampler = 1,
 		StorageBuffer = 2,
-		UniformBuffer = 3
-	}
+		UniformBuffer = 3,
+        None = 4
+    }
 }
 

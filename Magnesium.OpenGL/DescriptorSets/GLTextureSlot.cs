@@ -9,7 +9,7 @@ namespace Magnesium.OpenGL
         public IGLImageView View { get; set; }
         public IGLSampler Sampler { get; set; }
 
-        internal void Replace(uint dstBinding, IGLImageView localView, IGLSampler localSampler)
+        public void Replace(uint dstBinding, IGLImageView localView, IGLSampler localSampler)
         {
             Binding = dstBinding;
             View = localView;

@@ -11,9 +11,9 @@ namespace Magnesium.OpenGL
 		}
 
 		public uint BufferId { get; set; }
-		public bool IsDynamic { get; internal set; }
-		public long Offset { get; internal set; }
-		public int Size { get; internal set; }
+		public bool IsDynamic { get; set; }
+		public long Offset { get; set; }
+		public int Size { get; set; }
 
 		public void Destroy()
 		{

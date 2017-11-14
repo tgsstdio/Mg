@@ -327,7 +327,6 @@ void main(void)
                 null,
                 null,
                 null,
-                null,
                 selector
                );
             var configuration = new MockGraphicsConfiguration(deviceEntrypoint);

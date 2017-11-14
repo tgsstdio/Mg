@@ -61,7 +61,7 @@ namespace Magnesium.OpenGL.UnitTests
                     bool found = entrypoint.Views.TryGetValue(i, out MockTextureCentralEntrypoint.ViewInfo entry);
                     Assert.IsTrue(found);
                     Assert.IsNotNull(entry);
-                    Assert.IsFalse(entry.ViewType.HasValue);
+                    Assert.AreEqual(MgImageViewType.TYPE_2D, entry.ViewType);
                     Assert.AreEqual(0, entry.TextureId);
                 }
 
@@ -385,12 +385,11 @@ namespace Magnesium.OpenGL.UnitTests
                     Assert.AreEqual(textureId, entry.TextureId);
                     if (descriptor.View != null)
                     {
-                        Assert.IsTrue(entry.ViewType.HasValue);
                         Assert.AreEqual(descriptor.View.ViewTarget, entry.ViewType);
                     }
                     else
                     {
-                        Assert.IsFalse(entry.ViewType.HasValue);
+                        Assert.AreEqual(MgImageViewType.TYPE_2D, entry.ViewType);
                     }
                 }
             }

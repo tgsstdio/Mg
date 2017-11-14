@@ -15,6 +15,7 @@ Magnesium and its implementations uses [Semantic Versioning v2.0.0](http://semve
 	- Updated GetInstanceProcAddr & GetDeviceProcAddr to accept proc names as null-terminated UTF-8 strings
 	- Using one graphics device implementation for both Magnesium.Vulkan and Mg.OpenGL.DesktopGL 
 	- Removed OpenTKGraphicsDevice and its references from examples and tests 
+	- Removed bindless textures implementation 
 
 ## Version 5.2.9
  - Magnesium v5.2.9 - 10 Oct 2017 10 Oct 2017

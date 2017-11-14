@@ -163,8 +163,8 @@ namespace OffscreenDemo.DesktopGL
                 Magnesium.OpenGL.DesktopGL.FullGLDeviceImageViewEntrypoint>(new PerContainerLifetime());
             container.Register<Magnesium.OpenGL.IGLImageFormatEntrypoint,
                 Magnesium.OpenGL.DesktopGL.DesktopGLImageFormatEntrypoint>(new PerContainerLifetime());
-            container.Register<Magnesium.OpenGL.IGLImageDescriptorEntrypoint,
-                Magnesium.OpenGL.DesktopGL.FullGLImageDescriptorEntrypoint>(new PerContainerLifetime());
+            //container.Register<Magnesium.OpenGL.IGLImageDescriptorEntrypoint,
+            //    Magnesium.OpenGL.DesktopGL.FullGLImageDescriptorEntrypoint>(new PerContainerLifetime());
             container.Register<Magnesium.OpenGL.IGLShaderModuleEntrypoint,
                 Magnesium.OpenGL.DesktopGL.FullGLShaderModuleEntrypoint>(new PerContainerLifetime());
             container.Register<Magnesium.OpenGL.IGLDescriptorPoolEntrypoint,

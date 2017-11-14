@@ -48,6 +48,17 @@
     <Compile Include="ArrayPoolTests.cs" />
     <Compile Include="BlockTokenizerTest.cs" />
     <Compile Include="BuildPointDirectoryTest.cs" />
+    <Compile Include="GLFutureDescriptorSet.cs" />
+    <Compile Include="GLLunarDescriptorPool.cs" />
+    <Compile Include="GLLunarImageDescriptor.cs" />
+    <Compile Include="GLLunarShaderDescriptorCache.cs" />
+    <Compile Include="GLSolarDescriptorPool.cs" />
+    <Compile Include="GLSolarShaderDescriptorCache.cs" />
+    <Compile Include="IGLFutureDescriptorPool.cs" />
+    <Compile Include="IGLFutureDescriptorSet.cs" />
+    <Compile Include="IGLFutureDescriptorSetEntrypoint.cs" />
+    <Compile Include="IGLFutureShaderDescriptorCache.cs" />
+    <Compile Include="IGLLunarImageDescriptorEntrypoint.cs" />
     <Compile Include="MockTextureCentralEntrypoint.cs" />
     <Compile Include="SubpassTransactionsUnitTests.cs" />
     <Compile Include="CollatorTest.cs" />
@@ -62,6 +73,7 @@
     <Compile Include="MockGLStaticBufferResource.cs" />
     <Compile Include="NullDescriptorSetBinding.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SwappableDescriptorUnitTests.cs" />
     <Compile Include="TextureSlotsUnitTests.cs" />
   </ItemGroup>
   <ItemGroup>
