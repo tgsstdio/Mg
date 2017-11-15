@@ -15,7 +15,7 @@ namespace Magnesium.OpenGL.UnitTests
         private readonly ConcurrentBag<IGLFutureDescriptorSet> mAvailableSets;
         public IDictionary<uint, IGLFutureDescriptorSet> AllocatedSets { get; private set; }
 
-        IGLDescriptorPoolResource<GLTextureSlot> mCombinedImageSamplers;
+        public IGLDescriptorPoolResource<GLTextureSlot> CombinedImageSamplers { get; private set; }
         IGLDescriptorPoolResource<GLBufferDescriptor> mStorageBuffers;
         IGLDescriptorPoolResource<GLBufferDescriptor> mUniformBuffers;
 
@@ -90,7 +90,7 @@ namespace Magnesium.OpenGL.UnitTests
             {
                 cis[i] = new GLTextureSlot();
             }
-            mCombinedImageSamplers = new GLPoolResource<GLTextureSlot>(
+            CombinedImageSamplers = new GLPoolResource<GLTextureSlot>(
                 noOfCombinedImageSamplers,
                 cis);
         }
@@ -110,7 +110,7 @@ namespace Magnesium.OpenGL.UnitTests
                         mUniformBuffers.Free(resourceInfo.Ticket);
                         break;
                     case GLDescriptorBindingGroup.CombinedImageSampler:
-                        mCombinedImageSamplers.Free(resourceInfo.Ticket);
+                        CombinedImageSamplers.Free(resourceInfo.Ticket);
                         break;
                     case GLDescriptorBindingGroup.StorageBuffer:
                         mStorageBuffers.Free(resourceInfo.Ticket);
@@ -152,7 +152,7 @@ namespace Magnesium.OpenGL.UnitTests
             {
                 case MgDescriptorType.COMBINED_IMAGE_SAMPLER:
                     groupType = GLDescriptorBindingGroup.CombinedImageSampler;
-                    if (!mCombinedImageSamplers.Allocate(count, out ticket))
+                    if (!CombinedImageSamplers.Allocate(count, out ticket))
                     { 
                         resource = null;
                         return GLPoolAllocationStatus.FailedAllocation;
@@ -249,7 +249,7 @@ namespace Magnesium.OpenGL.UnitTests
                     var localView = (IGLImageView)info.ImageView;
 
                     var index = first + j;
-                    mCombinedImageSamplers.Items[index].Replace(desc.DstBinding, localView, localSampler);
+                    CombinedImageSamplers.Items[index].Replace(desc.DstBinding, localView, localSampler);
                 }
             }
         }

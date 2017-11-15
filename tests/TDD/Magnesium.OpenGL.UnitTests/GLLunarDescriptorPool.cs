@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 namespace Magnesium.OpenGL.UnitTests
 {
-
     class GLLunarDescriptorPool : IGLFutureDescriptorPool
     {
         private IGLLunarImageDescriptorEntrypoint mEntrypoint;
@@ -105,6 +104,14 @@ namespace Magnesium.OpenGL.UnitTests
         {
             if (BufferId != 0)
                 mEntrypoint.DestroyBuffer(BufferId);
+
+            foreach (var img in mCombinedImageSamplers.Items)
+            {
+                if (img != null)
+                {
+                    img.Destroy();
+                }
+            }
         }
 
         public void ResetResource(GLDescriptorPoolResourceInfo resourceInfo)
@@ -248,6 +255,7 @@ namespace Magnesium.OpenGL.UnitTests
         {
             if (resource.GroupType == GLDescriptorBindingGroup.CombinedImageSampler)
             {
+                var deltaHandles = new long[count];
                 for (var j = 0; j < count; j += 1)
                 {
                     MgDescriptorImageInfo info = desc.ImageInfo[j];
@@ -256,8 +264,15 @@ namespace Magnesium.OpenGL.UnitTests
                     var localView = (IGLImageView)info.ImageView;
 
                     var index = first + j;
-                    mCombinedImageSamplers.Items[index].Replace(desc.DstBinding, localView, localSampler);
+
+                    var texHandle = mEntrypoint.CreateHandle(localView.TextureId, localSampler.SamplerId);
+                    deltaHandles[j] = (texHandle);
+
+                    mCombinedImageSamplers.Items[index].Replace(texHandle);
                 }
+
+                var offset = sizeof(long) * first;
+                mEntrypoint.InsertHandles(BufferId, offset, deltaHandles);
             }
         }
 

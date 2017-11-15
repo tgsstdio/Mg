@@ -38,31 +38,24 @@ namespace Magnesium.OpenGL.UnitTests
             var parentPool = (GLSolarDescriptorPool) ds.Parent;
             Debug.Assert(parentPool != null);
 
-            var images = new List<GLTextureSlot>();
             for (var i = resource.Ticket.First; i <= resource.Ticket.Last; i += 1)
 			{
-                images.Add(parentPool.CombinedImageSamplers.Items[i]);
+                BindImages(parentPool.CombinedImageSamplers.Items[i]);
 			}
-
-            BindImages(images.ToArray());
         }
 
-
-        void BindImages(GLTextureSlot[] descriptors)
+        void BindImages(GLTextureSlot srcDescriptor)
         {
-            foreach (var srcDescriptor in descriptors)
+            var destBinding = srcDescriptor.Binding;
+
+            if (destBinding < (uint)AvailableSlots.Length)
             {
-                var destBinding = srcDescriptor.Binding;
+                var dest = AvailableSlots[destBinding];
 
-                if (destBinding < (uint)AvailableSlots.Length)
-                {
-                    var dest = AvailableSlots[destBinding];
+                UpdateViewIfNeeded(srcDescriptor, destBinding, dest);
 
-                    UpdateViewIfNeeded(srcDescriptor, destBinding, dest);
-
-                    UpdateSamplerIfNeeded(dest, destBinding, srcDescriptor);
-                }
-            }
+                UpdateSamplerIfNeeded(dest, destBinding, srcDescriptor);
+            }            
         }
 
         private void UpdateSamplerIfNeeded(GLTextureSlot dest, uint destBinding, GLTextureSlot srcDescriptor)

@@ -4,10 +4,6 @@ using System.Collections.Generic;
 
 namespace Magnesium.OpenGL.UnitTests
 {
-    interface IGLLunarUniformBindingEntrypoint
-    {
-        void BindUniformBuffer(uint binding, int bufferId, IntPtr offset, long size);
-    }
 
     class GLBaseDescriptorSetEntrypoint : IGLFutureDescriptorSetEntrypoint
     {
@@ -133,59 +129,6 @@ namespace Magnesium.OpenGL.UnitTests
             }
         }
     }
-
-    class GLSolarDescriptorSetEntrypoint : IGLFutureDescriptorSetEntrypoint
-    {
-        public Result Allocate(MgDescriptorSetAllocateInfo pAllocateInfo, out IMgDescriptorSet[] pDescriptorSets)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IGLFutureDescriptorPool CreatePool(MgDescriptorPoolCreateInfo createInfo)
-        {
-            return new GLSolarDescriptorPool(createInfo);
-        }
-
-        public Result Free(IMgDescriptorPool descriptorPool, IMgDescriptorSet[] pDescriptorSets)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Update(MgWriteDescriptorSet[] pDescriptorWrites, MgCopyDescriptorSet[] pDescriptorCopies)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    class GLLunarDescriptorSetEntrypoint : IGLFutureDescriptorSetEntrypoint
-    {
-        private IGLLunarImageDescriptorEntrypoint mEntrypoint;
-        public GLLunarDescriptorSetEntrypoint(IGLLunarImageDescriptorEntrypoint entrypoint)
-        {
-            mEntrypoint = entrypoint;
-        }
-
-        public Result Allocate(MgDescriptorSetAllocateInfo pAllocateInfo, out IMgDescriptorSet[] pDescriptorSets)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IGLFutureDescriptorPool CreatePool(MgDescriptorPoolCreateInfo createInfo)
-        {
-            return new GLLunarDescriptorPool(mEntrypoint, createInfo);
-        }
-
-        public Result Free(IMgDescriptorPool descriptorPool, IMgDescriptorSet[] pDescriptorSets)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Update(MgWriteDescriptorSet[] pDescriptorWrites, MgCopyDescriptorSet[] pDescriptorCopies)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
 
     class SwappableDescriptorUnitTests
     {

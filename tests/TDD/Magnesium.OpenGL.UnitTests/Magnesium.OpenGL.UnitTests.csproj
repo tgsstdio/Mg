@@ -59,6 +59,15 @@
     <Compile Include="IGLFutureDescriptorSetEntrypoint.cs" />
     <Compile Include="IGLFutureShaderDescriptorCache.cs" />
     <Compile Include="IGLLunarImageDescriptorEntrypoint.cs" />
+    <Compile Include="IGLLunarUniformBindingEntrypoint.cs" />
+    <Compile Include="IMgDecoratorFactory.cs" />
+    <Compile Include="IMgDestroyElementLogger.cs" />
+    <Compile Include="IMgEntrypointValidationLayer.cs" />
+    <Compile Include="IMgInstanceValidationLayer.cs" />
+    <Compile Include="MgMultiLayeredDeviceDecorator.cs" />
+    <Compile Include="MgMultiLayeredEntrypointDecorator.cs" />
+    <Compile Include="MgMultiLayeredInstanceDecorator.cs" />
+    <Compile Include="MgMultiLayeredPhysicalDeviceDecorator.cs" />
     <Compile Include="MockTextureCentralEntrypoint.cs" />
     <Compile Include="SubpassTransactionsUnitTests.cs" />
     <Compile Include="CollatorTest.cs" />
@@ -75,6 +84,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SwappableDescriptorUnitTests.cs" />
     <Compile Include="TextureSlotsUnitTests.cs" />
+    <Compile Include="UserValidationUnitTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
