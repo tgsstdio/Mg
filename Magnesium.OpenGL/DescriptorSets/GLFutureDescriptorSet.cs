@@ -1,6 +1,6 @@
-﻿namespace Magnesium.OpenGL.UnitTests
+﻿namespace Magnesium.OpenGL
 {
-    class GLFutureDescriptorSet : IGLFutureDescriptorSet
+    public class GLFutureDescriptorSet : IGLFutureDescriptorSet
     {
         public uint Key { get; private set; }
         public IGLFutureDescriptorPool Parent { get; private set; }

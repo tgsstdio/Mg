@@ -75,6 +75,8 @@
     <Compile Include="Entrypoint\FullGLBlitOperationEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLCmdShaderProgramEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLFullFenceEntrypoint.cs" />
+    <Compile Include="Entrypoint\FullGLLunarImageDescriptorEntrypoint.cs" />
+    <Compile Include="Entrypoint\FullGLLunarUniformBindingEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLPhysicalDeviceFormatLookupEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLTextureGalleryEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLUniformBlockEntrypoint.cs" />

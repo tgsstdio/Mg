@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Magnesium.OpenGL.UnitTests
+namespace Magnesium.OpenGL
 {
-    interface IGLFutureDescriptorSet : IMgDescriptorSet, IEquatable<IGLFutureDescriptorSet>
+    public interface IGLFutureDescriptorSet : IMgDescriptorSet, IEquatable<IGLFutureDescriptorSet>
     {
         uint Key { get; }
         IGLFutureDescriptorPool Parent { get; }

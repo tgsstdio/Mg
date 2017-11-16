@@ -1,7 +1,7 @@
-﻿namespace Magnesium.OpenGL.UnitTests
+﻿namespace Magnesium.OpenGL
 {
     // Sits at shader cache level (run-time) 
-    interface IGLFutureShaderDescriptorCache
+    public interface IGLShaderTextureDescriptorCache
     {
         void Initialize();
         void Bind(IGLFutureDescriptorSet ds, GLDescriptorPoolResourceInfo resource);

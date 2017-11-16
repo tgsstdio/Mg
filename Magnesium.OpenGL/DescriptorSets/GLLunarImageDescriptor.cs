@@ -1,6 +1,6 @@
-﻿namespace Magnesium.OpenGL.UnitTests
+﻿namespace Magnesium.OpenGL
 {
-    class GLLunarImageDescriptor
+    public class GLLunarImageDescriptor
     {
         readonly IGLLunarImageDescriptorEntrypoint mImgDescriptor;
         public GLLunarImageDescriptor(IGLLunarImageDescriptorEntrypoint imgDescriptor)

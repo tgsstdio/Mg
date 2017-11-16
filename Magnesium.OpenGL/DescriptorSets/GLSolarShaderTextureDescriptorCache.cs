@@ -1,14 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
-namespace Magnesium.OpenGL.UnitTests
+namespace Magnesium.OpenGL
 {
-    class GLSolarShaderDescriptorCache : IGLFutureShaderDescriptorCache
+    class GLSolarShaderTextureDescriptorCache : IGLShaderTextureDescriptorCache
     {
         private IGLTextureGalleryEntrypoint mEntrypoint;
         private GLTextureSlot[] AvailableSlots;
 
-        public GLSolarShaderDescriptorCache(IGLTextureGalleryEntrypoint entrypoint)
+        public GLSolarShaderTextureDescriptorCache(IGLTextureGalleryEntrypoint entrypoint)
         {
             mEntrypoint = entrypoint;
             AvailableSlots = new GLTextureSlot[0];

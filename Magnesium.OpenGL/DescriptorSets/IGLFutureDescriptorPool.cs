@@ -1,21 +1,14 @@
 ﻿using System.Collections.Generic;
 
-namespace Magnesium.OpenGL.UnitTests
+namespace Magnesium.OpenGL
 {
-    enum GLPoolAllocationStatus
-    {
-        SuccessfulAllocation,
-        FailedAllocation,
-        ResourceNotSupported
-    }
-
     // descriptor pool can contain any implementation
-    interface IGLFutureDescriptorPool
+    public interface IGLFutureDescriptorPool
     {
         uint MaxSets { get; }
         IDictionary<uint, IGLFutureDescriptorSet> AllocatedSets { get; }
 
-        GLPoolAllocationStatus AllocateTicket(
+        GLDescriptorPoolAllocationStatus AllocateTicket(
             MgDescriptorType descriptorType,
             uint binding,
             uint count,

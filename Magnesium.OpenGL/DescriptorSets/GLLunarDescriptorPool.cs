@@ -3,24 +3,26 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
-namespace Magnesium.OpenGL.UnitTests
+namespace Magnesium.OpenGL
 {
-    // CODENAME: SOLAR => global texture unit 
-    // CODENAME: LUNAR => array of bindless textures via uniform block binding 
-
-    class GLSolarDescriptorPool : IGLFutureDescriptorPool
+    public class GLLunarDescriptorPool : IGLFutureDescriptorPool
     {
+        private IGLLunarImageDescriptorEntrypoint mEntrypoint;
+
         public uint MaxSets { get; set; }
 
         private readonly ConcurrentBag<IGLFutureDescriptorSet> mAvailableSets;
         public IDictionary<uint, IGLFutureDescriptorSet> AllocatedSets { get; private set; }
 
-        public IGLDescriptorPoolResource<GLTextureSlot> CombinedImageSamplers { get; private set; }
+        IGLDescriptorPoolResource<GLLunarImageDescriptor> mCombinedImageSamplers;
         IGLDescriptorPoolResource<GLBufferDescriptor> mStorageBuffers;
         IGLDescriptorPoolResource<GLBufferDescriptor> mUniformBuffers;
+        public uint BufferId { get; internal set; }
 
-        public GLSolarDescriptorPool(MgDescriptorPoolCreateInfo createInfo)
+        public GLLunarDescriptorPool(IGLLunarImageDescriptorEntrypoint entrypoint, MgDescriptorPoolCreateInfo createInfo)
         {
+            mEntrypoint = entrypoint;
+
             MaxSets = createInfo.MaxSets;
             mAvailableSets = new ConcurrentBag<IGLFutureDescriptorSet>();
             for (var i = 1U; i <= MaxSets; i += 1)
@@ -85,19 +87,31 @@ namespace Magnesium.OpenGL.UnitTests
 
         void SetupCombinedImageSamplers(uint noOfCombinedImageSamplers)
         {
-            var cis = new GLTextureSlot[noOfCombinedImageSamplers];
+            var cis = new GLLunarImageDescriptor[noOfCombinedImageSamplers];
             for (var i = 0; i < noOfCombinedImageSamplers; i += 1)
             {
-                cis[i] = new GLTextureSlot();
+                cis[i] = new GLLunarImageDescriptor(mEntrypoint);
             }
-            CombinedImageSamplers = new GLPoolResource<GLTextureSlot>(
+            mCombinedImageSamplers = new GLPoolResource<GLLunarImageDescriptor>(
                 noOfCombinedImageSamplers,
                 cis);
+
+            var overallSize = noOfCombinedImageSamplers * sizeof(long);
+            BufferId = mEntrypoint.CreateBuffer(overallSize);
         }
 
         public void DestroyDescriptorPool(IMgDevice device, IMgAllocationCallbacks allocator)
         {
+            if (BufferId != 0)
+                mEntrypoint.DestroyBuffer(BufferId);
 
+            foreach (var img in mCombinedImageSamplers.Items)
+            {
+                if (img != null)
+                {
+                    img.Destroy();
+                }
+            }
         }
 
         public void ResetResource(GLDescriptorPoolResourceInfo resourceInfo)
@@ -110,7 +124,7 @@ namespace Magnesium.OpenGL.UnitTests
                         mUniformBuffers.Free(resourceInfo.Ticket);
                         break;
                     case GLDescriptorBindingGroup.CombinedImageSampler:
-                        CombinedImageSamplers.Free(resourceInfo.Ticket);
+                        mCombinedImageSamplers.Free(resourceInfo.Ticket);
                         break;
                     case GLDescriptorBindingGroup.StorageBuffer:
                         mStorageBuffers.Free(resourceInfo.Ticket);
@@ -140,7 +154,7 @@ namespace Magnesium.OpenGL.UnitTests
             return mAvailableSets.TryTake(out result);
         }
 
-        public GLPoolAllocationStatus AllocateTicket(
+        public GLDescriptorPoolAllocationStatus AllocateTicket(
             MgDescriptorType descriptorType,
             uint binding,
             uint count,
@@ -152,10 +166,10 @@ namespace Magnesium.OpenGL.UnitTests
             {
                 case MgDescriptorType.COMBINED_IMAGE_SAMPLER:
                     groupType = GLDescriptorBindingGroup.CombinedImageSampler;
-                    if (!CombinedImageSamplers.Allocate(count, out ticket))
-                    { 
+                    if (!mCombinedImageSamplers.Allocate(count, out ticket))
+                    {
                         resource = null;
-                        return GLPoolAllocationStatus.FailedAllocation;
+                        return GLDescriptorPoolAllocationStatus.FailedAllocation;
                     }
                     break;
                 case MgDescriptorType.STORAGE_BUFFER:
@@ -163,7 +177,7 @@ namespace Magnesium.OpenGL.UnitTests
                     if (!mStorageBuffers.Allocate(count, out ticket))
                     {
                         resource = null;
-                        return GLPoolAllocationStatus.FailedAllocation;
+                        return GLDescriptorPoolAllocationStatus.FailedAllocation;
                     }
                     break;
                 case MgDescriptorType.UNIFORM_BUFFER:
@@ -171,12 +185,12 @@ namespace Magnesium.OpenGL.UnitTests
                     if (!mUniformBuffers.Allocate(count, out ticket))
                     {
                         resource = null;
-                        return GLPoolAllocationStatus.FailedAllocation;
+                        return GLDescriptorPoolAllocationStatus.FailedAllocation;
                     }
                     break;
                 default:
                     resource = null;
-                    return GLPoolAllocationStatus.ResourceNotSupported;
+                    return GLDescriptorPoolAllocationStatus.ResourceNotSupported;
             }
 
             resource = new GLDescriptorPoolResourceInfo
@@ -186,7 +200,7 @@ namespace Magnesium.OpenGL.UnitTests
                 GroupType = groupType,
                 Ticket = ticket,
             };
-            return GLPoolAllocationStatus.SuccessfulAllocation;
+            return GLDescriptorPoolAllocationStatus.SuccessfulAllocation;
         }
 
         public void WritePoolValues(
@@ -234,13 +248,14 @@ namespace Magnesium.OpenGL.UnitTests
         }
 
         void UpdateCombinedImageSamplers(
-            MgWriteDescriptorSet desc, 
-            GLDescriptorPoolResourceInfo resource, 
+            MgWriteDescriptorSet desc,
+            GLDescriptorPoolResourceInfo resource,
             uint first,
             uint count)
         {
             if (resource.GroupType == GLDescriptorBindingGroup.CombinedImageSampler)
             {
+                var deltaHandles = new long[count];
                 for (var j = 0; j < count; j += 1)
                 {
                     MgDescriptorImageInfo info = desc.ImageInfo[j];
@@ -249,8 +264,15 @@ namespace Magnesium.OpenGL.UnitTests
                     var localView = (IGLImageView)info.ImageView;
 
                     var index = first + j;
-                    CombinedImageSamplers.Items[index].Replace(desc.DstBinding, localView, localSampler);
+
+                    var texHandle = mEntrypoint.CreateHandle(localView.TextureId, localSampler.SamplerId);
+                    deltaHandles[j] = (texHandle);
+
+                    mCombinedImageSamplers.Items[index].Replace(texHandle);
                 }
+
+                var offset = sizeof(long) * first;
+                mEntrypoint.InsertHandles(BufferId, offset, deltaHandles);
             }
         }
 

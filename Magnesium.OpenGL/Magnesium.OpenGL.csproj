@@ -98,6 +98,11 @@
     <Compile Include="CommandBuffer\IGLCmdEncoderContextSorter.cs" />
     <Compile Include="CommandBuffer\IGLCmdGraphicsEncoder.cs" />
     <Compile Include="CommandBuffer\IGLCmdStateRenderer.cs" />
+    <Compile Include="DescriptorSets\GLDescriptorPoolAllocationStatus.cs" />
+    <Compile Include="DescriptorSets\GLFutureDescriptorSet.cs" />
+    <Compile Include="DescriptorSets\GLLunarDescriptorPool.cs" />
+    <Compile Include="DescriptorSets\GLLunarImageDescriptor.cs" />
+    <Compile Include="DescriptorSets\GLLunarShaderTextureDescriptorCache.cs" />
     <Compile Include="DescriptorSets\GLNextCmdShaderProgramCache.cs" />
     <Compile Include="DescriptorSets\GLBindingPointOffsetInfo.cs" />
     <Compile Include="DescriptorSets\GLBufferDescriptor.cs" />
@@ -109,6 +114,11 @@
     <Compile Include="DescriptorSets\GLInternalCacheArrayMapper.cs" />
     <Compile Include="DescriptorSets\GLInternalCacheBlockBinding.cs" />
     <Compile Include="DescriptorSets\GLNextDescriptorSet.cs" />
+    <Compile Include="DescriptorSets\GLSolarDescriptorPool.cs" />
+    <Compile Include="DescriptorSets\GLSolarShaderTextureDescriptorCache.cs" />
+    <Compile Include="DescriptorSets\IGLFutureDescriptorPool.cs" />
+    <Compile Include="DescriptorSets\IGLFutureDescriptorSet.cs" />
+    <Compile Include="DescriptorSets\IGLShaderTextureDescriptorCache.cs" />
     <Compile Include="DescriptorSets\IGLTextureGallery.cs" />
     <Compile Include="DescriptorSets\MgTextureCentral.cs" />
     <Compile Include="Device\GLClearAttachmentDivisor.cs" />
@@ -134,7 +144,11 @@
     <Compile Include="Entrypoint\DefaultGLUniformBlockNameParser.cs" />
     <Compile Include="DescriptorSets\IGLCmdShaderProgramCache.cs" />
     <Compile Include="Device\GLDescriptorSetLayout.cs" />
+    <Compile Include="Entrypoint\GLFutureDescriptorSetEntrypoint.cs" />
+    <Compile Include="Entrypoint\GLLunarDescriptorPoolEntrypoint.cs" />
     <Compile Include="Entrypoint\GLOffscreenDeviceEntrypoint.cs" />
+    <Compile Include="Entrypoint\GLSolarDescriptorPoolEntrypoint.cs" />
+    <Compile Include="Entrypoint\IGLFutureDescriptorPoolEntrypoint.cs" />
     <Compile Include="Entrypoint\IGLCmdShaderProgramEntrypoint.cs" />
     <Compile Include="DescriptorSets\IGLDescriptorPoolResource.cs" />
     <Compile Include="DescriptorSets\IGLDescriptorSet.cs" />
@@ -143,6 +157,8 @@
     <Compile Include="DescriptorSets\IGLDescriptorSetLayout.cs" />
     <Compile Include="DescriptorSets\IGLNextDescriptorPool.cs" />
     <Compile Include="DescriptorSets\IGLPipelineLayout.cs" />
+    <Compile Include="Entrypoint\IGLLunarImageDescriptorEntrypoint.cs" />
+    <Compile Include="Entrypoint\IGLLunarUniformBindingEntrypoint.cs" />
     <Compile Include="Entrypoint\IGLUniformBlockNameParser.cs" />
     <Compile Include="Device\IGLCommandBuffer.cs" />
     <Compile Include="Device\IGLFence.cs" />
