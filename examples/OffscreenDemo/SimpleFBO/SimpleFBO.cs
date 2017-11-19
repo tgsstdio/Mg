@@ -34,7 +34,13 @@ namespace Examples.Tutorial
 
         #region CreateOffscreenShader methods
 
-        string vertexShaderSource = @"
+        int mOffscreenShaderProgram;
+       // int mProjectionMatrixLocation;
+       // int mModelviewMatrixLocation;
+
+        static int CreateOffscreenShader()
+        {
+            string vertexShaderSource = @"
 #version 450
 
 precision highp float;
@@ -51,14 +57,14 @@ out vec2 texCoords;
 
 void main(void)
 {
-  //works only for orthogonal modelview
-  texCoords = in_uv;
-  normal = (modelview_matrix * vec4(in_normal, 0)).xyz;
+    //works only for orthogonal modelview
+    texCoords = in_uv;
+    normal = (modelview_matrix * vec4(in_normal, 0)).xyz;
   
-  gl_Position = projection_matrix * modelview_matrix * vec4(in_position, 1);
+    gl_Position = projection_matrix * modelview_matrix * vec4(in_position, 1);
 }";
 
-        string fragmentShaderSource = @"
+            string fragmentShaderSource = @"
 #version 450
 
 precision highp float;
@@ -74,17 +80,10 @@ out vec4 out_frag_color;
 
 void main(void)
 {
-   float diffuse = clamp(dot(lightVecNormalized, normalize(normal)), 0.0, 1.0);
-  out_frag_color = vec4(ambient + diffuse * lightColor, 1.0);
-  //  out_frag_color = vec4(0, 0, 1, 1);
+    float diffuse = clamp(dot(lightVecNormalized, normalize(normal)), 0.0, 1.0);
+    out_frag_color = vec4(ambient + diffuse * lightColor, 1.0);
+    //  out_frag_color = vec4(0, 0, 1, 1);
 }";
-
-        int mOffscreenShaderProgram;
-        int mProjectionMatrixLocation;
-        int mModelviewMatrixLocation;
-
-        void CreateOffscreenShader()
-        {
             var vertexShaderHandle = GL.CreateShader(ShaderType.VertexShader);
             var fragmentShaderHandle = GL.CreateShader(ShaderType.FragmentShader);
 
@@ -98,37 +97,38 @@ void main(void)
             Console.WriteLine(GL.GetShaderInfoLog(fragmentShaderHandle));
 
             // Create program
-            mOffscreenShaderProgram = GL.CreateProgram();
+            var programId = GL.CreateProgram();
 
-            GL.AttachShader(mOffscreenShaderProgram, vertexShaderHandle);
-            GL.AttachShader(mOffscreenShaderProgram, fragmentShaderHandle);
+            GL.AttachShader(programId, vertexShaderHandle);
+            GL.AttachShader(programId, fragmentShaderHandle);
 
-             GL.BindAttribLocation(mOffscreenShaderProgram, 0, "in_position");
-            GL.BindAttribLocation(mOffscreenShaderProgram, 1, "in_normal");
-            GL.BindAttribLocation(mOffscreenShaderProgram, 2, "in_uv");
+             GL.BindAttribLocation(programId, 0, "in_position");
+            GL.BindAttribLocation(programId, 1, "in_normal");
+            GL.BindAttribLocation(programId, 2, "in_uv");
 
-            GL.LinkProgram(mOffscreenShaderProgram);
-            Console.WriteLine(GL.GetProgramInfoLog(mOffscreenShaderProgram));
+            GL.LinkProgram(programId);
+            Console.WriteLine(GL.GetProgramInfoLog(programId));
 
             GL.DeleteShader(vertexShaderHandle);
             GL.DeleteShader(fragmentShaderHandle);
 
             //GL.UseProgram(mShaderProgramHandle);
 
-            GL.UseProgram(mOffscreenShaderProgram);
+            GL.UseProgram(programId);
             // Set uniforms
-            mProjectionMatrixLocation = GL.GetUniformLocation(mOffscreenShaderProgram, "projection_matrix");
-            mModelviewMatrixLocation = GL.GetUniformLocation(mOffscreenShaderProgram, "modelview_matrix");
+            var projectionMatrixLocation = GL.GetUniformLocation(programId, "projection_matrix");
+            var modelviewMatrixLocation = GL.GetUniformLocation(programId, "modelview_matrix");
 
             OpenTK.Matrix4 projectionMatrix = OpenTK.Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, TEXTURE_SIZE / (float)TEXTURE_SIZE, 2.5f, 6f);
             Matrix4 modelviewMatrix = Matrix4.LookAt(0f, 0f, 4.5f, 0f, 0f, 0f, 0f, 1f, 0f);
            // var projectionMatrix = Matrix4.Identity;
            // var modelviewMatrix = Matrix4.Translation(0, 0, -2.5f);
 
-            GL.UniformMatrix4(mProjectionMatrixLocation, false, ref projectionMatrix);
-            GL.UniformMatrix4(mModelviewMatrixLocation, false, ref modelviewMatrix);
+            GL.UniformMatrix4(projectionMatrixLocation, false, ref projectionMatrix);
+            GL.UniformMatrix4(modelviewMatrixLocation, false, ref modelviewMatrix);
 
             GL.UseProgram(0);
+            return programId;
         }
 
         #endregion
@@ -291,7 +291,9 @@ void main(void)
                      "GL_EXT_framebuffer_object extension is required. Please update your drivers.");
             }
 
-            CreateOffscreenShader();
+            mOffscreenShaderProgram = CreateOffscreenShader();
+            mToscreenShaderProgram = CreateToScreenShader();
+
             Object = new Shapes.TorusKnot(256, 32, 0.2, 7,8, 1, true);
 
             GenerateVAO(Object);
@@ -566,6 +568,11 @@ void main(void)
                 GL.DeleteProgram(mOffscreenShaderProgram);
             }
 
+            if (mToscreenShaderProgram != 0)
+            {
+                GL.DeleteProgram(mToscreenShaderProgram);
+            }
+
             if (mVAOHandle != 0)
             {
                 GL.DeleteVertexArrays(1, new[] { mVAOHandle });
@@ -603,10 +610,109 @@ void main(void)
                 this.Exit();
         }
 
+        #region CreateToScreenShader methods
+
+        int mToscreenShaderProgram;
+
+        static int CreateToScreenShader()
+        {
+            const string VERT_SOURCE = @"
+#version 450
+
+precision highp float;
+
+uniform mat4 modelview_matrix;
+
+layout(location = 0) in vec3 in_position;
+layout(location = 1) in vec2 in_uv;
+
+out vec2 texCoords;
+
+void main(void)
+{
+  texCoords = in_uv;
+  
+  gl_Position = modelview_matrix * vec4(in_position, 1);
+}";
+
+            const string FRAG_SOURCE = @"
+#version 450
+
+#extension GL_ARB_shading_language_420pack : require
+
+precision highp float;
+
+const vec3 ambient = vec3(0.1, 0.1, 0.1);
+const vec3 lightVecNormalized = normalize(vec3(0.5, 0.5, 2.0));
+const vec3 lightColor = vec3(0.0, 1.0, 0.0);
+
+layout (binding = 0) uniform sampler2D diffuseTex;
+
+in vec2 texCoords;
+
+out vec4 out_frag_color;
+
+void main(void)
+{
+  vec4 diffuse = texture2D(diffuseTex, texCoords);
+  out_frag_color = vec4(ambient + diffuse.rgb * lightColor, 1.0);
+  //  out_frag_color = vec4(0, 0, 1, 1);
+}";
+
+            var vertexShaderHandle = GL.CreateShader(ShaderType.VertexShader);
+            var fragmentShaderHandle = GL.CreateShader(ShaderType.FragmentShader);
+
+            GL.ShaderSource(vertexShaderHandle, VERT_SOURCE);
+            GL.ShaderSource(fragmentShaderHandle, FRAG_SOURCE);
+
+            GL.CompileShader(vertexShaderHandle);
+            GL.CompileShader(fragmentShaderHandle);
+
+            Console.WriteLine(GL.GetShaderInfoLog(vertexShaderHandle));
+            Console.WriteLine(GL.GetShaderInfoLog(fragmentShaderHandle));
+
+            // Create program
+            var programId = GL.CreateProgram();
+
+            GL.AttachShader(programId, vertexShaderHandle);
+            GL.AttachShader(programId, fragmentShaderHandle);
+
+            GL.BindAttribLocation(programId, 0, "in_position");
+            GL.BindAttribLocation(programId, 1, "in_uv");
+
+            GL.LinkProgram(programId);
+            Console.WriteLine(GL.GetProgramInfoLog(programId));
+
+            GL.DeleteShader(vertexShaderHandle);
+            GL.DeleteShader(fragmentShaderHandle);
+
+            //GL.UseProgram(mShaderProgramHandle);
+
+            GL.UseProgram(programId);
+            // Set uniforms
+            var projectionMatrixLocation = GL.GetUniformLocation(programId, "projection_matrix");
+            var modelviewMatrixLocation = GL.GetUniformLocation(programId, "modelview_matrix");
+
+            OpenTK.Matrix4 projectionMatrix = OpenTK.Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, TEXTURE_SIZE / (float)TEXTURE_SIZE, 2.5f, 6f);
+            Matrix4 modelviewMatrix = Matrix4.LookAt(0f, 0f, 4.5f, 0f, 0f, 0f, 0f, 1f, 0f);
+            // var projectionMatrix = Matrix4.Identity;
+            // var modelviewMatrix = Matrix4.Translation(0, 0, -2.5f);
+
+            GL.UniformMatrix4(projectionMatrixLocation, false, ref projectionMatrix);
+            GL.UniformMatrix4(modelviewMatrixLocation, false, ref modelviewMatrix);
+
+            GL.UseProgram(0);
+            return programId;
+        }
+
+        #endregion
+
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             GL.UseProgram(0);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+           // var modelviewMatrixLocation = GL.GetUniformLocation(programId, "modelview_matrix");
 
             GL.PushMatrix();
             {

@@ -8,6 +8,6 @@
         bool IsInvalid { get; }
 		IGLPipelineLayout BoundPipelineLayout { get;  }
 		uint[] BoundDynamicOffsets { get; }
-		IGLDescriptorSet BoundDescriptorSet { get; }
+		IGLFutureDescriptorSet BoundDescriptorSet { get; }
 	}
 }

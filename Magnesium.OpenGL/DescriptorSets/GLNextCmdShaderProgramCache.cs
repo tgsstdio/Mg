@@ -10,8 +10,8 @@ namespace Magnesium.OpenGL
 		private int mProgramID;
 		private uint mVAO;
         private GLCmdDescriptorSetParameter[] mBoundDescriptorSets;
-        private IGLTextureGallery mGallery;
-        public GLNextCmdShaderProgramCache(IGLCmdShaderProgramEntrypoint graphics, IGLTextureGallery gallery)
+        private IGLShaderTextureDescriptorCache mGallery;
+        public GLNextCmdShaderProgramCache(IGLCmdShaderProgramEntrypoint graphics, IGLShaderTextureDescriptorCache gallery)
 		{
 			mEntrypoint = graphics;
 			mProgramID = 0;
@@ -160,23 +160,17 @@ namespace Magnesium.OpenGL
             }
         }
 
-        void BindCombinedSampler(IGLDescriptorSet ds, GLDescriptorPoolResourceInfo resource)
+        void BindCombinedSampler(IGLFutureDescriptorSet ds, GLDescriptorPoolResourceInfo resource)
 		{
-			IGLNextDescriptorPool parentPool = ds.Parent;
+			IGLFutureDescriptorPool parentPool = ds.Parent;
             Debug.Assert(parentPool != null);
 
-            var images = new List<GLTextureSlot>();
-            for (var i = resource.Ticket.First; i <= resource.Ticket.Last; i += 1)
-			{
-                images.Add(parentPool.CombinedImageSamplers.Items[i]);
-			}
-
-            mGallery.Bind(images.ToArray());
+            mGallery.Bind(ds, resource);
         }
 
-		uint BindStorageBuffer(IGLDescriptorSet ds, GLDescriptorPoolResourceInfo resource, uint[] dynamicOffsets, uint offsetIndex)
+		uint BindStorageBuffer(IGLFutureDescriptorSet ds, GLDescriptorPoolResourceInfo resource, uint[] dynamicOffsets, uint offsetIndex)
 		{
-            IGLNextDescriptorPool parentPool = ds.Parent;
+            IGLFutureDescriptorPool parentPool = ds.Parent;
             Debug.Assert(parentPool != null);
 
 			// BIND SSBOS
@@ -187,20 +181,21 @@ namespace Magnesium.OpenGL
 
 			for (var i = resource.Ticket.First; i <= resource.Ticket.Last; i += 1)
 			{
-				var buffer = parentPool.StorageBuffers.Items[i];
+                if (parentPool.GetBufferDescriptor(GLDescriptorBindingGroup.StorageBuffer, i, out GLBufferDescriptor buffer))
+                {
+                    var offset = buffer.Offset;
+                    // WHAT ABOUT THE DYNAMIC OFFSET
+                    if (buffer.IsDynamic)
+                    {
+                        offset += AdjustOffset(dynamicOffsets, ref offsetIndex);
+                    }
 
-				var offset = buffer.Offset;
-				// WHAT ABOUT THE DYNAMIC OFFSET
-				if (buffer.IsDynamic)
-				{
-					offset += AdjustOffset(dynamicOffsets, ref offsetIndex);
-				}
-
-				mEntrypoint.BindStorageBuffer(
-					resource.Binding,
-					buffer.BufferId,
-					new IntPtr(offset),
-					new IntPtr(buffer.Size));
+                    mEntrypoint.BindStorageBuffer(
+                        resource.Binding,
+                        buffer.BufferId,
+                        new IntPtr(offset),
+                        new IntPtr(buffer.Size));
+                }
 			}
 
 			return offsetIndex;
@@ -225,12 +220,12 @@ namespace Magnesium.OpenGL
 			mEntrypoint.BindUniformBuffers(mNoOfBindingPoints, mUniformBuffers, mUniformOffsets, mUniformSizes);
 		}
 
-		uint BindUniformBuffer(IGLDescriptorSet ds, GLDescriptorPoolResourceInfo resource, uint[] dynamicOffsets, uint offsetIndex)
+		uint BindUniformBuffer(IGLFutureDescriptorSet ds, GLDescriptorPoolResourceInfo resource, uint[] dynamicOffsets, uint offsetIndex)
 		{
 			// do diff
 			if (BoundPipelineLayout != null)
 			{
-                IGLNextDescriptorPool parentPool = ds.Parent;
+                IGLFutureDescriptorPool parentPool = ds.Parent;
                 Debug.Assert(parentPool != null);
 
                 // for each active uniform block
@@ -241,22 +236,22 @@ namespace Magnesium.OpenGL
 
 				for (var j = 0; j < resource.DescriptorCount; j += 1)
 				{
-					var buffer = parentPool.UniformBuffers.Items[srcIndex];
+                    if (parentPool.GetBufferDescriptor(GLDescriptorBindingGroup.UniformBuffer, srcIndex, out GLBufferDescriptor buffer))
+                    {
+                        mUniformBuffers[dstIndex] = buffer.BufferId;
 
-					mUniformBuffers[dstIndex] = buffer.BufferId;
+                        var offset = buffer.Offset;
 
-					var offset = buffer.Offset;
+                        // WHAT DYNAMIC
+                        if (buffer.IsDynamic)
+                        {
+                            offset += AdjustOffset(dynamicOffsets, ref offsetIndex);
+                        }
 
-					// WHAT DYNAMIC
-					if (buffer.IsDynamic)
-					{
-						offset += AdjustOffset(dynamicOffsets, ref offsetIndex);
-					}
+                        mUniformOffsets[dstIndex] = new IntPtr(offset);
 
-					mUniformOffsets[dstIndex] = new IntPtr(offset);
-
-					mUniformSizes[dstIndex] = new IntPtr(buffer.Size);
-
+                        mUniformSizes[dstIndex] = new IntPtr(buffer.Size);
+                    }
 					srcIndex += 1;
 					dstIndex += 1;
 				}

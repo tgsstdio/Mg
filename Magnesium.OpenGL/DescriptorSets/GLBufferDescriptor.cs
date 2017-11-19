@@ -15,11 +15,6 @@ namespace Magnesium.OpenGL
 		public long Offset { get; set; }
 		public int Size { get; set; }
 
-		public void Destroy()
-		{
-
-		}
-
 		public void Reset()
 		{
 			BufferId = 0;

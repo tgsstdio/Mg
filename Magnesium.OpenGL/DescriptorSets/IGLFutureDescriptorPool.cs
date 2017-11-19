@@ -8,6 +8,12 @@ namespace Magnesium.OpenGL
         uint MaxSets { get; }
         IDictionary<uint, IGLFutureDescriptorSet> AllocatedSets { get; }
 
+         bool GetBufferDescriptor(
+            GLDescriptorBindingGroup groupType,
+            uint i,
+            out GLBufferDescriptor result
+            );
+
         GLDescriptorPoolAllocationStatus AllocateTicket(
             MgDescriptorType descriptorType,
             uint binding,

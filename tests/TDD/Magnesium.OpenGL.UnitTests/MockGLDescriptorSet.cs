@@ -2,7 +2,7 @@
 
 namespace Magnesium.OpenGL.UnitTests
 {
-    internal class MockGLDescriptorSet : IGLDescriptorSet
+    internal class MockGLDescriptorSet : IGLFutureDescriptorSet
     {
         public MockGLDescriptorSet()
         {
@@ -20,7 +20,7 @@ namespace Magnesium.OpenGL.UnitTests
             set;
         }
 
-        public IGLNextDescriptorPool Parent
+        public IGLFutureDescriptorPool Parent
         {
             get;
             set;
@@ -32,7 +32,7 @@ namespace Magnesium.OpenGL.UnitTests
             set;
         }
 
-        public bool Equals(IGLDescriptorSet other)
+        public bool Equals(IGLFutureDescriptorSet other)
         {
             return ReferenceEquals(this, other);
         }

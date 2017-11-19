@@ -10,7 +10,7 @@ namespace Magnesium.OpenGL.Internals
 
 		public IGLPipelineLayout BoundPipelineLayout { get; private set;}
 		public uint[] BoundDynamicOffsets { get; private set;}
-		public IGLDescriptorSet BoundDescriptorSet { get; private set;}
+		public IGLFutureDescriptorSet BoundDescriptorSet { get; private set;}
 
 		public void Clear()
 		{
@@ -52,7 +52,7 @@ namespace Magnesium.OpenGL.Internals
 			var isArrayDifferent = CopyDynamicOffsetsIfDifferent(pDynamicOffsets);
 			IsInvalid = IsInvalid && isArrayDifferent;
 
-			var bDescSet = (IGLDescriptorSet)pDescriptorSets[0];
+			var bDescSet = (IGLFutureDescriptorSet)pDescriptorSets[0];
 			// EXACT DSET ONLY
 			if (!bDescSet.Equals(BoundDescriptorSet))
 			{

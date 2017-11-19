@@ -269,18 +269,16 @@ namespace Magnesium.OpenGL.UnitTests
             Assert.AreEqual(blockEntries.Length, shaderEntrypoint.UniformSizes.Length);
         }
 
-        private class MockGLTextureGallery : IGLTextureGallery
+        private class MockGLTextureGallery : IGLShaderTextureDescriptorCache
         {
-            public GLTextureSlot[] AvailableSlots => throw new System.NotImplementedException();
-
-            public void Bind(GLTextureSlot[] descriptors)
+            public void Bind(IGLFutureDescriptorSet ds, GLDescriptorPoolResourceInfo resource)
             {
-        
+           
             }
 
             public void Initialize()
             {
-               
+      
             }
         }
     }

@@ -318,5 +318,21 @@ namespace Magnesium.OpenGL
                     + "].BufferInfo[" + j + "].Offset is > long.MaxValue");
             }
         }
+
+        public bool GetBufferDescriptor(GLDescriptorBindingGroup groupType, uint i, out GLBufferDescriptor result)
+        {
+            switch(groupType)
+            {
+                case GLDescriptorBindingGroup.StorageBuffer:
+                    result = mStorageBuffers.Items[i];
+                    return true;
+                case GLDescriptorBindingGroup.UniformBuffer:
+                    result = mUniformBuffers.Items[i];
+                    return true;
+                default:
+                    result = null;
+                    return false;
+            }
+        }
     }
 }

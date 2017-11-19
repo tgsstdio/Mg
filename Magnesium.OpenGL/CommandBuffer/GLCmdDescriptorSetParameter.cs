@@ -2,7 +2,7 @@
 {
     public class GLCmdDescriptorSetParameter
 	{
-		public IGLDescriptorSet DescriptorSet {
+		public IGLFutureDescriptorSet DescriptorSet {
 			get;
 			set;
 		}
