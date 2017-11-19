@@ -15,8 +15,8 @@ namespace Magnesium.OpenGL
         public IDictionary<uint, IGLFutureDescriptorSet> AllocatedSets { get; private set; }
 
         IGLDescriptorPoolResource<GLLunarImageDescriptor> mCombinedImageSamplers;
-        IGLDescriptorPoolResource<GLBufferDescriptor> mStorageBuffers;
-        IGLDescriptorPoolResource<GLBufferDescriptor> mUniformBuffers;
+
+        GLBufferDescriptorPool mBufferPool;
         public uint BufferId { get; internal set; }
 
         public GLLunarDescriptorPool(IGLLunarImageDescriptorEntrypoint entrypoint, MgDescriptorPoolCreateInfo createInfo)
@@ -55,34 +55,9 @@ namespace Magnesium.OpenGL
             }
 
             SetupCombinedImageSamplers(noOfCombinedImageSamplers);
-            SetupUniformBlocks(noOfUniformBlocks);
-            SetupStorageBuffers(noOfStorageBuffers);
-        }
 
-        void SetupUniformBlocks(uint noOfUniformBlocks)
-        {
-            var blocks = new GLBufferDescriptor[noOfUniformBlocks];
-            for (var i = 0; i < noOfUniformBlocks; i += 1)
-            {
-                blocks[i] = new GLBufferDescriptor();
-            }
-
-            mUniformBuffers = new GLPoolResource<GLBufferDescriptor>(
-                noOfUniformBlocks,
-                blocks);
-        }
-
-        void SetupStorageBuffers(uint noOfStorageBuffers)
-        {
-            var buffers = new GLBufferDescriptor[noOfStorageBuffers];
-            for (var i = 0; i < noOfStorageBuffers; i += 1)
-            {
-                buffers[i] = new GLBufferDescriptor();
-            }
-
-            mStorageBuffers = new GLPoolResource<GLBufferDescriptor>(
-                noOfStorageBuffers,
-                buffers);
+            mBufferPool = new GLBufferDescriptorPool();
+            mBufferPool.Setup(noOfUniformBlocks, noOfStorageBuffers);
         }
 
         void SetupCombinedImageSamplers(uint noOfCombinedImageSamplers)
@@ -121,13 +96,13 @@ namespace Magnesium.OpenGL
                 switch (resourceInfo.GroupType)
                 {
                     case GLDescriptorBindingGroup.UniformBuffer:
-                        mUniformBuffers.Free(resourceInfo.Ticket);
+                        mBufferPool.UniformBuffers.Free(resourceInfo.Ticket);
                         break;
                     case GLDescriptorBindingGroup.CombinedImageSampler:
                         mCombinedImageSamplers.Free(resourceInfo.Ticket);
                         break;
                     case GLDescriptorBindingGroup.StorageBuffer:
-                        mStorageBuffers.Free(resourceInfo.Ticket);
+                        mBufferPool.StorageBuffers.Free(resourceInfo.Ticket);
                         break;
                 }
             }
@@ -174,7 +149,7 @@ namespace Magnesium.OpenGL
                     break;
                 case MgDescriptorType.STORAGE_BUFFER:
                     groupType = GLDescriptorBindingGroup.StorageBuffer;
-                    if (!mStorageBuffers.Allocate(count, out ticket))
+                    if (!mBufferPool.StorageBuffers.Allocate(count, out ticket))
                     {
                         resource = null;
                         return GLDescriptorPoolAllocationStatus.FailedAllocation;
@@ -182,7 +157,7 @@ namespace Magnesium.OpenGL
                     break;
                 case MgDescriptorType.UNIFORM_BUFFER:
                     groupType = GLDescriptorBindingGroup.UniformBuffer;
-                    if (!mUniformBuffers.Allocate(count, out ticket))
+                    if (!mBufferPool.UniformBuffers.Allocate(count, out ticket))
                     {
                         resource = null;
                         return GLDescriptorPoolAllocationStatus.FailedAllocation;
@@ -218,11 +193,7 @@ namespace Magnesium.OpenGL
                     break;
                 case MgDescriptorType.STORAGE_BUFFER:
                 case MgDescriptorType.STORAGE_BUFFER_DYNAMIC:
-                    WriteBufferChanges(
-                        GLDescriptorBindingGroup.StorageBuffer,
-                        MgBufferUsageFlagBits.STORAGE_BUFFER_BIT,
-                        MgDescriptorType.STORAGE_BUFFER_DYNAMIC,
-                        mStorageBuffers,
+                    mBufferPool.WriteStorageBufferChanges(
                          change
                         , i
                         , resource
@@ -231,11 +202,7 @@ namespace Magnesium.OpenGL
                     break;
                 case MgDescriptorType.UNIFORM_BUFFER:
                 case MgDescriptorType.UNIFORM_BUFFER_DYNAMIC:
-                    WriteBufferChanges(
-                        GLDescriptorBindingGroup.UniformBuffer,
-                        MgBufferUsageFlagBits.UNIFORM_BUFFER_BIT,
-                        MgDescriptorType.UNIFORM_BUFFER_DYNAMIC,
-                        mUniformBuffers,
+                    mBufferPool.WriteUniformBufferChanges(
                          change
                         , i
                         , resource
@@ -276,81 +243,15 @@ namespace Magnesium.OpenGL
             }
         }
 
-        void WriteBufferChanges(
-            GLDescriptorBindingGroup bindingGroup,
-            MgBufferUsageFlagBits isBufferFlags,
-            MgDescriptorType dynamicBufferType,
-            IGLDescriptorPoolResource<GLBufferDescriptor> collection,
-            MgWriteDescriptorSet change,
-            int i,
-            GLDescriptorPoolResourceInfo resource,
-            uint first,
-            uint count
-        )
-        {
-            if (resource.GroupType == bindingGroup)
-            {
-                for (var j = 0; j < count; j += 1)
-                {
-                    var info = change.BufferInfo[j];
-                    var buf = (IGLBuffer)info.Buffer;
-
-                    if (buf != null && ((buf.Usage & isBufferFlags) == isBufferFlags))
-                    {
-                        var index = first + j;
-                        var bufferDesc = collection.Items[index];
-                        bufferDesc.BufferId = buf.BufferId;
-
-                        ValidateOffset(i, j, info);
-                        ValidateRange(i, j, info);
-
-                        bufferDesc.Offset = (long)info.Offset;
-                        // need to pass in whole 
-                        bufferDesc.Size = (int)info.Range;
-                        bufferDesc.IsDynamic = (change.DescriptorType == dynamicBufferType);
-                    }
-
-                }
-            }
-        }
-
-        private static void ValidateRange(int i, int j, MgDescriptorBufferInfo info)
-        {
-            // CROSS PLATFORM ISSUE : VK_WHOLE_SIZE == ulong.MaxValue
-            if (info.Range == ulong.MaxValue)
-            {
-                throw new ArgumentOutOfRangeException(
-                    "Mg.OpenGL : Cannot accept pDescriptorWrites[" + i
-                    + "].BufferInfo[" + j +
-                    "].Range == ulong.MaxValue (VK_WHOLE_SIZE). Please use actual size of buffer instead.");
-            }
-
-            if (info.Range > (ulong)int.MaxValue)
-            {
-                throw new ArgumentOutOfRangeException(
-                    "pDescriptorWrites[" + i
-                    + "].BufferInfo[" + j + "].Range is > int.MaxValue");
-            }
-        }
-
-        private static void ValidateOffset(int i, int j, MgDescriptorBufferInfo info)
-        {
-            if (info.Offset > (ulong)long.MaxValue)
-            {
-                throw new ArgumentOutOfRangeException("pDescriptorWrites[" + i
-                    + "].BufferInfo[" + j + "].Offset is > long.MaxValue");
-            }
-        }
-
         public bool GetBufferDescriptor(GLDescriptorBindingGroup groupType, uint i, out GLBufferDescriptor result)
         {
             switch (groupType)
             {
                 case GLDescriptorBindingGroup.StorageBuffer:
-                    result = mStorageBuffers.Items[i];
+                    result = mBufferPool.StorageBuffers.Items[i];
                     return true;
                 case GLDescriptorBindingGroup.UniformBuffer:
-                    result = mUniformBuffers.Items[i];
+                    result = mBufferPool.UniformBuffers.Items[i];
                     return true;
                 default:
                     result = null;

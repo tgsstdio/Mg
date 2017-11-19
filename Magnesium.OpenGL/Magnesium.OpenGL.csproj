@@ -98,6 +98,7 @@
     <Compile Include="CommandBuffer\IGLCmdEncoderContextSorter.cs" />
     <Compile Include="CommandBuffer\IGLCmdGraphicsEncoder.cs" />
     <Compile Include="CommandBuffer\IGLCmdStateRenderer.cs" />
+    <Compile Include="DescriptorSets\GLBufferDescriptorPool.cs" />
     <Compile Include="DescriptorSets\GLDescriptorPoolAllocationStatus.cs" />
     <Compile Include="DescriptorSets\GLFutureDescriptorSet.cs" />
     <Compile Include="DescriptorSets\GLLunarDescriptorPool.cs" />
