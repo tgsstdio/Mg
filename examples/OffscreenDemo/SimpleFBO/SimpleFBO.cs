@@ -135,8 +135,8 @@ void main(void)
 
         #region GenerateVAO methods 
 
-        private int mVAOHandle;
-        private int mPositionVertexBuffer;
+        private uint mVAOHandle;
+        private uint mPositionVertexBuffer;
         private PrimitiveType mPrimitiveType;
         private int mNoOfIndices;
         private void GenerateVAO(DrawableShape item)
@@ -149,53 +149,137 @@ void main(void)
             mPositionVertexBuffer = GenerateVertexBuffer(vertices, indices);
 
             var dataStride = Marshal.SizeOf(typeof(VertexT2fN3fV3f));
-            mVAOHandle = GenerateVertexArray(indices, mPositionVertexBuffer, dataStride);
-            // GL.DeleteVertexArrays(1, result);
+
+            const int BINDING_INDEX = 0;
+
+            const int POSITION_ATTRIB = 0;
+            const int NORMAL_ATTRIB = 1;
+            const int UV_ATTRIB = 2;
+
+            var positionAttribOffset = sizeof(float) * 5;
+            var normalAttribOffset = sizeof(float) * 2;
+            var uvAttribOffset = 0;
+
+            var vertexInput = new MgPipelineVertexInputStateCreateInfo
+            {
+                VertexBindingDescriptions = new[]
+    {
+                    new MgVertexInputBindingDescription
+                    {
+                        Binding = BINDING_INDEX,
+                        InputRate = MgVertexInputRate.VERTEX,
+                        Stride = (uint) dataStride,
+                    }
+                },
+                VertexAttributeDescriptions = new[]
+    {
+                    new MgVertexInputAttributeDescription
+                    {
+                        Binding = BINDING_INDEX,
+                        Location = POSITION_ATTRIB,
+                        Format= MgFormat.R32G32B32_SFLOAT,
+                        Offset = (uint) positionAttribOffset,
+                    },
+                    new MgVertexInputAttributeDescription
+                    {
+                        Binding = BINDING_INDEX,
+                        Location = NORMAL_ATTRIB,
+                        Format= MgFormat.R32G32B32_SFLOAT,
+                        Offset = (uint) normalAttribOffset,
+                    },
+                    new MgVertexInputAttributeDescription
+                    {
+                        Binding = BINDING_INDEX,
+                        Location = UV_ATTRIB,
+                        Format= MgFormat.R32G32_SFLOAT,
+                        Offset = (uint) uvAttribOffset,
+                    },
+                }
+            };
+
+            var indexSize = (sizeof(uint) * indices.Length);
+            var positionOffset = new IntPtr(indexSize);
+
+            mVAOHandle = GenerateVertexArray(mPositionVertexBuffer, positionOffset, vertexInput);
+            GL.VertexArrayElementBuffer(mVAOHandle, mPositionVertexBuffer);
+            GL.BindVertexArray(0);
         }
 
-        private static int GenerateVertexArray(uint[] indices, int buffer, int dataStride)
+        private static uint GenerateVertexArray(uint buffer, IntPtr vertexOffset, MgPipelineVertexInputStateCreateInfo vertexInput)
         {
-            int[] result = new int[1];
+            uint[] result = new uint[1];
             GL.CreateVertexArrays(1, result);
 
             Debug.Assert(GL.IsVertexArray(result[0]));
 
             var vaoHandle = result[0];
 
-            // ALWAYS OFFSET OF ZERO
-            GL.VertexArrayElementBuffer(vaoHandle, buffer);
+            //// ALWAYS OFFSET OF ZERO
+            //if (hasIndices)
+            //{
+            //    GL.VertexArrayElementBuffer(vaoHandle, buffer);
+            //}
 
-            var indexSize = (sizeof(uint) * indices.Length);
-            var positionOffset = new IntPtr(indexSize);
-            const int BINDING_INDEX = 0;
-            GL.VertexArrayVertexBuffer(vaoHandle, BINDING_INDEX, buffer, positionOffset, dataStride);
+            foreach (var desc in vertexInput.VertexBindingDescriptions)
+            {
+                GL.VertexArrayVertexBuffer(vaoHandle, desc.Binding, buffer, vertexOffset, (int) desc.Stride);
+            }
 
-            const int POSITION_ATTRIB = 0;
-            const int NORMAL_ATTRIB = 1;
-            const int UV_ATTRIB = 2;
+            foreach(var desc in vertexInput.VertexAttributeDescriptions)
+            {
+                GL.EnableVertexArrayAttrib(vaoHandle, desc.Location);
+                GL.VertexArrayAttribBinding(vaoHandle, desc.Location, desc.Binding);
+                ExtractFormatValues(desc.Format, out int noOfComponents, out VertexAttribType attribType, out bool isNormalized);
+                GL.VertexArrayAttribFormat(vaoHandle, desc.Location, noOfComponents, attribType, isNormalized, desc.Offset);
+            }
 
-            GL.EnableVertexArrayAttrib(vaoHandle, POSITION_ATTRIB);
-            GL.EnableVertexArrayAttrib(vaoHandle, NORMAL_ATTRIB);
-            GL.EnableVertexArrayAttrib(vaoHandle, UV_ATTRIB);
 
-            GL.VertexArrayAttribBinding(vaoHandle, POSITION_ATTRIB, BINDING_INDEX);
-            var positionAttribOffset = sizeof(float) * 5;
-            GL.VertexArrayAttribFormat(vaoHandle, POSITION_ATTRIB, 3, VertexAttribType.Float, false, positionAttribOffset);
+            //GL.EnableVertexArrayAttrib(vaoHandle, POSITION_ATTRIB);
+            //GL.EnableVertexArrayAttrib(vaoHandle, NORMAL_ATTRIB);
+            //GL.EnableVertexArrayAttrib(vaoHandle, UV_ATTRIB);
 
-            GL.VertexArrayAttribBinding(vaoHandle, NORMAL_ATTRIB, BINDING_INDEX);
-            var normalAttribOffset = sizeof(float) * 2;
-            GL.VertexArrayAttribFormat(vaoHandle, NORMAL_ATTRIB, 3, VertexAttribType.Float, false, normalAttribOffset);
+            //GL.VertexArrayAttribBinding(vaoHandle, POSITION_ATTRIB, BINDING_INDEX);
 
-            GL.VertexArrayAttribBinding(vaoHandle, UV_ATTRIB, BINDING_INDEX);
-            var uvAttribOffset = 0;
-            GL.VertexArrayAttribFormat(vaoHandle, UV_ATTRIB, 2, VertexAttribType.Float, false, uvAttribOffset);
+            //GL.VertexArrayAttribFormat(vaoHandle, POSITION_ATTRIB, 3, VertexAttribType.Float, false, positionAttribOffset);
+
+            //GL.VertexArrayAttribBinding(vaoHandle, NORMAL_ATTRIB, BINDING_INDEX);
+     
+            //GL.VertexArrayAttribFormat(vaoHandle, NORMAL_ATTRIB, 3, VertexAttribType.Float, false, normalAttribOffset);
+
+            //GL.VertexArrayAttribBinding(vaoHandle, UV_ATTRIB, BINDING_INDEX);
+
+            //GL.VertexArrayAttribFormat(vaoHandle, UV_ATTRIB, 2, VertexAttribType.Float, false, uvAttribOffset);
 
             return vaoHandle;
         }
 
-        private static int GenerateVertexBuffer<TData>(TData[] vertices, uint[] indices)
+        private static bool ExtractFormatValues(MgFormat format, out int noOfComponents, out VertexAttribType attribType, out bool isNormalized)
         {
-            var buffers = new int[1];
+            switch(format)
+            {
+                case MgFormat.R16G16_UNORM:
+                    noOfComponents = 2;
+                    attribType = VertexAttribType.HalfFloat;
+                    isNormalized = true;
+                    return true;
+                case MgFormat.R32G32_SFLOAT:
+                    noOfComponents = 2;
+                    attribType = VertexAttribType.Float;
+                    isNormalized = false;
+                    return true;
+                case MgFormat.R32G32B32_SFLOAT:
+                    noOfComponents = 3;
+                    attribType = VertexAttribType.Float;
+                    isNormalized = false;
+                    return true;
+                default:
+                    throw new NotSupportedException();
+            }
+        }
+
+        private static uint GenerateVertexBuffer<TData>(TData[] vertices, uint[] indices)
+        {
+            var buffers = new uint[1];
             // ARB_direct_state_access
             // Allows buffer objects to be initialised without binding them
             GL.CreateBuffers(1, buffers);
@@ -203,7 +287,9 @@ void main(void)
             var positionVboHandle = buffers[0];
 
             var stride = Marshal.SizeOf(typeof(TData));
-            var indexSize = (sizeof(uint) * indices.Length);
+
+            var indexCount = indices != null ? indices.Length : 0;
+            var indexSize = (sizeof(uint) * indexCount);
             var positionOffset = indexSize;
             var positionSize = (stride * vertices.Length);
             var totalLength = indexSize + positionSize;
@@ -217,20 +303,24 @@ void main(void)
             return positionVboHandle;
         }
 
-        private static void TransferVertexData<TData>(TData[] vertices, uint[] indices, int positionVboHandle, int indexSize, int positionOffset, int positionSize)
+        private static void TransferVertexData<TData>(TData[] vertices, uint[] indices, uint positionVboHandle, int indexSize, int positionOffset, int positionSize)
         {
             BufferAccessMask rangeFlags = BufferAccessMask.MapWriteBit | BufferAccessMask.MapPersistentBit | BufferAccessMask.MapCoherentBit;
-            IntPtr indexDest = GL.MapNamedBufferRange(positionVboHandle, IntPtr.Zero, indexSize, rangeFlags);
-            // Copy the struct to unmanaged memory.	
-            CopyUint32s(indexDest, indices, 0, indexSize, 0, indices.Length);
-            GL.Ext.UnmapNamedBuffer(positionVboHandle);
+
+            if (indices != null)
+            {
+                IntPtr indexDest = GL.MapNamedBufferRange(positionVboHandle, IntPtr.Zero, indexSize, rangeFlags);
+                // Copy the struct to unmanaged memory.	
+                CopyUint32s(indexDest, indices, 0, indexSize, 0, indices.Length);
+                GL.Ext.UnmapNamedBuffer(positionVboHandle);
+            }
 
             IntPtr vertexDest = GL.MapNamedBufferRange(positionVboHandle, new IntPtr(positionOffset), positionSize, rangeFlags);
             CopyValueData<TData>(vertexDest, vertices, 0, positionSize, 0, vertices.Length);
             GL.Ext.UnmapNamedBuffer(positionVboHandle);
         }
 
-        private static void AllocateDeviceMemory(int positionVboHandle, int totalLength)
+        private static void AllocateDeviceMemory(uint positionVboHandle, int totalLength)
         {
             BufferStorageFlags flags = BufferStorageFlags.MapWriteBit | BufferStorageFlags.MapPersistentBit | BufferStorageFlags.MapCoherentBit;
             GL.NamedBufferStorage(positionVboHandle, totalLength, IntPtr.Zero, flags);
@@ -292,11 +382,12 @@ void main(void)
             }
 
             mOffscreenShaderProgram = CreateOffscreenShader();
-            mToscreenShaderProgram = CreateToScreenShader();
+            mToScreenShaderProgram = CreateToScreenShader();
 
             Object = new Shapes.TorusKnot(256, 32, 0.2, 7,8, 1, true);
 
             GenerateVAO(Object);
+            GenerateQuad();
 
             GL.Enable(EnableCap.DepthTest);
             GL.ClearDepth(1.0);
@@ -568,9 +659,9 @@ void main(void)
                 GL.DeleteProgram(mOffscreenShaderProgram);
             }
 
-            if (mToscreenShaderProgram != 0)
+            if (mToScreenShaderProgram != 0)
             {
-                GL.DeleteProgram(mToscreenShaderProgram);
+                GL.DeleteProgram(mToScreenShaderProgram);
             }
 
             if (mVAOHandle != 0)
@@ -581,6 +672,11 @@ void main(void)
             if (mPositionVertexBuffer != 0)
             {
                 GL.DeleteBuffers(1, new[] { mPositionVertexBuffer });
+            }
+
+            if (mQuadBuffer != 0)
+            {
+                GL.DeleteBuffers(1, new[] { mQuadBuffer });
             }
         }
 
@@ -612,7 +708,7 @@ void main(void)
 
         #region CreateToScreenShader methods
 
-        int mToscreenShaderProgram;
+        int mToScreenShaderProgram;
 
         static int CreateToScreenShader()
         {
@@ -621,9 +717,11 @@ void main(void)
 
 precision highp float;
 
+uniform mat4 projection_matrix;
 uniform mat4 modelview_matrix;
+uniform vec3 offset;
 
-layout(location = 0) in vec3 in_position;
+layout(location = 0) in vec2 in_position;
 layout(location = 1) in vec2 in_uv;
 
 out vec2 texCoords;
@@ -632,7 +730,9 @@ void main(void)
 {
   texCoords = in_uv;
   
-  gl_Position = modelview_matrix * vec4(in_position, 1);
+  vec4 adjusted = vec4(in_position, 0, 1) + vec4(offset, 1);
+
+  gl_Position = projection_matrix * modelview_matrix * adjusted;
 }";
 
             const string FRAG_SOURCE = @"
@@ -644,7 +744,7 @@ precision highp float;
 
 const vec3 ambient = vec3(0.1, 0.1, 0.1);
 const vec3 lightVecNormalized = normalize(vec3(0.5, 0.5, 2.0));
-const vec3 lightColor = vec3(0.0, 1.0, 0.0);
+const vec3 lightColor = vec3(1.0, 1.0, 1.0);
 
 layout (binding = 0) uniform sampler2D diffuseTex;
 
@@ -707,6 +807,112 @@ void main(void)
 
         #endregion
 
+        #region GenerateQuad methods 
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct QuadVertexData
+        {
+            public Vector2h TexCoord;
+            public Vector2 Position;
+        }
+
+        private uint mQuadBuffer;
+        private uint mQuadVAO;
+        public void GenerateQuad()
+        {
+            //GL.TexCoord2(0f, 1f);
+            //GL.Vertex2(-1.0f, 1.0f);
+
+            //GL.TexCoord2(0.0f, 0.0f);
+            //GL.Vertex2(-1.0f, -1.0f);
+
+            //GL.TexCoord2(1.0f, 0.0f);
+            //GL.Vertex2(1.0f, -1.0f);
+
+            //GL.TexCoord2(1.0f, 1.0f);
+            //GL.Vertex2(1.0f, 1.0f);
+
+            var vertexData = new []
+            {
+                new QuadVertexData
+                {
+                    TexCoord = new Vector2h(0f,1f),
+                    Position = new Vector2(-1f,1f),
+                },
+                new QuadVertexData
+                {
+                    TexCoord = new Vector2h(0f,0f),
+                    Position = new Vector2(-1f,-1f),
+                },
+                new QuadVertexData
+                {
+                    TexCoord = new Vector2h(1f,0f),
+                    Position = new Vector2(1f,-1f),
+                },
+                new QuadVertexData
+                {
+                    TexCoord = new Vector2h(1f,1f),
+                    Position = new Vector2(1f, 1f),
+                },
+            };
+
+            var indices = new uint[] { 0, 1 , 2, 0, 2, 3 };
+
+            mQuadBuffer = GenerateVertexBuffer< QuadVertexData>(vertexData, indices);
+            var dataStride = Marshal.SizeOf(typeof(QuadVertexData));
+
+            var indexSize = (sizeof(uint) * indices.Length);
+            var positionSize = (dataStride * vertexData.Length);
+            TransferVertexData<QuadVertexData>(vertexData, indices, mQuadBuffer, indexSize, indexSize, positionSize);
+
+            const int BINDING_INDEX = 0;
+
+            const int POSITION_ATTRIB = 0;
+            const int UV_ATTRIB = 1;
+
+            var uvAttribOffset = 0;
+            var positionAttribOffset = sizeof(float) * 2;
+
+            var vertexInput = new MgPipelineVertexInputStateCreateInfo
+            {
+                VertexBindingDescriptions = new[]
+    {
+                    new MgVertexInputBindingDescription
+                    {
+                        Binding = BINDING_INDEX,
+                        InputRate = MgVertexInputRate.VERTEX,
+                        Stride = (uint) dataStride,
+                    }
+                },
+                VertexAttributeDescriptions = new[]
+    {
+                    new MgVertexInputAttributeDescription
+                    {
+                        Binding = BINDING_INDEX,
+                        Location = POSITION_ATTRIB,
+                        Format= MgFormat.R32G32_SFLOAT,
+                        Offset = (uint) Marshal.OffsetOf(typeof(QuadVertexData), "Position"),
+                    },
+                    new MgVertexInputAttributeDescription
+                    {
+                        Binding = BINDING_INDEX,
+                        Location = UV_ATTRIB,
+                        Format= MgFormat.R16G16_UNORM,
+                        Offset = (uint) Marshal.OffsetOf(typeof(QuadVertexData), "TexCoord"),
+                    },
+                }
+            };
+
+
+            var positionOffset = new IntPtr(indexSize);
+
+            mQuadVAO = GenerateVertexArray(mQuadBuffer, positionOffset, vertexInput);
+            GL.VertexArrayElementBuffer(mQuadVAO, mQuadBuffer);
+            GL.BindVertexArray(0);
+        }
+
+        #endregion
+
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             GL.UseProgram(0);
@@ -717,36 +923,75 @@ void main(void)
             GL.PushMatrix();
             {
                 // Draw the Color Texture
-                GL.Translate(-1.1f, 0f, 0f);
+               // GL.Translate(-1.1f, 0f, 0f);
                 GL.BindTexture(TextureTarget.Texture2D, ColorTexture);
-                GL.Begin(PrimitiveType.Quads);
-                {
-                    GL.TexCoord2(0f, 1f);
-                    GL.Vertex2(-1.0f, 1.0f);
-                    GL.TexCoord2(0.0f, 0.0f);
-                    GL.Vertex2(-1.0f, -1.0f);
-                    GL.TexCoord2(1.0f, 0.0f);
-                    GL.Vertex2(1.0f, -1.0f);
-                    GL.TexCoord2(1.0f, 1.0f);
-                    GL.Vertex2(1.0f, 1.0f);
-                }
-                GL.End();
 
-                // Draw the Depth Texture
-                GL.Translate(+2.2f, 0f, 0f);
+                GL.BindVertexArray(mQuadVAO);
+
+                GL.UseProgram(mToScreenShaderProgram);
+
+
+                var projectionMatrixLocation = GL.GetUniformLocation(mToScreenShaderProgram, "projection_matrix");
+                var modelviewMatrixLocation = GL.GetUniformLocation(mToScreenShaderProgram, "modelview_matrix");
+                var offsetLocation = GL.GetUniformLocation(mToScreenShaderProgram, "offset");
+
+                // var projectionMatrix = Matrix4.Identity;
+                var projectionMatrix = OpenTK.Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, (float) this.Width / (float)this.Height, 0.1f, 1000f); ;
+
+               var modelviewMatrix = Matrix4.LookAt(0f, 0f, 1.5f, 0f, 0f, 0f, 0f, 1f, 0f);
+                // var projectionMatrix = Matrix4.Identity;
+                //  var modelviewMatrix = Matrix4.CreateTranslation(-1.1f, 0f, 1f);
+                
+                GL.Uniform3(offsetLocation, -1.1f, 0f, 0f);
+                GL.UniformMatrix4(modelviewMatrixLocation, false, ref modelviewMatrix);
+                GL.UniformMatrix4(projectionMatrixLocation, false, ref projectionMatrix);
+
+                GL.DrawElementsInstancedBaseInstance(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero, 1, 0);
+                // GL.DrawArraysInstancedBaseInstance(PrimitiveType.Triangles, 0, 6, 1, 0);
+
+
+                //GL.Begin(PrimitiveType.Quads);
+                //{
+                //    GL.TexCoord2(0f, 1f);
+                //    GL.Vertex2(-1.0f, 1.0f);
+
+                //    GL.TexCoord2(0.0f, 0.0f);
+                //    GL.Vertex2(-1.0f, -1.0f);
+
+                //    GL.TexCoord2(1.0f, 0.0f);
+                //    GL.Vertex2(1.0f, -1.0f);
+
+                //    GL.TexCoord2(1.0f, 1.0f);
+                //    GL.Vertex2(1.0f, 1.0f);
+                //}
+                //GL.End();
+
                 GL.BindTexture(TextureTarget.Texture2D, DepthTexture);
-                GL.Begin(PrimitiveType.Quads);
-                {
-                    GL.TexCoord2(0f, 1f);
-                    GL.Vertex2(-1.0f, 1.0f);
-                    GL.TexCoord2(0.0f, 0.0f);
-                    GL.Vertex2(-1.0f, -1.0f);
-                    GL.TexCoord2(1.0f, 0.0f);
-                    GL.Vertex2(1.0f, -1.0f);
-                    GL.TexCoord2(1.0f, 1.0f);
-                    GL.Vertex2(1.0f, 1.0f);
-                }
-                GL.End();
+
+                GL.Uniform3(offsetLocation, 1.1f, 0f, 0f);
+                GL.DrawElementsInstancedBaseInstance(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero, 1, 0);
+
+                GL.UseProgram(0);
+
+                //// Draw the Depth Texture
+                //GL.Translate(+2.2f, 0f, 0f);
+                //GL.BindTexture(TextureTarget.Texture2D, DepthTexture);
+
+                ////  GL.DrawElementsInstancedBaseInstance(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero, 1, 0);
+                //// GL.DrawArraysInstancedBaseInstance(PrimitiveType.Triangles, 0, 6, 1, 0);
+
+                //GL.Begin(PrimitiveType.Quads);
+                //{
+                //    GL.TexCoord2(0f, 1f);
+                //    GL.Vertex2(-1.0f, 1.0f);
+                //    GL.TexCoord2(0.0f, 0.0f);
+                //    GL.Vertex2(-1.0f, -1.0f);
+                //    GL.TexCoord2(1.0f, 0.0f);
+                //    GL.Vertex2(1.0f, -1.0f);
+                //    GL.TexCoord2(1.0f, 1.0f);
+                //    GL.Vertex2(1.0f, 1.0f);
+                //}
+                //GL.End();
             }
             GL.PopMatrix();
 
