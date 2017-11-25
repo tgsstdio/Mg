@@ -156,10 +156,6 @@ void main(void)
             const int NORMAL_ATTRIB = 1;
             const int UV_ATTRIB = 2;
 
-            var positionAttribOffset = sizeof(float) * 5;
-            var normalAttribOffset = sizeof(float) * 2;
-            var uvAttribOffset = 0;
-
             var vertexInput = new MgPipelineVertexInputStateCreateInfo
             {
                 VertexBindingDescriptions = new[]
@@ -178,21 +174,21 @@ void main(void)
                         Binding = BINDING_INDEX,
                         Location = POSITION_ATTRIB,
                         Format= MgFormat.R32G32B32_SFLOAT,
-                        Offset = (uint) positionAttribOffset,
+                        Offset =  (uint) Marshal.OffsetOf(typeof(VertexT2fN3fV3f), "Position"),
                     },
                     new MgVertexInputAttributeDescription
                     {
                         Binding = BINDING_INDEX,
                         Location = NORMAL_ATTRIB,
                         Format= MgFormat.R32G32B32_SFLOAT,
-                        Offset = (uint) normalAttribOffset,
+                        Offset = (uint) Marshal.OffsetOf(typeof(VertexT2fN3fV3f), "Normal"),
                     },
                     new MgVertexInputAttributeDescription
                     {
                         Binding = BINDING_INDEX,
                         Location = UV_ATTRIB,
                         Format= MgFormat.R32G32_SFLOAT,
-                        Offset = (uint) uvAttribOffset,
+                        Offset = (uint) Marshal.OffsetOf(typeof(VertexT2fN3fV3f), "TexCoord"),
                     },
                 }
             };
@@ -384,7 +380,7 @@ void main(void)
             mOffscreenShaderProgram = CreateOffscreenShader();
             mToScreenShaderProgram = CreateToScreenShader();
 
-            Object = new Shapes.TorusKnot(256, 32, 0.2, 7,8, 1, true);
+            Object = new Shapes.TorusKnot(256, 32, 0.2, 7, 8, 1, true);
 
             GenerateVAO(Object);
             GenerateQuad();
@@ -403,6 +399,7 @@ void main(void)
             var selector = new Magnesium.OpenGL.DesktopGL.FullGLFramebufferHelperSelector(capabilities, errHandler);
             selector.Initialize();
 
+            Magnesium.OpenGL.IGLDescriptorSetEntrypoint dSetEntrypoint = new Magnesium.OpenGL.GLFutureDescriptorSetEntrypoint();
             var deviceEntrypoint = new Magnesium.OpenGL.DefaultGLDeviceEntrypoint(
                 null,
                 new Magnesium.OpenGL.DesktopGL.FullGLSamplerEntrypoint(errHandler),
@@ -418,7 +415,7 @@ void main(void)
                 null,
                 null,
                 null,
-                null,
+                dSetEntrypoint,
                 null,
                 selector
                );
@@ -428,11 +425,11 @@ void main(void)
 
             mColorReplacement = factory.CreateColorAttachment(MgFormat.R8G8B8A8_UNORM, TEXTURE_SIZE, TEXTURE_SIZE);
             var internalView = mColorReplacement.View as Magnesium.OpenGL.Internals.IGLImageView;
-            ColorTexture = (uint) internalView.TextureId;
+            ColorTexture = (uint)internalView.TextureId;
 
             // Create Color Tex
-       //     GL.GenTextures(1, out ColorTexture);
-            GL.BindTexture(TextureTarget.Texture2D, ColorTexture);
+            //     GL.GenTextures(1, out ColorTexture);
+           // GL.BindTexture(TextureTarget.Texture2D, ColorTexture);
             //   GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba8, TextureSize, TextureSize, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
             //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
             //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
@@ -445,8 +442,8 @@ void main(void)
             DepthTexture = (uint)depthView.TextureId;
 
             // Create Depth Tex
-           // GL.GenTextures(1, out DepthTexture);
-            GL.BindTexture(TextureTarget.Texture2D, DepthTexture);
+            // GL.GenTextures(1, out DepthTexture);
+           // GL.BindTexture(TextureTarget.Texture2D, DepthTexture);
             // GL.TexImage2D(TextureTarget.Texture2D, 0, (PixelInternalFormat)All.DepthComponent32, TextureSize, TextureSize, 0, PixelFormat.DepthComponent, PixelType.UnsignedInt, IntPtr.Zero);
             //GL.TexImage2D(TextureTarget.Texture2D, 0, (PixelInternalFormat)All.DepthComponent16, TextureSize, TextureSize, 0, PixelFormat.DepthComponent, PixelType.UnsignedShort, IntPtr.Zero);
             // things go horribly wrong if DepthComponent's Bitcount does not match the main Framebuffer's Depth
@@ -462,7 +459,7 @@ void main(void)
                 Height = TEXTURE_SIZE,
                 MinDepth = 0f,
                 MaxDepth = 1f,
-                ColorAttachments = new []
+                ColorAttachments = new[]
                 {
                     new MgOffscreenColorAttachmentInfo
                     {
@@ -486,9 +483,9 @@ void main(void)
             // Create a FBO and attach the textures
             mOffscreen = factory.CreateOffscreenDevice(createInfo);
             var fb = mOffscreen.Framebuffers[0] as Magnesium.OpenGL.GLNextFramebuffer;
-            FBOHandle = (uint) fb.Subpasses[0].Framebuffer;
+            FBOHandle = (uint)fb.Subpasses[0].Framebuffer;
 
-           // GL.GenFramebuffers(1, out FBOHandle);
+            // GL.GenFramebuffers(1, out FBOHandle);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, FBOHandle);
             //GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, ColorTexture, 0);
             //GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, DepthTexture, 0);
@@ -583,7 +580,7 @@ void main(void)
                 GL.ClearBuffer(ClearBufferCombined.DepthStencil, 0, 1f, 0);
                 // GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-               // DrawImmediateMode();
+                // DrawImmediateMode();
 
                 DrawVAO();
 
@@ -597,7 +594,89 @@ void main(void)
 
             GL.Enable(EnableCap.Texture2D); // enable Texture Mapping
             GL.BindTexture(TextureTarget.Texture2D, 0); // bind default texture
+
+            Magnesium.OpenGL.IGLTextureGalleryEntrypoint texGallery = new Magnesium.OpenGL.DesktopGL.FullGLTextureGalleryEntrypoint();
+            mTextureCache = new Magnesium.OpenGL.GLSolarShaderTextureDescriptorCache(texGallery);
+            mTextureCache.Initialize();
+
+            var poolCreateInfo = new MgDescriptorPoolCreateInfo
+            {
+                MaxSets = 2,
+                PoolSizes = new[]
+                {
+                    new MgDescriptorPoolSize
+                    {
+                        DescriptorCount = 2,
+                        Type = MgDescriptorType.COMBINED_IMAGE_SAMPLER,
+                    }
+                }
+            };
+
+            var descriptorPool = new Magnesium.OpenGL.GLSolarDescriptorPool(poolCreateInfo);
+
+            var device = new Magnesium.OpenGL.Internals.GLDevice(null, deviceEntrypoint);
+
+            var lCreateInfo = new MgDescriptorSetLayoutCreateInfo
+            {
+                Bindings = new []
+                {
+                    new MgDescriptorSetLayoutBinding
+                    {
+                        Binding = 0,
+                        DescriptorCount = 1,
+                        DescriptorType = MgDescriptorType.COMBINED_IMAGE_SAMPLER,                        
+                    }
+                }
+            };
+            device.CreateDescriptorSetLayout(lCreateInfo, null, out IMgDescriptorSetLayout pSetLayout);
+
+            var pAllocateInfo = new MgDescriptorSetAllocateInfo
+            {
+                DescriptorPool = descriptorPool,
+                DescriptorSetCount = 2,
+                SetLayouts = new[] { pSetLayout, pSetLayout },
+            };
+            var err = device.AllocateDescriptorSets(pAllocateInfo, out IMgDescriptorSet[] dSets);
+            Debug.Assert(err == Result.SUCCESS);
+            mTextureSets = dSets;
+
+            MgWriteDescriptorSet[] pDescriptorWrites = new MgWriteDescriptorSet[]
+            {
+                new MgWriteDescriptorSet
+                {
+                    DstSet = mTextureSets[0],
+                    DescriptorCount = 1,
+                    DstBinding = 0,
+                    DescriptorType = MgDescriptorType.COMBINED_IMAGE_SAMPLER,                    
+                    ImageInfo = new []
+                    {
+                        new MgDescriptorImageInfo
+                        {
+                            ImageLayout = MgImageLayout.COLOR_ATTACHMENT_OPTIMAL,
+                            ImageView = internalView,
+                        }
+                    }
+                },
+                new MgWriteDescriptorSet
+                {
+                    DstSet = mTextureSets[1],
+                    DescriptorCount = 1,
+                    DstBinding = 0,
+                    DescriptorType = MgDescriptorType.COMBINED_IMAGE_SAMPLER,
+                    ImageInfo = new []
+                    {
+                        new MgDescriptorImageInfo
+                        {
+                            ImageLayout = MgImageLayout.COLOR_ATTACHMENT_OPTIMAL,
+                            ImageView = depthView,
+                        }
+                    }
+                },
+            };
+            device.UpdateDescriptorSets(pDescriptorWrites, null);
         }
+        Magnesium.OpenGL.IGLShaderTextureDescriptorCache mTextureCache;
+        IMgDescriptorSet[] mTextureSets;
 
         private void DrawVAO()
         {
@@ -742,10 +821,6 @@ void main(void)
 
 precision highp float;
 
-const vec3 ambient = vec3(0.1, 0.1, 0.1);
-const vec3 lightVecNormalized = normalize(vec3(0.5, 0.5, 2.0));
-const vec3 lightColor = vec3(1.0, 1.0, 1.0);
-
 layout (binding = 0) uniform sampler2D diffuseTex;
 
 in vec2 texCoords;
@@ -755,8 +830,7 @@ out vec4 out_frag_color;
 void main(void)
 {
   vec4 diffuse = texture2D(diffuseTex, texCoords);
-  out_frag_color = vec4(ambient + diffuse.rgb * lightColor, 1.0);
-  //  out_frag_color = vec4(0, 0, 1, 1);
+  out_frag_color = diffuse;
 }";
 
             var vertexShaderHandle = GL.CreateShader(ShaderType.VertexShader);
@@ -870,13 +944,11 @@ void main(void)
             const int POSITION_ATTRIB = 0;
             const int UV_ATTRIB = 1;
 
-            var uvAttribOffset = 0;
-            var positionAttribOffset = sizeof(float) * 2;
 
             var vertexInput = new MgPipelineVertexInputStateCreateInfo
             {
                 VertexBindingDescriptions = new[]
-    {
+                {
                     new MgVertexInputBindingDescription
                     {
                         Binding = BINDING_INDEX,
@@ -885,7 +957,7 @@ void main(void)
                     }
                 },
                 VertexAttributeDescriptions = new[]
-    {
+                {
                     new MgVertexInputAttributeDescription
                     {
                         Binding = BINDING_INDEX,
@@ -923,8 +995,16 @@ void main(void)
             GL.PushMatrix();
             {
                 // Draw the Color Texture
-               // GL.Translate(-1.1f, 0f, 0f);
-                GL.BindTexture(TextureTarget.Texture2D, ColorTexture);
+                // GL.Translate(-1.1f, 0f, 0f);
+
+                var colorMapDs = mTextureSets[0] as Magnesium.OpenGL.IGLFutureDescriptorSet;
+
+                mTextureCache.Bind(
+                    colorMapDs,
+                    colorMapDs.Resources[0]);
+
+                //GL.ActiveTexture(TextureUnit.Texture0);
+                //GL.BindTexture(TextureTarget.Texture2D, ColorTexture);
 
                 GL.BindVertexArray(mQuadVAO);
 
@@ -966,7 +1046,13 @@ void main(void)
                 //}
                 //GL.End();
 
-                GL.BindTexture(TextureTarget.Texture2D, DepthTexture);
+                var depthMapDs = mTextureSets[1] as Magnesium.OpenGL.IGLFutureDescriptorSet;
+
+                mTextureCache.Bind(
+                    depthMapDs,
+                    depthMapDs.Resources[0]);
+
+                //GL.BindTexture(TextureTarget.Texture2D, DepthTexture);
 
                 GL.Uniform3(offsetLocation, 1.1f, 0f, 0f);
                 GL.DrawElementsInstancedBaseInstance(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero, 1, 0);

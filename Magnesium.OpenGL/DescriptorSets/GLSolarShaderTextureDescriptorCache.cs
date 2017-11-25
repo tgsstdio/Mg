@@ -2,7 +2,7 @@
 
 namespace Magnesium.OpenGL
 {
-    class GLSolarShaderTextureDescriptorCache : IGLShaderTextureDescriptorCache
+    public class GLSolarShaderTextureDescriptorCache : IGLShaderTextureDescriptorCache
     {
         private IGLTextureGalleryEntrypoint mEntrypoint;
         private GLTextureSlot[] AvailableSlots;

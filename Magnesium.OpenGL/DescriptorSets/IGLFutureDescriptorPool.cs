@@ -3,7 +3,7 @@
 namespace Magnesium.OpenGL
 {
     // descriptor pool can contain any implementation
-    public interface IGLFutureDescriptorPool
+    public interface IGLFutureDescriptorPool : IMgDescriptorPool
     {
         uint MaxSets { get; }
         IDictionary<uint, IGLFutureDescriptorSet> AllocatedSets { get; }

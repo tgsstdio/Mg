@@ -1,10 +1,7 @@
-﻿using Magnesium;
-using Magnesium.OpenGL;
-
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 using System;
 
-namespace Magenesium.OpenGL
+namespace Magnesium.OpenGL.DesktopGL
 {
     public class FullGLTextureGalleryEntrypoint : IGLTextureGalleryEntrypoint
     {

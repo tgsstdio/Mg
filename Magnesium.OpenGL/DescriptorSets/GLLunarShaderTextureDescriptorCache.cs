@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace Magnesium.OpenGL
 {
-    class GLLunarShaderTextureDescriptorCache : IGLShaderTextureDescriptorCache
+    public class GLLunarShaderTextureDescriptorCache : IGLShaderTextureDescriptorCache
     {
         private IGLExtensionLookup mLookup;
         private IGLLunarUniformBindingEntrypoint mEntrypoint;
