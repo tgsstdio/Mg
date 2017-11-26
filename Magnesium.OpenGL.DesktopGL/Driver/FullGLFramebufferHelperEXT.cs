@@ -152,6 +152,20 @@ namespace Magnesium.OpenGL.DesktopGL
 				throw new InvalidOperationException(message);
 			}
 		}
-	}
+
+        public void EnableColorAttachments(uint[] colorAttachments)
+        {
+            var noOfAttachments = colorAttachments.Length;
+
+            var flags = new DrawBuffersEnum[noOfAttachments];
+
+            for (var i = 0; i < colorAttachments.Length; i += 1)
+            {
+                flags[i] = DrawBuffersEnum.ColorAttachment0 + i;
+            }
+
+            GL.DrawBuffers(noOfAttachments, flags);
+        }
+    }
 }
 

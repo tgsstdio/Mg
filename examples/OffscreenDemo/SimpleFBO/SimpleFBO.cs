@@ -17,19 +17,20 @@ namespace Examples.Tutorial
     public class SimpleFBO : GameWindow
     {
         public SimpleFBO()
-            : base(800, 400)
+            : base(720, 480)
         {
         }
 
-        uint ColorTexture;
-        uint DepthTexture;
+       // uint ColorTexture;
+       // uint DepthTexture;
         uint FBOHandle;
 
-        const int TEXTURE_SIZE = 512;
+        const int TEXTURE_SIZE = 256;
 
         Examples.Shapes.DrawableShape Object;
-        private IMgOffscreenDeviceAttachment mColorReplacement;
-        private IMgOffscreenDeviceAttachment mDepthReplacement;
+        private IMgOffscreenDeviceAttachment mColorAttachment;
+        private IMgOffscreenDeviceAttachment mDepthAttachment;
+        private IMgOffscreenDeviceAttachment mNormalAttachment;
         private IMgEffectFramework mOffscreen;
 
         #region CreateOffscreenShader methods
@@ -76,13 +77,15 @@ const vec3 lightColor = vec3(0.0, 1.0, 0.0);
 in vec3 normal;
 in vec2 texCoords;
 
-out vec4 out_frag_color;
+layout(location = 0) out vec4 out_frag_color_0;
+layout(location = 1) out vec4 out_frag_color_1;
 
 void main(void)
 {
-    float diffuse = clamp(dot(lightVecNormalized, normalize(normal)), 0.0, 1.0);
-    out_frag_color = vec4(ambient + diffuse * lightColor, 1.0);
-    //  out_frag_color = vec4(0, 0, 1, 1);
+    vec3 unitNormal = normalize(normal);
+    float diffuse = clamp(dot(lightVecNormalized, unitNormal), 0.0, 1.0);
+    out_frag_color_0 = vec4(ambient + diffuse * lightColor, 1.0);
+    out_frag_color_1 = vec4(unitNormal, 1.0);
 }";
             var vertexShaderHandle = GL.CreateShader(ShaderType.VertexShader);
             var fragmentShaderHandle = GL.CreateShader(ShaderType.FragmentShader);
@@ -423,35 +426,11 @@ void main(void)
             var entrypoint = new Magnesium.OpenGL.GLOffscreenDeviceEntrypoint();
             var factory = new MgOffscreenDeviceFactory(configuration, entrypoint);
 
-            mColorReplacement = factory.CreateColorAttachment(MgFormat.R8G8B8A8_UNORM, TEXTURE_SIZE, TEXTURE_SIZE);
-            var internalView = mColorReplacement.View as Magnesium.OpenGL.Internals.IGLImageView;
-            ColorTexture = (uint)internalView.TextureId;
+            mColorAttachment = factory.CreateColorAttachment(MgFormat.R8G8B8A8_UNORM, TEXTURE_SIZE, TEXTURE_SIZE);
 
-            // Create Color Tex
-            //     GL.GenTextures(1, out ColorTexture);
-           // GL.BindTexture(TextureTarget.Texture2D, ColorTexture);
-            //   GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba8, TextureSize, TextureSize, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
-            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToBorder);
-            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder);
-            // GL.Ext.GenerateMipmap( GenerateMipmapTarget.Texture2D );
+            mDepthAttachment = factory.CreateDepthStencilAttachment(MgFormat.D16_UNORM, TEXTURE_SIZE, TEXTURE_SIZE);
 
-            mDepthReplacement = factory.CreateDepthStencilAttachment(MgFormat.D16_UNORM, TEXTURE_SIZE, TEXTURE_SIZE);
-            var depthView = mDepthReplacement.View as Magnesium.OpenGL.Internals.IGLImageView;
-            DepthTexture = (uint)depthView.TextureId;
-
-            // Create Depth Tex
-            // GL.GenTextures(1, out DepthTexture);
-           // GL.BindTexture(TextureTarget.Texture2D, DepthTexture);
-            // GL.TexImage2D(TextureTarget.Texture2D, 0, (PixelInternalFormat)All.DepthComponent32, TextureSize, TextureSize, 0, PixelFormat.DepthComponent, PixelType.UnsignedInt, IntPtr.Zero);
-            //GL.TexImage2D(TextureTarget.Texture2D, 0, (PixelInternalFormat)All.DepthComponent16, TextureSize, TextureSize, 0, PixelFormat.DepthComponent, PixelType.UnsignedShort, IntPtr.Zero);
-            // things go horribly wrong if DepthComponent's Bitcount does not match the main Framebuffer's Depth
-            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToBorder);
-            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder);
-            // GL.Ext.GenerateMipmap( GenerateMipmapTarget.Texture2D );
+            mNormalAttachment = factory.CreateColorAttachment(MgFormat.R8G8B8A8_UNORM, TEXTURE_SIZE, TEXTURE_SIZE);
 
             var createInfo = new MgOffscreenDeviceCreateInfo
             {
@@ -466,8 +445,15 @@ void main(void)
                         Format = MgFormat.R8G8B8A8_UNORM,
                         LoadOp = MgAttachmentLoadOp.CLEAR,
                         StoreOp = MgAttachmentStoreOp.STORE,
-                        View = internalView,
-                    }
+                        View = mColorAttachment.View,
+                    },
+                    new MgOffscreenColorAttachmentInfo
+                    {
+                        Format = MgFormat.R8G8B8A8_UNORM,
+                        LoadOp = MgAttachmentLoadOp.CLEAR,
+                        StoreOp = MgAttachmentStoreOp.STORE,
+                        View = mNormalAttachment.View,
+                    },
                 },
                 DepthStencilAttachment = new MgOffscreenDepthStencilAttachmentInfo
                 {
@@ -476,7 +462,7 @@ void main(void)
                     StoreOp = MgAttachmentStoreOp.STORE,
                     StencilLoadOp = MgAttachmentLoadOp.CLEAR,
                     StencilStoreOp = MgAttachmentStoreOp.STORE,
-                    View = depthView,
+                    View = mDepthAttachment.View,
                     Layout = MgImageLayout.GENERAL,
                 }
             };
@@ -485,15 +471,7 @@ void main(void)
             var fb = mOffscreen.Framebuffers[0] as Magnesium.OpenGL.GLNextFramebuffer;
             FBOHandle = (uint)fb.Subpasses[0].Framebuffer;
 
-            // GL.GenFramebuffers(1, out FBOHandle);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, FBOHandle);
-            //GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, ColorTexture, 0);
-            //GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, DepthTexture, 0);
-
-            //GL.Ext.GenFramebuffers(1, out FBOHandle);
-            //GL.Ext.BindFramebuffer(FramebufferTarget.FramebufferExt, FBOHandle);
-            // GL.Ext.FramebufferTexture2D(FramebufferTarget.FramebufferExt, FramebufferAttachment.ColorAttachment0Ext, TextureTarget.Texture2D, ColorTexture, 0);
-            // GL.Ext.FramebufferTexture2D(FramebufferTarget.FramebufferExt, FramebufferAttachment.DepthAttachmentExt, TextureTarget.Texture2D, DepthTexture, 0);
 
             #region Test for Error
 
@@ -580,6 +558,8 @@ void main(void)
                 GL.ClearBuffer(ClearBufferCombined.DepthStencil, 0, 1f, 0);
                 // GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
+                GL.ClearBuffer(ClearBuffer.Color, 1, new float[] { 0f, 0.7f, 0.7f, 0f });
+
                 // DrawImmediateMode();
 
                 DrawVAO();
@@ -601,12 +581,12 @@ void main(void)
 
             var poolCreateInfo = new MgDescriptorPoolCreateInfo
             {
-                MaxSets = 2,
+                MaxSets = 3,
                 PoolSizes = new[]
                 {
                     new MgDescriptorPoolSize
                     {
-                        DescriptorCount = 2,
+                        DescriptorCount = 3,
                         Type = MgDescriptorType.COMBINED_IMAGE_SAMPLER,
                     }
                 }
@@ -633,8 +613,8 @@ void main(void)
             var pAllocateInfo = new MgDescriptorSetAllocateInfo
             {
                 DescriptorPool = descriptorPool,
-                DescriptorSetCount = 2,
-                SetLayouts = new[] { pSetLayout, pSetLayout },
+                DescriptorSetCount = 3,
+                SetLayouts = new[] { pSetLayout, pSetLayout, pSetLayout },
             };
             var err = device.AllocateDescriptorSets(pAllocateInfo, out IMgDescriptorSet[] dSets);
             Debug.Assert(err == Result.SUCCESS);
@@ -653,7 +633,7 @@ void main(void)
                         new MgDescriptorImageInfo
                         {
                             ImageLayout = MgImageLayout.COLOR_ATTACHMENT_OPTIMAL,
-                            ImageView = internalView,
+                            ImageView = mColorAttachment.View,
                         }
                     }
                 },
@@ -668,7 +648,22 @@ void main(void)
                         new MgDescriptorImageInfo
                         {
                             ImageLayout = MgImageLayout.COLOR_ATTACHMENT_OPTIMAL,
-                            ImageView = depthView,
+                            ImageView = mDepthAttachment.View,
+                        }
+                    }
+                },
+                new MgWriteDescriptorSet
+                {
+                    DstSet = mTextureSets[2],
+                    DescriptorCount = 1,
+                    DstBinding = 0,
+                    DescriptorType = MgDescriptorType.COMBINED_IMAGE_SAMPLER,
+                    ImageInfo = new []
+                    {
+                        new MgDescriptorImageInfo
+                        {
+                            ImageLayout = MgImageLayout.COLOR_ATTACHMENT_OPTIMAL,
+                            ImageView = mNormalAttachment.View,
                         }
                     }
                 },
@@ -718,20 +713,11 @@ void main(void)
             mOffscreen.Dispose();
 
             // Clean up what we allocated before exiting
-            mColorReplacement.Dispose();
+            mColorAttachment.Dispose();
 
-            //if (ColorTexture != 0)
-            //    GL.DeleteTextures(1, ref ColorTexture);
+            mDepthAttachment.Dispose();
 
-            mDepthReplacement.Dispose();
-            //if (DepthTexture != 0)
-            //    GL.DeleteTextures(1, ref DepthTexture);
-
-            if (FBOHandle != 0)
-            {
-               // GL.Ext.DeleteFramebuffers(1, ref FBOHandle);
-                GL.DeleteFramebuffers(1, ref FBOHandle);
-            }
+            mNormalAttachment.Dispose();
 
             if (mOffscreenShaderProgram != 0)
             {
@@ -1018,11 +1004,11 @@ void main(void)
                 // var projectionMatrix = Matrix4.Identity;
                 var projectionMatrix = OpenTK.Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, (float) this.Width / (float)this.Height, 0.1f, 1000f); ;
 
-               var modelviewMatrix = Matrix4.LookAt(0f, 0f, 1.5f, 0f, 0f, 0f, 0f, 1f, 0f);
+               var modelviewMatrix = Matrix4.LookAt(0f, 0f, 2.8f, 0f, 0f, 0f, 0f, 1f, 0f);
                 // var projectionMatrix = Matrix4.Identity;
                 //  var modelviewMatrix = Matrix4.CreateTranslation(-1.1f, 0f, 1f);
                 
-                GL.Uniform3(offsetLocation, -1.1f, 0f, 0f);
+                GL.Uniform3(offsetLocation, -2.2f, 0f, 0f);
                 GL.UniformMatrix4(modelviewMatrixLocation, false, ref modelviewMatrix);
                 GL.UniformMatrix4(projectionMatrixLocation, false, ref projectionMatrix);
 
@@ -1054,7 +1040,16 @@ void main(void)
 
                 //GL.BindTexture(TextureTarget.Texture2D, DepthTexture);
 
-                GL.Uniform3(offsetLocation, 1.1f, 0f, 0f);
+                GL.Uniform3(offsetLocation, 2.2f, 0f, 0f);
+                GL.DrawElementsInstancedBaseInstance(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero, 1, 0);
+
+                var normalDs = mTextureSets[2] as Magnesium.OpenGL.IGLFutureDescriptorSet;
+
+                mTextureCache.Bind(
+                    normalDs,
+                    normalDs.Resources[0]);
+
+                GL.Uniform3(offsetLocation, 0f, 0f, 0f);
                 GL.DrawElementsInstancedBaseInstance(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero, 1, 0);
 
                 GL.UseProgram(0);

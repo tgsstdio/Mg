@@ -1,5 +1,6 @@
 ﻿using Magnesium.OpenGL.Internals;
 using System;
+using System.Collections.Generic;
 
 namespace Magnesium.OpenGL
 {
@@ -68,6 +69,7 @@ namespace Magnesium.OpenGL
             {
                 var noOfColorAttachments = srcSubpass.ColorAttachments.Length;
 
+                var colorAttachments = new uint[noOfColorAttachments];
                 for (var j = 0; j < noOfColorAttachments; ++j)
                 {
                     var srcViewIndex = srcSubpass.ColorAttachments[j];
@@ -76,7 +78,10 @@ namespace Magnesium.OpenGL
                     const int LEVEL = 0;
                     const int SAMPLES = 0;
                     mSelector.Helper.FramebufferColorAttachment(j, bSrcView.ViewTarget, bSrcView.TextureId, LEVEL, SAMPLES);
+                    colorAttachments[j] = srcViewIndex;
                 }
+
+                mSelector.Helper.EnableColorAttachments(colorAttachments);
             }
 
             if (srcSubpass.DepthAttachment.HasValue)

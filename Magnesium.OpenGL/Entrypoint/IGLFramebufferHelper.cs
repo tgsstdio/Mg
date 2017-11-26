@@ -36,6 +36,7 @@
 		void BlitFramebuffer (int iColorAttachment, int width, int height);
 
 		void CheckFramebufferStatus ();
-	}
+        void EnableColorAttachments(uint[] colorAttachments);
+    }
 }
 
