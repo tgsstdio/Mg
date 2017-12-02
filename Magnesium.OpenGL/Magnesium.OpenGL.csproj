@@ -124,6 +124,7 @@
     <Compile Include="DescriptorSets\MgTextureCentral.cs" />
     <Compile Include="Device\GLClearAttachmentDivisor.cs" />
     <Compile Include="Device\GLNextFramebuffer.cs" />
+    <Compile Include="Device\GLNextFramebufferSubpassInfo.cs" />
     <Compile Include="Device\GLNextRenderPass.cs" />
     <Compile Include="Device\GLRenderPassClearAttachment.cs" />
     <Compile Include="Device\IGLImage.cs" />

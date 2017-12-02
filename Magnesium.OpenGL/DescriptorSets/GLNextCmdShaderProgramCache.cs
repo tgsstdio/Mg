@@ -1,14 +1,14 @@
 ﻿using Magnesium.OpenGL.Internals;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 namespace Magnesium.OpenGL
 {
-	public class GLNextCmdShaderProgramCache : IGLNextCmdShaderProgramCache
+    public class GLNextCmdShaderProgramCache : IGLNextCmdShaderProgramCache
     {
 		private readonly IGLCmdShaderProgramEntrypoint mEntrypoint;
 		private int mProgramID;
 		private uint mVAO;
+        private int mFBO;
         private GLCmdDescriptorSetParameter[] mBoundDescriptorSets;
         private IGLShaderTextureDescriptorCache mGallery;
         public GLNextCmdShaderProgramCache(IGLCmdShaderProgramEntrypoint graphics, IGLShaderTextureDescriptorCache gallery)
@@ -16,6 +16,7 @@ namespace Magnesium.OpenGL
 			mEntrypoint = graphics;
 			mProgramID = 0;
 			mVAO = 0;
+            mFBO = 0;
 
             const int NO_OF_DESCRIPTOR_SETS = 2;
             mBoundDescriptorSets = new GLCmdDescriptorSetParameter[NO_OF_DESCRIPTOR_SETS];
@@ -280,5 +281,22 @@ namespace Magnesium.OpenGL
 				return mVAO;
 			}
 		}
+
+        public int FBO
+        {
+            get
+            {
+                return mFBO;
+            }
+        }
+
+        public void SetFramebuffer(int fbo)
+        {
+            if (mFBO != fbo)
+            {
+                mFBO = fbo;
+                mEntrypoint.BindFramebuffer(mFBO);
+            }
+        }
 	}
 }

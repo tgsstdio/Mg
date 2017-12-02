@@ -1,8 +1,7 @@
 ﻿using Magnesium.OpenGL.Internals;
-using System;
 namespace Magnesium.OpenGL
 {
-	public interface IGLNextCmdShaderProgramCache
+    public interface IGLNextCmdShaderProgramCache
 	{
         void Initialize();
 
@@ -11,5 +10,7 @@ namespace Magnesium.OpenGL
         uint VAO { get; }
 		void SetVAO(uint vao);
         void SetDescriptorSets(GLCmdDescriptorSetParameter ds);
+        int FBO { get; }
+        void SetFramebuffer(int fbo);
     }
 }

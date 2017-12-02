@@ -1,14 +1,8 @@
 ﻿using Magnesium.OpenGL.Internals;
 using System;
-using System.Collections.Generic;
 
 namespace Magnesium.OpenGL
 {
-    public class GLNextFramebufferSubpassInfo
-    {
-        public int Framebuffer { get; internal set; }
-    }
-
     public class GLNextFramebuffer : IMgFramebuffer
     {
         private IGLFramebufferHelperSelector mSelector;

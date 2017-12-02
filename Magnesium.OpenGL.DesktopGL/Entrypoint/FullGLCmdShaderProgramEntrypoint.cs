@@ -6,15 +6,22 @@ namespace Magnesium.OpenGL.DesktopGL
     public class FullGLCmdShaderProgramEntrypoint : IGLCmdShaderProgramEntrypoint
     {
         private IGLErrorHandler mErrHandler;
-        public FullGLCmdShaderProgramEntrypoint(IGLErrorHandler errHandler)
+        private IGLFramebufferHelperSelector mSelector;
+        public FullGLCmdShaderProgramEntrypoint(IGLErrorHandler errHandler, IGLFramebufferHelperSelector selector)
         {
             mErrHandler = errHandler;
+            mSelector = selector;
         }
 
         public void BindCombinedImageSampler(int programID, int binding, long value)
         {
             GL.Arb.ProgramUniformHandle(programID, binding, value);
             mErrHandler.LogGLError("BindCombinedImageSampler");
+        }
+
+        public void BindFramebuffer(int fbo)
+        {
+            mSelector.Helper.BindFramebuffer(fbo);
         }
 
         public void BindProgram(int programID)

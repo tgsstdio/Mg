@@ -52,16 +52,15 @@ namespace Magnesium.OpenGL
 
             if (pass.Framebuffer.IsNullFramebuffer)
             {
-                mFramebuffer.Helper.BindFramebuffer(0);
+                mCache.SetFramebuffer(0);
                 ApplyClearBuffers(pass.ClearState, pass.Bitmask);
             }
             else
             {
                 // Framebuffer stuff here
                 // mFramebuffer.Helper.BindFramebuffer(pass.Framebuffer.Subpasses[0].Framebuffer);
-               // ApplyDrawBuffers(pass.ClearState, pass.Framebuffer.Subpasses[0]);
-
-                mFramebuffer.Helper.BindFramebuffer(pass.Framebuffer.Subpasses[0].Framebuffer);
+                // ApplyDrawBuffers(pass.ClearState, pass.Framebuffer.Subpasses[0]);
+                mCache.SetFramebuffer(pass.Framebuffer.Subpasses[0].Framebuffer);
                 ApplyClearBuffers(pass.ClearState, pass.Bitmask);
             }
         }

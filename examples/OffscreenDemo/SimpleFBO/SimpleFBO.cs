@@ -1,4 +1,6 @@
-﻿// This code was written for the OpenTK library and has been released
+﻿// 
+
+// This code was written for the OpenTK library and has been released
 // to the Public Domain.
 // It is provided "as is" without express or implied warranty of any kind.
 
@@ -21,16 +23,13 @@ namespace Examples.Tutorial
         {
         }
 
-       // uint ColorTexture;
-       // uint DepthTexture;
-        uint FBOHandle;
-
         const int TEXTURE_SIZE = 256;
 
         Examples.Shapes.DrawableShape Object;
         private IMgOffscreenDeviceAttachment mColorAttachment;
         private IMgOffscreenDeviceAttachment mDepthAttachment;
         private IMgOffscreenDeviceAttachment mNormalAttachment;
+        private Magnesium.OpenGL.IGLCmdShaderProgramEntrypoint mShaderCache;
         private IMgEffectFramework mOffscreen;
 
         #region CreateOffscreenShader methods
@@ -432,6 +431,8 @@ void main(void)
 
             mNormalAttachment = factory.CreateColorAttachment(MgFormat.R8G8B8A8_UNORM, TEXTURE_SIZE, TEXTURE_SIZE);
 
+            mShaderCache = new Magnesium.OpenGL.DesktopGL.FullGLCmdShaderProgramEntrypoint(errHandler, selector);
+
             var createInfo = new MgOffscreenDeviceCreateInfo
             {
                 Width = TEXTURE_SIZE,
@@ -469,9 +470,9 @@ void main(void)
             // Create a FBO and attach the textures
             mOffscreen = factory.CreateOffscreenDevice(createInfo);
             var fb = mOffscreen.Framebuffers[0] as Magnesium.OpenGL.GLNextFramebuffer;
-            FBOHandle = (uint)fb.Subpasses[0].Framebuffer;
+            var fboHandle = fb.Subpasses[0].Framebuffer;
 
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, FBOHandle);
+            mShaderCache.BindFramebuffer(fboHandle);
 
             #region Test for Error
 
@@ -560,14 +561,12 @@ void main(void)
 
                 GL.ClearBuffer(ClearBuffer.Color, 1, new float[] { 0f, 0.7f, 0.7f, 0f });
 
-                // DrawImmediateMode();
-
                 DrawVAO();
 
             }
             GL.PopAttrib();
-            //GL.Ext.BindFramebuffer(FramebufferTarget.FramebufferExt, 0); // disable rendering into the FBO
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
+            mShaderCache.BindFramebuffer(0);
 
             GL.ClearColor(.1f, .2f, .3f, 0f);
             GL.Color3(1f, 1f, 1f);
@@ -675,35 +674,13 @@ void main(void)
 
         private void DrawVAO()
         {
-            GL.UseProgram(mOffscreenShaderProgram);
+            mShaderCache.BindProgram(mOffscreenShaderProgram);
+            mShaderCache.BindVAO(mVAOHandle);
 
-            GL.BindVertexArray(mVAOHandle);
-          //  GL.DrawArrays(PrimitiveType.Triangles, 0, mNoOfIndices);
             GL.DrawElementsInstancedBaseVertex(PrimitiveType.TriangleStrip, mNoOfIndices, DrawElementsType.UnsignedInt, IntPtr.Zero, 1, 0);
-            GL.UseProgram(0);
-            GL.BindVertexArray(0);
-        }
 
-        private void DrawImmediateMode()
-        {
-            OpenTK.Matrix4 perspective = OpenTK.Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, TEXTURE_SIZE / (float)TEXTURE_SIZE, 2.5f, 6f);
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.LoadMatrix(ref perspective);
-
-            Matrix4 lookat = Matrix4.LookAt(0f, 0f, 4.5f, 0f, 0f, 0f, 0f, 1f, 0f);
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadMatrix(ref lookat);
-
-            // draw some complex object into the FBO's textures
-            GL.Enable(EnableCap.Lighting);
-            GL.Enable(EnableCap.Light0);
-            GL.Enable(EnableCap.ColorMaterial);
-            GL.Color3(0f, 1f, 0f);
-            Object.Draw();
-
-            GL.Disable(EnableCap.ColorMaterial);
-            GL.Disable(EnableCap.Light0);
-            GL.Disable(EnableCap.Lighting);
+            mShaderCache.BindVAO(0);
+            mShaderCache.BindProgram(0);
         }
 
         protected override void OnUnload(EventArgs e)
@@ -973,108 +950,51 @@ void main(void)
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
-            GL.UseProgram(0);
+            mShaderCache.BindProgram(0);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-           // var modelviewMatrixLocation = GL.GetUniformLocation(programId, "modelview_matrix");
+            var colorMapDs = mTextureSets[0] as Magnesium.OpenGL.IGLFutureDescriptorSet;
 
-            GL.PushMatrix();
-            {
-                // Draw the Color Texture
-                // GL.Translate(-1.1f, 0f, 0f);
+            mTextureCache.Bind(
+                colorMapDs,
+                colorMapDs.Resources[0]);
 
-                var colorMapDs = mTextureSets[0] as Magnesium.OpenGL.IGLFutureDescriptorSet;
+            mShaderCache.BindVAO(mQuadVAO);
+            mShaderCache.BindProgram(mToScreenShaderProgram);
 
-                mTextureCache.Bind(
-                    colorMapDs,
-                    colorMapDs.Resources[0]);
+            var projectionMatrixLocation = GL.GetUniformLocation(mToScreenShaderProgram, "projection_matrix");
+            var modelviewMatrixLocation = GL.GetUniformLocation(mToScreenShaderProgram, "modelview_matrix");
+            var offsetLocation = GL.GetUniformLocation(mToScreenShaderProgram, "offset");
 
-                //GL.ActiveTexture(TextureUnit.Texture0);
-                //GL.BindTexture(TextureTarget.Texture2D, ColorTexture);
+            var projectionMatrix = OpenTK.Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, (float) this.Width / (float)this.Height, 0.1f, 1000f); ;
 
-                GL.BindVertexArray(mQuadVAO);
-
-                GL.UseProgram(mToScreenShaderProgram);
-
-
-                var projectionMatrixLocation = GL.GetUniformLocation(mToScreenShaderProgram, "projection_matrix");
-                var modelviewMatrixLocation = GL.GetUniformLocation(mToScreenShaderProgram, "modelview_matrix");
-                var offsetLocation = GL.GetUniformLocation(mToScreenShaderProgram, "offset");
-
-                // var projectionMatrix = Matrix4.Identity;
-                var projectionMatrix = OpenTK.Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, (float) this.Width / (float)this.Height, 0.1f, 1000f); ;
-
-               var modelviewMatrix = Matrix4.LookAt(0f, 0f, 2.8f, 0f, 0f, 0f, 0f, 1f, 0f);
-                // var projectionMatrix = Matrix4.Identity;
-                //  var modelviewMatrix = Matrix4.CreateTranslation(-1.1f, 0f, 1f);
+            var modelviewMatrix = Matrix4.LookAt(0f, 0f, 2.8f, 0f, 0f, 0f, 0f, 1f, 0f);
                 
-                GL.Uniform3(offsetLocation, -2.2f, 0f, 0f);
-                GL.UniformMatrix4(modelviewMatrixLocation, false, ref modelviewMatrix);
-                GL.UniformMatrix4(projectionMatrixLocation, false, ref projectionMatrix);
+            GL.Uniform3(offsetLocation, -2.2f, 0f, 0f);
+            GL.UniformMatrix4(modelviewMatrixLocation, false, ref modelviewMatrix);
+            GL.UniformMatrix4(projectionMatrixLocation, false, ref projectionMatrix);
 
-                GL.DrawElementsInstancedBaseInstance(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero, 1, 0);
-                // GL.DrawArraysInstancedBaseInstance(PrimitiveType.Triangles, 0, 6, 1, 0);
+            GL.DrawElementsInstancedBaseInstance(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero, 1, 0);
 
+            var depthMapDs = mTextureSets[1] as Magnesium.OpenGL.IGLFutureDescriptorSet;
 
-                //GL.Begin(PrimitiveType.Quads);
-                //{
-                //    GL.TexCoord2(0f, 1f);
-                //    GL.Vertex2(-1.0f, 1.0f);
+            mTextureCache.Bind(
+                depthMapDs,
+                depthMapDs.Resources[0]);
 
-                //    GL.TexCoord2(0.0f, 0.0f);
-                //    GL.Vertex2(-1.0f, -1.0f);
+            GL.Uniform3(offsetLocation, 2.2f, 0f, 0f);
+            GL.DrawElementsInstancedBaseInstance(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero, 1, 0);
 
-                //    GL.TexCoord2(1.0f, 0.0f);
-                //    GL.Vertex2(1.0f, -1.0f);
+            var normalDs = mTextureSets[2] as Magnesium.OpenGL.IGLFutureDescriptorSet;
 
-                //    GL.TexCoord2(1.0f, 1.0f);
-                //    GL.Vertex2(1.0f, 1.0f);
-                //}
-                //GL.End();
+            mTextureCache.Bind(
+                normalDs,
+                normalDs.Resources[0]);
 
-                var depthMapDs = mTextureSets[1] as Magnesium.OpenGL.IGLFutureDescriptorSet;
+            GL.Uniform3(offsetLocation, 0f, 0f, 0f);
+            GL.DrawElementsInstancedBaseInstance(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero, 1, 0);
 
-                mTextureCache.Bind(
-                    depthMapDs,
-                    depthMapDs.Resources[0]);
-
-                //GL.BindTexture(TextureTarget.Texture2D, DepthTexture);
-
-                GL.Uniform3(offsetLocation, 2.2f, 0f, 0f);
-                GL.DrawElementsInstancedBaseInstance(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero, 1, 0);
-
-                var normalDs = mTextureSets[2] as Magnesium.OpenGL.IGLFutureDescriptorSet;
-
-                mTextureCache.Bind(
-                    normalDs,
-                    normalDs.Resources[0]);
-
-                GL.Uniform3(offsetLocation, 0f, 0f, 0f);
-                GL.DrawElementsInstancedBaseInstance(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero, 1, 0);
-
-                GL.UseProgram(0);
-
-                //// Draw the Depth Texture
-                //GL.Translate(+2.2f, 0f, 0f);
-                //GL.BindTexture(TextureTarget.Texture2D, DepthTexture);
-
-                ////  GL.DrawElementsInstancedBaseInstance(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero, 1, 0);
-                //// GL.DrawArraysInstancedBaseInstance(PrimitiveType.Triangles, 0, 6, 1, 0);
-
-                //GL.Begin(PrimitiveType.Quads);
-                //{
-                //    GL.TexCoord2(0f, 1f);
-                //    GL.Vertex2(-1.0f, 1.0f);
-                //    GL.TexCoord2(0.0f, 0.0f);
-                //    GL.Vertex2(-1.0f, -1.0f);
-                //    GL.TexCoord2(1.0f, 0.0f);
-                //    GL.Vertex2(1.0f, -1.0f);
-                //    GL.TexCoord2(1.0f, 1.0f);
-                //    GL.Vertex2(1.0f, 1.0f);
-                //}
-                //GL.End();
-            }
-            GL.PopMatrix();
+            mShaderCache.BindProgram(0);
 
             this.SwapBuffers();
         }

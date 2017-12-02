@@ -8,7 +8,9 @@ namespace Magnesium.OpenGL
 
 		void BindVAO(uint vao);
 
-		void BindStorageBuffer(uint binding, uint bufferId, IntPtr offset, IntPtr size);
+        void BindFramebuffer(int fbo);
+
+        void BindStorageBuffer(uint binding, uint bufferId, IntPtr offset, IntPtr size);
 
 		void SetUniformBlock(int programID, int activeIndex, int bindingPoint);
 
