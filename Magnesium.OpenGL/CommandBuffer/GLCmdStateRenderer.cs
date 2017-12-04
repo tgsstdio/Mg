@@ -45,115 +45,122 @@ namespace Magnesium.OpenGL
         #region BeginRenderPass methods
 
         GLClearValueState mPastClearValues;
-        public void BeginRenderpass(GLCmdBeginRenderpassRecord pass)
+        public void BeginRenderpass(GLCmdSubpassOperation subpass)
         {
-            // Clear color plus attachment binding          
-            Debug.Assert(pass.Framebuffer != null);
-
-            if (pass.Framebuffer.IsNullFramebuffer)
+            if (mCache.FBO != subpass.FBO)
             {
-                mCache.SetFramebuffer(0);
-                ApplyClearBuffers(pass.ClearState, pass.Bitmask);
+                mCache.SetFramebuffer(subpass.FBO);
             }
-            else
-            {
-                // Framebuffer stuff here
-                // mFramebuffer.Helper.BindFramebuffer(pass.Framebuffer.Subpasses[0].Framebuffer);
-                // ApplyDrawBuffers(pass.ClearState, pass.Framebuffer.Subpasses[0]);
-                mCache.SetFramebuffer(pass.Framebuffer.Subpasses[0].Framebuffer);
-                ApplyClearBuffers(pass.ClearState, pass.Bitmask);
-            }
+            ApplyClearBuffers(subpass.Loads, subpass.ClearMask);
         }
-        
-        void ApplyDrawBuffers(GLCmdClearValuesParameter clearState, GLNextFramebufferSubpassInfo subpassInfo)
-        {
-            var noOfAttachments = clearState.Attachments.Length;
-            if (noOfAttachments > 0)
-            {
-                mFramebuffer.Helper.BindFramebuffer(subpassInfo.Framebuffer);
 
-                for (var i = 0U; i < noOfAttachments; i += 1)
+        private void ApplyClearBuffers(GLCmdLoadColorAttachment[] loads, GLQueueClearBufferMask clearMask)
+        {
+            foreach(var loadAttachment in loads)
+            {
+                switch (loadAttachment.AttachmentType)
                 {
-                    var state = clearState.Attachments[i];
-
-                    if (state.Attachment.LoadOp == MgAttachmentLoadOp.CLEAR)
-                    {
-                        mClear.ClearFramebufferfv(i, state.Color);
-
-                        //if (state.Attachment.AttachmentType == GLClearAttachmentType.COLOR_FLOAT)
-                        //{
-                        //    mClear.ClearFramebufferfv(i, state.Value.Color.Float32);
-                        //}
-                        //else if (state.Attachment.AttachmentType == GLClearAttachmentType.COLOR_INT)
-                        //{
-                        //    mClear.ClearFramebufferiv(i, state.Value.Color.Int32);
-                        //}
-                        //else if (state.Attachment.AttachmentType == GLClearAttachmentType.COLOR_UINT)
-                        //{
-                        //    mClear.ClearFramebufferuiv(i, state.Value.Color.Uint32);
-                        //}
-                    }
-
-                    if (state.Attachment.StencilLoadOp == MgAttachmentLoadOp.CLEAR)
-                    {
-                        if (state.Attachment.AttachmentType == GLClearAttachmentType.DEPTH_STENCIL)
-                        {
-                            mClear.ClearFramebufferDepthStencil(state.Value.DepthStencil);
-                        }
-                    }
+                    case GLClearAttachmentType.COLOR_INT:
+                    case GLClearAttachmentType.COLOR_UINT:
+                    case GLClearAttachmentType.COLOR_FLOAT:
+                        mClear.ClearFramebufferfv(loadAttachment.ColorAttachment, loadAttachment.ClearValue.Color);
+                        break;
+                    case GLClearAttachmentType.DEPTH_STENCIL:
+                        mClear.ClearFramebufferDepthStencil(loadAttachment.ClearValue.Value.DepthStencil);
+                        break;
                 }
-                mClear.ClearBuffers( GLQueueClearBufferMask.Color | GLQueueClearBufferMask.Depth | GLQueueClearBufferMask.Stencil);
             }
         }
 
-        void ApplyClearBuffers(GLCmdClearValuesParameter clearState, GLQueueClearBufferMask combinedMask)
-        {
-            if (clearState.Attachments.Length > 0)
-            {
-                // TODO : use clear buffers 
-                foreach (var state in clearState.Attachments)
-                {
-                    if (state.Attachment.LoadOp == MgAttachmentLoadOp.CLEAR)
-                    {
-                        if (state.Attachment.AttachmentType == GLClearAttachmentType.COLOR_INT
-                            || state.Attachment.AttachmentType == GLClearAttachmentType.COLOR_FLOAT
-                            || state.Attachment.AttachmentType == GLClearAttachmentType.COLOR_UINT)
-                        {   
-                            var clearValue = state.Color;
-                            if (!mPastClearValues.ClearColor.Equals(clearValue))
-                            {
-                                mClear.SetClearColor(clearValue);
-                                mPastClearValues.ClearColor = clearValue;
-                            }
-                        }
-                        else if (state.Attachment.AttachmentType == GLClearAttachmentType.DEPTH_STENCIL)
-                        {
-                            var clearValue = state.Value.DepthStencil;
-                            if (Math.Abs(mPastClearValues.DepthValue - clearValue.Depth) > float.Epsilon)
-                            {
-                                mClear.SetClearDepthValue(clearValue.Depth);
-                                mPastClearValues.DepthValue = clearValue.Depth;
-                            }
-                        }
+        //void ApplyDrawBuffers(GLCmdClearValuesParameter clearState, GLNextFramebufferSubpassInfo subpassInfo)
+        //{
+        //    var noOfAttachments = clearState.Attachments.Length;
+        //    if (noOfAttachments > 0)
+        //    {
+        //        mFramebuffer.Helper.BindFramebuffer(subpassInfo.Framebuffer);
 
-                    }
+        //        for (var i = 0U; i < noOfAttachments; i += 1)
+        //        {
+        //            var state = clearState.Attachments[i];
 
-                    if (state.Attachment.StencilLoadOp == MgAttachmentLoadOp.CLEAR)
-                    {
-                        if (state.Attachment.AttachmentType == GLClearAttachmentType.DEPTH_STENCIL)
-                        {
-                            var clearValue = state.Value.DepthStencil.Stencil;  
-                            if (mPastClearValues.StencilValue != clearValue)
-                            {
-                                mClear.SetClearStencilValue(clearValue);
-                                mPastClearValues.StencilValue = clearValue;
-                            }
-                        }
-                    }
-                }
-                mClear.ClearBuffers(combinedMask);
-            }
-        }
+        //            if (state.Attachment.LoadOp == MgAttachmentLoadOp.CLEAR)
+        //            {
+        //                mClear.ClearFramebufferfv(i, state.Color);
+
+        //                //if (state.Attachment.AttachmentType == GLClearAttachmentType.COLOR_FLOAT)
+        //                //{
+        //                //    mClear.ClearFramebufferfv(i, state.Value.Color.Float32);
+        //                //}
+        //                //else if (state.Attachment.AttachmentType == GLClearAttachmentType.COLOR_INT)
+        //                //{
+        //                //    mClear.ClearFramebufferiv(i, state.Value.Color.Int32);
+        //                //}
+        //                //else if (state.Attachment.AttachmentType == GLClearAttachmentType.COLOR_UINT)
+        //                //{
+        //                //    mClear.ClearFramebufferuiv(i, state.Value.Color.Uint32);
+        //                //}
+        //            }
+
+        //            if (state.Attachment.StencilLoadOp == MgAttachmentLoadOp.CLEAR)
+        //            {
+        //                if (state.Attachment.AttachmentType == GLClearAttachmentType.DEPTH_STENCIL)
+        //                {
+        //                    mClear.ClearFramebufferDepthStencil(state.Value.DepthStencil);
+        //                }
+        //            }
+        //        }
+        //        mClear.ClearBuffers( GLQueueClearBufferMask.Color | GLQueueClearBufferMask.Depth | GLQueueClearBufferMask.Stencil);
+        //    }
+        //}
+
+        //void ApplyClearBuffers(GLCmdClearValuesParameter clearState, GLQueueClearBufferMask combinedMask)
+        //{
+        //    if (clearState.Attachments.Length > 0)
+        //    {
+        //        // TODO : use clear buffers 
+        //        foreach (var state in clearState.Attachments)
+        //        {
+        //            if (state.Attachment.LoadOp == MgAttachmentLoadOp.CLEAR)
+        //            {
+        //                if (state.Attachment.AttachmentType == GLClearAttachmentType.COLOR_INT
+        //                    || state.Attachment.AttachmentType == GLClearAttachmentType.COLOR_FLOAT
+        //                    || state.Attachment.AttachmentType == GLClearAttachmentType.COLOR_UINT)
+        //                {   
+        //                    var clearValue = state.Color;
+        //                    if (!mPastClearValues.ClearColor.Equals(clearValue))
+        //                    {
+        //                        mClear.SetClearColor(clearValue);
+        //                        mPastClearValues.ClearColor = clearValue;
+        //                    }
+        //                }
+        //                else if (state.Attachment.AttachmentType == GLClearAttachmentType.DEPTH_STENCIL)
+        //                {
+        //                    var clearValue = state.Value.DepthStencil;
+        //                    if (Math.Abs(mPastClearValues.DepthValue - clearValue.Depth) > float.Epsilon)
+        //                    {
+        //                        mClear.SetClearDepthValue(clearValue.Depth);
+        //                        mPastClearValues.DepthValue = clearValue.Depth;
+        //                    }
+        //                }
+
+        //            }
+
+        //            if (state.Attachment.StencilLoadOp == MgAttachmentLoadOp.CLEAR)
+        //            {
+        //                if (state.Attachment.AttachmentType == GLClearAttachmentType.DEPTH_STENCIL)
+        //                {
+        //                    var clearValue = state.Value.DepthStencil.Stencil;  
+        //                    if (mPastClearValues.StencilValue != clearValue)
+        //                    {
+        //                        mClear.SetClearStencilValue(clearValue);
+        //                        mPastClearValues.StencilValue = clearValue;
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        mClear.ClearBuffers(combinedMask);
+        //    }
+        //}
 
         #endregion
 

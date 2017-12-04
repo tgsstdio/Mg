@@ -6,7 +6,7 @@ namespace Magnesium.OpenGL
     {
         // TODO : hide these implementation details
         void Initialize();
-        void BeginRenderpass(GLCmdBeginRenderpassRecord record);
+        void BeginRenderpass(GLCmdSubpassOperation record);
         void EndRenderpass();
         void BindPipeline(GLCmdBoundPipelineRecordInfo pipelineInfo);
         void UpdateStencilWriteMask(GLCmdPipelineStencilWriteInfo write);

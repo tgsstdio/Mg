@@ -6,8 +6,8 @@ namespace Magnesium.OpenGL
     public class GLNextFramebuffer : IMgFramebuffer
     {
         private IGLFramebufferHelperSelector mSelector;
-
-        public bool IsNullFramebuffer { get; private set; }
+        
+        public MgRect2D Scissors { get; private set; }
         public GLNextFramebuffer(IGLFramebufferHelperSelector selector, MgFramebufferCreateInfo createInfo)
         {
             if (createInfo == null)
@@ -19,12 +19,25 @@ namespace Magnesium.OpenGL
             var bRenderpass = (GLNextRenderPass) createInfo.RenderPass;
 
             mSelector = selector;
-            CompatibilityProfile = bRenderpass.Profile;
+            Profile = bRenderpass.Profile;
+
+            Scissors = new MgRect2D
+            {
+                Offset = new MgOffset2D
+                {
+                    X = 0,
+                    Y = 0,
+                },
+                Extent = new MgExtent2D
+                {
+                    Width = createInfo.Width,
+                    Height = createInfo.Height,
+                }
+            };
 
             bool isNullFramebuffer = true;
             if (createInfo.Attachments != null)
             {
-
                 foreach (var attachment in createInfo.Attachments)
                 {
                     var bView = (IGLImageView)attachment;
@@ -36,25 +49,22 @@ namespace Magnesium.OpenGL
                 }               
             }
 
-            IsNullFramebuffer = isNullFramebuffer;
-
-            if (!isNullFramebuffer)
+            var noOfSubpasses = bRenderpass.Subpasses.Length;
+            Subpasses = new GLNextFramebufferSubpassInfo[noOfSubpasses];
+            for (var i = 0; i < noOfSubpasses; i++)
             {
-                var noOfSubpasses = bRenderpass.Subpasses.Length;
-                Subpasses = new GLNextFramebufferSubpassInfo[noOfSubpasses];
-
-                for (var i = 0; i < noOfSubpasses; i++)
+                var fbo = 
+                    (isNullFramebuffer)
+                    ? 0
+                    : GenerateFramebuffer(createInfo, bRenderpass.Subpasses[i]);
+                Subpasses[i] = new GLNextFramebufferSubpassInfo
                 {
-                    Subpasses[i] = GenerateFramebuffer(createInfo, bRenderpass.Subpasses[i]);
-                }
-            }
-            else
-            {
-                Subpasses = new GLNextFramebufferSubpassInfo[] { };
+                    Framebuffer = fbo,
+                };
             }
         }
 
-        private GLNextFramebufferSubpassInfo GenerateFramebuffer(MgFramebufferCreateInfo createInfo, MgSubpassTransactionsInfo srcSubpass)
+        private int GenerateFramebuffer(MgFramebufferCreateInfo createInfo, MgSubpassTransactionsInfo srcSubpass)
         {
             mSelector.Helper.GenFramebuffer(out int framebuffer);
 
@@ -91,14 +101,11 @@ namespace Magnesium.OpenGL
             mSelector.Helper.CheckFramebufferStatus();
             mSelector.Helper.BindFramebuffer(0);
 
-            return new GLNextFramebufferSubpassInfo {
-                Framebuffer = framebuffer
-            };
+            return framebuffer;
         }
 
-        public MgRenderPassProfile CompatibilityProfile { get; }
+        public MgRenderPassProfile Profile { get; }
         public GLNextFramebufferSubpassInfo[] Subpasses { get; }
-
 
         public void DestroyFramebuffer(IMgDevice device, IMgAllocationCallbacks allocator)
         {            

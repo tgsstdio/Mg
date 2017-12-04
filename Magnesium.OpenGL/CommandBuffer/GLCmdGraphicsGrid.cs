@@ -4,7 +4,7 @@ namespace Magnesium.OpenGL.Internals
 {
     public class GLCmdGraphicsGrid : IDisposable
     {
-        public GLCmdBeginRenderpassRecord[] Renderpasses { get; set; }
+        public GLCmdSubpassOperation[] Renderpasses { get; set; }
         public GLCmdBoundPipelineRecordInfo[] Pipelines { get; set; }
         public GLCmdPipelineStencilWriteInfo[] StencilWrites { get; set; }
         public GLCmdViewportParameter[] Viewports { get; set; }

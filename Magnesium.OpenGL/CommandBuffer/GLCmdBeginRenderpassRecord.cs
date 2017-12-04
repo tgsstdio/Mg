@@ -2,8 +2,11 @@
 {
     public class GLCmdBeginRenderpassRecord
     {
-        public GLQueueClearBufferMask Bitmask { get; internal set; }
-        public GLCmdClearValuesParameter ClearState { get; internal set; }
+       // public GLCmdClearValuesParameter ClearState { get; internal set; }
         public GLNextFramebuffer Framebuffer { get; internal set; }
+        public bool IsCompatible { get; internal set; }
+        public GLNextRenderPass Renderpass { get; internal set; }
+        public GLCmdClearValueArrayItem[] ClearValues { get; internal set; }
+        public uint Subpass { get; internal set; }
     }
 }

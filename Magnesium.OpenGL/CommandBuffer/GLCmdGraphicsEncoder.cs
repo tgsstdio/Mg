@@ -56,18 +56,49 @@ namespace Magnesium.OpenGL.Internals
         private GLCmdBeginRenderpassRecord mBoundRenderPass;
         public void BeginRenderPass(MgRenderPassBeginInfo pRenderPassBegin, MgSubpassContents contents)
         {
-            mBoundRenderPass =  InitializeRenderpassInfo(pRenderPassBegin);
+            // TODO : required actions 
+            // 1. set subpass-fbo
+            // 2. load/clear attachment based on first appearance
+            // 3. TODO : blit framebuffer for attachment's last appearance
+            // 4. pass-in renderpass for other subpasses
 
-            var nextIndex = mBag.Renderpasses.Push(mBoundRenderPass);
+            var glPass = (GLNextRenderPass)pRenderPassBegin.RenderPass;
+            var glFramebuffer = (GLNextFramebuffer)pRenderPassBegin.Framebuffer;
 
-            var instruction = new GLCmdEncodingInstruction
+            var isCompatible = glFramebuffer.Profile.IsCompatible(glPass.Profile);
+
+            mBoundRenderPass = new GLCmdBeginRenderpassRecord
             {
-                Category = GLCmdEncoderCategory.Graphics,
-                Index = nextIndex,
-                Operation = CmdBeginRenderPass,
+                Framebuffer = glFramebuffer,
+                Renderpass = glPass,
+                ClearValues = GenerateClearValues(pRenderPassBegin, glPass),
+                IsCompatible = glFramebuffer.Profile.IsCompatible(glPass.Profile),
+                Subpass = 0,
             };
 
-            mInstructions.Add(instruction);
+            PushSubpass();
+        }
+
+        private void PushSubpass()
+        {
+            if (mBoundRenderPass != null)
+            {
+                // MUST CHANGE SCISSOR BEFORE CLEAR BUFFERS
+                SetScissor(0, new[] { mBoundRenderPass.Framebuffer.Scissors });
+            
+                var subpass = GenerateSubpass(mBoundRenderPass, mBoundRenderPass.Subpass);
+                var nextIndex = mBag.Renderpasses.Push(subpass);
+
+                var instruction = new GLCmdEncodingInstruction
+                {
+                    Category = GLCmdEncoderCategory.Graphics,
+                    Index = nextIndex,
+                    Operation = CmdBeginRenderPass,
+                };
+
+                mInstructions.Add(instruction);
+                
+            }
         }
 
         private static void CmdBeginRenderPass(GLCmdCommandRecording arg1, uint arg2)
@@ -85,25 +116,87 @@ namespace Magnesium.OpenGL.Internals
             renderer.BeginRenderpass(passInfo);
         }
 
-        GLCmdBeginRenderpassRecord InitializeRenderpassInfo(MgRenderPassBeginInfo pass)
+        private static GLCmdSubpassOperation GenerateSubpass(GLCmdBeginRenderpassRecord boundRenderpass, uint index)      
         {
-            Debug.Assert(pass != null);
+            Debug.Assert(boundRenderpass.Renderpass != null);
+            Debug.Assert(boundRenderpass.Framebuffer != null);
 
-            var glPass = (GLNextRenderPass)pass.RenderPass;      
-            
-            var subPass = glPass.Subpasses[0];
+            var loads = new List<GLCmdLoadColorAttachment>();
+            GLQueueClearBufferMask clearMask = 0;
+            if (boundRenderpass.IsCompatible)
+            {
+                MgSubpassTransactionsInfo transactionsInfo = boundRenderpass.Renderpass.Subpasses[index];
+                foreach (var attachment in transactionsInfo.Loads)
+                {
+                    if (attachment < boundRenderpass.ClearValues.Length)
+                    {
+                        var attachmentFormat = boundRenderpass.Renderpass.AttachmentFormats[attachment];
+
+                        uint colorAttachmentIndex = ExtractColorAttachmentIndex(ref clearMask, transactionsInfo, attachment);
+
+                        var loadItem = new GLCmdLoadColorAttachment
+                        {
+                            ColorAttachment = colorAttachmentIndex,
+                            AttachmentType = attachmentFormat.AttachmentType,
+                            ClearValue = boundRenderpass.ClearValues[attachment],
+                        };
+
+                        loads.Add(loadItem);
+
+                        // CLEAR DEPTH / STENCIL
+                        if (transactionsInfo.DepthAttachment.HasValue
+                            && attachment == transactionsInfo.DepthAttachment.Value
+                            && attachmentFormat.AttachmentType == GLClearAttachmentType.DEPTH_STENCIL
+                        )
+                        {
+                            clearMask |= GLQueueClearBufferMask.Depth;
+                            clearMask |= GLQueueClearBufferMask.Stencil;
+                        }
+
+                    }
+                }
+            }
+
+            var passInfo = boundRenderpass.Framebuffer.Subpasses[index];
+            return new GLCmdSubpassOperation
+            {
+                FBO = passInfo.Framebuffer,
+                ClearMask = clearMask,
+                Loads = loads.ToArray(),
+            };
+        }
+
+        private static uint ExtractColorAttachmentIndex(ref GLQueueClearBufferMask clearMask, MgSubpassTransactionsInfo transactionsInfo, uint attachment)
+        {
+            var colorAttachmentIndex = 0U;
+            foreach (var color in transactionsInfo.ColorAttachments)
+            {
+                if (color == attachment)
+                {
+                    clearMask |= GLQueueClearBufferMask.Color;
+                    break;
+                }
+                colorAttachmentIndex += 1;
+            }
+
+            return colorAttachmentIndex;
+        }
+
+        private static GLCmdClearValueArrayItem[] GenerateClearValues(
+            MgRenderPassBeginInfo pass,
+            GLNextRenderPass glPass)
+        {
+            var finalValues = new List<GLCmdClearValueArrayItem>();
+            GLQueueClearBufferMask combinedMask = 0;
 
             var noOfAttachments = glPass.AttachmentFormats != null ? glPass.AttachmentFormats.Length : 0;
             var noOfClearValues = pass.ClearValues != null ? pass.ClearValues.Length : 0;
 
             var finalLength = Math.Min(noOfAttachments, noOfClearValues);
 
-            var finalValues = new List<GLCmdClearValueArrayItem>();
-
             // loadOp and stencilLoadOp define the load operations that 
             // execute as part of the first subpass that uses the attachment. 
 
-            GLQueueClearBufferMask combinedMask = 0;
             for (var i = 0; i < finalLength; ++i)
             {
                 var attachment = glPass.AttachmentFormats[i];
@@ -114,15 +207,12 @@ namespace Magnesium.OpenGL.Internals
                 {
                     case GLClearAttachmentType.COLOR_INT:
                         colorValue = ExtractColorI(attachment, pass.ClearValues[i].Color.Int32);
-                        combinedMask |= GLQueueClearBufferMask.Color;
                         break;
                     case GLClearAttachmentType.COLOR_UINT:
                         colorValue = ExtractColorUi(attachment, pass.ClearValues[i].Color.Uint32);
-                        combinedMask |= GLQueueClearBufferMask.Color;
                         break;
                     case GLClearAttachmentType.COLOR_FLOAT:
                         colorValue = pass.ClearValues[i].Color.Float32;
-                        combinedMask |= GLQueueClearBufferMask.Color;
                         break;
                     case GLClearAttachmentType.DEPTH_STENCIL:
                         //clearValue.Value = pass.ClearValues[i];
@@ -140,18 +230,9 @@ namespace Magnesium.OpenGL.Internals
                 };
 
                 finalValues.Add(clearValue);
-
             }
 
-            return new GLCmdBeginRenderpassRecord
-            {
-                Framebuffer = (GLNextFramebuffer) pass.Framebuffer,
-                Bitmask = combinedMask,
-                ClearState = new GLCmdClearValuesParameter
-                {
-                    Attachments = finalValues.ToArray(),
-                }
-            };
+            return finalValues.ToArray();            
         }
 
         public static MgColor4f ExtractColorUi(GLRenderPassClearAttachment attachment, MgVec4Ui initialValue)

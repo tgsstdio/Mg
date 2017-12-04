@@ -2,7 +2,7 @@
 {
     public class GLCmdGraphicsBag
     {
-        public GLCmdEncoderItemCollection<GLCmdBeginRenderpassRecord> Renderpasses { get; set; }
+        public GLCmdEncoderItemCollection<GLCmdSubpassOperation> Renderpasses { get; set; }
         public GLCmdEncoderItemCollection<GLCmdBoundPipelineRecordInfo> Pipelines { get; internal set; }
         public GLCmdEncoderItemCollection<GLCmdPipelineStencilWriteInfo> StencilWrites { get; internal set; }
         public GLCmdEncoderItemCollection<GLCmdViewportParameter> Viewports { get; internal set; }
@@ -21,7 +21,7 @@
 
         public GLCmdGraphicsBag()
         {
-            Renderpasses = new GLCmdEncoderItemCollection<GLCmdBeginRenderpassRecord>();
+            Renderpasses = new GLCmdEncoderItemCollection<GLCmdSubpassOperation>();
             Pipelines = new GLCmdEncoderItemCollection<GLCmdBoundPipelineRecordInfo>();
             StencilWrites = new GLCmdEncoderItemCollection<GLCmdPipelineStencilWriteInfo>();
             Viewports = new GLCmdEncoderItemCollection<GLCmdViewportParameter>();

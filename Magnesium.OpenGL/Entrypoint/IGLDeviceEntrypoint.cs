@@ -8,7 +8,7 @@
 		IGLDeviceImageViewEntrypoint ImageView { get; }
 		//IGLImageDescriptorEntrypoint ImageDescriptor { get; }
 		IGLShaderModuleEntrypoint ShaderModule { get; }
-		IGLDescriptorPoolEntrypoint DescriptorPool { get; }
+		IGLFutureDescriptorPoolEntrypoint DescriptorPool { get; }
 		IGLBufferEntrypoint Buffers { get;}
 		IGLDeviceMemoryEntrypoint DeviceMemory { get; }
 		IGLSemaphoreEntrypoint Semaphore {get; }

@@ -167,8 +167,6 @@ namespace OffscreenDemo.DesktopGL
             //    Magnesium.OpenGL.DesktopGL.FullGLImageDescriptorEntrypoint>(new PerContainerLifetime());
             container.Register<Magnesium.OpenGL.IGLShaderModuleEntrypoint,
                 Magnesium.OpenGL.DesktopGL.FullGLShaderModuleEntrypoint>(new PerContainerLifetime());
-            container.Register<Magnesium.OpenGL.IGLDescriptorPoolEntrypoint,
-                Magnesium.OpenGL.DesktopGL.FullGLDescriptorPoolEntrypoint>(new PerContainerLifetime());
             container.Register<Magnesium.OpenGL.IGLBufferEntrypoint,
                 Magnesium.OpenGL.DesktopGL.FullGLBufferEntrypoint>(new PerContainerLifetime());
             container.Register<Magnesium.OpenGL.IGLDeviceMemoryEntrypoint,
@@ -193,12 +191,24 @@ namespace OffscreenDemo.DesktopGL
                 Magnesium.OpenGL.DefaultGLUniformBlockNameParser>(new PerContainerLifetime());
             container.Register<Magnesium.OpenGL.IGLCmdShaderProgramEntrypoint,
                 Magnesium.OpenGL.DesktopGL.FullGLCmdShaderProgramEntrypoint>(new PerContainerLifetime());
+
             container.Register<Magnesium.OpenGL.IGLDescriptorSetEntrypoint,
-                Magnesium.OpenGL.DefaultGLDescriptorSetEntrypoint>(new PerContainerLifetime());
+                Magnesium.OpenGL.GLFutureDescriptorSetEntrypoint>(new PerContainerLifetime());
+            container.Register<Magnesium.OpenGL.IGLTextureGalleryEntrypoint,
+                Magnesium.OpenGL.DesktopGL.FullGLTextureGalleryEntrypoint>(new PerContainerLifetime());
+            // A: SOLAR CONFIGURATION
+            container.Register<Magnesium.OpenGL.IGLShaderTextureDescriptorCache,
+                Magnesium.OpenGL.GLSolarShaderTextureDescriptorCache>(new PerContainerLifetime());
+            container.Register<Magnesium.OpenGL.IGLFutureDescriptorPoolEntrypoint,
+                Magnesium.OpenGL.GLSolarDescriptorPoolEntrypoint>(new PerContainerLifetime());
+            // B: LUNAR CONFIGURATION            
+            //container.Register<Magnesium.OpenGL.IGLShaderTextureDescriptorCache,
+            //    Magnesium.OpenGL.GLLunarShaderTextureDescriptorCache>(new PerContainerLifetime());
+            //container.Register<Magnesium.OpenGL.IGLFutureDescriptorPoolEntrypoint,
+            //    Magnesium.OpenGL.GLLunarDescriptorPoolEntrypoint>(new PerContainerLifetime());            
 
-
-            // Magnesium.OpenGL.DesktopGL INTERNALS
-            container.Register<Magnesium.OpenGL.DesktopGL.IOpenTKSwapchainKHR, 
+           // Magnesium.OpenGL.DesktopGL INTERNALS
+           container.Register<Magnesium.OpenGL.DesktopGL.IOpenTKSwapchainKHR, 
                 Magnesium.OpenGL.DesktopGL.GLSwapchainKHR>(new PerContainerLifetime());
             container.Register<Magnesium.OpenGL.DesktopGL.IGLBackbufferContext, 
                 Magnesium.OpenGL.DesktopGL.OpenTKBackbufferContext>(new PerContainerLifetime());

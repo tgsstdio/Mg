@@ -93,6 +93,7 @@
     <Compile Include="CommandBuffer\GLCmdRenderer.cs" />
     <Compile Include="CommandBuffer\GLCmdRecordInstruction.cs" />
     <Compile Include="CommandBuffer\GLCmdStateRenderer.cs" />
+    <Compile Include="CommandBuffer\GLCmdSubpassOperation.cs" />
     <Compile Include="CommandBuffer\IGLCmdBlitEncoder.cs" />
     <Compile Include="CommandBuffer\IGLCmdComputeEncoder.cs" />
     <Compile Include="CommandBuffer\IGLCmdEncoderContextSorter.cs" />
