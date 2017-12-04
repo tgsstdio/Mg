@@ -18,7 +18,7 @@ namespace Magnesium
             UINT,
         }
 
-        public static MgClearValue FromColorAndFormat(MgFormat format, MgColor4f colorx)
+        public static MgClearValue FromColorAndFormat(MgFormat format, MgColor4f finalColor)
         {
             float factor = 0;
             MgClearColorCategory category;
@@ -89,14 +89,25 @@ namespace Magnesium
                     category = MgClearColorCategory.UINT;
                     break;
 
+                // UNORMs and SNORMs are expected as floats ... I guess
+                    // without any scaling for data type
                 case MgFormat.R8_SNORM:
                 case MgFormat.R8G8_SNORM:
                 case MgFormat.R8G8B8_SNORM:
                 case MgFormat.R8G8B8A8_SNORM:
+                case MgFormat.B8G8R8_SNORM:
+                case MgFormat.B8G8R8A8_SNORM:
+                    factor = 1f;
+                    category = MgClearColorCategory.FLOAT;
+                    break;
+
                 case MgFormat.R16_SNORM:
                 case MgFormat.R16G16_SNORM:
                 case MgFormat.R16G16B16_SNORM:
                 case MgFormat.R16G16B16A16_SNORM:
+                    factor = 1f;
+                    category = MgClearColorCategory.FLOAT;
+                    break;
 
                 case MgFormat.R8_UNORM:
                 case MgFormat.R8G8_UNORM:
@@ -104,16 +115,16 @@ namespace Magnesium
                 case MgFormat.R8G8B8A8_UNORM:
                 case MgFormat.B8G8R8_UNORM:
                 case MgFormat.B8G8R8A8_UNORM:
-                    factor = byte.MaxValue;
-                    category = MgClearColorCategory.UINT;
+                    factor = 1f;
+                    category = MgClearColorCategory.FLOAT;
                     break;
 
                 case MgFormat.R16_UNORM:
                 case MgFormat.R16G16_UNORM:
                 case MgFormat.R16G16B16_UNORM:
                 case MgFormat.R16G16B16A16_UNORM:
-                    factor = ushort.MaxValue;
-                    category = MgClearColorCategory.UINT;
+                    factor = 1f;
+                    category = MgClearColorCategory.FLOAT;
                     break;
 
                 case MgFormat.R32_SFLOAT:
@@ -129,23 +140,7 @@ namespace Magnesium
                     break;
                 default:
                     throw new NotSupportedException();
-
             }
-
-            // SWIZZLE 
-            MgColor4f finalColor = colorx;
-            //switch (format)
-            //{
-            //	case MgFormat.B8G8R8_UNORM:
-            //	case MgFormat.B8G8R8_SINT:
-            //             case MgFormat.B8G8R8_UINT:
-            //	case MgFormat.B8G8R8A8_SINT:
-            //	case MgFormat.B8G8R8A8_UINT:
-            //	case MgFormat.B8G8R8A8_UNORM:
-            //		finalColor.R = colorx.B;
-            //		finalColor.B = colorx.R;
-            //		break;
-            //}
 
             switch (category)
 			{
