@@ -27,6 +27,6 @@ void vertFunc()
 	outUV = inUV;
 	outLodBias = ubo.lodBias;
 
-	gl_Position = ubo.projection * vec4(ubo.viewPos + inPos.xyz, 1.0);
+	gl_Position = ubo.projection * ubo.model * vec4(ubo.viewPos + inPos.xyz, 1.0);
 	gl_Position.y *= -1.0f;
 }

@@ -219,7 +219,7 @@ namespace OffscreenDemo
                     Buffer = indexInstance.Buffer,
                     ByteOffset = indexDest.Offset,
                 },
-                DescriptorSet = mDescriptorSet,                
+                DescriptorSets = new[] { mDescriptorSet },                
                 IndexCount = 6,
                 InstanceCount = 1,
             };
@@ -391,7 +391,7 @@ namespace OffscreenDemo
 
             mUBOVS.lodBias = 0.5f;
 
-            mUBOVS.model = Matrix4.Identity;
+            mUBOVS.model = Matrix4.CreateTranslation(new Vector3(0.1f, 0f, 0f));
 
             mUBOVS.viewPos = new Vector3(0f, 0f, mZoom);
             //sum += 0.001f;
@@ -577,7 +577,7 @@ namespace OffscreenDemo
 
                 cmdBuf.CmdSetScissor(0, new[] { order.Framework.Scissor });
 
-                cmdBuf.CmdBindDescriptorSets(MgPipelineBindPoint.GRAPHICS, mPipelineLayout, 0, new [] { order.DescriptorSet }, null);
+                cmdBuf.CmdBindDescriptorSets(MgPipelineBindPoint.GRAPHICS, mPipelineLayout, 0, new [] { order.DescriptorSets[0] }, null);
                 cmdBuf.CmdBindPipeline(MgPipelineBindPoint.GRAPHICS, mPipeline);
 
                 cmdBuf.CmdBindVertexBuffers(0, new[] { order.Vertices.Buffer }, new[] { order.Vertices.ByteOffset });

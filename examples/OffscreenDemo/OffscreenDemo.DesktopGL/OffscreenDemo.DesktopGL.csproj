@@ -58,11 +58,16 @@
     <Compile Include="GLToScreenPipelinePath.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="GLRenderToTexturePath.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
+    <None Include="Shaders\PostProcessingPassThru.frag" />
+    <None Include="Shaders\PostProcessingPassThru.vert" />
+    <None Include="Shaders\RenderToTexture.frag" />
+    <None Include="Shaders\RenderToTexture.vert" />
     <None Include="Shaders\texture1.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

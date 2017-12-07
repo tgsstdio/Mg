@@ -212,7 +212,7 @@ namespace OffscreenDemo
                     Buffer = indexInstance.Buffer,
                     ByteOffset = indexDest.Offset,
                 },
-                DescriptorSet = mDescriptorSet,
+                DescriptorSets = new[] { mDescriptorSet },
                 IndexCount = 3,
                 InstanceCount = 1,
             };
@@ -266,15 +266,19 @@ namespace OffscreenDemo
         public void UpdateUniformBuffers(IMgGraphicsConfiguration configuration, MgOptimizedStorageContainer container, IMgEffectFramework framework)
         {
             // Update matrices
-            mUBOVS.projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(
-                DegreesToRadians(60.0f),
-                framework.Viewport.Width / framework.Viewport.Height,
-                0.01f,
-                256f);
+            //mUBOVS.projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(
+            //    DegreesToRadians(60.0f),
+            //    framework.Viewport.Width / framework.Viewport.Height,
+            //    0.01f,
+            //    256f);
+
+            mUBOVS.projectionMatrix = Matrix4.Identity;
 
             const float ZOOM = -2.5f;
 
-            mUBOVS.viewMatrix = Matrix4.CreateTranslation(0, 0, ZOOM);
+           //  mUBOVS.viewMatrix = Matrix4.CreateTranslation(0, 0, ZOOM);
+
+            mUBOVS.viewMatrix = Matrix4.Identity;
 
             // TODO : track down rotation
             mUBOVS.modelMatrix = Matrix4.Identity;
@@ -447,7 +451,7 @@ namespace OffscreenDemo
                 //    }
                 //);
 
-                cmdBuf.CmdBindDescriptorSets(MgPipelineBindPoint.GRAPHICS, mPipelineLayout, 0, new[] { order.DescriptorSet }, null);
+                cmdBuf.CmdBindDescriptorSets(MgPipelineBindPoint.GRAPHICS, mPipelineLayout, 0, new[] { order.DescriptorSets[0] }, null);
 
                 cmdBuf.CmdBindPipeline(MgPipelineBindPoint.GRAPHICS, mPipeline);
 
