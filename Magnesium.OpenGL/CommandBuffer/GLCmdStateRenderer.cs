@@ -70,6 +70,7 @@ namespace Magnesium.OpenGL
                         break;
                 }
             }
+           // mClear.ClearBuffers(clearMask);
         }
 
         //void ApplyDrawBuffers(GLCmdClearValuesParameter clearState, GLNextFramebufferSubpassInfo subpassInfo)

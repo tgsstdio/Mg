@@ -7,7 +7,6 @@ namespace Magnesium.OpenGL
     {
         private IGLFramebufferHelperSelector mSelector;
         
-        public MgRect2D Scissors { get; private set; }
         public GLNextFramebuffer(IGLFramebufferHelperSelector selector, MgFramebufferCreateInfo createInfo)
         {
             if (createInfo == null)
@@ -20,20 +19,6 @@ namespace Magnesium.OpenGL
 
             mSelector = selector;
             Profile = bRenderpass.Profile;
-
-            Scissors = new MgRect2D
-            {
-                Offset = new MgOffset2D
-                {
-                    X = 0,
-                    Y = 0,
-                },
-                Extent = new MgExtent2D
-                {
-                    Width = createInfo.Width,
-                    Height = createInfo.Height,
-                }
-            };
 
             bool isNullFramebuffer = true;
             if (createInfo.Attachments != null)

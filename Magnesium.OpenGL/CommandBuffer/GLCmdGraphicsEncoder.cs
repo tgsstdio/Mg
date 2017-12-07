@@ -71,6 +71,7 @@ namespace Magnesium.OpenGL.Internals
             {
                 Framebuffer = glFramebuffer,
                 Renderpass = glPass,
+                RenderArea = pRenderPassBegin.RenderArea,
                 ClearValues = GenerateClearValues(pRenderPassBegin, glPass),
                 IsCompatible = glFramebuffer.Profile.IsCompatible(glPass.Profile),
                 Subpass = 0,
@@ -84,7 +85,7 @@ namespace Magnesium.OpenGL.Internals
             if (mBoundRenderPass != null)
             {
                 // MUST CHANGE SCISSOR BEFORE CLEAR BUFFERS
-                SetScissor(0, new[] { mBoundRenderPass.Framebuffer.Scissors });
+                SetScissor(0, new[] { mBoundRenderPass.RenderArea });
             
                 var subpass = GenerateSubpass(mBoundRenderPass, mBoundRenderPass.Subpass);
                 var nextIndex = mBag.Renderpasses.Push(subpass);

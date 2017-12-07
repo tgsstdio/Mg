@@ -120,7 +120,7 @@
     <Compile Include="Entrypoint\FullGLDescriptorPoolEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLSamplerEntrypoint.cs" />
     <Compile Include="Entrypoint\DesktopGLImageFormatEntrypoint.cs" />
-    <Compile Include="Driver\FullGLCmdClearEntrypoint.cs" />
+    <Compile Include="Entrypoint\FullGLCmdClearEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLSemaphoreEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLDeviceImageViewEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLDeviceImageEntrypoint.cs" />
