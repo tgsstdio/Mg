@@ -4,6 +4,21 @@
     <TargetFramework>netstandard1.1</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Matrix4.cs" />
+    <Compile Remove="Vector2.cs" />
+    <Compile Remove="Vector3.cs" />
+    <Compile Remove="Vector4.cs" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\..\Magnesium\Magnesium.csproj" />
     <ProjectReference Include="..\Magnesium.Utilities\Magnesium.Utilities.csproj" />

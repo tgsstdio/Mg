@@ -32,8 +32,8 @@ namespace OffscreenDemo
         [StructLayout(LayoutKind.Sequential)]
         struct UBO
         {
-            public Matrix4 projection_matrix;
-            public Matrix4 modelview_matrix;
+            public TkMatrix4 projection_matrix;
+            public TkMatrix4 modelview_matrix;
         }
 
         private int mUniformsSlot;
@@ -273,14 +273,14 @@ namespace OffscreenDemo
             const float FieldOfView = (float)(Math.PI / 4.0);
             var uniformData = new UBO
             {
-                projection_matrix = Matrix4.CreatePerspectiveFieldOfView(
+                projection_matrix = TkMatrix4.CreatePerspectiveFieldOfView(
                     FieldOfView,
                     aspectRatio,
                     2.5f, 6f),
-                modelview_matrix = Matrix4.CreateLookAt(
-                    new Vector3(0f, 0f, 4.5f),
-                    new Vector3(0f, 0f, 0f),
-                    new Vector3(0f, 1f, 0f)),
+                modelview_matrix = TkMatrix4.LookAt(
+                    0f, 0f, 4.5f,
+                    0f, 0f, 0f,
+                    0f, 1f, 0f),
             };
 
             var structSize = (ulong)Marshal.SizeOf(typeof(UBO));

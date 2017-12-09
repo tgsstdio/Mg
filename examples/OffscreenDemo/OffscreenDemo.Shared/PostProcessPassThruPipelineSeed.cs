@@ -8,8 +8,8 @@ namespace OffscreenDemo
     [StructLayout(LayoutKind.Sequential)]
     public struct QuadVertexData
     {
-        public Vector2 TexCoord;
-        public Vector2 Position;
+        public TkVector2 TexCoord;
+        public TkVector2 Position;
     }
 
     internal class PostProcessPassThruPipelineSeed : IMgPipelineSeed

@@ -20,7 +20,7 @@ namespace OffscreenDemo
 
             PrimitiveMode = Magnesium.MgPrimitiveTopology.TRIANGLE_LIST;
 
-            Vector3[] PathPositions = new Vector3[pathsteps];
+            TkVector3[] PathPositions = new TkVector3[pathsteps];
 
             #region Find the center Points for each step on the path
 
@@ -31,7 +31,7 @@ namespace OffscreenDemo
                 double AngleTimesQ = Angle * q;
                 double r = ( 0.5 * ( 2.0 + System.Math.Sin( AngleTimesQ ) ) );
 
-                PathPositions[i] = new Vector3( (float) ( r * System.Math.Cos( AngleTimesP ) ),
+                PathPositions[i] = new TkVector3( (float) ( r * System.Math.Cos( AngleTimesP ) ),
                                                 (float) ( r * System.Math.Cos( AngleTimesQ ) ),
                                                 (float) ( r * System.Math.Sin( AngleTimesP ) ) );
 
@@ -39,16 +39,16 @@ namespace OffscreenDemo
             #endregion Find the center Points for each step on the path
 
             #region Find the Torus length
-            Vector3 result;
+            TkVector3 result;
             double[] Lengths = new double[pathsteps];
-            Vector3.Subtract( ref PathPositions[pathsteps - 1], ref PathPositions[0], out result );
-            Lengths[0] = result.Length();
-            double TotalLength = result.Length();
+            TkVector3.Subtract( ref PathPositions[pathsteps - 1], ref PathPositions[0], out result );
+            Lengths[0] = result.Length;
+            double TotalLength = result.Length;
             for ( int i = 1; i < pathsteps; i++ ) // skipping 
             {
-                Vector3.Subtract( ref PathPositions[i - 1], ref PathPositions[i], out result );
-                Lengths[i] = result.Length();
-                TotalLength += result.Length();
+                TkVector3.Subtract( ref PathPositions[i - 1], ref PathPositions[i], out result );
+                Lengths[i] = result.Length;
+                TotalLength += result.Length;
             }
             // Debug.WriteLine( "the TorusKnot's length is: " + TotalLength + " " );
             #endregion Find the Torus length
@@ -59,7 +59,7 @@ namespace OffscreenDemo
             double TwoPiThroughVert = TwoPi / shapevertices; // precalc for reuse
             for ( uint i = 0; i < pathsteps; i++ )
             {
-                Vector3 last, next, normal, tangent;
+                TkVector3 last, next, normal, tangent;
                 if ( i == pathsteps - 1 )
                     next = PathPositions[0];
                 else
@@ -69,26 +69,26 @@ namespace OffscreenDemo
                 else
                     last = PathPositions[i - 1];
 
-                Vector3.Subtract( ref next, ref last, out tangent ); // Guesstimate tangent
+                TkVector3.Subtract( ref next, ref last, out tangent ); // Guesstimate tangent
                 tangent.Normalize();
 
-                Vector3.Add( ref next, ref last, out normal ); // Approximate N
+                TkVector3.Add( ref next, ref last, out normal ); // Approximate N
                 normal.Normalize();
-                Vector3.Multiply( ref normal, (float) radius, out normal );// scale the shape to desired radius
+                TkVector3.Multiply( ref normal, (float) radius, out normal );// scale the shape to desired radius
 
                 for ( uint j = 0; j < shapevertices; j++ )
                 {
                     uint index = i * (uint)shapevertices + j;
 
                     // Create a point on the plane and rotate it
-                    Matrix4 RotationMatrix = Matrix4.CreateFromAxisAngle( tangent, (float) -( j * TwoPiThroughVert ) );
-                    Vector3 point = Vector3.Transform( normal, RotationMatrix );
-                    Vector3.Add( ref PathPositions[i], ref point, out VertexArray[index].Position );
+                    TkMatrix4 RotationMatrix = TkMatrix4.CreateFromAxisAngle( tangent, (float) -( j * TwoPiThroughVert ) );
+                    TkVector3 point = TkVector3.TransformPosition( normal, RotationMatrix );
+                    TkVector3.Add( ref PathPositions[i], ref point, out VertexArray[index].Position );
                     // Since the used shape is a circle, the Vertex normal's heading is easy to find
-                    Vector3.Subtract( ref VertexArray[index].Position, ref PathPositions[i], out VertexArray[index].Normal );
+                    TkVector3.Subtract( ref VertexArray[index].Position, ref PathPositions[i], out VertexArray[index].Normal );
                     VertexArray[index].Normal.Normalize();
                     // just generate some semi-useful UVs to fill blanks
-                    VertexArray[index].TexCoord = new Vector2( (float)( i / TotalLength/ TexCount  ), (float) ( j / ( shapevertices - 1.0 )) );
+                    VertexArray[index].TexCoord = new TkVector2( (float)( i / TotalLength/ TexCount  ), (float) ( j / ( shapevertices - 1.0 )) );
                 }
             }
             #endregion Loft a circle Shape along the path

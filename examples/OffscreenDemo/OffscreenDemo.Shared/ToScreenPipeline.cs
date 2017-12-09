@@ -266,9 +266,9 @@ namespace OffscreenDemo
         [StructLayout(LayoutKind.Sequential)]
         struct VertexData
         {
-            public Vector3 pos;
-            public Vector2 uv;
-            public Vector3 normal;
+            public TkVector3 pos;
+            public TkVector2 uv;
+            public TkVector3 normal;
         };
 
         public void Populate(MgOptimizedStorageContainer container, IMgGraphicsConfiguration configuration, IMgCommandBuffer copyCmd)
@@ -278,31 +278,31 @@ namespace OffscreenDemo
             {
                 new VertexData
                 {
-                    pos = new Vector3(  1f,  1f, 0f ),
-                    uv = new Vector2( 1.0f, 1.0f ),
-                    normal = new Vector3( 0.0f, 0.0f, -1.0f )
+                    pos = new TkVector3(  1f,  1f, 0f ),
+                    uv = new TkVector2( 1.0f, 1.0f ),
+                    normal = new TkVector3( 0.0f, 0.0f, -1.0f )
                 },
 
                 new VertexData
                 {
-                    pos = new Vector3(   -1.0f,  1.0f, 0f ),
-                    uv = new Vector2(  0.0f, 1.0f ),
-                    normal = new Vector3( 0.0f, 0.0f, -1.0f  )
+                    pos = new TkVector3(   -1.0f,  1.0f, 0f ),
+                    uv = new TkVector2(  0.0f, 1.0f ),
+                    normal = new TkVector3( 0.0f, 0.0f, -1.0f  )
                 },
 
                 new VertexData
                 {
-                    pos = new Vector3(  -1.0f, -1.0f, 0f ),
-                    uv = new Vector2( 0.0f, 0.0f ),
-                    normal = new Vector3( 0.0f, 0.0f, -1.0f )
+                    pos = new TkVector3(  -1.0f, -1.0f, 0f ),
+                    uv = new TkVector2( 0.0f, 0.0f ),
+                    normal = new TkVector3( 0.0f, 0.0f, -1.0f )
                 },
 
 
                 new VertexData
                 {
-                    pos = new Vector3( 1.0f, -1.0f, 0f ),
-                    uv = new Vector2( 1.0f, 0.0f ),
-                    normal = new Vector3( 0.0f, 0.0f, -1.0f )
+                    pos = new TkVector3( 1.0f, -1.0f, 0f ),
+                    uv = new TkVector2( 1.0f, 0.0f ),
+                    normal = new TkVector3( 0.0f, 0.0f, -1.0f )
                 },
             };
 
@@ -369,21 +369,21 @@ namespace OffscreenDemo
         internal void UpdateUniformBuffers(IMgGraphicsConfiguration configuration, MgOptimizedStorageContainer storageContainer, IMgEffectFramework framework)
         {
             // Vertex shader
-            mUBOVS.projection = Matrix4.CreatePerspectiveFieldOfView(
+            mUBOVS.projection = TkMatrix4.CreatePerspectiveFieldOfView(
                 DegreesToRadians(60.0f),
                 framework.Viewport.Width / (framework.Viewport.Height),
                 0.001f,
                 256f
             );
-            // uboVS.projection = Matrix4.Identity;
-            //uboVS.projection = Matrix4.CreateTranslation(1f,0f,0.5f);
+            // uboVS.projection = TkMatrix4.Identity;
+            //uboVS.projection = TkMatrix4.CreateTranslation(1f,0f,0.5f);
 
-            //var viewMatrix = Matrix4.CreateTranslation( 0f, 0f, mZoom);
+            //var viewMatrix = TkMatrix4.CreateTranslation( 0f, 0f, mZoom);
 
             ////uboVS.model = viewMatrix * glm::translate(glm::mat4(), cameraPos);
-            //var rotateX = Matrix4.RotateX(rotation.x);
-            //var rotateY = Matrix4.RotateY(rotation.y);
-            //var rotateZ = Matrix4.RotateZ(rotation.Z);
+            //var rotateX = TkMatrix4.RotateX(rotation.x);
+            //var rotateY = TkMatrix4.RotateY(rotation.y);
+            //var rotateZ = TkMatrix4.RotateZ(rotation.Z);
             ////uboVS.model = glm::rotate(uboVS.model, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
             ////uboVS.model = glm::rotate(uboVS.model, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
             ////uboVS.model = glm::rotate(uboVS.model, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -391,9 +391,9 @@ namespace OffscreenDemo
 
             mUBOVS.lodBias = 0.5f;
 
-            mUBOVS.model = Matrix4.CreateTranslation(new Vector3(0.1f, 0f, 0f));
+            mUBOVS.model = TkMatrix4.CreateTranslation(new TkVector3(0.1f, 0f, 0f));
 
-            mUBOVS.viewPos = new Vector3(0f, 0f, mZoom);
+            mUBOVS.viewPos = new TkVector3(0f, 0f, mZoom);
             //sum += 0.001f;
 
             //if (sum > 1f)
@@ -472,10 +472,10 @@ namespace OffscreenDemo
         [StructLayout(LayoutKind.Sequential)]
         struct UniformBufferObject
         {
-            public Vector3 viewPos;
+            public TkVector3 viewPos;
             public float lodBias;
-            public Matrix4 projection;
-            public Matrix4 model;
+            public TkMatrix4 projection;
+            public TkMatrix4 model;
         }
 
         private int mVertexDataPosition;

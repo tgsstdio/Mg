@@ -175,23 +175,23 @@ namespace OffscreenDemo
             {
                 new QuadVertexData
                 {
-                    TexCoord = new Vector2(0f,1f),
-                    Position = new Vector2(-1f,1f),
+                    TexCoord = new TkVector2(0f,1f),
+                    Position = new TkVector2(-1f,1f),
                 },
                 new QuadVertexData
                 {
-                    TexCoord = new Vector2(0f,0f),
-                    Position = new Vector2(-1f,-1f),
+                    TexCoord = new TkVector2(0f,0f),
+                    Position = new TkVector2(-1f,-1f),
                 },
                 new QuadVertexData
                 {
-                    TexCoord = new Vector2(1f,0f),
-                    Position = new Vector2(1f,-1f),
+                    TexCoord = new TkVector2(1f,0f),
+                    Position = new TkVector2(1f,-1f),
                 },
                 new QuadVertexData
                 {
-                    TexCoord = new Vector2(1f,1f),
-                    Position = new Vector2(1f, 1f),
+                    TexCoord = new TkVector2(1f,1f),
+                    Position = new TkVector2(1f, 1f),
                 },
             };
             var indices = new uint[] { 0, 1, 2, 0, 2, 3 };
@@ -203,17 +203,17 @@ namespace OffscreenDemo
                 new PostProcessUBO
                 {
                     ProjectionMatrix =
-                        Matrix4.CreatePerspectiveFieldOfView(
+                        TkMatrix4.CreatePerspectiveFieldOfView(
                           fieldOfView,
                           aspectRatio,
                           0.1f, 1000f),
                     ModelViewMatrix =
-                        Matrix4.CreateLookAt(
-                            new Vector3(0f, 0f, 2.8f),
-                            new Vector3(0f, 0f, 0f),
-                            new Vector3(0f, 1f, 0f)
+                        TkMatrix4.LookAt(
+                            0f, 0f, 2.8f,
+                            0f, 0f, 0f,
+                            0f, 1f, 0f
                         ),
-                    Offset = new Vector4(-2.2f, 0f, 0f, 0f),
+                    Offset = new TkVector4(-2.2f, 0f, 0f, 0f),
                 }
             };
 
@@ -252,9 +252,9 @@ namespace OffscreenDemo
         [StructLayout(LayoutKind.Sequential)]
         struct PostProcessUBO
         {
-            public Matrix4 ProjectionMatrix { get; internal set; }
-            public Matrix4 ModelViewMatrix { get; internal set; }
-            public Vector4 Offset { get; set; }
+            public TkMatrix4 ProjectionMatrix { get; internal set; }
+            public TkMatrix4 ModelViewMatrix { get; internal set; }
+            public TkVector4 Offset { get; set; }
         }
 
         private IMgSemaphore GenerateSemaphore(IMgGraphicsConfiguration configuration)

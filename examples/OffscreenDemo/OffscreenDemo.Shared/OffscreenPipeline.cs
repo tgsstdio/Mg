@@ -142,16 +142,16 @@ namespace OffscreenDemo
         [StructLayout(LayoutKind.Sequential)]
         struct TriangleVertex
         {
-            public Vector3 position;
-            public Vector3 color;
+            public TkVector3 position;
+            public TkVector3 color;
         };
 
         [StructLayout(LayoutKind.Sequential)]
         struct UniformBufferObject
         {
-            public Matrix4 projectionMatrix;
-            public Matrix4 modelMatrix;
-            public Matrix4 viewMatrix;
+            public TkMatrix4 projectionMatrix;
+            public TkMatrix4 modelMatrix;
+            public TkMatrix4 viewMatrix;
         };
 
         private int mVertexDataPosition;
@@ -272,16 +272,16 @@ namespace OffscreenDemo
             //    0.01f,
             //    256f);
 
-            mUBOVS.projectionMatrix = Matrix4.Identity;
+            mUBOVS.projectionMatrix = TkMatrix4.Identity;
 
             const float ZOOM = -2.5f;
 
            //  mUBOVS.viewMatrix = Matrix4.CreateTranslation(0, 0, ZOOM);
 
-            mUBOVS.viewMatrix = Matrix4.Identity;
+            mUBOVS.viewMatrix = TkMatrix4.Identity;
 
             // TODO : track down rotation
-            mUBOVS.modelMatrix = Matrix4.Identity;
+            mUBOVS.modelMatrix = TkMatrix4.Identity;
             //uboVS.modelMatrix = glm::rotate(uboVS.modelMatrix, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
             //uboVS.modelMatrix = glm::rotate(uboVS.modelMatrix, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
             //uboVS.modelMatrix = glm::rotate(uboVS.modelMatrix, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -311,18 +311,18 @@ namespace OffscreenDemo
             var corners = new []
             {
                 new TriangleVertex{
-                    position =new Vector3(1.0f,  1.0f, 0.0f),
-                    color = new Vector3( 1.0f, 0.0f, 0.0f )
+                    position =new TkVector3(1.0f,  1.0f, 0.0f),
+                    color = new TkVector3( 1.0f, 0.0f, 0.0f )
                 },
 
                 new TriangleVertex{
-                    position =new Vector3(-1.0f,  1.0f, 0.0f ),
-                    color = new Vector3( 0.0f, 1.0f, 0.0f )
+                    position =new TkVector3(-1.0f,  1.0f, 0.0f ),
+                    color = new TkVector3( 0.0f, 1.0f, 0.0f )
                 },
 
                 new TriangleVertex{
-                    position =new Vector3( 0.0f, -1.0f, 0.0f ),
-                    color = new Vector3( 0.0f, 0.0f, 1.0f )
+                    position =new TkVector3( 0.0f, -1.0f, 0.0f ),
+                    color = new TkVector3( 0.0f, 0.0f, 1.0f )
                 },
             };
 
