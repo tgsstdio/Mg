@@ -249,9 +249,11 @@ namespace Magnesium.OpenGL
                                 offset += AdjustOffset(dynamicOffsets, ref offsetIndex);
                             }
 
-                            mUniformOffsets[dstIndex] = new IntPtr(offset);
+                            IntPtr localOffset = new IntPtr(offset);
+                            IntPtr localSize = new IntPtr(buffer.Size);
 
-                            mUniformSizes[dstIndex] = new IntPtr(buffer.Size);
+                            mUniformOffsets[dstIndex] = localOffset;
+                            mUniformSizes[dstIndex] = localSize;
                         }
                         srcIndex += 1;
                         dstIndex += 1;

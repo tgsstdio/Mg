@@ -47,7 +47,7 @@ namespace Magnesium.OpenGL.Internals
 			bindingPoint += (mapGroup.MatrixStride * entry.Token.Z);
 
 			var arrayOffset = mLayout.Ranges[entry.FirstBinding];
-			bindingPoint += arrayOffset.First;
+			bindingPoint += (int) arrayOffset.Binding;
 			return bindingPoint;
 		}
 	}

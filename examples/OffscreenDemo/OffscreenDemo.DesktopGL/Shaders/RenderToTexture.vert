@@ -2,7 +2,7 @@
 
 precision highp float;
 
-layout (std140, binding = 0) uniform UBO 
+layout (std140, binding = 2) uniform UBO 
 {
 	mat4 projection_matrix;
 	mat4 modelview_matrix;

@@ -314,6 +314,8 @@ namespace OffscreenDemo
             var first = mUnmanagedResources.Torus.Order;
             var second = mUnmanagedResources.Quads.Order;
 
+            IMgSemaphore isDone = mUnmanagedResources.SecondStage[layerNo];
+
             var firstInfo = new[]
             {
                 new MgSubmitInfo
@@ -328,37 +330,39 @@ namespace OffscreenDemo
                         },
                     },
                     CommandBuffers = new [] { first.CommandBuffers[0] },
-                    SignalSemaphores = new [] { mUnmanagedResources.FirstStage },
+                    // SignalSemaphores = new [] { mUnmanagedResources.FirstStage },
+                    SignalSemaphores = new []
+                    {
+                        isDone
+                    }
                 },
             };
 
             var err = queue.QueueSubmit(firstInfo, null);
             Debug.Assert(err == Result.SUCCESS);
 
-            IMgSemaphore isDone = mUnmanagedResources.SecondStage[layerNo];
+            //var secondInfo = new[] {
+            //    new MgSubmitInfo
+            //    {
+            //        WaitSemaphores = new []
+            //        {
+            //            new MgSubmitInfoWaitSemaphoreInfo
+            //            {
+            //                WaitDstStageMask = MgPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT,
+            //                WaitSemaphore = mUnmanagedResources.FirstStage,
+            //            },
+            //        },
+            //        CommandBuffers = new [] { second.CommandBuffers[layerNo] },
+            //        SignalSemaphores = new []
+            //        {
+            //            isDone
+            //        }
+            //    }
+            //};
 
-            var secondInfo = new[] {
-                new MgSubmitInfo
-                {
-                    WaitSemaphores = new []
-                    {
-                        new MgSubmitInfoWaitSemaphoreInfo
-                        {
-                            WaitDstStageMask = MgPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT,
-                            WaitSemaphore = mUnmanagedResources.FirstStage,
-                        },
-                    },
-                    CommandBuffers = new [] { second.CommandBuffers[layerNo] },
-                    SignalSemaphores = new []
-                    {
-                        isDone
-                    }
-                }
-            };
-
-            //// Submit to queue
-            err = queue.QueueSubmit(secondInfo, null);
-            Debug.Assert(err == Result.SUCCESS);
+            ////// Submit to queue
+            //err = queue.QueueSubmit(secondInfo, null);
+            //Debug.Assert(err == Result.SUCCESS);
 
             err = queue.QueueWaitIdle();
             Debug.Assert(err == Result.SUCCESS);

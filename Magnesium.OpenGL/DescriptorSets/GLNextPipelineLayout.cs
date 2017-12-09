@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Magnesium.OpenGL.Internals
@@ -44,13 +45,14 @@ namespace Magnesium.OpenGL.Internals
 				if (desc.DescriptorType == MgDescriptorType.UNIFORM_BUFFER
 					|| desc.DescriptorType == MgDescriptorType.UNIFORM_BUFFER_DYNAMIC)
 				{
-					NoOfBindingPoints += (int) desc.DescriptorCount;
+                    uint rightMost = desc.Binding + desc.DescriptorCount;
+                    NoOfBindingPoints = (int)Math.Max(NoOfBindingPoints, rightMost);
 					Ranges.Add((int) desc.Binding,
 						   new GLBindingPointOffsetInfo
 						   {
 							   Binding = desc.Binding,
-							   First = 0,
-							   Last = (int) desc.DescriptorCount - 1
+							   First = (int) desc.Binding,
+							   Last = (int) rightMost - 1
 						   });
 
 					if (desc.DescriptorType == MgDescriptorType.UNIFORM_BUFFER_DYNAMIC)

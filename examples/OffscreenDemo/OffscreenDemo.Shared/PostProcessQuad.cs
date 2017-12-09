@@ -287,6 +287,11 @@ namespace OffscreenDemo
 
         public void Refresh(IMgDevice device, MgOptimizedStorageContainer container, IMgEffectFramework framework)
         {
+            CopyUniforms(device, container);
+        }
+
+        private void CopyUniforms(IMgDevice device, MgOptimizedStorageContainer container)
+        {
             var structSize = Marshal.SizeOf(typeof(TUniformData));
 
             var slot = container.Map.Allocations[mUniformsSlot];

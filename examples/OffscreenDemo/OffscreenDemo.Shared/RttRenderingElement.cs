@@ -185,7 +185,7 @@ namespace OffscreenDemo
                         {
                             descriptor,
                         },
-                        DstBinding = 0,
+                        DstBinding = 2,
                     },
                 }, null);
         }
@@ -249,7 +249,7 @@ namespace OffscreenDemo
                 cmdBuf.CmdBindDescriptorSets(
                     MgPipelineBindPoint.GRAPHICS,
                     effect.PipelineLayout,
-                    0, new[] { order.DescriptorSets[i] },
+                    0, new[] { order.DescriptorSets[0] },
                     null);
 
                 cmdBuf.CmdBindPipeline(MgPipelineBindPoint.GRAPHICS, effect.Pipeline);

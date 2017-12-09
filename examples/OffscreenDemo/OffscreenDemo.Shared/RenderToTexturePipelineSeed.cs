@@ -210,14 +210,14 @@ namespace OffscreenDemo
             {
                 Bindings = new[]
                 {
-                    // Binding 0: Uniform buffer (Vertex shader)
+                    // Binding 2: Uniform buffer (Vertex shader)
                     new MgDescriptorSetLayoutBinding
                     {
                         DescriptorCount = 1,
                         StageFlags = MgShaderStageFlagBits.VERTEX_BIT,
                         ImmutableSamplers = null,
                         DescriptorType = MgDescriptorType.UNIFORM_BUFFER,
-                        Binding = 0,
+                        Binding = 2,
                     }
                 },
             };

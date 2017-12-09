@@ -164,7 +164,7 @@ namespace Magnesium.OpenGL.DesktopGL
 
 				// TODO: flags translate 
 				BufferAccessMask rangeFlags = BufferAccessMask.MapWriteBit | BufferAccessMask.MapPersistentBit | BufferAccessMask.MapCoherentBit;
-				ppData = GL.MapNamedBufferRange (mBufferId, IntPtr.Zero, handleSize, rangeFlags);
+				ppData = GL.MapNamedBufferRange (mBufferId, handleOffset, handleSize, rangeFlags);
 
                 mErrHandler.LogGLError("GL.MapNamedBufferRange");
 

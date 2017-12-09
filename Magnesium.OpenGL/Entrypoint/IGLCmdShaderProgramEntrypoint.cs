@@ -17,5 +17,6 @@ namespace Magnesium.OpenGL
 		void BindUniformBuffers(int count, uint[] buffers, IntPtr[] offsets, IntPtr[] sizes);
 
 		void BindCombinedImageSampler(int programID, int binding, long value);
-	}
+        void BindUniformBuffer(uint binding, uint bufferId, IntPtr intPtr1, IntPtr intPtr2);
+    }
 }

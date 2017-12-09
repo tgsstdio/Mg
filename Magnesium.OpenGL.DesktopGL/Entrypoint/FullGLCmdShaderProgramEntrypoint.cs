@@ -36,6 +36,12 @@ namespace Magnesium.OpenGL.DesktopGL
             mErrHandler.LogGLError("BindStorageBuffer");
         }
 
+        public void BindUniformBuffer(uint binding, uint bufferId, IntPtr offset, IntPtr size)
+        {
+            GL.BindBufferRange(BufferRangeTarget.UniformBuffer, binding, bufferId, offset, size);
+            mErrHandler.LogGLError("BindUniformBuffer");
+        }
+
         public void BindUniformBuffers(int count, uint[] buffers, IntPtr[] offsets, IntPtr[] sizes)
         {
             GL.BindBuffersRange(BufferRangeTarget.UniformBuffer, 0, count, buffers, offsets, sizes);
