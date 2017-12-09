@@ -14,4 +14,5 @@ void fragFunc(void)
 {
   vec4 diffuse = texture2D(diffuseTex, texCoords);
   out_frag_color = diffuse;
+ // out_frag_color = vec4(1,0,1,1);
 }

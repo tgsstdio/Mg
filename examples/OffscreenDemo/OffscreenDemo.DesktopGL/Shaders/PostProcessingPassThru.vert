@@ -2,7 +2,7 @@
 
 precision highp float;
 
-layout (std140, binding = 0) uniform UBO 
+layout (std140, binding = 1) uniform UBO 
 {
 	mat4 projection_matrix;
 	mat4 modelview_matrix;
@@ -18,7 +18,7 @@ void vertFunc(void)
 {
   texCoords = in_uv;
   
-  vec4 adjusted = vec4(in_position, 0, 1) + vec4(ubo.offset);
+  vec4 adjusted = vec4(in_position, 0, 1) + vec4(ubo.offset.xyz, 0);
 
   gl_Position = ubo.projection_matrix * ubo.modelview_matrix * adjusted;
   gl_Position.y *= -1.0;

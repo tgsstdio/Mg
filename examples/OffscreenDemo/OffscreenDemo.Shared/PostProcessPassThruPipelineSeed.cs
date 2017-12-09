@@ -85,15 +85,15 @@ namespace OffscreenDemo
                             {
                                 Binding = 0U,
                                 Location = POSITION_ATTRIB,
-                                Format= MgFormat.R32G32B32_SFLOAT,
-                                Offset =  (uint) Marshal.OffsetOf(typeof(VertexT2fN3fV3f), "Position"),
+                                Format= MgFormat.R32G32_SFLOAT,
+                                Offset =  (uint) Marshal.OffsetOf(typeof(QuadVertexData), "Position"),
                             },
                             new MgVertexInputAttributeDescription
                             {
                                 Binding = 0U,
                                 Location = UV_ATTRIB,
                                 Format= MgFormat.R32G32_SFLOAT,
-                                Offset = (uint) Marshal.OffsetOf(typeof(VertexT2fN3fV3f), "TexCoord"),
+                                Offset = (uint) Marshal.OffsetOf(typeof(QuadVertexData), "TexCoord"),
                             },
                          }
                     },
@@ -192,6 +192,11 @@ namespace OffscreenDemo
                 {
                     new MgDescriptorPoolSize
                     {
+                        Type = MgDescriptorType.COMBINED_IMAGE_SAMPLER,
+                        DescriptorCount = 3,
+                    },
+                    new MgDescriptorPoolSize
+                    {
                         Type = MgDescriptorType.UNIFORM_BUFFER,
                         DescriptorCount = 1,
                     },
@@ -209,14 +214,23 @@ namespace OffscreenDemo
             {
                 Bindings = new[]
                 {
-                    // Binding 0: Uniform buffer (Vertex shader)
+                    // Binding 0: diffuseTex
+                    new MgDescriptorSetLayoutBinding
+                    {
+                        DescriptorCount = 1,
+                        StageFlags = MgShaderStageFlagBits.FRAGMENT_BIT,
+                        ImmutableSamplers = null,
+                        DescriptorType = MgDescriptorType.COMBINED_IMAGE_SAMPLER,
+                        Binding = 0,
+                    },
+                    // Binding 1: Uniform buffer (Vertex shader)
                     new MgDescriptorSetLayoutBinding
                     {
                         DescriptorCount = 1,
                         StageFlags = MgShaderStageFlagBits.VERTEX_BIT,
                         ImmutableSamplers = null,
                         DescriptorType = MgDescriptorType.UNIFORM_BUFFER,
-                        Binding = 0,
+                        Binding = 1,
                     }
                 },
             };

@@ -149,7 +149,7 @@ namespace OffscreenDemo
                 Framework = mPipeline.Framework,     
                 DescriptorSets = mDescriptorSets,
             };
-            mRender.Setup(Order, container);
+            mRender.Setup(mDevice, Order, container);
             mRender.Build(Order, mPipeline);
         }
     }

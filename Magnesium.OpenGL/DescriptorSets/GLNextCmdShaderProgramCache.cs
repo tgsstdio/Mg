@@ -223,39 +223,40 @@ namespace Magnesium.OpenGL
 
 		uint BindUniformBuffer(IGLFutureDescriptorSet ds, GLDescriptorPoolResourceInfo resource, uint[] dynamicOffsets, uint offsetIndex)
 		{
-			// do diff
-			if (BoundPipelineLayout != null)
-			{
+            // do diff
+            if (BoundPipelineLayout != null)
+            {
                 IGLFutureDescriptorPool parentPool = ds.Parent;
                 Debug.Assert(parentPool != null);
 
                 // for each active uniform block
-                var uniformGroup = BoundPipelineLayout.Ranges[(int) resource.Binding];
+                if (BoundPipelineLayout.Ranges.TryGetValue((int) resource.Binding, out GLBindingPointOffsetInfo uniformGroup))
+                { 
+                    var srcIndex = resource.Ticket.First;
+                    var dstIndex = uniformGroup.First;
 
-				var srcIndex = resource.Ticket.First;
-				var dstIndex = uniformGroup.First;
-
-				for (var j = 0; j < resource.DescriptorCount; j += 1)
-				{
-                    if (parentPool.GetBufferDescriptor(GLDescriptorBindingGroup.UniformBuffer, srcIndex, out GLBufferDescriptor buffer))
+                    for (var j = 0; j < resource.DescriptorCount; j += 1)
                     {
-                        mUniformBuffers[dstIndex] = buffer.BufferId;
-
-                        var offset = buffer.Offset;
-
-                        // WHAT DYNAMIC
-                        if (buffer.IsDynamic)
+                        if (parentPool.GetBufferDescriptor(GLDescriptorBindingGroup.UniformBuffer, srcIndex, out GLBufferDescriptor buffer))
                         {
-                            offset += AdjustOffset(dynamicOffsets, ref offsetIndex);
+                            mUniformBuffers[dstIndex] = buffer.BufferId;
+
+                            var offset = buffer.Offset;
+
+                            // WHAT DYNAMIC
+                            if (buffer.IsDynamic)
+                            {
+                                offset += AdjustOffset(dynamicOffsets, ref offsetIndex);
+                            }
+
+                            mUniformOffsets[dstIndex] = new IntPtr(offset);
+
+                            mUniformSizes[dstIndex] = new IntPtr(buffer.Size);
                         }
-
-                        mUniformOffsets[dstIndex] = new IntPtr(offset);
-
-                        mUniformSizes[dstIndex] = new IntPtr(buffer.Size);
+                        srcIndex += 1;
+                        dstIndex += 1;
                     }
-					srcIndex += 1;
-					dstIndex += 1;
-				}
+                }
 
 				return offsetIndex;
 			}

@@ -6,7 +6,7 @@ namespace OffscreenDemo.DesktopGL
     {
         public Stream OpenFragmentShader()
         {
-           return File.Open("Shaders/RenderToTexture.vert", FileMode.Open);
+           return File.Open("Shaders/RenderToTexture.frag", FileMode.Open);
         }
 
         public Stream OpenVertexShader()

@@ -121,7 +121,8 @@ void main(void)
             var projectionMatrixLocation = GL.GetUniformLocation(programId, "projection_matrix");
             var modelviewMatrixLocation = GL.GetUniformLocation(programId, "modelview_matrix");
 
-            OpenTK.Matrix4 projectionMatrix = OpenTK.Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, TEXTURE_SIZE / (float)TEXTURE_SIZE, 2.5f, 6f);
+            const float Aspect = TEXTURE_SIZE / (float)TEXTURE_SIZE;
+            OpenTK.Matrix4 projectionMatrix = OpenTK.Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, Aspect, 2.5f, 6f);
             Matrix4 modelviewMatrix = Matrix4.LookAt(0f, 0f, 4.5f, 0f, 0f, 0f, 0f, 1f, 0f);
            // var projectionMatrix = Matrix4.Identity;
            // var modelviewMatrix = Matrix4.Translation(0, 0, -2.5f);
@@ -728,13 +729,13 @@ void main(void)
 
             double aspect_ratio = Width / (double)Height;
 
-            OpenTK.Matrix4 perspective = OpenTK.Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, (float)aspect_ratio, 1, 64);
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.LoadMatrix(ref perspective);
+            //OpenTK.Matrix4 perspective = OpenTK.Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, (float)aspect_ratio, 1, 64);
+            //GL.MatrixMode(MatrixMode.Projection);
+            //GL.LoadMatrix(ref perspective);
 
-            Matrix4 lookat = Matrix4.LookAt(0, 0, 3, 0, 0, 0, 0, 1, 0);
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadMatrix(ref lookat);
+            //Matrix4 lookat = Matrix4.LookAt(0, 0, 3, 0, 0, 0, 0, 1, 0);
+            //GL.MatrixMode(MatrixMode.Modelview);
+            //GL.LoadMatrix(ref lookat);
 
             base.OnResize(e);
         }

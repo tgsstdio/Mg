@@ -24,7 +24,13 @@ namespace OffscreenDemo.DesktopGL
                     container.Register<MgGraphicsConfigurationManager>(new PerScopeLifetime());
 
                     container.Register<IDemoApplication,
-                        OffscreenDemoApplication>(new PerScopeLifetime());
+                        TriplePaneDemoApplication>(new PerScopeLifetime());
+                    container.Register<IRenderToTexturePipelineMediaPath,
+                        GLRenderToTexturePath>(new PerScopeLifetime());
+                    container.Register<IPostProcessingPassThruMediaPath,
+                        GLPostProcessPassThruMediaPath>(new PerScopeLifetime());
+                    //container.Register<IDemoApplication,
+                    //    OffscreenDemoApplication>(new PerScopeLifetime());
                     //container.Register<IDemoApplication,
                     //    TriangleDemoApplication>(new PerScopeLifetime());
                     container.Register<OffscreenPipeline>(new PerScopeLifetime());
@@ -32,8 +38,8 @@ namespace OffscreenDemo.DesktopGL
 
                     //container.Register<IMgPlatformMemoryLayout,
                     //   FullGLPlatformMemoryLayout>(new PerScopeLifetime());
-                    container.Register<IMgPlatformMemoryLayout, 
-                        VkDebugVertexPlatformMemoryLayout >(new PerScopeLifetime());
+                    container.Register<IMgPlatformMemoryLayout,
+                        VkDebugVertexPlatformMemoryLayout>(new PerScopeLifetime());
 
                     container.Register<IMgOptimizedStoragePartitioner,
                         MgOptimizedStoragePartitioner>(new PerScopeLifetime());

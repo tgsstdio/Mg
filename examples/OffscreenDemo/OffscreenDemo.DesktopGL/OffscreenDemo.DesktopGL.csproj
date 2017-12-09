@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GLOffscreenDemoShaderPath.cs" />
+    <Compile Include="GLPostProcessPassThruMediaPath.cs" />
     <Compile Include="GLToScreenPipelinePath.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -64,10 +65,18 @@
     <None Include="App.config" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
-    <None Include="Shaders\PostProcessingPassThru.frag" />
-    <None Include="Shaders\PostProcessingPassThru.vert" />
-    <None Include="Shaders\RenderToTexture.frag" />
-    <None Include="Shaders\RenderToTexture.vert" />
+    <None Include="Shaders\PostProcessingPassThru.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Shaders\PostProcessingPassThru.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Shaders\RenderToTexture.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Shaders\RenderToTexture.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Shaders\texture1.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

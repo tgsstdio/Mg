@@ -9,6 +9,6 @@ namespace OffscreenDemo
         void Populate(IMgDevice device, MgOptimizedStorageContainer container, IMgCommandBuffer cmdBuf);
         void Build(MgCommandBuildOrder order, SimpleEffectPipeline pipeline);
         void Refresh(IMgDevice device, MgOptimizedStorageContainer container, IMgEffectFramework framework);
-        void Setup(MgCommandBuildOrder order, MgOptimizedStorageContainer container);
+        void Setup(IMgDevice device, MgCommandBuildOrder order, MgOptimizedStorageContainer container);
     }
 }

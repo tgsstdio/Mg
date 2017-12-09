@@ -12,9 +12,9 @@ using System.Diagnostics;
 
 namespace OffscreenDemo
 {
-    public class MgIsolatedRenderingElement : IMgRenderableElement
+    public class RttRenderingElement : IMgRenderableElement
     {
-        public MgIsolatedRenderingElement(IDrawableShape shape, MgClearValue[] clearValues)
+        public RttRenderingElement(IDrawableShape shape, MgClearValue[] clearValues)
         {
             mShape = shape;
             mClearValues = clearValues;
@@ -29,9 +29,25 @@ namespace OffscreenDemo
             ReserveUniforms(request);
         }
 
+        [StructLayout(LayoutKind.Sequential)]
+        struct UBO
+        {
+            public Matrix4 projection_matrix;
+            public Matrix4 modelview_matrix;
+        }
+
+        private int mUniformsSlot;
         private void ReserveUniforms(MgBlockAllocationList request)
         {
-            throw new NotImplementedException();
+            int stride = Marshal.SizeOf(typeof(UBO));
+            var indexInfo = new MgStorageBlockAllocationInfo
+            {
+                Usage = MgBufferUsageFlagBits.UNIFORM_BUFFER_BIT,
+                ElementByteSize = (uint)stride,
+                MemoryPropertyFlags = MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT | MgMemoryPropertyFlagBits.HOST_COHERENT_BIT,
+                Size = (ulong) stride,
+            };
+            mUniformsSlot = request.Insert(indexInfo);
         }
 
         private int mVerticesSlot;
@@ -40,7 +56,7 @@ namespace OffscreenDemo
             int vertexStride = Marshal.SizeOf(typeof(VertexT2fN3fV3f));
             var indexInfo = new MgStorageBlockAllocationInfo
             {
-                Usage = MgBufferUsageFlagBits.INDEX_BUFFER_BIT,
+                Usage = MgBufferUsageFlagBits.VERTEX_BUFFER_BIT,
                 ElementByteSize = (uint)vertexStride,
                 MemoryPropertyFlags = MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT | MgMemoryPropertyFlagBits.HOST_COHERENT_BIT,
                 Size = (ulong)(vertexStride * mShape.VertexArray.Length),
@@ -57,7 +73,7 @@ namespace OffscreenDemo
             const int indexStride = sizeof(uint);
             var indexInfo = new MgStorageBlockAllocationInfo
             {
-                Usage = MgBufferUsageFlagBits.VERTEX_BUFFER_BIT,
+                Usage = MgBufferUsageFlagBits.INDEX_BUFFER_BIT,
                 ElementByteSize = indexStride,
                 MemoryPropertyFlags = MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT | MgMemoryPropertyFlagBits.HOST_COHERENT_BIT,
                 Size = (ulong)(indexStride * mShape.IndexArray.Length),
@@ -89,10 +105,10 @@ namespace OffscreenDemo
 
                 const uint FLAGS = 0U;
 
-                var slot = container.Map.Allocations[mVerticesSlot];
+                var slot = container.Map.Allocations[mIndicesSlot];
                 var bufferInstance = container.Storage.Blocks[slot.BlockIndex];
 
-                var err = bufferInstance.DeviceMemory.MapMemory(device, 0, sizeInBytes, FLAGS, out IntPtr dest);
+                var err = bufferInstance.DeviceMemory.MapMemory(device, slot.Offset, sizeInBytes, FLAGS, out IntPtr dest);
                 Debug.Assert(err == Result.SUCCESS);
                 Marshal.Copy(tempBuffer, 0, dest, transferSize);
                 bufferInstance.DeviceMemory.UnmapMemory(device);
@@ -113,7 +129,7 @@ namespace OffscreenDemo
                 var allocationSize = (ulong)(structSize * mShape.VertexArray.Length);
                 const uint FLAGS = 0U;
 
-                var err = bufferInstance.DeviceMemory.MapMemory(device, 0, allocationSize, FLAGS, out IntPtr data);
+                var err = bufferInstance.DeviceMemory.MapMemory(device, slot.Offset, allocationSize, FLAGS, out IntPtr data);
                 Debug.Assert(err == Result.SUCCESS);
 
                 var offset = 0;
@@ -132,13 +148,46 @@ namespace OffscreenDemo
 
         #region Setup methods
 
-        public void Setup(MgCommandBuildOrder order, MgOptimizedStorageContainer container)
+        public void Setup(IMgDevice device, MgCommandBuildOrder order, MgOptimizedStorageContainer container)
         {
             order.First = 0;
             order.InstanceCount = 1;
+            order.Count = order.Framework.Framebuffers.Length;
 
             SetupIndices(order, container);
             SetupVertices(order, container);
+            SetupUniforms(device, order, container);
+        }
+
+        private void SetupUniforms(IMgDevice device, MgCommandBuildOrder order, MgOptimizedStorageContainer container)
+        {
+            var slot = container.Map.Allocations[mUniformsSlot];
+            var uniformInstance = container.Storage.Blocks[slot.BlockIndex];
+
+            var structSize = Marshal.SizeOf(typeof(UBO));
+            var descriptor = new MgDescriptorBufferInfo
+            {
+                Buffer = uniformInstance.Buffer,
+                Offset = slot.Offset,
+                Range = (ulong)structSize,
+            };
+
+            device.UpdateDescriptorSets(
+                new[]
+                {
+                    // Binding 0 : Uniform buffer
+                    new MgWriteDescriptorSet
+                    {
+                        DstSet = order.DescriptorSets[0],
+                        DescriptorCount = 1,
+                        DescriptorType =  MgDescriptorType.UNIFORM_BUFFER,
+                        BufferInfo = new []
+                        {
+                            descriptor,
+                        },
+                        DstBinding = 0,
+                    },
+                }, null);
         }
 
         private void SetupIndices(MgCommandBuildOrder order, MgOptimizedStorageContainer container)
@@ -220,8 +269,29 @@ namespace OffscreenDemo
 
         public void Refresh(IMgDevice device, MgOptimizedStorageContainer container, IMgEffectFramework framework)
         {
-            throw new NotImplementedException();
+            float aspectRatio = framework.Viewport.Width / framework.Viewport.Height;
+            const float FieldOfView = (float)(Math.PI / 4.0);
+            var uniformData = new UBO
+            {
+                projection_matrix = Matrix4.CreatePerspectiveFieldOfView(
+                    FieldOfView,
+                    aspectRatio,
+                    2.5f, 6f),
+                modelview_matrix = Matrix4.CreateLookAt(
+                    new Vector3(0f, 0f, 4.5f),
+                    new Vector3(0f, 0f, 0f),
+                    new Vector3(0f, 1f, 0f)),
+            };
+
+            var structSize = (ulong)Marshal.SizeOf(typeof(UBO));
+
+            var slot = container.Map.Allocations[mUniformsSlot];
+            var bufferInstance = container.Storage.Blocks[slot.BlockIndex];
+
+            var err = bufferInstance.DeviceMemory.MapMemory(device, slot.Offset, slot.Size, 0, out IntPtr pData);
+            Debug.Assert(err == Result.SUCCESS);
+            Marshal.StructureToPtr(uniformData, pData, false);
+            bufferInstance.DeviceMemory.UnmapMemory(device);
         }
     }
-
 }

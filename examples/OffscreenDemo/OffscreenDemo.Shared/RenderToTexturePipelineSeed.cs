@@ -101,7 +101,7 @@ namespace OffscreenDemo
 
                     InputAssemblyState = new MgPipelineInputAssemblyStateCreateInfo
                     {
-                        Topology = MgPrimitiveTopology.TRIANGLE_LIST,
+                        Topology = MgPrimitiveTopology.TRIANGLE_STRIP,
                     },
 
                     RasterizationState = new MgPipelineRasterizationStateCreateInfo

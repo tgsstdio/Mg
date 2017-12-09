@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Magnesium;
+﻿using Magnesium;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using Magnesium.Utilities;
+using System.Runtime.InteropServices;
+using System;
 
 namespace OffscreenDemo
 {
-    partial class TriplePaneDemoApplication : IDemoApplication
+    public class TriplePaneDemoApplication : IDemoApplication
     {
         private MgOffscreenDeviceFactory mFactory;
         private MgOptimizedStorageBuilder mBuilder;
@@ -50,9 +48,45 @@ namespace OffscreenDemo
         {
             public SimpleEffectPipeline RTT { get; set; }
             public SimpleEffectPipeline PassThru { get; internal set; }
+            public SimpleRenderableShape Torus { get; internal set; }
+            public SimpleRenderableShape Quads { get; internal set; }
+            public IMgSemaphore FirstStage { get; internal set; }
+            public IMgSemaphore[] SecondStage { get; internal set; }
+            public SimpleRenderBlock Block { get; internal set; }
 
             public void DisposeAll(IMgDevice device)
             {
+                if (Block != null)
+                {
+                    Block.Dispose();
+                    Block = null;
+                }
+
+                if (SecondStage != null)
+                {
+                    foreach (var stage in SecondStage)
+                    {
+                        stage.DestroySemaphore(device, null);
+                    }
+                }
+
+                if (FirstStage != null)
+                {
+                    FirstStage.DestroySemaphore(device, null);
+                    FirstStage = null;
+                }
+
+                if (Torus != null)
+                {
+                    Torus.Dispose();
+                    Torus = null;
+                }
+
+                if (Quads != null)
+                {
+                    Quads.Dispose();
+                    Quads = null;
+                }
 
                 if (RTT != null)
                 {
@@ -121,27 +155,117 @@ namespace OffscreenDemo
             var torusKnot = new TorusKnot(256, 32, 0.2, 7, 8, 1);
 
             var colorFormat = mOffscreen.RenderpassInfo.Attachments[0].Format;
-            var torusItem = new MgIsolatedRenderingElement(
+            var torusItem = new RttRenderingElement(
                 torusKnot,
                 new MgClearValue[]
                 {
-                    MgClearValue.FromColorAndFormat(colorFormat, new MgColor4f(0.1f, 0.2f, 0.3f, 1f)),
-                    new MgClearValue { DepthStencil = new MgClearDepthStencilValue(1.0f, 0) },
+                    MgClearValue.FromColorAndFormat(
+                        mOffscreen.RenderpassInfo.Attachments[0].Format,
+                        new MgColor4f(0.7f, 0f, 0f, 1f)
+                    ),
+                    MgClearValue.FromColorAndFormat(
+                        mOffscreen.RenderpassInfo.Attachments[1].Format,
+                        new MgColor4f(0f, 0.7f, 0.7f, 1f)
+                    ),
+                    new MgClearValue { DepthStencil = new MgClearDepthStencilValue(1.0f, 0) }
                 });
             var torusModel = new SimpleRenderableShape(torusItem, mUnmanagedResources.RTT);
-            var quads = new PostProcessQuad();
-            var quadModel = new SimpleRenderableShape(quads, mUnmanagedResources.PassThru);
-            var block = new SimpleRenderBlock(mBuilder, new[] { torusModel, quadModel } ));
 
-            throw new NotImplementedException();
+            var vertexData = new[]
+            {
+                new QuadVertexData
+                {
+                    TexCoord = new Vector2(0f,1f),
+                    Position = new Vector2(-1f,1f),
+                },
+                new QuadVertexData
+                {
+                    TexCoord = new Vector2(0f,0f),
+                    Position = new Vector2(-1f,-1f),
+                },
+                new QuadVertexData
+                {
+                    TexCoord = new Vector2(1f,0f),
+                    Position = new Vector2(1f,-1f),
+                },
+                new QuadVertexData
+                {
+                    TexCoord = new Vector2(1f,1f),
+                    Position = new Vector2(1f, 1f),
+                },
+            };
+            var indices = new uint[] { 0, 1, 2, 0, 2, 3 };
+
+            const float fieldOfView = 0.7853982f;
+            float aspectRatio = screen.Viewport.Width / screen.Viewport.Height;
+            var uniforms = new[]
+            {
+                new PostProcessUBO
+                {
+                    ProjectionMatrix =
+                        Matrix4.CreatePerspectiveFieldOfView(
+                          fieldOfView,
+                          aspectRatio,
+                          0.1f, 1000f),
+                    ModelViewMatrix =
+                        Matrix4.CreateLookAt(
+                            new Vector3(0f, 0f, 2.8f),
+                            new Vector3(0f, 0f, 0f),
+                            new Vector3(0f, 1f, 0f)
+                        ),
+                    Offset = new Vector4(-2.2f, 0f, 0f, 0f),
+                }
+            };
+
+            var quads = new PostProcessQuad<QuadVertexData, uint, PostProcessUBO>(
+                vertexData,
+                indices,
+                uniforms,
+                mColorAttachment,
+                new MgClearValue[]
+                {
+                    MgClearValue.FromColorAndFormat(
+                        screen.RenderpassInfo.Attachments[0].Format,
+                        new MgColor4f(0.1f, 0.2f, 0.3f, 1f)),
+                    new MgClearValue { DepthStencil = new MgClearDepthStencilValue(1.0f, 0) },
+                });
+            var quadModel = new SimpleRenderableShape(quads, mUnmanagedResources.PassThru);
+            var block = new SimpleRenderBlock(mBuilder, new[] { torusModel, quadModel } );
+            block.Initialize(configuration);
+            mUnmanagedResources.Block = block;
+
+            mUnmanagedResources.Torus = torusModel;
+            mUnmanagedResources.Quads = quadModel;
+
+            torusKnot.Dispose();
+
+            mUnmanagedResources.FirstStage = GenerateSemaphore(configuration);
+
+            var noOfSemaphores = screen.Framebuffers.Length;
+            mUnmanagedResources.SecondStage = new IMgSemaphore[noOfSemaphores];
+            for (var i = 0; i < noOfSemaphores; i += 1)
+            {
+                mUnmanagedResources.SecondStage[i] = GenerateSemaphore(configuration);
+            }
         }
 
-        private static IMgCommandPool CreateCommandPool(IMgGraphicsConfiguration configuration)
+        [StructLayout(LayoutKind.Sequential)]
+        struct PostProcessUBO
         {
-            var poolCreateInfo = new MgCommandPoolCreateInfo { };
-            var err = configuration.Device.CreateCommandPool(poolCreateInfo, null, out IMgCommandPool pool);
+            public Matrix4 ProjectionMatrix { get; internal set; }
+            public Matrix4 ModelViewMatrix { get; internal set; }
+            public Vector4 Offset { get; set; }
+        }
+
+        private IMgSemaphore GenerateSemaphore(IMgGraphicsConfiguration configuration)
+        {
+            var createInfo = new MgSemaphoreCreateInfo
+            {
+
+            };
+            var err = configuration.Device.CreateSemaphore(createInfo, null, out IMgSemaphore temp);
             Debug.Assert(err == Result.SUCCESS);
-            return pool;
+            return temp;
         }
 
         private void PreparePassThru(IMgGraphicsConfiguration configuration, IMgGraphicsDevice screen)
@@ -187,8 +311,8 @@ namespace OffscreenDemo
         {
             //// Command buffer to be sumitted to the queue
 
-            var first = mUnmanagedResources.Orders[0];
-            var second = mUnmanagedResources.Orders[1];
+            var first = mUnmanagedResources.Torus.Order;
+            var second = mUnmanagedResources.Quads.Order;
 
             var firstInfo = new[]
             {
@@ -244,7 +368,7 @@ namespace OffscreenDemo
 
         public void Update(IMgGraphicsConfiguration configuration)
         {
-            throw new NotImplementedException();
+
         }
     }
 }

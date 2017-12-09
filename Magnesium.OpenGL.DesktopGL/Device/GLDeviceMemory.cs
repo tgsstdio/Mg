@@ -78,8 +78,8 @@ namespace Magnesium.OpenGL.DesktopGL
 
 		readonly GLMemoryBufferType mBufferType;
 		readonly int mBufferSize;
-		readonly uint mBufferId;
-		readonly IntPtr mHandle;
+		uint mBufferId;
+		IntPtr mHandle;
 
 		public GLMemoryBufferType BufferType {
 			get {
@@ -113,12 +113,20 @@ namespace Magnesium.OpenGL.DesktopGL
 				return;
 
 			if (mIsHostCached)
-			{	
-				Marshal.FreeHGlobal (mHandle);
+			{
+                if (mHandle != IntPtr.Zero)
+                {
+                    Marshal.FreeHGlobal(mHandle);
+                    mHandle = IntPtr.Zero;
+                }
 			}
 			else
 			{
-				GL.DeleteBuffer (mBufferId);
+                if (mBufferId != 0U)
+                {
+                    GL.DeleteBuffer(mBufferId);
+                    mBufferId = 0U;
+                }
 			}
 
 			mIsDisposed = true;

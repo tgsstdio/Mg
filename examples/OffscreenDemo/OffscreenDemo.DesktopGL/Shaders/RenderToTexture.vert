@@ -19,7 +19,7 @@ void vertFunc(void)
 {
     //works only for orthogonal modelview
     texCoords = in_uv;
-    normal = (modelview_matrix * vec4(in_normal, 0)).xyz;
+    normal = (ubo.modelview_matrix * vec4(in_normal, 0)).xyz;
   
     gl_Position = ubo.projection_matrix * ubo.modelview_matrix * vec4(in_position, 1);
 	gl_Position.y *= -1.0;

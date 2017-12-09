@@ -37,8 +37,8 @@ namespace OffscreenDemo
             foreach (var shape in mShapes)
             {
                 shape.Populate(mContainer);
-                shape.Update(mContainer);
                 shape.GenerateOrder(mContainer);
+                shape.Update(mContainer);
             }
         }
 
