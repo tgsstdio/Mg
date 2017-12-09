@@ -115,7 +115,10 @@ namespace OffscreenDemo
         }
 
         /// <summary>
+        /// Constructs a new Vector4 from the given TkVector2.
         /// </summary>
+        /// <param name="v">The TkVector2 to copy components from.</param>
+        public TkVector4(TkVector2 v)
         {
             X = v.X;
             Y = v.Y;
@@ -873,40 +876,64 @@ namespace OffscreenDemo
         }
 
         /// <summary>
+        /// Gets or sets an OpenTK.TkVector2 with the X and Y components of this instance.
         /// </summary>
+        public TkVector2 Xy { get { return new TkVector2(X, Y); } set { X = value.X; Y = value.Y; } }
 
         /// <summary>
+        /// Gets or sets an OpenTK.TkVector2 with the X and Z components of this instance.
         /// </summary>
+        public TkVector2 Xz { get { return new TkVector2(X, Z); } set { X = value.X; Z = value.Y; } }
 
         /// <summary>
+        /// Gets or sets an OpenTK.TkVector2 with the X and W components of this instance.
         /// </summary>
+        public TkVector2 Xw { get { return new TkVector2(X, W); } set { X = value.X; W = value.Y; } }
 
         /// <summary>
+        /// Gets or sets an OpenTK.TkVector2 with the Y and X components of this instance.
         /// </summary>
+        public TkVector2 Yx { get { return new TkVector2(Y, X); } set { Y = value.X; X = value.Y; } }
 
         /// <summary>
+        /// Gets or sets an OpenTK.TkVector2 with the Y and Z components of this instance.
         /// </summary>
+        public TkVector2 Yz { get { return new TkVector2(Y, Z); } set { Y = value.X; Z = value.Y; } }
 
         /// <summary>
+        /// Gets or sets an OpenTK.TkVector2 with the Y and W components of this instance.
         /// </summary>
+        public TkVector2 Yw { get { return new TkVector2(Y, W); } set { Y = value.X; W = value.Y; } }
 
         /// <summary>
+        /// Gets or sets an OpenTK.TkVector2 with the Z and X components of this instance.
         /// </summary>
+        public TkVector2 Zx { get { return new TkVector2(Z, X); } set { Z = value.X; X = value.Y; } }
 
         /// <summary>
+        /// Gets or sets an OpenTK.TkVector2 with the Z and Y components of this instance.
         /// </summary>
+        public TkVector2 Zy { get { return new TkVector2(Z, Y); } set { Z = value.X; Y = value.Y; } }
 
         /// <summary>
+        /// Gets an OpenTK.TkVector2 with the Z and W components of this instance.
         /// </summary>
+        public TkVector2 Zw { get { return new TkVector2(Z, W); } set { Z = value.X; W = value.Y; } }
 
         /// <summary>
+        /// Gets or sets an OpenTK.TkVector2 with the W and X components of this instance.
         /// </summary>
+        public TkVector2 Wx { get { return new TkVector2(W, X); } set { W = value.X; X = value.Y; } }
 
         /// <summary>
+        /// Gets or sets an OpenTK.TkVector2 with the W and Y components of this instance.
         /// </summary>
+        public TkVector2 Wy { get { return new TkVector2(W, Y); } set { W = value.X; Y = value.Y; } }
 
         /// <summary>
+        /// Gets or sets an OpenTK.TkVector2 with the W and Z components of this instance.
         /// </summary>
+        public TkVector2 Wz { get { return new TkVector2(W, Z); } set { W = value.X; Z = value.Y; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.TkVector3 with the X, Y, and Z components of this instance.
