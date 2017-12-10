@@ -151,7 +151,31 @@ namespace Magnesium.Utilities
                 sortedList.Add(key, attr.Index);
             }          
 
-            ulong overallSize = 0;
+            ulong overallSize = 0;    
+
+            var pCreateInfo = new MgBufferCreateInfo
+            {
+                SharingMode = createInfo.SharingMode,
+                QueueFamilyIndices = createInfo.QueueFamilyIndices,
+                Size = 0,
+                Usage = bufferUsage,
+            };
+
+            // The alignment member is identical for all VkBuffer objects created with the same combination of values
+            // for the usage and flags members in the VkBufferCreateInfo structure passed to vkCreateBuffer.     
+
+            var err = mConfiguration.Device.CreateBuffer(pCreateInfo, null, out IMgBuffer pZeroBuffer);
+            if (err != Result.SUCCESS)
+            {
+                instance = null;
+                return false;
+            }
+
+            mConfiguration.Device.GetBufferMemoryRequirements(pZeroBuffer, out MgMemoryRequirements pZeroMemReqs);
+            pZeroBuffer.DestroyBuffer(mConfiguration.Device, null);
+
+            var requiredAlignment = pZeroMemReqs.Alignment;
+
             var mappings = new List<MgStorageBufferOffset>();
             foreach(var element in sortedList.Values)
             {
@@ -160,7 +184,7 @@ namespace Magnesium.Utilities
                 var mapping = new MgStorageBufferOffset
                 {
                     Index = element,
-                    Offset = UpperBounded(overallSize, attr.ElementByteSize),
+                    Offset = UpperBounded(overallSize, Math.Max(attr.ElementByteSize, requiredAlignment)),
                     Size = attr.Size,
                     Usage = attr.Usage,
                 };
@@ -169,15 +193,10 @@ namespace Magnesium.Utilities
                 overallSize = mapping.Offset + mapping.Size;
             }
 
-            var pCreateInfo = new MgBufferCreateInfo
-            {
-                SharingMode = createInfo.SharingMode,
-                QueueFamilyIndices = createInfo.QueueFamilyIndices,
-                Size = overallSize,
-                Usage = bufferUsage,                
-            };
+            // Real memory allocation
+            pCreateInfo.Size = overallSize;               
 
-            var err = mConfiguration.Device.CreateBuffer(pCreateInfo, null, out IMgBuffer pBuffer);
+            err = mConfiguration.Device.CreateBuffer(pCreateInfo, null, out IMgBuffer pBuffer);
             if (err != Result.SUCCESS)
             {
                 instance = null;

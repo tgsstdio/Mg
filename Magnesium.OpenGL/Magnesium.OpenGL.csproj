@@ -124,10 +124,16 @@
     <Compile Include="DescriptorSets\IGLTextureGallery.cs" />
     <Compile Include="DescriptorSets\MgTextureCentral.cs" />
     <Compile Include="Device\GLClearAttachmentDivisor.cs" />
+    <Compile Include="Device\GLDeviceMemoryTypeFlagBits.cs" />
+    <Compile Include="Device\GLDeviceMemoryTypeInfo.cs" />
+    <Compile Include="Device\GLDeviceMemoryTypeMap.cs" />
+    <Compile Include="Device\GLFutureDeviceMemory.cs" />
     <Compile Include="Device\GLNextFramebuffer.cs" />
     <Compile Include="Device\GLNextFramebufferSubpassInfo.cs" />
     <Compile Include="Device\GLNextRenderPass.cs" />
     <Compile Include="Device\GLRenderPassClearAttachment.cs" />
+    <Compile Include="Device\IGLDeviceMemoryTypeMap.cs" />
+    <Compile Include="Entrypoint\IGLFutureDeviceMemoryEntrypoint.cs" />
     <Compile Include="Device\IGLImage.cs" />
     <Compile Include="Device\IGLImageView.cs" />
     <Compile Include="Device\IGLSampler.cs" />

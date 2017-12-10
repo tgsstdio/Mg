@@ -5,12 +5,13 @@ namespace Magnesium.OpenGL.Internals
 	public class GLPhysicalDevice : IMgPhysicalDevice
 	{
         private IGLPhysicalDeviceFormatLookupEntrypoint mFormatLookup;
+        private readonly IGLDeviceMemoryTypeMap mDeviceMemoryMap;
         private readonly GLDevice mDevice;
-		public GLPhysicalDevice (IGLQueue queue, IGLDeviceEntrypoint entrypoint, IGLPhysicalDeviceFormatLookupEntrypoint lookup)
+		public GLPhysicalDevice (IGLQueue queue, IGLDeviceEntrypoint entrypoint, IGLPhysicalDeviceFormatLookupEntrypoint lookup, IGLDeviceMemoryTypeMap deviceMemoryMap)
 		{
-			mDevice = new GLDevice (queue, entrypoint);
+            mDeviceMemoryMap = deviceMemoryMap;
+			mDevice = new GLDevice (queue, entrypoint, mDeviceMemoryMap);
             mFormatLookup = lookup;
-
         }
 
 		#region IMgPhysicalDevice implementation
@@ -34,33 +35,26 @@ namespace Magnesium.OpenGL.Internals
 				}
 			};
 		}
-		public void GetPhysicalDeviceMemoryProperties (out MgPhysicalDeviceMemoryProperties pMemoryProperties)
-		{
-			// TODO : overwrite here to shift memory based on which type
-			// 0 : buffer based 
-			// 1 : host defined (for INDIRECT)
-			pMemoryProperties = new MgPhysicalDeviceMemoryProperties();
-			var slots = new MgMemoryType[8];
+        public void GetPhysicalDeviceMemoryProperties(out MgPhysicalDeviceMemoryProperties pMemoryProperties)
+        {
+            var count = this.mDeviceMemoryMap.MemoryTypes.Length;
+            var slots = new MgMemoryType[count];
+            for (var i = 0; i < count; i += 1)
+            {
+                var entry = this.mDeviceMemoryMap.MemoryTypes[i];
+                slots[i] = new MgMemoryType
+                {
+                    HeapIndex = 0,
+                    PropertyFlags = (uint)entry.MemoryPropertyFlags,
+                }; ;
+            }
 
-			const uint allOn = (uint)(
-			                       MgMemoryPropertyFlagBits.DEVICE_LOCAL_BIT |
-			                       MgMemoryPropertyFlagBits.HOST_CACHED_BIT |
-			                       MgMemoryPropertyFlagBits.HOST_COHERENT_BIT |
-			                       MgMemoryPropertyFlagBits.LAZILY_ALLOCATED_BIT |
-			                       MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT);
-
-			// THE NUMBER OF SLOTS DETERMINE THE DIFFERENT BUFFER TYPES = no of GLMemoryBufferType enums
-			slots [0] = new MgMemoryType{ PropertyFlags = allOn };
-			slots [1] = new MgMemoryType{ PropertyFlags = allOn };
-			slots [2] = new MgMemoryType{ PropertyFlags = allOn };
-			slots [3] = new MgMemoryType{ PropertyFlags = allOn };
-			slots [4] = new MgMemoryType{ PropertyFlags = allOn };
-            slots [5] = new MgMemoryType { PropertyFlags = allOn };
-            slots [6] = new MgMemoryType { PropertyFlags = allOn };
-            slots [7] = new MgMemoryType { PropertyFlags = allOn };
-
-            pMemoryProperties.MemoryTypes = slots;
-		}
+            pMemoryProperties = new MgPhysicalDeviceMemoryProperties
+            {
+                MemoryHeaps = new MgMemoryHeap[] { },
+                MemoryTypes = slots,
+            };
+        }
 		public void GetPhysicalDeviceFeatures (out MgPhysicalDeviceFeatures pFeatures)
 		{
 			pFeatures = new MgPhysicalDeviceFeatures ();

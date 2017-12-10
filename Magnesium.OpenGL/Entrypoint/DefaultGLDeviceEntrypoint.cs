@@ -14,7 +14,7 @@ namespace Magnesium.OpenGL
 			IGLShaderModuleEntrypoint shaderModule,
 			IGLFutureDescriptorPoolEntrypoint descriptorPool,
 			IGLBufferEntrypoint buffers,
-			IGLDeviceMemoryEntrypoint deviceMemory,
+			IGLFutureDeviceMemoryEntrypoint deviceMemory,
 			IGLSemaphoreEntrypoint semaphore,
 			IGLGraphicsPipelineEntrypoint graphicsPipeline,
 			IGLImageFormatEntrypoint imageFormat,
@@ -94,7 +94,7 @@ namespace Magnesium.OpenGL
 			private set;
 		}
 
-		public IGLDeviceMemoryEntrypoint DeviceMemory {
+		public IGLFutureDeviceMemoryEntrypoint DeviceMemory {
 			get;
 			private set;
 		}

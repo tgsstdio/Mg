@@ -19,11 +19,14 @@ namespace Magnesium.OpenGL.Internals
 
 		private IGLQueue mQueue;
 		private IGLDeviceEntrypoint mEntrypoint;
-		public GLDevice (IGLQueue queue, IGLDeviceEntrypoint entrypoint)
+        private IGLDeviceMemoryTypeMap mDeviceMemoryMap;
+        public GLDevice (IGLQueue queue, IGLDeviceEntrypoint entrypoint, IGLDeviceMemoryTypeMap deviceMemoryMap)
 		{
 			mQueue = queue;
 			mEntrypoint = entrypoint;
-		}
+            mDeviceMemoryMap = deviceMemoryMap;
+
+        }
 
 		public void GetDeviceQueue (uint queueFamilyIndex, uint queueIndex, out IMgQueue pQueue)
 		{
@@ -37,7 +40,7 @@ namespace Magnesium.OpenGL.Internals
 
 		public Result AllocateMemory (MgMemoryAllocateInfo pAllocateInfo, IMgAllocationCallbacks allocator, out IMgDeviceMemory pMemory)
 		{
-			pMemory = mEntrypoint.DeviceMemory.CreateDeviceMemory(pAllocateInfo);
+			pMemory = new GLFutureDeviceMemory(pAllocateInfo, mEntrypoint.DeviceMemory, mDeviceMemoryMap);
 			return Result.SUCCESS;
 		}
 
@@ -58,13 +61,14 @@ namespace Magnesium.OpenGL.Internals
 			var internalBuffer = buffer as IGLBuffer;
 			if (internalBuffer == null)
 			{
-				throw new ArgumentException (nameof(buffer));
+				throw new ArgumentException ("buffer");
 			}
 
             uint mask = DetermineBufferMemoryType(internalBuffer.Usage);
-			pMemoryRequirements = new MgMemoryRequirements {
-				Size = internalBuffer.RequestedSize,
-				MemoryTypeBits = mask,
+            pMemoryRequirements = new MgMemoryRequirements {
+                Size = internalBuffer.RequestedSize,
+                MemoryTypeBits = mask,
+                Alignment = mEntrypoint.DeviceMemory.GetMinAlignment(),
 			};
 		}
 

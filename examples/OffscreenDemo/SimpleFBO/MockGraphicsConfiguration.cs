@@ -14,7 +14,7 @@ namespace Examples.Tutorial
 
         public MockGraphicsConfiguration(DefaultGLDeviceEntrypoint deviceEntrypoint)
         {
-            mDevice = new GLDevice(null, deviceEntrypoint);
+            mDevice = new GLDevice(null, deviceEntrypoint, null);
         }
 
         public IMgDevice Device => mDevice;

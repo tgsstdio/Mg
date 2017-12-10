@@ -594,7 +594,7 @@ void main(void)
 
             var descriptorPool = new Magnesium.OpenGL.GLSolarDescriptorPool(poolCreateInfo);
 
-            var device = new Magnesium.OpenGL.Internals.GLDevice(null, deviceEntrypoint);
+            var device = new Magnesium.OpenGL.Internals.GLDevice(null, deviceEntrypoint, null);
 
             var lCreateInfo = new MgDescriptorSetLayoutCreateInfo
             {

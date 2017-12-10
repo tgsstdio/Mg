@@ -64,6 +64,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Device\FullGLDeviceMemoryTypeMap.cs" />
     <Compile Include="Device\GLFullFence.cs" />
     <Compile Include="Device\GLNextDescriptorPool.cs" />
     <Compile Include="Driver\DesktopGLGraphicsContext.cs" />
@@ -72,6 +73,7 @@
     <Compile Include="Driver\GLNullOffscreenDeviceLocalMemory.cs" />
     <Compile Include="Driver\IGLBackbufferContext.cs" />
     <Compile Include="Driver\OpenTKBackbufferContext.cs" />
+    <Compile Include="Entrypoint\FullGLFutureDeviceMemoryEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLBlitOperationEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLCmdShaderProgramEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLFullFenceEntrypoint.cs" />

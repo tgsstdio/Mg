@@ -10,7 +10,7 @@
 		IGLShaderModuleEntrypoint ShaderModule { get; }
 		IGLFutureDescriptorPoolEntrypoint DescriptorPool { get; }
 		IGLBufferEntrypoint Buffers { get;}
-		IGLDeviceMemoryEntrypoint DeviceMemory { get; }
+		IGLFutureDeviceMemoryEntrypoint DeviceMemory { get; }
 		IGLSemaphoreEntrypoint Semaphore {get; }
 		IGLGraphicsPipelineEntrypoint GraphicsPipeline { get; }
 		IGLGraphicsPipelineCompiler GraphicsCompiler { get; }
