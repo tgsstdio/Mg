@@ -264,13 +264,13 @@ namespace OffscreenDemo
 
                 cmdBuf.CmdSetScissor(0, new[] { order.Framework.Scissor });
 
+                cmdBuf.CmdBindPipeline(MgPipelineBindPoint.GRAPHICS, effect.Pipeline);
+
                 cmdBuf.CmdBindDescriptorSets(
                     MgPipelineBindPoint.GRAPHICS,
                     effect.PipelineLayout,
                     0, new[] { order.DescriptorSets[0] },
                     null);
-
-                cmdBuf.CmdBindPipeline(MgPipelineBindPoint.GRAPHICS, effect.Pipeline);
 
                 cmdBuf.CmdBindVertexBuffers(0, new[] { order.Vertices.Buffer }, new[] { order.Vertices.ByteOffset });
 

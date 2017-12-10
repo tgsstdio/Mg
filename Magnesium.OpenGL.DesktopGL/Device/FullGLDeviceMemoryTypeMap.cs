@@ -1,7 +1,7 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using System.Collections.Generic;
 
-namespace Magnesium.OpenGL
+namespace Magnesium.OpenGL.DesktopGL
 {
     public class FullGLDeviceMemoryTypeMap : IGLDeviceMemoryTypeMap
     {

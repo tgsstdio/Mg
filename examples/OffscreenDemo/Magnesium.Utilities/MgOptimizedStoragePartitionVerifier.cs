@@ -184,7 +184,7 @@ namespace Magnesium.Utilities
                 var mapping = new MgStorageBufferOffset
                 {
                     Index = element,
-                    Offset = UpperBounded(overallSize, Math.Max(attr.ElementByteSize, requiredAlignment)),
+                    Offset = UpperBounded(overallSize, requiredAlignment),
                     Size = attr.Size,
                     Usage = attr.Usage,
                 };

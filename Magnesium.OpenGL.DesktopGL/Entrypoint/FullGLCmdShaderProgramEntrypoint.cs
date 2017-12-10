@@ -26,6 +26,7 @@ namespace Magnesium.OpenGL.DesktopGL
 
         public void BindProgram(int programID)
         {
+            Console.WriteLine("BindProgram : " + programID);
             GL.UseProgram(programID);
             mErrHandler.LogGLError("BindProgram");
         }
@@ -36,7 +37,7 @@ namespace Magnesium.OpenGL.DesktopGL
             mErrHandler.LogGLError("BindStorageBuffer");
         }
 
-        public void BindUniformBuffer(uint binding, uint bufferId, IntPtr offset, IntPtr size)
+        public void BindUniformBuffer(uint binding, uint bufferId, IntPtr offset, int size)
         {
             GL.BindBufferRange(BufferRangeTarget.UniformBuffer, binding, bufferId, offset, size);
             mErrHandler.LogGLError("BindUniformBuffer");
@@ -44,6 +45,11 @@ namespace Magnesium.OpenGL.DesktopGL
 
         public void BindUniformBuffers(int count, uint[] buffers, IntPtr[] offsets, IntPtr[] sizes)
         {
+            Console.WriteLine("BindUniformBuffers : " + count);
+            for (var i = 0; i < count; i += 1)
+            {
+                Console.WriteLine(">>> Buffer {0}, Offset {1}, Sizes {2} ", buffers[i], offsets[i], sizes[i]);
+            }
             GL.BindBuffersRange(BufferRangeTarget.UniformBuffer, 0, count, buffers, offsets, sizes);
             mErrHandler.LogGLError("BindUniformBuffers");
         }
@@ -56,6 +62,7 @@ namespace Magnesium.OpenGL.DesktopGL
 
         public void SetUniformBlock(int programID, int activeIndex, int bindingPoint)
         {
+            Console.WriteLine("SetUniformBlock {0} {1} {2}", programID, activeIndex, bindingPoint);
             GL.UniformBlockBinding(programID, activeIndex, bindingPoint);
             mErrHandler.LogGLError("SetUniformBlock");
         }

@@ -7,6 +7,7 @@ namespace Magnesium.OpenGL
     {
         private IGLFutureDeviceMemoryEntrypoint mEntrypoint;
         private int mBufferSize;
+        private uint mTypeIndex;
         private bool mIsHostCached;
         private IntPtr mHandle;
         private GLMemoryBufferType? mBufferTarget;
@@ -29,8 +30,8 @@ namespace Magnesium.OpenGL
 
             mBufferSize = (int)pAllocateInfo.AllocationSize;
 
-            var typeIndex = pAllocateInfo.MemoryTypeIndex;
-            var slotInfo = deviceMemoryMap.MemoryTypes[typeIndex];
+            mTypeIndex = pAllocateInfo.MemoryTypeIndex;
+            var slotInfo = deviceMemoryMap.MemoryTypes[mTypeIndex];
 
             mIsHostCached = IsHostCached(slotInfo.MemoryTypeIndex, out GLMemoryBufferType? target);            
             if (mIsHostCached)
@@ -107,11 +108,32 @@ namespace Magnesium.OpenGL
 
         public IntPtr Handle { get => mHandle; }
 
+        private bool mIsDisposed = false;
         public void FreeMemory(IMgDevice device, IMgAllocationCallbacks allocator)
         {
-            throw new NotImplementedException();
-        }
+            if (mIsDisposed)
+                return;
 
+            if (mIsHostCached)
+            {
+                if (mHandle != IntPtr.Zero)
+                {
+                    Marshal.FreeHGlobal(mHandle);
+                    mHandle = IntPtr.Zero;
+                }
+            }
+            else
+            {
+                if (mBufferId != 0U)
+                {
+                    mEntrypoint.DeleteBufferStorage(mBufferId);
+                    mBufferId = 0U;
+                }
+            }
+
+            mIsDisposed = true;
+        }
+    
         public Result MapMemory(IMgDevice device, ulong offset, ulong size, uint flags, out IntPtr ppData)
         {
             if (mIsHostCached)
@@ -141,7 +163,7 @@ namespace Magnesium.OpenGL
                 var handleOffset = (IntPtr)((Int64)offset);
                 var handleSize = (int)size;
 
-                ppData = mEntrypoint.MapBufferStorage(mBufferId, handleOffset, mBufferSize, mBufferFlags);                
+                ppData = mEntrypoint.MapBufferStorage(mBufferId, handleOffset, handleSize, mBufferFlags);                
                 mIsMapped = true;
                 return Result.SUCCESS;
             }

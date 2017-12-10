@@ -31,7 +31,8 @@ namespace Magnesium.Utilities
                     | MgBufferUsageFlagBits.STORAGE_TEXEL_BUFFER_BIT
                     | MgBufferUsageFlagBits.TRANSFER_DST_BIT
                     | MgBufferUsageFlagBits.TRANSFER_SRC_BIT
-                    | MgBufferUsageFlagBits.UNIFORM_TEXEL_BUFFER_BIT
+                    | MgBufferUsageFlagBits.UNIFORM_TEXEL_BUFFER_BIT,
+                    SeparateBlockRequired = MgBufferUsageFlagBits.INDEX_BUFFER_BIT
                 },
                 new MgPlatformMemoryProperties
                 {
@@ -42,7 +43,8 @@ namespace Magnesium.Utilities
                     | MgBufferUsageFlagBits.STORAGE_TEXEL_BUFFER_BIT
                     | MgBufferUsageFlagBits.TRANSFER_DST_BIT
                     | MgBufferUsageFlagBits.TRANSFER_SRC_BIT
-                    | MgBufferUsageFlagBits.UNIFORM_TEXEL_BUFFER_BIT
+                    | MgBufferUsageFlagBits.UNIFORM_TEXEL_BUFFER_BIT,
+                    SeparateBlockRequired = MgBufferUsageFlagBits.UNIFORM_BUFFER_BIT
                 },
             };
 

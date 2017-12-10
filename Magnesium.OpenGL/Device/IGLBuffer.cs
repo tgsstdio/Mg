@@ -10,7 +10,9 @@ namespace Magnesium.OpenGL
 		IntPtr Source { get; }
 		ulong RequestedSize { get; }
 		uint BufferId { get; }
-	}
+
+        GLDeviceMemoryTypeFlagBits MemoryType { get; }
+    }
 
 }
 

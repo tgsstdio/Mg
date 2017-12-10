@@ -27,6 +27,12 @@ namespace Magnesium.OpenGL.DesktopGL
             return mBufferId;
         }
 
+        public void DeleteBufferStorage(uint bufferId)
+        {
+            GL.DeleteBuffer(bufferId);
+            mErrHandler.LogGLError("DeleteBufferStorage");
+        }
+
         public ulong GetMinAlignment()
         {
             return (ulong) GL.GetInteger((GetPName)All.MinMapBufferAlignment);

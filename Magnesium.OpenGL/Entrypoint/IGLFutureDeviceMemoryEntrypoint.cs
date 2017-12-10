@@ -8,5 +8,6 @@ namespace Magnesium.OpenGL
         IntPtr MapBufferStorage(uint bufferId, IntPtr offset, int size, uint flags);
         void UnmapBufferStorage(uint bufferId);
         ulong GetMinAlignment();
+        void DeleteBufferStorage(uint mBufferId);
     }
 }

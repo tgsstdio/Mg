@@ -5,26 +5,63 @@ namespace Magnesium.OpenGL.DesktopGL
 {
 	internal class FullGLBuffer : IGLBuffer
 	{
-		//private static BufferTarget GetBufferTarget(MgBufferCreateInfo info)
-		//{
-		//	switch(info.Usage)
-		//	{
-		//	case MgBufferUsageFlagBits.STORAGE_BUFFER_BIT:
-		//		return BufferTarget.ShaderStorageBuffer;
-		//	case MgBufferUsageFlagBits.INDEX_BUFFER_BIT:
-		//		return BufferTarget.ElementArrayBuffer;
-		//	case MgBufferUsageFlagBits.VERTEX_BUFFER_BIT:
-		//		return BufferTarget.ArrayBuffer;
-		//	case MgBufferUsageFlagBits.INDIRECT_BUFFER_BIT:
-		//		return BufferTarget.DrawIndirectBuffer;
-  //          case MgBufferUsageFlagBits.TRANSFER_SRC_BIT:
-  //              return BufferTarget.CopyReadBuffer;
-  //          case MgBufferUsageFlagBits.TRANSFER_DST_BIT:
-  //              return BufferTarget.CopyWriteBuffer;
-  //          default:
-		//		throw new NotSupportedException ();
-		//	}
-		//}
+        //private static BufferTarget GetBufferTarget(MgBufferCreateInfo info)
+        //{
+        //	switch(info.Usage)
+        //	{
+        //	case MgBufferUsageFlagBits.STORAGE_BUFFER_BIT:
+        //		return BufferTarget.ShaderStorageBuffer;
+        //	case MgBufferUsageFlagBits.INDEX_BUFFER_BIT:
+        //		return BufferTarget.ElementArrayBuffer;
+        //	case MgBufferUsageFlagBits.VERTEX_BUFFER_BIT:
+        //		return BufferTarget.ArrayBuffer;
+        //	case MgBufferUsageFlagBits.INDIRECT_BUFFER_BIT:
+        //		return BufferTarget.DrawIndirectBuffer;
+        //          case MgBufferUsageFlagBits.TRANSFER_SRC_BIT:
+        //              return BufferTarget.CopyReadBuffer;
+        //          case MgBufferUsageFlagBits.TRANSFER_DST_BIT:
+        //              return BufferTarget.CopyWriteBuffer;
+        //          default:
+        //		throw new NotSupportedException ();
+        //	}
+        //}
+
+        private static GLDeviceMemoryTypeFlagBits DetermineMemoryType(MgBufferCreateInfo info)
+        {
+           GLDeviceMemoryTypeFlagBits flags = 0;
+
+           var references = new[] {
+              MgBufferUsageFlagBits.INDEX_BUFFER_BIT
+            , MgBufferUsageFlagBits.STORAGE_BUFFER_BIT
+            , MgBufferUsageFlagBits.VERTEX_BUFFER_BIT
+            , MgBufferUsageFlagBits.INDIRECT_BUFFER_BIT
+            , MgBufferUsageFlagBits.UNIFORM_BUFFER_BIT
+            , MgBufferUsageFlagBits.TRANSFER_SRC_BIT
+            , MgBufferUsageFlagBits.TRANSFER_DST_BIT
+            };
+
+            var toggles = new[] {
+              GLDeviceMemoryTypeFlagBits.INDEX
+              , GLDeviceMemoryTypeFlagBits.STORAGE
+              , GLDeviceMemoryTypeFlagBits.VERTEX
+              , GLDeviceMemoryTypeFlagBits.INDIRECT
+              , GLDeviceMemoryTypeFlagBits.UNIFORM
+              , GLDeviceMemoryTypeFlagBits.TRANSFER_SRC
+              , GLDeviceMemoryTypeFlagBits.TRANSFER_DST
+            };
+
+            var count = references.Length;
+
+            for(var i = 0; i<count; i += 1)
+            {
+                var referenceMask = references[i];
+                if ((info.Usage & referenceMask) == referenceMask)
+                {
+                    flags |= toggles[i];
+                }
+            }
+            return flags;
+        }
 
 		public FullGLBuffer (MgBufferCreateInfo info)
         {
@@ -34,6 +71,7 @@ namespace Magnesium.OpenGL.DesktopGL
 
             //Target = GetBufferTarget(info);
             RequestedSize = info.Size;
+            this.MemoryType = DetermineMemoryType(info);
         }
 
         private static bool DetrimineIfVertexBuffer(MgBufferCreateInfo info)
@@ -72,6 +110,7 @@ namespace Magnesium.OpenGL.DesktopGL
 		public BufferTarget Target { get; private set;}
 		public uint BufferId { get; private set; }
 		public ulong RequestedSize { get; set; }
+        public GLDeviceMemoryTypeFlagBits MemoryType { get; }
         public bool IsBufferType { get; private set; }
 
         public MgBufferUsageFlagBits Usage
@@ -84,7 +123,7 @@ namespace Magnesium.OpenGL.DesktopGL
         #region IMgBuffer implementation
         public Result BindBufferMemory (IMgDevice device, IMgDeviceMemory memory, ulong memoryOffset)
 		{
-			var internalMemory = memory as GLDeviceMemory;
+			var internalMemory = memory as IGLDeviceMemory;
 			if (internalMemory == null)
 			{
 				throw new ArgumentException ("memory");

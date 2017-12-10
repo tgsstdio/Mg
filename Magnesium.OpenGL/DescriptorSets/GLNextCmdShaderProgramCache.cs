@@ -147,7 +147,7 @@ namespace Magnesium.OpenGL
                     ResetExistingUniformBuffers();
                 }
 
-                // RebindAllUniformBuffers();
+                RebindAllUniformBuffers();
             }
 		}
 
@@ -255,11 +255,11 @@ namespace Magnesium.OpenGL
                             mUniformOffsets[dstIndex] = localOffset;
                             mUniformSizes[dstIndex] = localSize;
 
-                            mEntrypoint.BindUniformBuffer(
-                                (uint) dstIndex,
-                                buffer.BufferId,
-                                localOffset,
-                                localSize);
+                            //mEntrypoint.BindUniformBuffer(
+                            //    (uint) dstIndex,
+                            //    buffer.BufferId,
+                            //    localOffset,
+                            //    buffer.Size);
                         }
                         srcIndex += 1;
                         dstIndex += 1;

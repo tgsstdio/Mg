@@ -185,6 +185,7 @@ namespace Magnesium.OpenGL.DesktopGL
 
 		public void DrawIndexed (MgPrimitiveTopology topology, MgIndexType indexType, uint first, uint count, uint instanceCount, int vertexOffset)
 		{
+            Console.WriteLine("DrawIndexed");
 			// void glDrawElementsInstancedBaseVertex(GLenum mode​, GLsizei count​, GLenum type​, GLvoid *indices​, GLsizei primcount​, GLint basevertex​);
 			// count => indexCount Specifies the number of elements to be rendered. (divide by elements)
 			// indices => firstIndex Specifies a byte offset (cast to a pointer type) (multiple by data size)

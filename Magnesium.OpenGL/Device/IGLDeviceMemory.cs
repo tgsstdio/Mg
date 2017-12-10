@@ -4,7 +4,7 @@ namespace Magnesium.OpenGL
 {
 	public interface IGLDeviceMemory : IMgDeviceMemory
 	{
-		GLMemoryBufferType BufferType { get; }
+		// GLMemoryBufferType BufferType { get; }
 		int BufferSize { get; }
 		uint BufferId { get; }
 		IntPtr Handle { get; }

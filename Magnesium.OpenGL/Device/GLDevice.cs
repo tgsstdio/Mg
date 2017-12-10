@@ -64,8 +64,9 @@ namespace Magnesium.OpenGL.Internals
 				throw new ArgumentException ("buffer");
 			}
 
-            uint mask = DetermineBufferMemoryType(internalBuffer.Usage);
-            pMemoryRequirements = new MgMemoryRequirements {
+            uint mask = this.mDeviceMemoryMap.DetermineTypeIndex(internalBuffer.MemoryType);
+            pMemoryRequirements = new MgMemoryRequirements
+            { 
                 Size = internalBuffer.RequestedSize,
                 MemoryTypeBits = mask,
                 Alignment = mEntrypoint.DeviceMemory.GetMinAlignment(),
