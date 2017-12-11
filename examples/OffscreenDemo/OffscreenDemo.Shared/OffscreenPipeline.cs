@@ -202,10 +202,12 @@ namespace OffscreenDemo
 
             return new MgCommandBuildOrder
             {
-                Vertices = new MgCommandBuildOrderBufferInfo
-                {
-                    Buffer = vertexInstance.Buffer,
-                    ByteOffset = vertexDest.Offset,
+                Vertices = new[] {
+                    new MgCommandBuildOrderBufferInfo
+                    {
+                        Buffer = vertexInstance.Buffer,
+                        ByteOffset = vertexDest.Offset,
+                    },
                 },
                 Indices = new MgCommandBuildOrderBufferInfo
                 {
@@ -455,7 +457,7 @@ namespace OffscreenDemo
 
                 cmdBuf.CmdBindPipeline(MgPipelineBindPoint.GRAPHICS, mPipeline);
 
-                cmdBuf.CmdBindVertexBuffers(0, new[] { order.Vertices.Buffer }, new[] { order.Vertices.ByteOffset });
+                cmdBuf.CmdBindVertexBuffers(0, new[] { order.Vertices[0].Buffer }, new[] { order.Vertices[0].ByteOffset });
 
                 cmdBuf.CmdBindIndexBuffer(order.Indices.Buffer, order.Indices.ByteOffset, MgIndexType.UINT32);
 

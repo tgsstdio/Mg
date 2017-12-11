@@ -6,6 +6,115 @@ using System.Runtime.InteropServices;
 
 namespace OffscreenDemo
 {
+    public class PostProcessQuadInstance
+    {
+        public TkVector3 Offset { get; set; }
+        public IMgOffscreenDeviceAttachment Attachment { get; set; }
+    }
+
+    public class QuadEntry<TData>
+    {
+        private MgBufferUsageFlagBits mUsage;
+        private TData[] mItems;
+
+        public QuadEntry(
+            MgBufferUsageFlagBits usage
+            , TData[] items
+        )
+        {
+            mUsage = usage;
+            mItems = items;
+        }
+
+        public int Slot { get; private set; }
+        public void Reserve(MgBlockAllocationList request)
+        {
+            int stride = Marshal.SizeOf(typeof(TData));
+            var noOfElements = mItems != null ? mItems.Length : 0;
+            var indexInfo = new MgStorageBlockAllocationInfo
+            {
+                Usage = mUsage,
+                ElementByteSize = (uint)stride,
+                MemoryPropertyFlags = MgMemoryPropertyFlagBits.HOST_VISIBLE_BIT | MgMemoryPropertyFlagBits.HOST_COHERENT_BIT,
+                Size = (ulong)(stride * noOfElements),
+            };
+            Slot = request.Insert(indexInfo);
+        }
+
+        public void PopulateIndices(IMgDevice device, MgOptimizedStorageContainer container)
+        {
+            int indexStride = Marshal.SizeOf(typeof(TData));
+            var noOfElements = mItems != null ? mItems.Length : 0;
+            var sizeInBytes = (ulong)(indexStride * noOfElements);
+
+            if (mItems != null && sizeInBytes > 0)
+            {
+                var transferSize = (int)sizeInBytes;
+
+                var tempBuffer = new byte[sizeInBytes];
+                Buffer.BlockCopy(mItems, 0, tempBuffer, 0, transferSize);
+
+                const uint FLAGS = 0U;
+
+                var slot = container.Map.Allocations[Slot];
+                var bufferInstance = container.Storage.Blocks[slot.BlockIndex];
+
+                var err = bufferInstance.DeviceMemory.MapMemory(device, slot.Offset, sizeInBytes, FLAGS, out IntPtr dest);
+                Debug.Assert(err == Result.SUCCESS);
+                Marshal.Copy(tempBuffer, 0, dest, transferSize);
+                bufferInstance.DeviceMemory.UnmapMemory(device);
+            }
+        }
+
+        public void PopulateStructs(IMgDevice device, MgOptimizedStorageContainer container)
+        {
+            // Map and copy
+            var arrayCount = mItems != null ? mItems.Length : 0;
+
+            if (mItems != null && arrayCount > 0)
+            {
+                var slot = container.Map.Allocations[Slot];
+                var bufferInstance = container.Storage.Blocks[slot.BlockIndex];
+
+                var structSize = Marshal.SizeOf(typeof(TData));
+                var allocationSize = (ulong)(structSize * arrayCount);
+                const uint FLAGS = 0U;
+
+                var err = bufferInstance.DeviceMemory.MapMemory(device, slot.Offset, allocationSize, FLAGS, out IntPtr data);
+                Debug.Assert(err == Result.SUCCESS);
+
+                var offset = 0;
+                for (var i = 0; i < arrayCount; i += 1)
+                {
+                    IntPtr dest = IntPtr.Add(data, offset);
+                    Marshal.StructureToPtr(mItems[i], dest, false);
+                    offset += structSize;
+                }
+
+                bufferInstance.DeviceMemory.UnmapMemory(device);
+            }
+        }
+
+        public MgCommandBuildOrderBufferInfo SetupVertices(MgOptimizedStorageContainer container)
+        {
+            var slot = container.Map.Allocations[Slot];
+            var bufferInstance = container.Storage.Blocks[slot.BlockIndex];
+
+            return new MgCommandBuildOrderBufferInfo
+            {
+                Buffer = bufferInstance.Buffer,
+                ByteOffset = slot.Offset,
+            };
+        }
+
+        public void SetupIndices(MgCommandBuildOrder order, MgOptimizedStorageContainer container)
+        {
+            order.Indices = SetupVertices(container);
+            var noOfElements = mItems != null ? mItems.Length : 0;
+            order.IndexCount = (uint)noOfElements;
+        }
+    }
+
     public class PostProcessQuad<TVertexData, TIndex, TUniformData> : IMgRenderableElement        
         where TVertexData : struct
         where TUniformData : struct
@@ -14,18 +123,18 @@ namespace OffscreenDemo
         private TIndex[] mIndices;
         private TUniformData[] mUniformData;
         private MgClearValue[] mClearValues;
-        private IMgOffscreenDeviceAttachment mAttachment;
+        private PostProcessQuadInstance[] mInstances;
         public PostProcessQuad(
             TVertexData[] vertices,
             TIndex[] indices,
             TUniformData[] uniformData,
-            IMgOffscreenDeviceAttachment attachment,
+            PostProcessQuadInstance[] instances,
             MgClearValue[] clearValues)
         {
             mVertices = vertices;
             mIndices = indices;
             mUniformData = uniformData;
-            mAttachment = attachment;
+            mInstances = instances;
             mClearValues = clearValues;
         }
 
@@ -158,7 +267,9 @@ namespace OffscreenDemo
             order.Count = order.Framework.Framebuffers.Length;
 
             SetupIndices(order, container);
-            SetupVertices(order, container);
+            order.Vertices = new[] {
+                SetupVertices(container),
+            };
             SetupUniforms(device, order, container);
         }
 
@@ -189,7 +300,7 @@ namespace OffscreenDemo
                         {
                             new MgDescriptorImageInfo{
                                 ImageLayout = MgImageLayout.COLOR_ATTACHMENT_OPTIMAL,
-                                ImageView = mAttachment.View,
+                                ImageView = mInstances[0].Attachment.View,
                             }
                         }
                     },
@@ -222,12 +333,12 @@ namespace OffscreenDemo
             order.IndexCount = (uint) noOfElements;
         }
 
-        private void SetupVertices(MgCommandBuildOrder order, MgOptimizedStorageContainer container)
+        private MgCommandBuildOrderBufferInfo SetupVertices( MgOptimizedStorageContainer container)
         {
             var slot = container.Map.Allocations[mVerticesSlot];
             var bufferInstance = container.Storage.Blocks[slot.BlockIndex];
 
-            order.Vertices = new MgCommandBuildOrderBufferInfo
+            return new MgCommandBuildOrderBufferInfo
             {
                 Buffer = bufferInstance.Buffer,
                 ByteOffset = slot.Offset,
@@ -272,7 +383,7 @@ namespace OffscreenDemo
                     0, new[] { order.DescriptorSets[0] },
                     null);
 
-                cmdBuf.CmdBindVertexBuffers(0, new[] { order.Vertices.Buffer }, new[] { order.Vertices.ByteOffset });
+                cmdBuf.CmdBindVertexBuffers(0, new[] { order.Vertices[0].Buffer }, new[] { order.Vertices[0].ByteOffset });
 
                 cmdBuf.CmdBindIndexBuffer(order.Indices.Buffer, order.Indices.ByteOffset, MgIndexType.UINT32);
 

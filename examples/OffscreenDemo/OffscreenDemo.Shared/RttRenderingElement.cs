@@ -155,7 +155,11 @@ namespace OffscreenDemo
             order.Count = order.Framework.Framebuffers.Length;
 
             SetupIndices(order, container);
-            SetupVertices(order, container);
+            order.Vertices = new [] 
+            {
+                SetupVertices(order, container)
+
+            };
             SetupUniforms(device, order, container);
         }
 
@@ -204,12 +208,12 @@ namespace OffscreenDemo
             order.IndexCount = (uint)mShape.IndexArray.Length;
         }
 
-        private void SetupVertices(MgCommandBuildOrder order, MgOptimizedStorageContainer container)
+        private MgCommandBuildOrderBufferInfo SetupVertices(MgCommandBuildOrder order, MgOptimizedStorageContainer container)
         {
             var slot = container.Map.Allocations[mVerticesSlot];
             var bufferInstance = container.Storage.Blocks[slot.BlockIndex];
 
-            order.Vertices = new MgCommandBuildOrderBufferInfo
+           return new MgCommandBuildOrderBufferInfo
             {
                 Buffer = bufferInstance.Buffer,
                 ByteOffset = slot.Offset,
@@ -254,7 +258,7 @@ namespace OffscreenDemo
 
                 cmdBuf.CmdBindPipeline(MgPipelineBindPoint.GRAPHICS, effect.Pipeline);
 
-                cmdBuf.CmdBindVertexBuffers(0, new[] { order.Vertices.Buffer }, new[] { order.Vertices.ByteOffset });
+                cmdBuf.CmdBindVertexBuffers(0, new[] { order.Vertices[0].Buffer }, new[] { order.Vertices[0].ByteOffset });
 
                 cmdBuf.CmdBindIndexBuffer(order.Indices.Buffer, order.Indices.ByteOffset, MgIndexType.UINT32);
 

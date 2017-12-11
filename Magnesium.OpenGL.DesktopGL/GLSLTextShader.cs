@@ -45,11 +45,6 @@ namespace Magnesium.OpenGL.DesktopGL
 				if (compileStatus != (int) All.True) {
  					throw new Exception("Shader Compilation failed for shader with the following errors: " + buffer);
 				}
-//				else {
-//					Console.WriteLine("Shader Compilation succeeded for shader '{0}', with the following log:", _shaderFilename);
-//				}
-//
-//				Console.WriteLine(buffer);
 			}
 
 			if (compileStatus != (int) All.True) 
@@ -190,96 +185,16 @@ namespace Magnesium.OpenGL.DesktopGL
 			return false;
 		}
 
-		public int CreateFragmentProgram(Stream vsFile, Stream psFile, string shaderPrefix)
-		{
-			using (var vertex = new StreamReader(vsFile))
-			using (var frag = new StreamReader(psFile))
-			{
-				var vertexShaderString = vertex.ReadToEnd ();
-				int vs = CompileShader(ShaderType.VertexShader, vertexShaderString, shaderPrefix);
-
-				var fragmentShaderString = frag.ReadToEnd ();
-				int fs = CompileShader(ShaderType.FragmentShader, fragmentShaderString, shaderPrefix);
-
-				// If any are 0, dump out early.
-				if ((vs * fs) == 0) {
-					return 0;
-				}
-
-				int retProgram = LinkShaders(vs, fs);
-
-				// Flag these now, they're either attached (linked in) and will be cleaned up with the link, or the
-				// link failed and we're about to lose track of them anyways.
-				//GL.DeleteShader(fs);
-				//GL.DeleteShader(vs);
-
-				return retProgram;
-			}
-		}
-
-		public int CreateComputeShader(Stream fs, string shaderPrefix)
-		{
-			using (var vertex = new StreamReader (fs))
-			{
-				var vertexShaderString = vertex.ReadToEnd ();
-				int cs = CompileShader (ShaderType.ComputeShader, vertexShaderString, shaderPrefix);
-
-				int retProgram = LinkShaders(cs);
-				//GL.DeleteShader(cs);
-				return retProgram;
-			}
-		}
-
-		#region async
-
-		public async Task<int> CreateFragmentProgramAsync(Stream vsFile, Stream psFile, string shaderPrefix)
-		{
-			var vsTask = CompileShaderFromFileAsync(ShaderType.VertexShader, vsFile, shaderPrefix);
-			var fsTask = CompileShaderFromFileAsync(ShaderType.FragmentShader, psFile, shaderPrefix);
-
-			int[] shaders = await Task.WhenAll (new []{ vsTask, fsTask });
-
-			int retProgram = LinkShaders(shaders);
-
-			// Flag these now, they're either attached (linked in) and will be cleaned up with the link, or the
-			// link failed and we're about to lose track of them anyways.	
-			foreach (var s in shaders)
-			{
-				GL.DeleteShader(s);					
-			}
-
-			return retProgram;
-		}
-
-		private async static Task<int> CompileShaderFromFileAsync(ShaderType type, Stream fs, string shaderPrefix)
-		{
-			using (var sr = new StreamReader (fs))
-			{
-				var fileContents = await sr.ReadToEndAsync ();
-				return CompileShader (type, fileContents, shaderPrefix);
-			}
-		}
-
-		#endregion
-
 		internal int LinkShaders(params int[] shaders)
 		{
 			int retVal = mEntrypoint.CreateProgram ();
 			foreach (var shader in shaders)
 			{
 				mEntrypoint.AttachShaderToProgram(retVal, shader);
-				//GL.AttachShader (retVal, shader);
 			}
 			mEntrypoint.CompileProgram(retVal);
 
 			bool isLinked = mEntrypoint.IsCompiled(retVal);
-			//int linkStatus = 0;
-			//GL.GetProgram(retVal,GetProgramParameterName.LinkStatus, out linkStatus);
-			// return (linkStatus == (int)All.True)
-
-			//int glinfoLogLength = 0;
-			//GL.GetProgram(retVal, GetProgramParameterName.InfoLogLength, out glinfoLogLength);
-			// return (glinfoLogLength > 1)
 
 			bool hasMessages = mEntrypoint.HasCompilerMessages(retVal);
 
@@ -296,9 +211,6 @@ namespace Magnesium.OpenGL.DesktopGL
 			}
 
 			if (!isLinked) {
-				//		        #ifndef POSIX
-				//		            assert(!"Shader failed linking, here's an assert to break you in the debugger.");
-				//		        #endif
 				mEntrypoint.DeleteProgram(retVal);
 				retVal = 0;
 			}

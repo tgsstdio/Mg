@@ -217,11 +217,20 @@ namespace OffscreenDemo
                 }
             };
 
+            var instances = new[]
+            {
+                new PostProcessQuadInstance
+                {
+                    Attachment = mColorAttachment,
+                    Offset = new TkVector3(-2.2f, 0f, 0f),
+                }
+            };
+
             var quads = new PostProcessQuad<QuadVertexData, uint, PostProcessUBO>(
                 vertexData,
                 indices,
                 uniforms,
-                mColorAttachment,
+                instances,
                 new MgClearValue[]
                 {
                     MgClearValue.FromColorAndFormat(
