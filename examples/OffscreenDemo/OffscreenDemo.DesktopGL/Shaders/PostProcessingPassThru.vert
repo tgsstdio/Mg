@@ -18,7 +18,7 @@ void vertFunc(void)
 {
   texCoords = in_uv;
   
-  vec4 adjusted = vec4(in_position, 0, 1) + vec4(ubo.offset.xyz, 0);
+  vec4 adjusted = vec4(in_position, 0, 1) + vec4(ubo.offset.xyz, 1);
 
   gl_Position = ubo.projection_matrix * ubo.modelview_matrix * adjusted;
   gl_Position.y *= -1.0;
