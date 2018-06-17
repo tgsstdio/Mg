@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>Magnesium.PresentationSurfaces.OpenTK</id>
-    <version>1.0.4</version>
+    <version>1.0.5-alpha</version>
     <authors>David Young</authors>
     <owners>David Young</owners>
     <licenseUrl>https://github.com/tgsstdio/Mg/blob/master/LICENSE.txt</licenseUrl>
