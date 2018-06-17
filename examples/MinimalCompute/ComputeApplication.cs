@@ -73,39 +73,44 @@ namespace MinimalCompute
             // Get the color data from the buffer, and cast it to bytes.
             // We save the data to a vector.
             const int byteLength = WIDTH * HEIGHT * 4;
-            var image = new byte[byteLength];
+
+            var src = new byte[byteLength];
             var stride = Marshal.SizeOf(typeof(Pixel));
-            var offset = 0;
+            var srcOffset = 0;
             for (int i = 0; i < WIDTH * HEIGHT; i += 1)
             {
-                IntPtr localPos = IntPtr.Add(mappedMemory, offset);
+                IntPtr localPos = IntPtr.Add(mappedMemory, srcOffset);
 
                 var p = (Pixel) Marshal.PtrToStructure(localPos, typeof(Pixel));
 
-                image[i] = (byte)(255.0f * p.a);
-                image[i + 1] = (byte)(255.0f * p.r);
-                image[i + 2] =  (byte)(255.0f * p.g);
-                image[i + 3] = (byte)(255.0f * p.b);
-
-                offset += stride;
+                var dstOffset = i * 4;
+                src[dstOffset + 0] = (byte)(255.0f * p.r);
+                src[dstOffset + 1] = (byte)(255.0f * p.g);
+                src[dstOffset + 2] = (byte)(255.0f * p.b);
+                src[dstOffset + 3] = (byte)(255.0f * p.a);
+                srcOffset += stride;
             }
 
             // Done reading, so unmap.
             mDeviceMemory.UnmapMemory(device);
 
-            var data = Marshal.AllocHGlobal(byteLength);       
+            var pinHandle = GCHandle.Alloc(src, GCHandleType.Pinned); //Pin the image data
+            var scan0 = pinHandle.AddrOfPinnedObject();
 
-            var b = new System.Drawing.Bitmap
+            using (var b = new System.Drawing.Bitmap
                 (
                     WIDTH,
                     HEIGHT,
-                    0,
+                    4 * WIDTH,
                     System.Drawing.Imaging.PixelFormat.Format32bppArgb,
-                    data
-                );
-            b.Save("mandelbrot.png");
+                    scan0
+                )
+            )
+            {
+                b.Save("mandelbrot.png", System.Drawing.Imaging.ImageFormat.Png);
 
-            Marshal.FreeHGlobal(data);
+                pinHandle.Free();
+            }
         }
 
         static void VK_CHECK_RESULT(Result err) 																				
@@ -320,10 +325,8 @@ namespace MinimalCompute
             );
 
 
-           using (var fs = File.Open("shaders/shader.comp.spv", FileMode.Open))
+           using (var fs = File.Open("shaders/green.comp.spv", FileMode.Open))
            {
-
-
                 VK_CHECK_RESULT(
                     device.CreateShaderModule(
                         new MgShaderModuleCreateInfo
@@ -508,19 +511,13 @@ namespace MinimalCompute
             /*
             Clean up all Vulkan Resources. 
             */
-
             mDeviceMemory.FreeMemory(device, null);
             mBuffer.DestroyBuffer(device, null);
-            
-
-           // vkDestroyShaderModule(device, computeShaderModule, NULL);
-            vkDestroyDescriptorPool(device, descriptorPool, NULL);
-            vkDestroyDescriptorSetLayout(device, descriptorSetLayout, NULL);
-            vkDestroyPipelineLayout(device, pipelineLayout, NULL);
-            vkDestroyPipeline(device, pipeline, NULL);
-            vkDestroyCommandPool(device, commandPool, NULL);
-            vkDestroyDevice(device, NULL);
-            vkDestroyInstance(instance, NULL);
+            mDescriptorPool.DestroyDescriptorPool(device, null);
+            mDescSetLayout.DestroyDescriptorSetLayout(device, null);
+            mPipelineLayout.DestroyPipelineLayout(device, null);
+            mComputePipeline.DestroyPipeline(device, null);
+            mCommandPool.DestroyCommandPool(device, null);
         }
 
 
@@ -536,7 +533,7 @@ namespace MinimalCompute
                     driver.Initialize(new MgApplicationInfo
                     {
                         ApiVersion = MgApplicationInfo.GenerateApiVersion(1, 0, 17),
-                        ApplicationName = "InstanceDemo",
+                        ApplicationName = "MinimalCompute",
                         ApplicationVersion = 1,
                         EngineName = "Magnesium.Vulkan",
                         EngineVersion = 1,
@@ -549,81 +546,33 @@ namespace MinimalCompute
                         {
                             Console.WriteLine(nameof(logicalDevice.Queues.Length) + " : " + logicalDevice.Queues.Length);
 
-                            using (var partition = logicalDevice.Queues[0].CreatePartition(0))
-                            {
- 
+                            var queueFamily = logicalDevice.Queues[0];
+                            using (var partition = queueFamily.CreatePartition(0))
+                            { 
                                 var device = partition.Device;
 
-                                var err0 = device.CreateDescriptorSetLayout(
-                                    new MgDescriptorSetLayoutCreateInfo
-                                    {
-                                        Bindings = null,
-                                    },
-                                    null,
-                                    out IMgDescriptorSetLayout dSetLayout
-                                );
+                                // Buffer size of the storage buffer that will contain the rendered mandelbrot set.
+                                var bufferSize = (ulong)(Marshal.SizeOf(typeof(Pixel)) * WIDTH * HEIGHT);
 
-                                if (err0 != Result.SUCCESS)
-                                {
-                                    throw new Exception("CreateDescriptorSetLayout err:" + err0);
-                                }
+                                // Initialize vulkan:
+                                //createInstance();
+                                //findPhysicalDevice();
+                                //createDevice();
+                                CreateBuffer(partition, bufferSize);
+                                CreateDescriptorSetLayout(device);
+                                CreateDescriptorSet(device, bufferSize);
+                                CreateComputePipeline(device);
+                                CreateCommandBuffer(device, queueFamily.QueueFamilyIndex);
 
-                                var err1 = device.CreatePipelineLayout(
-                                    new MgPipelineLayoutCreateInfo
-                                    {
-                                        SetLayouts = new[]
-                                        {
-                                        dSetLayout,
-                                        }
-                                    },
-                                    null,
-                                    out IMgPipelineLayout pLayout);
+                                // Finally, run the recorded command buffer.
+                                RunCommandBuffer(device, partition.Queue);
 
-                                if (err1 != Result.SUCCESS)
-                                {
-                                    throw new Exception("CreatePipelineLayout err:" + err1);
-                                }
+                                // The former command rendered a mandelbrot set to a buffer.
+                                // Save that buffer as a png on disk.
+                                SaveRenderedImage(device, bufferSize);
 
-                                IMgShaderModule sModule;
-                                using (var fs = File.Open("", FileMode.Open))
-                                {
-                                    var err2 = device.CreateShaderModule(
-                                        new MgShaderModuleCreateInfo
-                                        {
-                                            Code = fs,
-                                            CodeSize = new UIntPtr((ulong)fs.Length),
-                                        }
-                                        , null
-                                        , out sModule
-                                    );
-                                    if (err2 != Result.SUCCESS)
-                                    {
-                                        throw new Exception("CreateShaderModule err:" + err2);
-                                    }
-                                }
-
-                                var computeParams = new MgComputePipelineCreateInfo
-                                {
-                                    Stage = new MgPipelineShaderStageCreateInfo
-                                    {
-                                        Name = "",
-                                        Module = sModule,
-                                        Stage = MgShaderStageFlagBits.COMPUTE_BIT,
-                                    },
-                                    Flags = 0,
-                                    Layout = pLayout,
-                                    ThreadsPerWorkgroup = new MgVec3Ui { X = 1U, Y = 1U, Z = 1U },
-                                };
-
-                                var err3 = device.CreateComputePipelines(null, new[] { computeParams }, null, out IMgPipeline[] pipelines);
-                                if (err3 != Result.SUCCESS)
-                                {
-                                    throw new Exception("CreateComputePipelines err:" + err3);
-                                }
-
-                                pipelines[0].DestroyPipeline(device, null);
-                                pLayout.DestroyPipelineLayout(device, null);
-                                dSetLayout.DestroyDescriptorSetLayout(device, null);
+                                // Clean up all vulkan resources.
+                                Cleanup(device);
                             }
                         }
                     }
