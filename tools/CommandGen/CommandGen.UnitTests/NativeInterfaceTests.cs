@@ -13,7 +13,7 @@ namespace CommandGen.UnitTests
 			var native = new VkNativeInterface { Name = "vkCreateInstance", ReturnType = "void" };
 			native.UseUnsafe = false;
 
-			Assert.AreEqual("internal external static void vkCreateInstance();", native.GetImplementation());
+			Assert.AreEqual("internal extern static void vkCreateInstance();", native.GetImplementation());
 		}
 
 		[TestCase]
@@ -33,7 +33,7 @@ namespace CommandGen.UnitTests
 					UseOut = true,
 				}
 			);
-			Assert.AreEqual("internal external static unsafe void vkCreateInstance(IntPtr* instance);", native.GetImplementation());
+			Assert.AreEqual("internal extern static unsafe void vkCreateInstance(IntPtr* instance);", native.GetImplementation());
 		}
 
 		[TestCase]
@@ -63,7 +63,7 @@ namespace CommandGen.UnitTests
 					IsBlittable = true,
 				}
 			);
-			Assert.AreEqual("internal external static void vkCreateInstance(InstanceCreateInfo createInfo, ref IntPtr instance);", native.GetImplementation());
+			Assert.AreEqual("internal extern static void vkCreateInstance(InstanceCreateInfo createInfo, ref IntPtr instance);", native.GetImplementation());
 		}
 
 		[TestCase]
@@ -80,7 +80,7 @@ namespace CommandGen.UnitTests
 				}
 			);
 
-			Assert.AreEqual("internal external static void vkCreateInstance(ref IntPtr instance);", native.GetImplementation());
+			Assert.AreEqual("internal extern static void vkCreateInstance(ref IntPtr instance);", native.GetImplementation());
 		}
 
 		[TestCase]
@@ -97,7 +97,7 @@ namespace CommandGen.UnitTests
 				}
 			);
 
-			Assert.AreEqual("internal external static unsafe void vkCreateInstance(UInt64* instance);", native.GetImplementation());
+			Assert.AreEqual("internal extern static unsafe void vkCreateInstance(UInt64* instance);", native.GetImplementation());
 		}
 
 		[TestCase]
@@ -130,7 +130,7 @@ namespace CommandGen.UnitTests
 				}
 			);
 
-			Assert.AreEqual("internal external static Result vkEnumeratePhysicalDevices(IntPtr instance, ref UInt32 pPhysicalDeviceCount, ref IntPtr pPhysicalDevices);", native.GetImplementation());
+			Assert.AreEqual("internal extern static Result vkEnumeratePhysicalDevices(IntPtr instance, ref UInt32 pPhysicalDeviceCount, ref IntPtr pPhysicalDevices);", native.GetImplementation());
 		}
 
 		[TestCase]
@@ -158,7 +158,7 @@ namespace CommandGen.UnitTests
 				}
 			);
 
-			Assert.AreEqual("internal external static UInt32 vkEnumerateInstanceLayerProperties(ref UInt32 pPropertyCount, [In, Out] LayerProperties[] pProperties);", native.GetImplementation());
+			Assert.AreEqual("internal extern static UInt32 vkEnumerateInstanceLayerProperties(ref UInt32 pPropertyCount, [In, Out] LayerProperties[] pProperties);", native.GetImplementation());
 		}
 
 		[TestCase]
@@ -186,7 +186,7 @@ namespace CommandGen.UnitTests
 					UseOut = false,
 				}
 			);
-			Assert.AreEqual("internal external static void vkCmdSetBlendConstants(IntPtr commandBuffer, [MarshalAs(UnmanagedType.LPArray, SizeConst = 4)] float[] blendConstants);", native.GetImplementation());
+			Assert.AreEqual("internal extern static void vkCmdSetBlendConstants(IntPtr commandBuffer, [MarshalAs(UnmanagedType.LPArray, SizeConst = 4)] float[] blendConstants);", native.GetImplementation());
 		}
 
 		[TestCase]
@@ -211,7 +211,7 @@ namespace CommandGen.UnitTests
 					IsOptional = true,
 				});
 
-			Assert.AreEqual("internal external static void vkDestroyInstance(IntPtr instance, IntPtr pAllocator);", native.GetImplementation());
+			Assert.AreEqual("internal extern static void vkDestroyInstance(IntPtr instance, IntPtr pAllocator);", native.GetImplementation());
 		}
 
 		[TestCase]
@@ -237,7 +237,7 @@ namespace CommandGen.UnitTests
 					IsOptional = true,
 				});
 
-			Assert.AreEqual("internal external static Result vkQueuePresentKHR(IntPtr queue, [In, Out] PresentInfoKhr pPresentInfo);", native.GetImplementation());
+			Assert.AreEqual("internal extern static Result vkQueuePresentKHR(IntPtr queue, [In, Out] PresentInfoKhr pPresentInfo);", native.GetImplementation());
 		}
 
 		[TestCase]
@@ -267,7 +267,7 @@ namespace CommandGen.UnitTests
 
 			// TODO : 
 
-			Assert.AreEqual("internal external static void vkGetPhysicalDeviceMemoryProperties(IntPtr physicalDevice, [In, Out] PhysicalDeviceMemoryProperties pMemoryProperties);", native.GetImplementation());
+			Assert.AreEqual("internal extern static void vkGetPhysicalDeviceMemoryProperties(IntPtr physicalDevice, [In, Out] PhysicalDeviceMemoryProperties pMemoryProperties);", native.GetImplementation());
 		}
 	}
 }

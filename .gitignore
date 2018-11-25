@@ -105,3 +105,5 @@ examples/*/*/[Pp]ackages/*
 */[Pp]ackages/*
 */.vs/*
 *.ide
+tools/*/.vs/*
+tools/*/*/[Pp]ackages/*

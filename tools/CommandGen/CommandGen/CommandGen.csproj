@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -40,6 +40,7 @@
     <Compile Include="VkFunctionArgument.cs" />
     <Compile Include="VkMethodParameter.cs" />
     <Compile Include="VkFunctionCall.cs" />
+    <Compile Include="VkTypeAliasInfo.cs" />
     <Compile Include="VkVariableDeclaration.cs" />
     <Compile Include="VkMethodSignature.cs" />
     <Compile Include="VkNativeInterface.cs" />
@@ -63,19 +64,16 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="TestData\" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Magnesium, Version=5.2.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Magnesium.5.2.8\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml.Serialization" />
     <Reference Include="System" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\MonoGame\Magnesium\Magnesium.csproj">
-      <Project>{9F9AC448-9D17-43E5-8889-285426290891}</Project>
-      <Name>Magnesium</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
