@@ -52,8 +52,16 @@ namespace CommandGen
 				return mStructures;
 			}
 		}
-        
-		public void Inspect(XElement root)
+
+        public IDictionary<string, List<VkEnumExtensionInfo>> EnumExtensions
+        {
+            get
+            {
+                return mEnumExtensions;
+            }
+        }
+
+        public void Inspect(XElement root)
         {
             LearnExtensions(root);
             ExtractEnumConstants(root, "API Constants", StoreAPIConstants);
@@ -66,14 +74,14 @@ namespace CommandGen
 
         private void InspectStructureTypes(XElement root)
         {
-            ExtractEnumConstants(root, "VkStructureType", ParseVkStructureType);
+            // ExtractEnumConstants(root, "VkStructureType", ParseVkStructureType);
 
-            foreach (var alias in mEnumAliases)
-            {
-                ParseVkStructureType(alias.Name, alias.Alias);
-            }
+            //foreach (var alias in mEnumAliases)
+            //{
+            //    ParseVkStructureType(alias.Name, alias.Alias);
+            //}
         }
-
+        /*
         public static List<VkTypeAliasInfo> ExtractTypeAliases(XElement top)
         {
             var typeAliases = new List<VkTypeAliasInfo>();
@@ -107,6 +115,7 @@ namespace CommandGen
             }
             return typeAliases;
         }    
+        */
 
     private Dictionary<string, string> mVkStructureKeys = new Dictionary<string, string>();
 		public void ParseVkStructureType(string attr, string value)
@@ -489,9 +498,9 @@ namespace CommandGen
 					container.Members.Add(WriteEnumField(e, csName));
 				}
 
-				if (enumExtensions.ContainsKey(csName))
+				if (mEnumExtensions.ContainsKey(csName))
 				{
-					foreach (var info in enumExtensions[csName])
+					foreach (var info in mEnumExtensions[csName])
 					{
 						container.Members.Add(WriteExtendedEnumField(info.Name, info.Value, csName));
 					}
@@ -515,37 +524,67 @@ namespace CommandGen
 			var extensions = from e in extensionElement.Element("require").Elements("enum") where e.Attribute("extends") != null select e;
 			int number = Int32.Parse(extensionElement.Attribute("number").Value);
 			foreach (var element in extensions)
-			{
-				string enumName = GetTypeCsName(element.Attribute("extends").Value, "enum");
+            {
+                string enumName = GetTypeCsName(element.Attribute("extends").Value, "enum");
 
-                var nameAttr = element.Attribute("name");                  
+                var nameAttr = element.Attribute("name");
 
-                if (!enumExtensions.ContainsKey(enumName))
-                    enumExtensions[enumName] = new List<VkEnumExtensionInfo>();
+                enumName = AppendEnumMember(number, element, enumName, nameAttr);
 
-                enumExtensions[enumName].Add(
+                var aliasAttr = element.Attribute("alias");
+
+                string memberName = nameAttr?.Value;
+                string memberAlias = aliasAttr?.Value;
+                AppendEnumMemberAlias(enumName, memberName, memberAlias);
+            }
+        }
+
+        private string AppendEnumMember(int number, XElement element, string enumName, XAttribute nameAttr)
+        {
+            SetupEnumExtensionEntry(enumName);
+
+            mEnumExtensions[enumName].Add(
+                new VkEnumExtensionInfo
+                {
+                    Name = nameAttr.Value,
+                    Value = EnumExtensionValue(element, number, ref enumName),
+                }
+            );
+            return enumName;
+        }
+
+        private void SetupEnumExtensionEntry(string enumName)
+        {
+            if (!mEnumExtensions.ContainsKey(enumName))
+                mEnumExtensions[enumName] = new List<VkEnumExtensionInfo>();
+        }
+
+        public void AppendEnumMemberAlias(string enumName, string memberName, string memberAlias)
+        {
+            if (enumName == null)
+            {
+                throw new ArgumentNullException(nameof(enumName));
+            }
+
+            if (memberName == null)
+            {
+                throw new ArgumentNullException(nameof(memberName));
+            }
+
+            SetupEnumExtensionEntry(enumName);
+
+            if (!string.IsNullOrEmpty(memberAlias))
+            {
+                // add secondary alias
+                mEnumExtensions[enumName].Add(
                     new VkEnumExtensionInfo
                     {
-                        Name = nameAttr.Value,
-                        Value = EnumExtensionValue(element, number, ref enumName),
+                        Name  = ExtractStandardizedEnum(memberAlias, enumName),
+                        Value = ExtractStandardizedEnum(memberName, enumName),
                     }
                 );
-                
-
-                var enumAlias = element.Attribute("alias");
-                if (enumAlias != null)
-                {
-                    // add secondary alias
-                    enumExtensions[enumName].Add(
-                        new VkEnumExtensionInfo
-                        {
-                            Name = nameAttr.Value,
-                            Value = ExtractStandardizedEnum(enumAlias.Value, enumName),
-                        }
-                    );
-                }
             }
-		}
+        }
 
         class VkEnumAlias
         {
@@ -586,10 +625,10 @@ namespace CommandGen
             
             if (extendsAttribute != null)
             {
-                if (extendsAttribute.Value == "VkStructureType")
-                {
-                    return GetTypeCsName(extendsAttribute.Value);
-                }
+                //if (extendsAttribute.Value == "VkStructureType")
+                //{
+                //    return GetTypeCsName(extendsAttribute.Value);
+                //}
 
                 int direction = 1;
                 var dirAttr = element.Attribute("dir");
@@ -628,7 +667,7 @@ namespace CommandGen
             return (direction * (1000000000 + (number - 1) * 1000 + offset));
         }
 
-        Dictionary<string, List<VkEnumExtensionInfo>> enumExtensions = new Dictionary<string, List<VkEnumExtensionInfo>>();
+        Dictionary<string, List<VkEnumExtensionInfo>> mEnumExtensions = new Dictionary<string, List<VkEnumExtensionInfo>>();
 
 		string FormatFlagValue(int pos)
 		{
@@ -647,16 +686,15 @@ namespace CommandGen
                 {
                     value = FormatFlagValue(Convert.ToInt32(bitPosAttr.Value));
                 }
-                /*
+
                 else if (aliasAttr != null)
                 {
-                    value = aliasAttr.Value;
+                    value = ExtractStandardizedEnum(aliasAttr.Value, csEnumName);
                 }
                 else
                 {
                     throw new Exception("valueAttr enum value : " + csEnumName);
                 }
-                */
             }
             else
                 value = valueAttr.Value;
@@ -737,7 +775,7 @@ namespace CommandGen
             bool isExtensionField = false;
             string extension = null;
 
-            if (prefix.StartsWith("Vk"))
+            if (prefix.StartsWith("VK", StringComparison.OrdinalIgnoreCase))
             {
                 prefix = prefix.Substring(2);
             }
@@ -769,27 +807,27 @@ namespace CommandGen
             {
                 switch (csEnumName)
                 {
-                    case "ImageType":
+                    case "VkImageType":
                         fName = "Image" + fName;
                         break;
-                    case "ImageViewType":
+                    case "VkImageViewType":
                         fName = "View" + fName;
                         break;
-                    case "QueryResultFlags":
+                    case "VkQueryResultFlags":
                         fName = "Result" + fName;
                         break;
-                    case "SampleCountFlags":
+                    case "VkSampleCountFlags":
                         fName = "Count" + fName;
                         break;
                 }
             }
-            if (suffix != null)
-            {
-                if (fName.EndsWith(suffix, StringComparison.InvariantCulture))
-                    fName = fName.Substring(0, fName.Length - suffix.Length);
-                else if (isExtensionField && fName.EndsWith(suffix + extension, StringComparison.InvariantCulture))
-                    fName = fName.Substring(0, fName.Length - suffix.Length - extension.Length) + extension;
-            }
+            //if (suffix != null)
+            //{
+            //    if (fName.EndsWith(suffix, StringComparison.InvariantCulture))
+            //        fName = fName.Substring(0, fName.Length - suffix.Length);
+            //    else if (isExtensionField && fName.EndsWith(suffix + extension, StringComparison.InvariantCulture))
+            //        fName = fName.Substring(0, fName.Length - suffix.Length - extension.Length) + extension;
+            //}
 
             return fName;
         }
