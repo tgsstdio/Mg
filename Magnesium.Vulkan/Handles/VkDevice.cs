@@ -55,14 +55,14 @@ namespace Magnesium.Vulkan
 			pQueue = new VkQueue(queueHandle);
 		}
 
-		public Result DeviceWaitIdle()
+		public MgResult DeviceWaitIdle()
 		{
 			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			return Interops.vkDeviceWaitIdle(Handle);
 		}
 
-		public Result AllocateMemory(MgMemoryAllocateInfo pAllocateInfo, IMgAllocationCallbacks allocator, out IMgDeviceMemory pMemory)
+		public MgResult AllocateMemory(MgMemoryAllocateInfo pAllocateInfo, IMgAllocationCallbacks allocator, out IMgDeviceMemory pMemory)
 		{
 			if (pAllocateInfo == null)
 				throw new ArgumentNullException(nameof(pAllocateInfo));
@@ -91,7 +91,7 @@ namespace Magnesium.Vulkan
 			}
 		}
 
-		public Result FlushMappedMemoryRanges(MgMappedMemoryRange[] pMemoryRanges)
+		public MgResult FlushMappedMemoryRanges(MgMappedMemoryRange[] pMemoryRanges)
 		{
 			if (pMemoryRanges == null)
 				throw new ArgumentNullException(nameof(pMemoryRanges));
@@ -124,7 +124,7 @@ namespace Magnesium.Vulkan
 			}
 		}
 
-		public Result InvalidateMappedMemoryRanges(MgMappedMemoryRange[] pMemoryRanges)
+		public MgResult InvalidateMappedMemoryRanges(MgMappedMemoryRange[] pMemoryRanges)
 		{
 			if (pMemoryRanges == null)
 				throw new ArgumentNullException(nameof(pMemoryRanges));
@@ -235,7 +235,7 @@ namespace Magnesium.Vulkan
 			}
 		}
 
-		public Result CreateFence(MgFenceCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgFence fence)
+		public MgResult CreateFence(MgFenceCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgFence fence)
 		{
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
@@ -257,7 +257,7 @@ namespace Magnesium.Vulkan
 			return result;
 		}
 
-		public Result ResetFences(IMgFence[] pFences)
+		public MgResult ResetFences(IMgFence[] pFences)
 		{
 			if (pFences == null)
 				throw new ArgumentNullException(nameof(pFences));
@@ -277,7 +277,7 @@ namespace Magnesium.Vulkan
 			return Interops.vkResetFences(Handle, fenceCount, fenceHandles);
 		}
 
-		public Result GetFenceStatus(IMgFence fence)
+		public MgResult GetFenceStatus(IMgFence fence)
 		{
 			if (fence == null)
 				throw new ArgumentNullException(nameof(fence));
@@ -290,7 +290,7 @@ namespace Magnesium.Vulkan
 			return Interops.vkGetFenceStatus(Handle, bFence.Handle);
 		}
 
-		public Result WaitForFences(IMgFence[] pFences, bool waitAll, ulong timeout)
+		public MgResult WaitForFences(IMgFence[] pFences, bool waitAll, ulong timeout)
 		{
 			if (pFences == null)
 				throw new ArgumentNullException(nameof(pFences));
@@ -310,7 +310,7 @@ namespace Magnesium.Vulkan
 			return Interops.vkWaitForFences(Handle, fenceCount, fenceHandles, VkBool32.ConvertTo(waitAll), timeout);
 		}
 
-		public Result CreateSemaphore(MgSemaphoreCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgSemaphore pSemaphore)
+		public MgResult CreateSemaphore(MgSemaphoreCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgSemaphore pSemaphore)
 		{
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
@@ -333,7 +333,7 @@ namespace Magnesium.Vulkan
 			return result;
 		}
 
-		public Result CreateEvent(MgEventCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgEvent @event)
+		public MgResult CreateEvent(MgEventCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgEvent @event)
 		{
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
@@ -356,7 +356,7 @@ namespace Magnesium.Vulkan
 			return result;
 		}
 
-		public Result CreateQueryPool(MgQueryPoolCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgQueryPool queryPool)
+		public MgResult CreateQueryPool(MgQueryPoolCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgQueryPool queryPool)
 		{
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
@@ -382,7 +382,7 @@ namespace Magnesium.Vulkan
 			return result;
 		}
 
-		public Result GetQueryPoolResults(IMgQueryPool queryPool, uint firstQuery, uint queryCount, IntPtr dataSize, IntPtr pData, ulong stride, MgQueryResultFlagBits flags)
+		public MgResult GetQueryPoolResults(IMgQueryPool queryPool, uint firstQuery, uint queryCount, IntPtr dataSize, IntPtr pData, ulong stride, MgQueryResultFlagBits flags)
 		{
 			if (queryPool == null)
 				throw new ArgumentNullException(nameof(queryPool));
@@ -395,7 +395,7 @@ namespace Magnesium.Vulkan
 			return Interops.vkGetQueryPoolResults(Handle, bQueryPool.Handle, firstQuery, queryCount, dataSize, pData, stride, (VkQueryResultFlags)flags);
 		}
 
-		public Result CreateBuffer(MgBufferCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgBuffer pBuffer)
+		public MgResult CreateBuffer(MgBufferCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgBuffer pBuffer)
 		{
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
@@ -442,7 +442,7 @@ namespace Magnesium.Vulkan
 			}
 		}
 
-		public Result CreateBufferView(MgBufferViewCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgBufferView pView)
+		public MgResult CreateBufferView(MgBufferViewCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgBufferView pView)
 		{
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
@@ -470,7 +470,7 @@ namespace Magnesium.Vulkan
 			return result;
 		}
 
-		public Result CreateImage(MgImageCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgImage pImage)
+		public MgResult CreateImage(MgImageCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgImage pImage)
 		{
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
@@ -538,7 +538,7 @@ namespace Magnesium.Vulkan
 			pLayout = layout;
 		}
 
-		public Result CreateImageView(MgImageViewCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgImageView pView)
+		public MgResult CreateImageView(MgImageViewCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgImageView pView)
 		{
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
@@ -574,7 +574,7 @@ namespace Magnesium.Vulkan
 			return result;
 		}
 
-		public Result CreateShaderModule(MgShaderModuleCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgShaderModule pShaderModule)
+		public MgResult CreateShaderModule(MgShaderModuleCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgShaderModule pShaderModule)
 		{
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
@@ -616,7 +616,7 @@ namespace Magnesium.Vulkan
 			}
 		}
 
-		public Result CreatePipelineCache(MgPipelineCacheCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgPipelineCache pPipelineCache)
+		public MgResult CreatePipelineCache(MgPipelineCacheCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgPipelineCache pPipelineCache)
 		{
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
@@ -640,7 +640,7 @@ namespace Magnesium.Vulkan
 			return result;
 		}
 
-		public Result GetPipelineCacheData(IMgPipelineCache pipelineCache, out byte[] pData)
+		public MgResult GetPipelineCacheData(IMgPipelineCache pipelineCache, out byte[] pData)
 		{
 			if (pipelineCache == null)
 				throw new ArgumentNullException(nameof(pipelineCache));
@@ -653,7 +653,7 @@ namespace Magnesium.Vulkan
 			UIntPtr dataSize = UIntPtr.Zero;
 			var first = Interops.vkGetPipelineCacheData(Handle, bPipelineCache.Handle, ref dataSize, IntPtr.Zero);
 
-			if (first != Result.SUCCESS)
+			if (first != MgResult.SUCCESS)
 			{
 				pData = null;
 				return first;
@@ -672,7 +672,7 @@ namespace Magnesium.Vulkan
 			}
 		}
 
-		public Result MergePipelineCaches(IMgPipelineCache dstCache, IMgPipelineCache[] pSrcCaches)
+		public MgResult MergePipelineCaches(IMgPipelineCache dstCache, IMgPipelineCache[] pSrcCaches)
 		{
 			if (pSrcCaches == null)
 				throw new ArgumentNullException(nameof(pSrcCaches));			
@@ -695,7 +695,7 @@ namespace Magnesium.Vulkan
 			return Interops.vkMergePipelineCaches(Handle, bDstCache.Handle, srcCacheCount, cacheHandles);
 		}
 
-		public Result CreateGraphicsPipelines(IMgPipelineCache pipelineCache, MgGraphicsPipelineCreateInfo[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgPipeline[] pPipelines)
+		public MgResult CreateGraphicsPipelines(IMgPipelineCache pipelineCache, MgGraphicsPipelineCreateInfo[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgPipeline[] pPipelines)
 		{
 			if (pCreateInfos == null)
 				throw new ArgumentNullException(nameof(pCreateInfos));
@@ -1204,7 +1204,7 @@ namespace Magnesium.Vulkan
 			}
 		}
 
-		public Result CreateComputePipelines(IMgPipelineCache pipelineCache, MgComputePipelineCreateInfo[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgPipeline[] pPipelines)
+		public MgResult CreateComputePipelines(IMgPipelineCache pipelineCache, MgComputePipelineCreateInfo[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgPipeline[] pPipelines)
 		{
 			if (pCreateInfos == null)
 				throw new ArgumentNullException(nameof(pCreateInfos));
@@ -1328,7 +1328,7 @@ namespace Magnesium.Vulkan
 			return pStage;
 		}
 
-		public Result CreatePipelineLayout(MgPipelineLayoutCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgPipelineLayout pPipelineLayout)
+		public MgResult CreatePipelineLayout(MgPipelineLayoutCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgPipelineLayout pPipelineLayout)
 		{
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
@@ -1413,7 +1413,7 @@ namespace Magnesium.Vulkan
 			}
 		}
 
-		public Result CreateSampler(MgSamplerCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgSampler pSampler)
+		public MgResult CreateSampler(MgSamplerCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgSampler pSampler)
 		{
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
@@ -1450,7 +1450,7 @@ namespace Magnesium.Vulkan
 			return result;
 		}
 
-		public Result CreateDescriptorSetLayout(MgDescriptorSetLayoutCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDescriptorSetLayout pSetLayout)
+		public MgResult CreateDescriptorSetLayout(MgDescriptorSetLayoutCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDescriptorSetLayout pSetLayout)
 		{
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
@@ -1543,7 +1543,7 @@ namespace Magnesium.Vulkan
 			}
 		}
 
-		public Result CreateDescriptorPool(MgDescriptorPoolCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDescriptorPool pDescriptorPool)
+		public MgResult CreateDescriptorPool(MgDescriptorPoolCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDescriptorPool pDescriptorPool)
 		{
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
@@ -1598,7 +1598,7 @@ namespace Magnesium.Vulkan
 			}
 		}
 
-		public Result AllocateDescriptorSets(MgDescriptorSetAllocateInfo pAllocateInfo, out IMgDescriptorSet[] pDescriptorSets)
+		public MgResult AllocateDescriptorSets(MgDescriptorSetAllocateInfo pAllocateInfo, out IMgDescriptorSet[] pDescriptorSets)
 		{
 			if (pAllocateInfo == null)
 				throw new ArgumentNullException(nameof(pAllocateInfo));
@@ -1658,7 +1658,7 @@ namespace Magnesium.Vulkan
 			}
 		}
 
-		public Result FreeDescriptorSets(IMgDescriptorPool descriptorPool, IMgDescriptorSet[] pDescriptorSets)
+		public MgResult FreeDescriptorSets(IMgDescriptorPool descriptorPool, IMgDescriptorSet[] pDescriptorSets)
 		{
 			if (descriptorPool == null)
 				throw new ArgumentNullException(nameof(descriptorPool));
@@ -1851,7 +1851,7 @@ namespace Magnesium.Vulkan
 			}
 		}
 
-		public Result CreateFramebuffer(MgFramebufferCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgFramebuffer pFramebuffer)
+		public MgResult CreateFramebuffer(MgFramebufferCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgFramebuffer pFramebuffer)
 		{
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
@@ -1910,7 +1910,7 @@ namespace Magnesium.Vulkan
 			}
 		}
 
-		public Result CreateRenderPass(MgRenderPassCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgRenderPass pRenderPass)
+		public MgResult CreateRenderPass(MgRenderPassCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgRenderPass pRenderPass)
 		{
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
@@ -2117,7 +2117,7 @@ namespace Magnesium.Vulkan
 			}
 		}
 
-		public Result CreateCommandPool(MgCommandPoolCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgCommandPool pCommandPool)
+		public MgResult CreateCommandPool(MgCommandPoolCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgCommandPool pCommandPool)
 		{
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
@@ -2139,7 +2139,7 @@ namespace Magnesium.Vulkan
 			return result;
 		}
 
-		public Result AllocateCommandBuffers(MgCommandBufferAllocateInfo pAllocateInfo, IMgCommandBuffer[] pCommandBuffers)
+		public MgResult AllocateCommandBuffers(MgCommandBufferAllocateInfo pAllocateInfo, IMgCommandBuffer[] pCommandBuffers)
 		{
 			if (pAllocateInfo == null)
 				throw new ArgumentNullException(nameof(pAllocateInfo));
@@ -2204,7 +2204,7 @@ namespace Magnesium.Vulkan
 			}
 		}
 
-		public Result CreateSharedSwapchainsKHR(MgSwapchainCreateInfoKHR[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgSwapchainKHR[] pSwapchains)
+		public MgResult CreateSharedSwapchainsKHR(MgSwapchainCreateInfoKHR[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgSwapchainKHR[] pSwapchains)
 		{
 			if (pCreateInfos == null)
 				throw new ArgumentNullException(nameof(pCreateInfos));
@@ -2251,7 +2251,7 @@ namespace Magnesium.Vulkan
 			}
 		}
 
-		public Result CreateSwapchainKHR(MgSwapchainCreateInfoKHR pCreateInfo, IMgAllocationCallbacks allocator, out IMgSwapchainKHR pSwapchain)
+		public MgResult CreateSwapchainKHR(MgSwapchainCreateInfoKHR pCreateInfo, IMgAllocationCallbacks allocator, out IMgSwapchainKHR pSwapchain)
 		{
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
@@ -2324,7 +2324,7 @@ namespace Magnesium.Vulkan
 
 		}
 
-		public Result GetSwapchainImagesKHR(IMgSwapchainKHR swapchain, out IMgImage[] pSwapchainImages)
+		public MgResult GetSwapchainImagesKHR(IMgSwapchainKHR swapchain, out IMgImage[] pSwapchainImages)
 		{
 			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
@@ -2334,7 +2334,7 @@ namespace Magnesium.Vulkan
 			uint noOfImages = 0;
 			var first = Interops.vkGetSwapchainImagesKHR(Handle, bSwapchain.Handle, ref noOfImages, null);
 
-			if (first != Result.SUCCESS)
+			if (first != MgResult.SUCCESS)
 			{
 				pSwapchainImages = null;
 				return first;
@@ -2352,7 +2352,7 @@ namespace Magnesium.Vulkan
 			return final;
 		}
 
-		public Result AcquireNextImageKHR(IMgSwapchainKHR swapchain, ulong timeout, IMgSemaphore semaphore, IMgFence fence, out uint pImageIndex)
+		public MgResult AcquireNextImageKHR(IMgSwapchainKHR swapchain, ulong timeout, IMgSemaphore semaphore, IMgFence fence, out uint pImageIndex)
 		{
 			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 

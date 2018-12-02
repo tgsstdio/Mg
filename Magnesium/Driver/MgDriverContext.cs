@@ -20,12 +20,12 @@ namespace Magnesium
 			}
 		}
 
-		public Result Initialize(MgApplicationInfo appInfo)
+		public MgResult Initialize(MgApplicationInfo appInfo)
 		{
 			return Initialize (appInfo, null, null);
 		}
 
-        public Result Initialize(MgApplicationInfo appInfo, MgInstanceExtensionOptions options)
+        public MgResult Initialize(MgApplicationInfo appInfo, MgInstanceExtensionOptions options)
         {
             string[] extensions = null;
 			if (options == MgInstanceExtensionOptions.ALL)
@@ -33,7 +33,7 @@ namespace Magnesium
 				MgExtensionProperties[] extensionProperties;
 				var err = mEntrypoint.EnumerateInstanceExtensionProperties(null, out extensionProperties);
 
-				Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
+				Debug.Assert(err == MgResult.SUCCESS, err + " != MgResult.SUCCESS");
 
 				var enabledExtensions = new List<string>();
 				if (extensionProperties != null)
@@ -54,7 +54,7 @@ namespace Magnesium
             return Initialize(appInfo, null, extensions);
         }
 
-        public Result Initialize (MgApplicationInfo appInfo, string[] enabledLayerNames, string[] enabledExtensionNames)
+        public MgResult Initialize (MgApplicationInfo appInfo, string[] enabledLayerNames, string[] enabledExtensionNames)
 		{
 			var instCreateInfo = new MgInstanceCreateInfo{
 				ApplicationInfo = appInfo,
@@ -75,7 +75,7 @@ namespace Magnesium
 
             IMgPhysicalDevice[] physicalDevices;
             var errorCode = mInstance.EnumeratePhysicalDevices(out physicalDevices);
-            Debug.Assert(errorCode == Result.SUCCESS, errorCode + " != Result.SUCCESS");
+            Debug.Assert(errorCode == MgResult.SUCCESS, errorCode + " != MgResult.SUCCESS");
             IMgPhysicalDevice firstPhysicalDevice = physicalDevices[0];
 
             if (option == MgDeviceExtensionOptions.ALL)
@@ -84,7 +84,7 @@ namespace Magnesium
                 MgExtensionProperties[] extensionProperties;
                 var err = firstPhysicalDevice.EnumerateDeviceExtensionProperties(null, out extensionProperties);
 
-                Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
+                Debug.Assert(err == MgResult.SUCCESS, err + " != MgResult.SUCCESS");
 
                 var enabledExtensions = new List<string>();
                 if (extensionProperties != null)
@@ -240,7 +240,7 @@ namespace Magnesium
 
 			IMgDevice device;
 			var errorCode = gpu.CreateDevice (deviceCreateInfo, null, out device);
-			Debug.Assert (errorCode == Result.SUCCESS, errorCode + " != Result.SUCCESS");		
+			Debug.Assert (errorCode == MgResult.SUCCESS, errorCode + " != MgResult.SUCCESS");		
 
 			// Get the graphics queue
 			var availableQueues = new IMgQueueInfo[queueCreateInfo.QueueCount];

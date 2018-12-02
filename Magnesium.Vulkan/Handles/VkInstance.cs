@@ -36,7 +36,7 @@ namespace Magnesium.Vulkan
 			mIsDisposed = true;
 		}
 
-		public Result EnumeratePhysicalDevices(out IMgPhysicalDevice[] physicalDevices)
+		public MgResult EnumeratePhysicalDevices(out IMgPhysicalDevice[] physicalDevices)
 		{
 			Debug.Assert(!mIsDisposed);
 
@@ -44,7 +44,7 @@ namespace Magnesium.Vulkan
 
 			var first = Interops.vkEnumeratePhysicalDevices(Handle, ref pPropertyCount, null);
 
-			if (first != Result.SUCCESS)
+			if (first != MgResult.SUCCESS)
 			{
 				physicalDevices = null;
 				return first;
@@ -68,7 +68,7 @@ namespace Magnesium.Vulkan
 			return Interops.vkGetInstanceProcAddr(Handle, pName);
 		}
 
-		public Result CreateDisplayPlaneSurfaceKHR(MgDisplaySurfaceCreateInfoKHR createInfo, IMgAllocationCallbacks allocator, out IMgSurfaceKHR pSurface)
+		public MgResult CreateDisplayPlaneSurfaceKHR(MgDisplaySurfaceCreateInfoKHR createInfo, IMgAllocationCallbacks allocator, out IMgSurfaceKHR pSurface)
 		{
 			if (createInfo == null)
 				throw new ArgumentNullException(nameof(createInfo));
@@ -103,7 +103,7 @@ namespace Magnesium.Vulkan
 			return result;
 		}
 
-		public Result CreateAndroidSurfaceKHR(MgAndroidSurfaceCreateInfoKHR pCreateInfo, IMgAllocationCallbacks allocator, out IMgSurfaceKHR pSurface)
+		public MgResult CreateAndroidSurfaceKHR(MgAndroidSurfaceCreateInfoKHR pCreateInfo, IMgAllocationCallbacks allocator, out IMgSurfaceKHR pSurface)
 		{
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
@@ -128,7 +128,7 @@ namespace Magnesium.Vulkan
 			return result;
 		}
 
-		public Result CreateWin32SurfaceKHR(MgWin32SurfaceCreateInfoKHR pCreateInfo, IMgAllocationCallbacks allocator, out IMgSurfaceKHR pSurface)
+		public MgResult CreateWin32SurfaceKHR(MgWin32SurfaceCreateInfoKHR pCreateInfo, IMgAllocationCallbacks allocator, out IMgSurfaceKHR pSurface)
 		{
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
@@ -155,7 +155,7 @@ namespace Magnesium.Vulkan
 			return result;
 		}
 
-		public Result CreateDebugReportCallbackEXT(MgDebugReportCallbackCreateInfoEXT pCreateInfo, IMgAllocationCallbacks allocator, out IMgDebugReportCallbackEXT pCallback)
+		public MgResult CreateDebugReportCallbackEXT(MgDebugReportCallbackCreateInfoEXT pCreateInfo, IMgAllocationCallbacks allocator, out IMgDebugReportCallbackEXT pCallback)
 		{
 			throw new NotImplementedException();
 

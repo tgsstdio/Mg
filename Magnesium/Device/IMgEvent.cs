@@ -2,9 +2,9 @@
 {
     public interface IMgEvent
 	{
-		Result GetEventStatus(IMgDevice device);
-		Result SetEvent(IMgDevice device);
-		Result ResetEvent(IMgDevice device);
+		MgResult GetEventStatus(IMgDevice device);
+		MgResult SetEvent(IMgDevice device);
+		MgResult ResetEvent(IMgDevice device);
 
 		void DestroyEvent(IMgDevice device, IMgAllocationCallbacks allocator);
 	}

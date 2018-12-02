@@ -13,7 +13,7 @@ namespace Magnesium.Vulkan
 			Handle = handle;
 		}
 
-		public Result BeginCommandBuffer(MgCommandBufferBeginInfo pBeginInfo)
+		public MgResult BeginCommandBuffer(MgCommandBufferBeginInfo pBeginInfo)
 		{
 			IntPtr inheritanceInfo = IntPtr.Zero;
 			try
@@ -77,12 +77,12 @@ namespace Magnesium.Vulkan
 			}
 		}
 
-		public Result EndCommandBuffer()
+		public MgResult EndCommandBuffer()
 		{
 			return Interops.vkEndCommandBuffer(this.Handle);
 		}
 
-		public Result ResetCommandBuffer(MgCommandBufferResetFlagBits flags)
+		public MgResult ResetCommandBuffer(MgCommandBufferResetFlagBits flags)
 		{
 			return Interops.vkResetCommandBuffer(this.Handle, (VkCommandBufferResetFlags)flags);
 		}
@@ -815,5 +815,25 @@ namespace Magnesium.Vulkan
 			Interops.vkCmdExecuteCommands(this.Handle, bufferCount, handles);
 		}
 
-	}
+        public void CmdBeginConditionalRenderingEXT(MgConditionalRenderingBeginInfoEXT pConditionalRenderingBegin)
+        {
+            if (pConditionalRenderingBegin == null)
+            {
+                throw new ArgumentNullException(nameof(pConditionalRenderingBegin));
+            }
+
+            var bBuffer = (VkBuffer)pConditionalRenderingBegin.Buffer;
+            Debug.Assert(bBuffer != null);
+
+            var pBegin = new VkConditionalRenderingBeginInfoEXT
+            {
+                pNext = IntPtr.Zero,
+                buffer = bBuffer.Handle,
+                offset = pConditionalRenderingBegin.Offset,
+                flags = pConditionalRenderingBegin.Flags,
+            };
+
+            Interops.vkCmdBeginConditionalRenderingEXT(this.Handle, ref pBegin);
+        }
+    }
 }

@@ -56,11 +56,14 @@ namespace CommandGen
 
 				var implementation = new VkInterfaceCollection();
 				GenerateInterops(DLLNAME, lookup, ref noOfUnsafe, ref totalNativeInterfaces);
-				GenerateImplementation(implementation, inspector);
-				GenerateVkEnums(inspector);
+				GenerateHandles(implementation, inspector);
+                GenerateInterfaces(implementation, inspector);
+                GenerateVkEnums(inspector);
 				GenerateVkStructs(inspector);
+                GenerateVkClasses(inspector);
+                GenerateVkStructureTypes(inspector);
 
-				Console.WriteLine("totalNativeInterfaces :" + totalNativeInterfaces);
+                Console.WriteLine("totalNativeInterfaces :" + totalNativeInterfaces);
 				Console.WriteLine("noOfUnsafe :" + noOfUnsafe);
 			}
 			catch (Exception ex)
@@ -69,7 +72,38 @@ namespace CommandGen
 			}
 		}
 
-		static void GenerateVkEnums(VkEntityInspector inspector)
+        static void GenerateVkStructureTypes(VkEntityInspector inspector)
+        {
+            var container = inspector.Enums["VkStructureType"];          
+            {
+                using (var interfaceFile = new StreamWriter("VkStructureType.cs", false))
+                {
+                    interfaceFile.WriteLine("using System;");
+                    interfaceFile.WriteLine("");
+                    interfaceFile.WriteLine("namespace Magnesium.Vulkan");
+                    interfaceFile.WriteLine("{");
+                    string tabbedField = "\t";
+
+                    if (container.UseFlags)
+                        interfaceFile.WriteLine(tabbedField + "[Flags]");
+                    interfaceFile.WriteLine(tabbedField + "internal enum {0} : uint", container.name);
+                    interfaceFile.WriteLine(tabbedField + "{");
+
+                    var methodTabs = tabbedField + "\t";
+
+                    foreach (var member in container.Members)
+                    {
+                        interfaceFile.WriteLine(methodTabs 
+                            + VkEntityInspector.ParseVkStructureTypeEnum(member.UnmodifiedKey)
+                            + " = " + VkEntityInspector.ParseVkStructureTypeEnum(member.UnmodifiedValue) + ",");
+                    }
+                    interfaceFile.WriteLine(tabbedField + "}");
+                    interfaceFile.WriteLine("}");
+                }
+            }
+        }
+
+        static void GenerateVkEnums(VkEntityInspector inspector)
 		{
 			if (!Directory.Exists("Enums"))
 			{
@@ -142,7 +176,57 @@ namespace CommandGen
 			}
 		}
 
-		static void GenerateImplementation(VkInterfaceCollection implementation, IVkEntityInspector inspector)
+        static void GenerateVkClasses(IVkEntityInspector inspector)
+        {
+            if (!Directory.Exists("Classes"))
+            {
+                Directory.CreateDirectory("Classes");
+            }
+
+
+            foreach (var container in inspector.Structs.Values)
+            {
+                string mgClassFile = container.Name.Replace("Vk", "Mg");
+                using (var interfaceFile = new StreamWriter(Path.Combine("Classes", mgClassFile + ".cs"), false))
+                {
+                    interfaceFile.WriteLine("using System;");
+                    interfaceFile.WriteLine("");
+                    interfaceFile.WriteLine("namespace Magnesium");
+                    interfaceFile.WriteLine("{");
+                    string tabbedField = "\t";
+
+
+                    interfaceFile.WriteLine(tabbedField + "public class {0}", mgClassFile);
+                    interfaceFile.WriteLine(tabbedField + "{");
+
+                    var methodTabs = tabbedField + "\t";
+
+                    foreach (var member in container.Members)
+                    {
+                        if (member.Name == "sType")
+                        {
+                            continue;
+                        }
+                        if (member.Name == "pNext")
+                        {
+                            continue;
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(member.Comment))
+                        {
+                            interfaceFile.WriteLine(methodTabs + "///");
+                            interfaceFile.WriteLine(methodTabs + "/// " + member.Comment);
+                            interfaceFile.WriteLine(methodTabs + "///");
+                        }
+                        interfaceFile.WriteLine(methodTabs + member.GetClassLine());
+                    }
+                    interfaceFile.WriteLine(tabbedField + "}");
+                    interfaceFile.WriteLine("}");
+                }
+            }
+        }
+
+        static void GenerateHandles(VkInterfaceCollection implementation, IVkEntityInspector inspector)
 		{
 			if (!Directory.Exists("Handles"))
 			{
@@ -197,7 +281,44 @@ namespace CommandGen
 			}
 		}
 
-		static void GenerateInterops(string DLLNAME, Dictionary<string, VkCommandInfo> lookup, ref int noOfUnsafe, ref int totalNativeInterfaces)
+        static void GenerateInterfaces(VkInterfaceCollection implementation, IVkEntityInspector inspector)
+        {
+            if (!Directory.Exists("Interfaces"))
+            {
+                Directory.CreateDirectory("Interfaces");
+            }
+
+            foreach (var container in implementation.Interfaces)
+            {
+                VkHandleInfo found;
+                if (inspector.Handles.TryGetValue(container.Name, out found))
+                {
+                    container.Handle = found;
+                }
+
+                using (var interfaceFile = new StreamWriter(Path.Combine("Interfaces", container.InterfaceName + ".cs"), false))
+                {
+                    interfaceFile.WriteLine("using System;");
+                    interfaceFile.WriteLine("namespace Magnesium");
+                    interfaceFile.WriteLine("{");
+                    string tabbedField = "\t";
+
+                    interfaceFile.WriteLine(tabbedField + "public interface {0}", container.InterfaceName);
+                    interfaceFile.WriteLine(tabbedField + "{");
+
+                    var methodTabs = tabbedField + "\t";
+
+                    foreach (var method in container.Methods)
+                    {
+                        interfaceFile.WriteLine(methodTabs + method.GetInterfaceLine());
+                    }
+                    interfaceFile.WriteLine(tabbedField + "}");
+                    interfaceFile.WriteLine("}");
+                }
+            }
+        }
+
+        static void GenerateInterops(string DLLNAME, Dictionary<string, VkCommandInfo> lookup, ref int noOfUnsafe, ref int totalNativeInterfaces)
 		{
 			using (var interfaceFile = new StreamWriter("Interops.cs", false))
 			{

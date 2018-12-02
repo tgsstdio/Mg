@@ -228,11 +228,11 @@ namespace Magnesium
 				Dependencies = null,
 			};
 
-			Result err;
+			MgResult err;
 
 			IMgRenderPass renderPass;
 			err = mGraphicsConfiguration.Partition.Device.CreateRenderPass(renderPassInfo, null, out renderPass);
-			Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
+			Debug.Assert(err == MgResult.SUCCESS, err + " != MgResult.SUCCESS");
 			mRenderpass = renderPass;
 		}
 
@@ -268,11 +268,11 @@ namespace Magnesium
 
             Debug.Assert(mGraphicsConfiguration.Partition != null);
 
-            Result err;
+            MgResult err;
 			{
 				IMgImage dsImage;
 				err = mGraphicsConfiguration.Partition.Device.CreateImage (image, null, out dsImage);
-				Debug.Assert (err == Result.SUCCESS, err + " != Result.SUCCESS");
+				Debug.Assert (err == MgResult.SUCCESS, err + " != MgResult.SUCCESS");
 				mImage = dsImage;
 			}
             mGraphicsConfiguration.Partition.Device.GetImageMemoryRequirements (mImage, out memReqs);
@@ -284,11 +284,11 @@ namespace Magnesium
 			{
 				IMgDeviceMemory dsDeviceMemory;
 				err = mGraphicsConfiguration.Partition.Device.AllocateMemory (mem_alloc, null, out dsDeviceMemory);
-				Debug.Assert (err == Result.SUCCESS, err + " != Result.SUCCESS");
+				Debug.Assert (err == MgResult.SUCCESS, err + " != MgResult.SUCCESS");
 				mDeviceMemory = dsDeviceMemory;
 			}
 			err = mImage.BindImageMemory (mGraphicsConfiguration.Partition.Device, mDeviceMemory, 0);
-			Debug.Assert (err == Result.SUCCESS, err + " != Result.SUCCESS");
+			Debug.Assert (err == MgResult.SUCCESS, err + " != MgResult.SUCCESS");
 			mImageTools.SetImageLayout (setupCmdBuffer, mImage, MgImageAspectFlagBits.DEPTH_BIT | MgImageAspectFlagBits.STENCIL_BIT, MgImageLayout.UNDEFINED, MgImageLayout.DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 			var depthStencilView = new MgImageViewCreateInfo {
 				Image = mImage,
@@ -306,7 +306,7 @@ namespace Magnesium
 			{
 				IMgImageView dsView;
 				err = mGraphicsConfiguration.Partition.Device.CreateImageView (depthStencilView, null, out dsView);
-				Debug.Assert (err == Result.SUCCESS, err + " != Result.SUCCESS");
+				Debug.Assert (err == MgResult.SUCCESS, err + " != MgResult.SUCCESS");
 				mDepthStencilImageView = dsView;
 			}
 		}
@@ -343,7 +343,7 @@ namespace Magnesium
 		//		};
 
 		//		var err = mGraphicsConfiguration.Partition.Device.CreateFramebuffer(frameBufferCreateInfo, null, out frameBuffers[i]);
-		//		Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
+		//		Debug.Assert(err == MgResult.SUCCESS, err + " != MgResult.SUCCESS");
 		//	}
 
 		//	mFramebuffers = frameBuffers;

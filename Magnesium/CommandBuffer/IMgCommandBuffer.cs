@@ -5,9 +5,9 @@ namespace Magnesium
     // CommandBuffer
     public interface IMgCommandBuffer
 	{
-		Result BeginCommandBuffer(MgCommandBufferBeginInfo pBeginInfo);
-		Result EndCommandBuffer();
-		Result ResetCommandBuffer(MgCommandBufferResetFlagBits flags);
+		MgResult BeginCommandBuffer(MgCommandBufferBeginInfo pBeginInfo);
+		MgResult EndCommandBuffer();
+		MgResult ResetCommandBuffer(MgCommandBufferResetFlagBits flags);
 		void CmdBindPipeline(MgPipelineBindPoint pipelineBindPoint, IMgPipeline pipeline);
 		void CmdSetViewport(UInt32 firstViewport, MgViewport[] pViewports);
 		void CmdSetScissor(UInt32 firstScissor, MgRect2D[] pScissors);
@@ -52,6 +52,8 @@ namespace Magnesium
 		void CmdNextSubpass(MgSubpassContents contents);
 		void CmdEndRenderPass();
 		void CmdExecuteCommands(IMgCommandBuffer[] pCommandBuffers);
-	}
+
+        void CmdBeginConditionalRenderingEXT(MgConditionalRenderingBeginInfoEXT pConditionalRenderingBegin);
+    }
 }
 

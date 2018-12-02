@@ -39,7 +39,7 @@ namespace Magnesium
 
 			// This buffer is used as a transfer source for the buffer copy
 			var result = device.CreateBuffer(bufferCreateInfo, allocator, out stagingBuffer);
-			Debug.Assert (result == Result.SUCCESS);
+			Debug.Assert (result == MgResult.SUCCESS);
 
 			MgMemoryRequirements memReqs;
 			// Get memory requirements for the staging buffer (alignment, memory type bits)
@@ -57,15 +57,15 @@ namespace Magnesium
 
 
 			result = device.AllocateMemory(memAllocInfo, allocator, out stagingMemory);
-			Debug.Assert (result == Result.SUCCESS);
+			Debug.Assert (result == MgResult.SUCCESS);
 
 			result = stagingBuffer.BindBufferMemory (device, stagingMemory, 0);
-			Debug.Assert (result == Result.SUCCESS);
+			Debug.Assert (result == MgResult.SUCCESS);
 
 			// Copy texture data into staging buffer
 			IntPtr data;
 			result = stagingMemory.MapMemory (device, 0, memReqs.Size, 0, out data);
-			Debug.Assert (result == Result.SUCCESS);
+			Debug.Assert (result == MgResult.SUCCESS);
 
 			// TODO : Copy here
 			Marshal.Copy (imageData, 0, data, (int)source.Size);
@@ -117,7 +117,7 @@ namespace Magnesium
 
 			IMgImage image;
 			result = device.CreateImage(imageCreateInfo, allocator, out image);
-			Debug.Assert (result == Result.SUCCESS);
+			Debug.Assert (result == MgResult.SUCCESS);
 			texture.Image = image;
 
 			device.GetImageMemoryRequirements(texture.Image, out memReqs);
@@ -129,11 +129,11 @@ namespace Magnesium
 
 			IMgDeviceMemory deviceMem;
 			result = device.AllocateMemory(memAllocInfo, allocator, out deviceMem);
-			Debug.Assert (result == Result.SUCCESS);
+			Debug.Assert (result == MgResult.SUCCESS);
 			texture.DeviceMemory = deviceMem; 
 
 			result = texture.Image.BindImageMemory(device, texture.DeviceMemory, 0);
-			Debug.Assert (result == Result.SUCCESS);
+			Debug.Assert (result == MgResult.SUCCESS);
 
 			var cmdBufAllocateInfo = new MgCommandBufferAllocateInfo
 			{
@@ -144,7 +144,7 @@ namespace Magnesium
 
 			var commands = new IMgCommandBuffer[1];
 			result =  device.AllocateCommandBuffers(cmdBufAllocateInfo, commands);
-			Debug.Assert (result == Result.SUCCESS);
+			Debug.Assert (result == MgResult.SUCCESS);
 
 			var cmdBufInfo = new MgCommandBufferBeginInfo
 			{
@@ -153,7 +153,7 @@ namespace Magnesium
 
 			texture.Command = commands [0];
 			result = commands[0].BeginCommandBuffer(cmdBufInfo);
-			Debug.Assert (result == Result.SUCCESS);
+			Debug.Assert (result == MgResult.SUCCESS);
 
 			// Image barrier for optimal image (target)
 			// Optimal image will be used as destination for the copy
@@ -186,7 +186,7 @@ namespace Magnesium
 				mipLevels);
 
 			result = texture.Command.EndCommandBuffer();
-			Debug.Assert (result == Result.SUCCESS);
+			Debug.Assert (result == MgResult.SUCCESS);
 
 			var submitInfo = new MgSubmitInfo {				
 				CommandBuffers = commands,
@@ -195,7 +195,7 @@ namespace Magnesium
 			queue.QueueSubmit(new[] {submitInfo}, fence);
 			
 //			result = queue.QueueWaitIdle();
-//			Debug.Assert (result == Result.SUCCESS);
+//			Debug.Assert (result == MgResult.SUCCESS);
 //	
 //			device.FreeCommandBuffers(cmdPool, commands);
 //			texture.Command = copyCmd;

@@ -29,7 +29,7 @@ namespace Magnesium.Vulkan
 			mIsDisposed = true;
 		}
 
-		public Result ResetDescriptorPool(IMgDevice device, UInt32 flags)
+		public MgResult ResetDescriptorPool(IMgDevice device, UInt32 flags)
 		{
 			Debug.Assert(!mIsDisposed);
 

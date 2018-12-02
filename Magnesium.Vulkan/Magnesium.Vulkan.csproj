@@ -125,6 +125,7 @@
     <Compile Include="Structs\VkCommandPoolCreateInfo.cs" />
     <Compile Include="Structs\VkComponentMapping.cs" />
     <Compile Include="Structs\VkComputePipelineCreateInfo.cs" />
+    <Compile Include="Structs\VkConditionalRenderingBeginInfoEXT.cs" />
     <Compile Include="Structs\VkCopyDescriptorSet.cs" />
     <Compile Include="Structs\VkDebugMarkerMarkerInfoEXT.cs" />
     <Compile Include="Structs\VkDebugMarkerObjectNameInfoEXT.cs" />

@@ -12,7 +12,7 @@ namespace Magnesium.Vulkan
 			Handle = handle;
 		}
 
-		public Result BindImageMemory(IMgDevice device, IMgDeviceMemory memory, UInt64 memoryOffset)
+		public MgResult BindImageMemory(IMgDevice device, IMgDeviceMemory memory, UInt64 memoryOffset)
 		{
 			Debug.Assert(!mIsDisposed);
 

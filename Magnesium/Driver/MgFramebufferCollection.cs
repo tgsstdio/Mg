@@ -42,7 +42,7 @@ namespace Magnesium
                 };
 
                 var err = mGraphicsConfiguration.Partition.Device.CreateFramebuffer(frameBufferCreateInfo, null, out frameBuffers[i]);
-                Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
+                Debug.Assert(err == MgResult.SUCCESS, err + " != MgResult.SUCCESS");
             }
 
             mFramebuffers = frameBuffers;

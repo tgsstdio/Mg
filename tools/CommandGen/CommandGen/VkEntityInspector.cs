@@ -125,7 +125,24 @@ namespace CommandGen
 			mVkStructureKeys.Add(structKey, value);
         }
 
-		public static string ParseVkStructureTypeKey(string name)
+        public static string ParseVkStructureTypeEnum(string name)
+        {
+            //throw new NotImplementedException();
+            var tokens = name.Replace("VK_", "").Split('_');
+
+            var collection = new List<string>();
+            foreach (var token in tokens)
+            {
+                if (token.Length > 1)
+                    collection.Add(token[0] + token.Substring(1).ToLowerInvariant());
+                else
+                    collection.Add(token[0].ToString());
+            }
+
+            return string.Join("", collection.ToArray());
+        }
+
+        public static string ParseVkStructureTypeKey(string name)
 		{
 			//throw new NotImplementedException();
 			var tokens = name.Replace("_STRUCTURE_TYPE_", "_").Split('_');
@@ -504,7 +521,7 @@ namespace CommandGen
 				{
 					foreach (var info in mEnumExtensions[csName])
 					{
-						container.Members.Add(WriteExtendedEnumField(info.Name, info.Value, csName, string.Empty));
+						container.Members.Add(WriteExtendedEnumField(info.Key, info.Value, csName, string.Empty, info.UnmodifiedKey, info.UnmodifiedValue));
 					}
 				}
 
@@ -545,11 +562,15 @@ namespace CommandGen
         {
             SetupEnumExtensionEntry(enumName);
 
-            mEnumExtensions[enumName].Add(
+            string enumExtensionKey = enumName;
+            string localValue = EnumExtensionValue(element, number, enumName);
+            mEnumExtensions[enumExtensionKey].Add(
                 new VkEnumExtensionInfo
                 {
-                    Name = nameAttr.Value,
-                    Value = EnumExtensionValue(element, number, ref enumName),
+                    Key = nameAttr.Value,
+                    UnmodifiedKey = nameAttr.Value,
+                    Value = localValue,
+                    UnmodifiedValue = localValue,
                 }
             );
             return enumName;
@@ -581,14 +602,16 @@ namespace CommandGen
                 mEnumExtensions[enumName].Add(
                     new VkEnumExtensionInfo
                     {
-                        Name  = ExtractStandardizedEnum(memberAlias, enumName),
+                        Key  = ExtractStandardizedEnum(memberAlias, enumName),
+                        UnmodifiedKey = memberAlias,
                         Value = ExtractStandardizedEnum(memberName, enumName),
+                        UnmodifiedValue = memberName,
                     }
                 );
             }
         }
 
-		string EnumExtensionValue(XElement element, int extensionNo, ref string csEnumName)
+		string EnumExtensionValue(XElement element, int extensionNo, string csEnumName)
 		{
 			var offsetAttribute = element.Attribute("offset");
 			if (offsetAttribute != null)
@@ -608,8 +631,8 @@ namespace CommandGen
 			var bitposAttribute = element.Attribute("bitpos");
 			if (bitposAttribute != null)
 			{
-				if (csEnumName.EndsWith("FlagBits", StringComparison.InvariantCulture))
-					csEnumName = csEnumName.Substring(0, csEnumName.Length - 4) + "s";
+				//if (csEnumName.EndsWith("FlagBits", StringComparison.InvariantCulture))
+				//	csEnumName = csEnumName.Substring(0, csEnumName.Length - 4) + "s";
 
 				return FormatFlagValue(Int32.Parse(bitposAttribute.Value));
 			}
@@ -698,7 +721,8 @@ namespace CommandGen
                 throw new Exception("value not found" + csEnumName);
             }
 
-            return WriteExtendedEnumField(e.Attribute("name").Value, value, csEnumName, comment);
+            string enumKey = e.Attribute("name").Value;
+            return WriteExtendedEnumField(enumKey, value, csEnumName, comment, enumKey, valueAttr?.Value);
 		}
 
 		static Dictionary<string, string> mSpecialParts = new Dictionary<string, string> {
@@ -744,7 +768,7 @@ namespace CommandGen
 			}
 		}
 
-        VkEnumMemberInfo WriteExtendedEnumField(string name, string value, string csEnumName, string comment)
+        VkEnumMemberInfo WriteExtendedEnumField(string name, string value, string csEnumName, string comment, string unmodifiedKey, string unmodifiedValue)
         {
             string fName = ExtractStandardizedEnum(name, csEnumName);
 
@@ -755,8 +779,10 @@ namespace CommandGen
 
             return new VkEnumMemberInfo
             {
-                Id = fName,
+                Id = fName,                
+                UnmodifiedKey = unmodifiedKey,
                 Value = value,
+                UnmodifiedValue = unmodifiedValue,
                 Comment = comment,
             };
 

@@ -30,7 +30,7 @@ namespace Magnesium.Vulkan
 			mIsDisposed = true;
 		}
 
-		public Result MapMemory(IMgDevice device, UInt64 offset, UInt64 size, UInt32 flags, out IntPtr ppData)
+		public MgResult MapMemory(IMgDevice device, UInt64 offset, UInt64 size, UInt32 flags, out IntPtr ppData)
 		{
 			Debug.Assert(!mIsDisposed);
 

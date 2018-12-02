@@ -16,7 +16,7 @@ namespace Magnesium
 			};
 
 			var vkRes = prePresent.BeginCommandBuffer(cmdBufInfo);
-			Debug.Assert(vkRes == Result.SUCCESS, vkRes + " != Result.SUCCESS");
+			Debug.Assert(vkRes == MgResult.SUCCESS, vkRes + " != MgResult.SUCCESS");
 
 			const uint VK_QUEUE_FAMILY_IGNORED = ~0U;
 
@@ -49,7 +49,7 @@ namespace Magnesium
 				new[] { prePresentBarrier });
 
 			vkRes = prePresent.EndCommandBuffer();
-			Debug.Assert(vkRes == Result.SUCCESS, vkRes + " != Result.SUCCESS");
+			Debug.Assert(vkRes == MgResult.SUCCESS, vkRes + " != MgResult.SUCCESS");
 
 
 		}
@@ -65,7 +65,7 @@ namespace Magnesium
 			};
 
 			var vkRes = postPresent.BeginCommandBuffer(cmdBufInfo);
-			Debug.Assert(vkRes == Result.SUCCESS, vkRes + " != Result.SUCCESS");
+			Debug.Assert(vkRes == MgResult.SUCCESS, vkRes + " != MgResult.SUCCESS");
 
 			const uint VK_QUEUE_FAMILY_IGNORED = ~0U;
 
@@ -97,7 +97,7 @@ namespace Magnesium
 				new[] { postPresentBarrier });
 
 			vkRes = postPresent.EndCommandBuffer();
-			Debug.Assert(vkRes == Result.SUCCESS, vkRes + " != Result.SUCCESS");
+			Debug.Assert(vkRes == MgResult.SUCCESS, vkRes + " != MgResult.SUCCESS");
 		}
 	}
 }

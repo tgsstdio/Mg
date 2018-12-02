@@ -299,7 +299,7 @@ namespace Magnesium.Vulkan
 			};
 		}
 
-		public Result GetPhysicalDeviceImageFormatProperties(MgFormat format, MgImageType type, MgImageTiling tiling, MgImageUsageFlagBits usage, MgImageCreateFlagBits flags, out MgImageFormatProperties pImageFormatProperties)
+		public MgResult GetPhysicalDeviceImageFormatProperties(MgFormat format, MgImageType type, MgImageTiling tiling, MgImageUsageFlagBits usage, MgImageCreateFlagBits flags, out MgImageFormatProperties pImageFormatProperties)
 		{
 			var bFormat = (VkFormat)format;
 			var bType = (VkImageType)type;
@@ -337,7 +337,7 @@ namespace Magnesium.Vulkan
         /// <param name="allocator"></param>
         /// <param name="pDevice"></param>
         /// <returns></returns>
-        public Result CreateDevice(MgDeviceCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDevice pDevice)
+        public MgResult CreateDevice(MgDeviceCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDevice pDevice)
 		{
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
@@ -500,12 +500,12 @@ namespace Magnesium.Vulkan
 			return pQueueCreateInfos;
 		}
 
-		public Result EnumerateDeviceLayerProperties(out MgLayerProperties[] pProperties)
+		public MgResult EnumerateDeviceLayerProperties(out MgLayerProperties[] pProperties)
 		{
 			uint count = 0U;
 			var first = Interops.vkEnumerateDeviceLayerProperties(Handle, ref count, null);
 
-			if (first != Result.SUCCESS)
+			if (first != MgResult.SUCCESS)
 			{
 				pProperties = null;
 				return first;
@@ -529,7 +529,7 @@ namespace Magnesium.Vulkan
 			return final;
 		}
 
-		public Result EnumerateDeviceExtensionProperties(string layerName, out MgExtensionProperties[] pProperties)
+		public MgResult EnumerateDeviceExtensionProperties(string layerName, out MgExtensionProperties[] pProperties)
 		{
 			var bLayerName = IntPtr.Zero;
 
@@ -542,7 +542,7 @@ namespace Magnesium.Vulkan
 				uint count = 0;
 				var first = Interops.vkEnumerateDeviceExtensionProperties(Handle, bLayerName, ref count, null);
 
-				if (first != Result.SUCCESS)
+				if (first != MgResult.SUCCESS)
 				{
 					pProperties = null;
 					return first;
@@ -627,12 +627,12 @@ namespace Magnesium.Vulkan
 			}
 		}
 
-		public Result GetPhysicalDeviceDisplayPropertiesKHR(out MgDisplayPropertiesKHR[] pProperties)
+		public MgResult GetPhysicalDeviceDisplayPropertiesKHR(out MgDisplayPropertiesKHR[] pProperties)
 		{
 			uint count = 0;
 			var first = Interops.vkGetPhysicalDeviceDisplayPropertiesKHR(Handle, ref count, null);
 
-			if (first != Result.SUCCESS)
+			if (first != MgResult.SUCCESS)
 			{
 				pProperties = null;
 				return first;
@@ -660,12 +660,12 @@ namespace Magnesium.Vulkan
 			return final;
 		}
 
-		public Result GetPhysicalDeviceDisplayPlanePropertiesKHR(out MgDisplayPlanePropertiesKHR[] pProperties)
+		public MgResult GetPhysicalDeviceDisplayPlanePropertiesKHR(out MgDisplayPlanePropertiesKHR[] pProperties)
 		{
 			uint count = 0;
 			var first = Interops.vkGetPhysicalDeviceDisplayPlanePropertiesKHR(Handle, ref count, null);
 
-			if (first != Result.SUCCESS)
+			if (first != MgResult.SUCCESS)
 			{
 				pProperties = null;
 				return first;
@@ -687,12 +687,12 @@ namespace Magnesium.Vulkan
 			return final;
 		}
 
-		public Result GetDisplayPlaneSupportedDisplaysKHR(UInt32 planeIndex, out IMgDisplayKHR[] pDisplays)
+		public MgResult GetDisplayPlaneSupportedDisplaysKHR(UInt32 planeIndex, out IMgDisplayKHR[] pDisplays)
 		{
 			uint count = 0;
 			var first = Interops.vkGetDisplayPlaneSupportedDisplaysKHR(Handle, planeIndex, ref count, null);
 
-			if (first != Result.SUCCESS)
+			if (first != MgResult.SUCCESS)
 			{
 				pDisplays = null;
 				return first;
@@ -710,7 +710,7 @@ namespace Magnesium.Vulkan
 			return final;
 		}
 
-		public Result GetDisplayModePropertiesKHR(IMgDisplayKHR display, out MgDisplayModePropertiesKHR[] pProperties)
+		public MgResult GetDisplayModePropertiesKHR(IMgDisplayKHR display, out MgDisplayModePropertiesKHR[] pProperties)
 		{
 			if (display == null)
 				throw new ArgumentNullException(nameof(display));
@@ -720,7 +720,7 @@ namespace Magnesium.Vulkan
 			uint count = 0;
 			var first = Interops.vkGetDisplayModePropertiesKHR(Handle, bDisplay.Handle, ref count, null);
 
-			if (first != Result.SUCCESS)
+			if (first != MgResult.SUCCESS)
 			{
 				pProperties = null;
 				return first;
@@ -742,7 +742,7 @@ namespace Magnesium.Vulkan
 			return final;
 		}
 
-		public Result GetDisplayPlaneCapabilitiesKHR(IMgDisplayModeKHR mode, UInt32 planeIndex, out MgDisplayPlaneCapabilitiesKHR pCapabilities)
+		public MgResult GetDisplayPlaneCapabilitiesKHR(IMgDisplayModeKHR mode, UInt32 planeIndex, out MgDisplayPlaneCapabilitiesKHR pCapabilities)
 		{
 			if (mode == null)
 				throw new ArgumentNullException(nameof(mode));
@@ -768,7 +768,7 @@ namespace Magnesium.Vulkan
 			return result;
 		}
 
-		public Result GetPhysicalDeviceSurfaceSupportKHR(UInt32 queueFamilyIndex, IMgSurfaceKHR surface, ref bool pSupported)
+		public MgResult GetPhysicalDeviceSurfaceSupportKHR(UInt32 queueFamilyIndex, IMgSurfaceKHR surface, ref bool pSupported)
 		{
 			if (surface == null)
 				throw new ArgumentNullException(nameof(surface));
@@ -782,7 +782,7 @@ namespace Magnesium.Vulkan
 			return result;
 		}
 
-		public Result GetPhysicalDeviceSurfaceCapabilitiesKHR(IMgSurfaceKHR surface, out MgSurfaceCapabilitiesKHR pSurfaceCapabilities)
+		public MgResult GetPhysicalDeviceSurfaceCapabilitiesKHR(IMgSurfaceKHR surface, out MgSurfaceCapabilitiesKHR pSurfaceCapabilities)
 		{
 			if (surface == null)
 				throw new ArgumentNullException(nameof(surface));
@@ -810,7 +810,7 @@ namespace Magnesium.Vulkan
 			return result;
 		}
 
-		public Result GetPhysicalDeviceSurfaceFormatsKHR(IMgSurfaceKHR surface, out MgSurfaceFormatKHR[] pSurfaceFormats)
+		public MgResult GetPhysicalDeviceSurfaceFormatsKHR(IMgSurfaceKHR surface, out MgSurfaceFormatKHR[] pSurfaceFormats)
 		{
 			if (surface == null)
 				throw new ArgumentNullException(nameof(surface));
@@ -821,7 +821,7 @@ namespace Magnesium.Vulkan
 			var count = 0U;
 			var first = Interops.vkGetPhysicalDeviceSurfaceFormatsKHR(Handle, bSurface.Handle, ref count, null);
 
-			if (first != Result.SUCCESS)
+			if (first != MgResult.SUCCESS)
 			{
 				pSurfaceFormats = null;
 				return first;
@@ -843,7 +843,7 @@ namespace Magnesium.Vulkan
 			return final;
 		}
 
-		public Result GetPhysicalDeviceSurfacePresentModesKHR(IMgSurfaceKHR surface, out MgPresentModeKHR[] pPresentModes)
+		public MgResult GetPhysicalDeviceSurfacePresentModesKHR(IMgSurfaceKHR surface, out MgPresentModeKHR[] pPresentModes)
 		{
 			if (surface == null)
 				throw new ArgumentNullException(nameof(surface));
@@ -854,7 +854,7 @@ namespace Magnesium.Vulkan
 			var count = 0U;
 			var first = Interops.vkGetPhysicalDeviceSurfacePresentModesKHR(Handle, bSurface.Handle, ref count, null);
 
-			if (first != Result.SUCCESS)
+			if (first != MgResult.SUCCESS)
 			{
 				pPresentModes = null;
 				return first;
@@ -878,7 +878,7 @@ namespace Magnesium.Vulkan
 			return VkBool32.ConvertFrom(final);
 		}
 
-		public Result CreateDisplayModeKHR(IMgDisplayKHR display, MgDisplayModeCreateInfoKHR pCreateInfo, IMgAllocationCallbacks allocator, out IMgDisplayModeKHR pMode)
+		public MgResult CreateDisplayModeKHR(IMgDisplayKHR display, MgDisplayModeCreateInfoKHR pCreateInfo, IMgAllocationCallbacks allocator, out IMgDisplayModeKHR pMode)
 		{
 			if (display == null)
 				throw new ArgumentNullException(nameof(display));

@@ -25,7 +25,7 @@ namespace Magnesium
 			// Get the list of VkFormat's that are supported:
 			MgSurfaceFormatKHR[] surfFormats;
 			var err = mGraphicsConfiguration.Partition.PhysicalDevice.GetPhysicalDeviceSurfaceFormatsKHR(mLayer.Surface, out surfFormats);
-			Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
+			Debug.Assert(err == MgResult.SUCCESS, err + " != MgResult.SUCCESS");
 
 			// If the format list includes just one entry of VK_FORMAT_UNDEFINED,
 			// the surface has no preferred format.  Otherwise, at least one
@@ -73,7 +73,7 @@ namespace Magnesium
 			mWidth = width;
 			mHeight = height;
 
-			Result err;
+			MgResult err;
 			IMgSwapchainKHR oldSwapchain = mSwapChain;
 
             Setup();
@@ -81,12 +81,12 @@ namespace Magnesium
 			// Get physical device surface properties and formats
 			MgSurfaceCapabilitiesKHR surfCaps;
 			err = mGraphicsConfiguration.Partition.PhysicalDevice.GetPhysicalDeviceSurfaceCapabilitiesKHR(mLayer.Surface, out surfCaps);
-			Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
+			Debug.Assert(err == MgResult.SUCCESS, err + " != MgResult.SUCCESS");
 
 			// Get available present modes
 			MgPresentModeKHR[] presentModes;
 			err = mGraphicsConfiguration.Partition.PhysicalDevice.GetPhysicalDeviceSurfacePresentModesKHR(mLayer.Surface, out presentModes);
-			Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
+			Debug.Assert(err == MgResult.SUCCESS, err + " != MgResult.SUCCESS");
 
 			var swapchainExtent = new MgExtent2D {};
 			// width and height are either both -1, or both not -1.
@@ -155,7 +155,7 @@ namespace Magnesium
 			};
 
 			err = mGraphicsConfiguration.Device.CreateSwapchainKHR(swapchainCI, null, out mSwapChain);
-			Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
+			Debug.Assert(err == MgResult.SUCCESS, err + " != MgResult.SUCCESS");
 
 			// If an existing swap chain is re-created, destroy the old swap chain
 			// This also cleans up all the presentable images
@@ -170,7 +170,7 @@ namespace Magnesium
 
 			// Get the swap chain images
 			err = mGraphicsConfiguration.Device.GetSwapchainImagesKHR(mSwapChain, out mImages);
-			Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
+			Debug.Assert(err == MgResult.SUCCESS, err + " != MgResult.SUCCESS");
 
 			// Get the swap chain buffers containing the image and imageview
 			mImageCount = (uint)mImages.Length;
@@ -213,7 +213,7 @@ namespace Magnesium
 
 				IMgImageView bufferView;
 				err = mGraphicsConfiguration.Device.CreateImageView(colorAttachmentView, null, out bufferView);
-				Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
+				Debug.Assert(err == MgResult.SUCCESS, err + " != MgResult.SUCCESS");
 				buffer.View = bufferView;
 
 				mBuffers [i] = buffer;

@@ -11,7 +11,7 @@ namespace Magnesium.Vulkan
 			Handle = handle;
 		}
 
-		public Result GetEventStatus(IMgDevice device)
+		public MgResult GetEventStatus(IMgDevice device)
 		{
 			Debug.Assert(!mIsDisposed);
 
@@ -21,7 +21,7 @@ namespace Magnesium.Vulkan
 			return Interops.vkGetEventStatus(bDevice.Handle, this.Handle);
 		}
 
-		public Result SetEvent(IMgDevice device)
+		public MgResult SetEvent(IMgDevice device)
 		{
 			Debug.Assert(!mIsDisposed);
 
@@ -31,14 +31,14 @@ namespace Magnesium.Vulkan
 			return Interops.vkSetEvent(bDevice.Handle, this.Handle);
 		}
 
-		public Result ResetEvent(IMgDevice device)
+		public MgResult ResetEvent(IMgDevice device)
 		{
 			Debug.Assert(!mIsDisposed);
 
 			var bDevice = (VkDevice) device;
 			Debug.Assert(bDevice != null);		
 
-			return (Result)Interops.vkResetEvent(bDevice.Handle, this.Handle);
+			return (MgResult)Interops.vkResetEvent(bDevice.Handle, this.Handle);
 		}
 
 		private bool mIsDisposed = false;

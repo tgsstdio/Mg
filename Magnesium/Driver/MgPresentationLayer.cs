@@ -29,14 +29,14 @@ namespace Magnesium
 		uint AcquireNextImage (IMgSemaphore presentComplete, ulong timeout)
 		{
 			uint nextImage;
-			Result err = mGraphicsConfiguration.Device.AcquireNextImageKHR (mCollection.Swapchain, timeout, presentComplete, null, out nextImage);
-			Debug.Assert (err == Result.SUCCESS);
+			MgResult err = mGraphicsConfiguration.Device.AcquireNextImageKHR (mCollection.Swapchain, timeout, presentComplete, null, out nextImage);
+			Debug.Assert (err == MgResult.SUCCESS);
 			return nextImage;
 		}
 
 		public void EndDraw (uint[] nextImage, IMgCommandBuffer prePresent, IMgSemaphore[] renderComplete)
 		{
-			Result err;
+			MgResult err;
 
 			var presentImages = new List<MgPresentInfoKHRImage>();
 			foreach (var image in nextImage)
@@ -53,7 +53,7 @@ namespace Magnesium
 				};
 
 				var result = mGraphicsConfiguration.Queue.QueueSubmit(submitInfo, null);
-				Debug.Assert(result == Result.SUCCESS, result + " != Result.SUCCESS");
+				Debug.Assert(result == MgResult.SUCCESS, result + " != MgResult.SUCCESS");
 
 				presentImages.Add(new MgPresentInfoKHRImage
 				{
@@ -69,9 +69,9 @@ namespace Magnesium
 
 			//err = swapChain.queuePresent(queue, currentBuffer, semaphores.renderComplete);
 			err = mGraphicsConfiguration.Queue.QueuePresentKHR (presentInfo);
-			Debug.Assert (err == Result.SUCCESS, err + " != Result.SUCCESS");
+			Debug.Assert (err == MgResult.SUCCESS, err + " != MgResult.SUCCESS");
 			err = mGraphicsConfiguration.Queue.QueueWaitIdle ();
-			Debug.Assert (err == Result.SUCCESS, err + " != Result.SUCCESS");
+			Debug.Assert (err == MgResult.SUCCESS, err + " != MgResult.SUCCESS");
         }
 
 		public uint BeginDraw (IMgCommandBuffer postPresent, IMgSemaphore presentComplete, ulong timeout)
@@ -93,7 +93,7 @@ namespace Magnesium
 			};
 
 			var result = mGraphicsConfiguration.Queue.QueueSubmit(submitInfo, null);
-			Debug.Assert(result == Result.SUCCESS, result + " != Result.SUCCESS");
+			Debug.Assert(result == MgResult.SUCCESS, result + " != MgResult.SUCCESS");
 
 			return nextImage;
 		}

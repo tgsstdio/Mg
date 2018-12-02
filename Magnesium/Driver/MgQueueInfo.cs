@@ -42,7 +42,7 @@ namespace Magnesium
 			};
 
 			var errCode = Device.CreateCommandPool (cmdPoolCreateInfo, null, out commandPool);
-			Debug.Assert (errCode == Result.SUCCESS);
+			Debug.Assert (errCode == MgResult.SUCCESS);
 
 			MgPhysicalDeviceMemoryProperties prop;
 			mParent.GetPhysicalDeviceMemoryProperties (out prop);

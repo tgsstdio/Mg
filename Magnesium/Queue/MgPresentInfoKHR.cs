@@ -8,7 +8,7 @@ namespace Magnesium
 
 		public MgPresentInfoKHRImage[] Images { get; set;}
 
-		public Result[] Results { get; set; }
+		public MgResult[] Results { get; set; }
 	}
 }
 

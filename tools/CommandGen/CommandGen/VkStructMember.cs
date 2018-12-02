@@ -16,5 +16,24 @@
 		{
 			return Attribute != null ? Attribute + " " : "" + "public " + CsType + " " + Name + @" { get; set; }";
 		}
-	}
+
+        public string GetClassLine()
+        {
+            string localType = GetClassType(CsType);
+
+            string propName = char.ToUpperInvariant(Name[0]) + Name.Substring(1);
+            return Attribute != null ? Attribute + " " : "" + "public " + localType + " " + propName + @" { get; set; }";
+        }
+
+        static string GetClassType(string typeName)
+        {
+            switch (typeName)
+            {
+                case "VkDeviceSize":
+                    return "UInt64";
+                default:
+                    return typeName;
+            }
+        }
+    }
 }

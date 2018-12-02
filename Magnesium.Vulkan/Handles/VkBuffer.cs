@@ -30,7 +30,7 @@ namespace Magnesium.Vulkan
 			mIsDisposed = true;
 		}
 
-		public Result BindBufferMemory(IMgDevice device, IMgDeviceMemory memory, UInt64 memoryOffset)
+		public MgResult BindBufferMemory(IMgDevice device, IMgDeviceMemory memory, UInt64 memoryOffset)
 		{
 			Debug.Assert(!mIsDisposed);
 

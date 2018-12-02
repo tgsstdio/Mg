@@ -30,7 +30,7 @@ namespace Magnesium.Vulkan
 			mIsDisposed = true;
 		}
 
-		public Result ResetCommandPool(IMgDevice device, MgCommandPoolResetFlagBits flags)
+		public MgResult ResetCommandPool(IMgDevice device, MgCommandPoolResetFlagBits flags)
 		{
 			Debug.Assert(!mIsDisposed);
 

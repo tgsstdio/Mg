@@ -8,7 +8,7 @@ namespace Magnesium.Vulkan
 {
 	public class VkEntrypoint : IMgEntrypoint
 	{
-		public Result CreateInstance(MgInstanceCreateInfo createInfo, IMgAllocationCallbacks allocator, out IMgInstance instance)
+		public MgResult CreateInstance(MgInstanceCreateInfo createInfo, IMgAllocationCallbacks allocator, out IMgInstance instance)
 		{
 			var allocatedItems = new List<IntPtr>();
 			try
@@ -60,7 +60,7 @@ namespace Magnesium.Vulkan
 
 				instance = new VkInstance(handle);
 
-				return (Result)result;
+				return (MgResult)result;
 			}
 			finally
 			{
@@ -85,13 +85,13 @@ namespace Magnesium.Vulkan
 			}
 		}
 
-		public Result EnumerateInstanceLayerProperties(out MgLayerProperties[] properties)
+		public MgResult EnumerateInstanceLayerProperties(out MgLayerProperties[] properties)
 		{
 			UInt32 pPropertyCount = 0;
 
 			var first = Interops.vkEnumerateInstanceLayerProperties(ref pPropertyCount, null);
 
-			if (first != Result.SUCCESS)
+			if (first != MgResult.SUCCESS)
 			{
 				properties = null;
 				return first;
@@ -114,7 +114,7 @@ namespace Magnesium.Vulkan
 			return last;
 		}
 
-		public Result EnumerateInstanceExtensionProperties(string layerName, out MgExtensionProperties[] pProperties)
+		public MgResult EnumerateInstanceExtensionProperties(string layerName, out MgExtensionProperties[] pProperties)
 		{
 			var pLayerName = IntPtr.Zero;
 			try
@@ -125,7 +125,7 @@ namespace Magnesium.Vulkan
 				UInt32 pPropertyCount = 0;
 				var first = Interops.vkEnumerateInstanceExtensionProperties(pLayerName, ref pPropertyCount, null);
 
-				if (first != Result.SUCCESS)
+				if (first != MgResult.SUCCESS)
 				{
 					pProperties = null;
 					return first;

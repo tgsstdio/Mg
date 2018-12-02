@@ -14,7 +14,7 @@ namespace Magnesium.Vulkan
 			Handle = handle;
 		}
 
-		public Result QueueSubmit(MgSubmitInfo[] pSubmits, IMgFence fence)
+		public MgResult QueueSubmit(MgSubmitInfo[] pSubmits, IMgFence fence)
 		{
 			var bFence = (VkFence)fence;
 			var bFencePtr = bFence != null ? bFence.Handle : 0UL;
@@ -132,12 +132,12 @@ namespace Magnesium.Vulkan
 			}
 		}
 
-		public Result QueueWaitIdle()
+		public MgResult QueueWaitIdle()
 		{
 			return Interops.vkQueueWaitIdle(Handle);
 		}
 
-		public Result QueueBindSparse(MgBindSparseInfo[] pBindInfo, IMgFence fence)
+		public MgResult QueueBindSparse(MgBindSparseInfo[] pBindInfo, IMgFence fence)
 		{
 			var bFence = (VkFence)fence;
 			var bFencePtr = bFence != null ? bFence.Handle : 0UL;
@@ -393,7 +393,7 @@ namespace Magnesium.Vulkan
 			return dest;
 		}
 
-		public Result QueuePresentKHR(MgPresentInfoKHR pPresentInfo)
+		public MgResult QueuePresentKHR(MgPresentInfoKHR pPresentInfo)
 		{
 			if (pPresentInfo == null)
 				throw new ArgumentNullException(nameof(pPresentInfo));
@@ -427,13 +427,13 @@ namespace Magnesium.Vulkan
 				// MUST ABLE TO RETURN 
 				if (pResults != IntPtr.Zero)
 				{
-					var stride = Marshal.SizeOf(typeof(Result));
-					var swapChains = new Result[swapchainCount];
+					var stride = Marshal.SizeOf(typeof(MgResult));
+					var swapChains = new MgResult[swapchainCount];
 					var offset = 0;
 					for (var i = 0; i < swapchainCount; ++i)
 					{
 						var src = IntPtr.Add(pResults, offset);
-						swapChains[i] = (Magnesium.Result)Marshal.PtrToStructure(src, typeof(Magnesium.Result));
+						swapChains[i] = (Magnesium.MgResult)Marshal.PtrToStructure(src, typeof(Magnesium.MgResult));
 						offset += stride;
 					}
 
@@ -451,12 +451,12 @@ namespace Magnesium.Vulkan
 			}
 		}
 
-		static IntPtr ExtractResults(List<IntPtr> attachedItems, Result[] results)
+		static IntPtr ExtractResults(List<IntPtr> attachedItems, MgResult[] results)
 		{
 			if (results == null)
 				return IntPtr.Zero;
 
-			var stride = Marshal.SizeOf(typeof(Result));
+			var stride = Marshal.SizeOf(typeof(MgResult));
 			var dest = Marshal.AllocHGlobal(stride * results.Length);
 			attachedItems.Add(dest);
 			return dest;
