@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using System.Collections.Generic;
+using System.Text;
 using System.Xml.Linq;
 
 namespace CommandGen.UnitTests
@@ -29,25 +30,95 @@ namespace CommandGen.UnitTests
             Assert.IsNotNull(first);
 
 
-            const string _EXPECTED_ = "ViewportKhr";
+            const string _EXPECTED_ = "VIEWPORT_KHR";
             Assert.AreEqual(_EXPECTED_, first.Name);
 
-            const string _EXPECTED_1_ = "Viewport";
+            const string _EXPECTED_1_ = "VIEWPORT";
             Assert.AreEqual(_EXPECTED_1_, first.Value);
+        }
+
+        [TestCase()]
+        public void Test2()
+        {
+            var inspector = new VkEntityInspector();
+
+            var actual = inspector.ExtractStandardizedEnum("VK_IMAGE_TYPE_2D", "VkImageType");
+            var expected = "TYPE_2D";
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestCase()]
+        public void Test4()
+        {
+            var inspector = new VkEntityInspector();
+
+            var actual = inspector.ExtractStandardizedEnum("VK_IMAGE_VIEW_TYPE_2D", "VkImageViewType");
+            var expected = "TYPE_2D";
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestCase()]
+        public void Test5()
+        {
+            var inspector = new VkEntityInspector();
+
+            var actual = inspector.ExtractStandardizedEnum("VK_SAMPLE_COUNT_1_BIT", "VkSampleCountFlagBits");
+            var expected = "COUNT_1_BIT";
+
+            Assert.AreEqual(expected, actual);
         }
 
         [TestCase()]
         public void Test3()
         {
-            var actual = ExtractEnumAlias("VK_STRUCTURE_TYPE_RENDER_PASS_MULTIVIEW_CREATE_INFO_KHR");
-            var expected = "VkRenderPassMultiviewCreateInfoKhr";
+            var inspector = new VkEntityInspector();
+
+            var actual = inspector.ExtractStandardizedEnum("VK_STRUCTURE_TYPE_RENDER_PASS_MULTIVIEW_CREATE_INFO_KHR", "VkStructureType");
+            var expected = "RENDER_PASS_MULTIVIEW_CREATE_INFO_KHR";
 
             Assert.AreEqual(expected, actual);
         }
 
-        static string ExtractEnumAlias(string key)
+        [TestCase()]
+        public void Test6()
         {
-            return VkEntityInspector.ParseVkStructureTypeKey(key);
+            var actual = VkEntityInspector.SetUppercase("VkStructureType");
+            Assert.AreEqual("VK_STRUCTURE_TYPE", actual);
+        }
+
+        [TestCase()]
+        public void Test7()
+        {
+            var inspector = new VkEntityInspector();
+
+            var actual = inspector.ExtractStandardizedEnum("VK_SUCCESS", "VkResult");
+            var expected = "SUCCESS";
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestCase()]
+        public void Test8()
+        {
+            var inspector = new VkEntityInspector();
+
+            var actual = inspector.ExtractStandardizedEnum("VK_BUFFER_USAGE_TRANSFER_SRC_BIT", "VkBufferUsageFlagBits");
+            var expected = "TRANSFER_SRC_BIT";
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestCase()]
+        public void Test9()
+        {
+            var inspector = new VkEntityInspector();
+
+            var actual = inspector.ExtractStandardizedEnum("VK_SAMPLE_COUNT_1_BIT", "VkSampleCountFlags");
+            var expected = "COUNT_1_BIT";
+
+            Assert.AreEqual(expected, actual);
         }
     }
 }

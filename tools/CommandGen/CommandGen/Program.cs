@@ -95,7 +95,9 @@ namespace CommandGen
 
 					foreach (var member in container.Members)
 					{
-						interfaceFile.WriteLine(methodTabs + member.Id + " = " + member.Value + ",");
+                        if (!string.IsNullOrWhiteSpace(member.Comment))
+                            interfaceFile.WriteLine(methodTabs + "// " + member.Comment);
+                        interfaceFile.WriteLine(methodTabs + member.Id + " = " + member.Value + ",");
 					}
 					interfaceFile.WriteLine(tabbedField + "}");
 					interfaceFile.WriteLine("}");
@@ -130,7 +132,9 @@ namespace CommandGen
 
 					foreach (var member in container.Members)
 					{
-						interfaceFile.WriteLine(methodTabs + member.GetImplementation());
+                        if (!string.IsNullOrWhiteSpace(member.Comment))
+                            interfaceFile.WriteLine(methodTabs + "// " + member.Comment);
+                        interfaceFile.WriteLine(methodTabs + member.GetImplementation());
 					}
 					interfaceFile.WriteLine(tabbedField + "}");
 					interfaceFile.WriteLine("}");

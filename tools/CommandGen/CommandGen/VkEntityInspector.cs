@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Xml.Linq;
 
 namespace CommandGen
@@ -343,13 +344,14 @@ namespace CommandGen
 				//}
 
 				var memberInfo = new VkStructMember();
+                memberInfo.Comment = member.Element("comment")?.Value;
 				memberInfo.MemberType = member.Element("type").Value;
 
 				var tokens = member.Value.Split(new[] {
 					' ',
 					'[',
 					']'
-				}, StringSplitOptions.RemoveEmptyEntries);
+				}, StringSplitOptions.RemoveEmptyEntries); 
 				if (tokens.Length == 2)
 				{
 					// usually instance
@@ -468,20 +470,20 @@ namespace CommandGen
 
 				var typeAttribute = parent.Attribute("type");
 				var useFlags = typeAttribute != null && typeAttribute.Value == "bitmask";
-				if (useFlags)
-				{
-					string suffix = null;
-					foreach (var ext in mExtensions)
-						if (csName.EndsWith(ext.Value, StringComparison.InvariantCulture))
-						{
-							suffix = ext.Value + suffix;
-							csName = csName.Substring(0, csName.Length - ext.Value.Length);
-						}
-					if (csName.EndsWith("FlagBits", StringComparison.InvariantCulture))
-						csName = csName.Substring(0, csName.Length - 4) + "s";
-					if (suffix != null)
-						csName += suffix;
-				}
+				//if (useFlags)
+				//{
+				//	string suffix = null;
+				//	foreach (var ext in mExtensions)
+				//		if (csName.EndsWith(ext.Value, StringComparison.InvariantCulture))
+				//		{
+				//			suffix = ext.Value + suffix;
+				//			csName = csName.Substring(0, csName.Length - ext.Value.Length);
+				//		}
+				//	if (csName.EndsWith("FlagBits", StringComparison.InvariantCulture))
+				//		csName = csName.Substring(0, csName.Length - 4) + "s";
+				//	if (suffix != null)
+				//		csName += suffix;
+				//}
 
 				mTypesTranslation[name] = csName;
 				// enums are blittable too
@@ -502,7 +504,7 @@ namespace CommandGen
 				{
 					foreach (var info in mEnumExtensions[csName])
 					{
-						container.Members.Add(WriteExtendedEnumField(info.Name, info.Value, csName));
+						container.Members.Add(WriteExtendedEnumField(info.Name, info.Value, csName, string.Empty));
 					}
 				}
 
@@ -585,15 +587,6 @@ namespace CommandGen
                 );
             }
         }
-
-        class VkEnumAlias
-        {
-            public string Name { get; set; }
-            public string Enum { get; set; }
-            public string Alias { get; set; }
-        }
-
-        List<VkEnumAlias> mEnumAliases = new List<VkEnumAlias>();
 
 		string EnumExtensionValue(XElement element, int extensionNo, ref string csEnumName)
 		{
@@ -678,6 +671,7 @@ namespace CommandGen
 		{
 			var valueAttr = e.Attribute("value");
 			string value = "<DEADBEEF>";
+            string comment = e.Attribute("comment")?.Value;
             if (valueAttr == null)
             {
                 var bitPosAttr = e.Attribute("bitpos");
@@ -704,7 +698,7 @@ namespace CommandGen
                 throw new Exception("value not found" + csEnumName);
             }
 
-            return WriteExtendedEnumField(e.Attribute("name").Value, value, csEnumName);
+            return WriteExtendedEnumField(e.Attribute("name").Value, value, csEnumName, comment);
 		}
 
 		static Dictionary<string, string> mSpecialParts = new Dictionary<string, string> {
@@ -750,7 +744,7 @@ namespace CommandGen
 			}
 		}
 
-        VkEnumMemberInfo WriteExtendedEnumField(string name, string value, string csEnumName)
+        VkEnumMemberInfo WriteExtendedEnumField(string name, string value, string csEnumName, string comment)
         {
             string fName = ExtractStandardizedEnum(name, csEnumName);
 
@@ -763,22 +757,36 @@ namespace CommandGen
             {
                 Id = fName,
                 Value = value,
+                Comment = comment,
             };
 
             //IndentWriteLine("{0} = {1},", fName, value);
         }
 
-        private string ExtractStandardizedEnum(string name, string csEnumName)
+        public static string SetUppercase(string className)
         {
-            string fName = TranslateCName(name);
-            string prefix = csEnumName, suffix = null;
-            bool isExtensionField = false;
-            string extension = null;
-
-            if (prefix.StartsWith("VK", StringComparison.OrdinalIgnoreCase))
+            var sb = new StringBuilder();
+            for (var i = 0; i < className.Length; i += 1)
             {
-                prefix = prefix.Substring(2);
+                char letter = className[i];
+                if (char.IsUpper(letter))
+                {
+                    if (i > 0)
+                    {
+                        sb.Append('_');
+                    }
+                }
+
+                sb.Append(char.ToUpperInvariant(letter));
             }
+            return sb.ToString();
+        }
+
+        public string ExtractStandardizedEnum(string name, string csEnumName)
+        {
+            string fName = name;
+            string prefix = SetUppercase(csEnumName);
+            string suffix = null;
 
             foreach (var ext in mExtensions)
             {
@@ -787,37 +795,45 @@ namespace CommandGen
                     prefix = prefix.Substring(0, prefix.Length - ext.Value.Length);
                     suffix = ext.Value;
                 }
-                else if (fName.EndsWith(ext.Value, StringComparison.InvariantCulture))
+            }
+
+            string[] suffixes = { "_FLAG_BITS", "_FLAGS" };
+
+            foreach (var end in suffixes)
+            {
+                if (prefix.EndsWith(end, StringComparison.InvariantCulture))
                 {
-                    isExtensionField = true;
-                    extension = ext.Value;
+                    prefix = prefix.Substring(0, prefix.Length - end.Length);
+                    // suffix = "Bit" + suffix;
                 }
             }
 
-            if (prefix.EndsWith("Flags", StringComparison.InvariantCulture))
-            {
-                prefix = prefix.Substring(0, prefix.Length - 5);
-                suffix = "Bit" + suffix;
-            }
+            prefix += "_";
 
-            if (fName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-                fName = fName.Substring(prefix.Length);
+            string[] finalNameTweaks = { prefix, "VK_" };
+
+            foreach (var start in finalNameTweaks)
+            {
+                if (fName.StartsWith(start, StringComparison.OrdinalIgnoreCase))
+                    fName = fName.Substring(start.Length);
+            }
 
             if (!char.IsLetter(fName[0]))
             {
                 switch (csEnumName)
                 {
                     case "VkImageType":
-                        fName = "Image" + fName;
+                        fName = "TYPE_" + fName;
                         break;
                     case "VkImageViewType":
-                        fName = "View" + fName;
+                        fName = "TYPE_" + fName;
                         break;
                     case "VkQueryResultFlags":
-                        fName = "Result" + fName;
+                        fName = "RESULT_" + fName;
                         break;
                     case "VkSampleCountFlags":
-                        fName = "Count" + fName;
+                    case "VkSampleCountFlagBits":
+                        fName = "COUNT_" + fName;
                         break;
                 }
             }

@@ -10,8 +10,9 @@
 		public bool IsArray { get; set; }
 		public string ArrayLength { get; set; }
 		public string BaseCppType { get; internal set; }
+        public string Comment { get; set; }
 
-		public string GetImplementation()
+        public string GetImplementation()
 		{
 			return Attribute != null ? Attribute + " " : "" + "public " + CsType + " " + Name + @" { get; set; }";
 		}
