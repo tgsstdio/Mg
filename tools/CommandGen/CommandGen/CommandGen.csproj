@@ -74,7 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Magnesium\Magnesium.csproj">
-      <Project>{9F9AC448-9D17-43E5-8889-285426290891}</Project>
+      <Project>{9f9ac448-9d17-43e5-8889-285426290891}</Project>
       <Name>Magnesium</Name>
     </ProjectReference>
   </ItemGroup>

@@ -19,7 +19,7 @@ namespace CommandGen.UnitTests
             const string _MEMBER_NAME_ = "VK_STRUCTURE_TYPE_VIEWPORT";
             const string _MEMBER_ALIAS_ = "VK_STRUCTURE_TYPE_VIEWPORT_KHR";
 
-            inspector.AppendEnumMemberAlias(_ENUM_NAME_, _MEMBER_NAME_, _MEMBER_ALIAS_);
+            inspector.AppendEnumMemberAlias(_ENUM_NAME_, _MEMBER_NAME_, _MEMBER_ALIAS_, "");
             Assert.AreEqual(1, inspector.EnumExtensions.Count);
             var actual = inspector.EnumExtensions.TryGetValue(_ENUM_NAME_, out List<VkEnumExtensionInfo> found);
             Assert.IsTrue(actual);

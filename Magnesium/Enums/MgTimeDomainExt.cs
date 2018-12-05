@@ -2,7 +2,7 @@ using System;
 
 namespace Magnesium
 {
-	public enum MgTimeDomainExt : UInt32
+	public enum MgTimeDomainEXT : UInt32
 	{
 		DEVICE_EXT = 0,
 		CLOCK_MONOTONIC_EXT = 1,

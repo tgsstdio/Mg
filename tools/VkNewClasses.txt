@@ -1,7 +1,7 @@
 VkConditionalRenderingBeginInfoEXT D
 VkExternalMemoryHandleTypeFlagsNV UINT32 DONE
 VkExternalMemoryHandleTypeFlagsNV UINT32 DONE
-MgImageUsageFlagBits
+MgImageUsageFlagBits DONE
 VkCmdProcessCommandsInfoNVX
 VkCmdReserveSpaceForCommandsInfoNVX
 VkIndirectCommandsLayoutCreateInfoNVX

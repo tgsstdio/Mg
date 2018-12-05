@@ -2,7 +2,7 @@
 
 namespace Magnesium
 {
-    public enum MgDebugReportObjectTypeExt : UInt32
+    public enum MgDebugReportObjectTypeEXT : UInt32
     {
         UNKNOWN_EXT = 0,
         INSTANCE_EXT = 1,

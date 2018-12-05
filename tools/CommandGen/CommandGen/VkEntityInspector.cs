@@ -186,7 +186,9 @@ namespace CommandGen
 		readonly Dictionary<string, string> mExtensions = new Dictionary<string, string> {
 			{ "EXT", "Ext" },
 			{ "IMG", "Img" },
-			{ "KHR", "Khr" }
+			{ "KHR", "Khr" },
+            { "AMD", "Amd" },
+            { "NVX", "Nvx" }
 		};
 
 		readonly Dictionary<string, VkHandleInfo> mHandles = new Dictionary<string, VkHandleInfo>();
@@ -243,9 +245,9 @@ namespace CommandGen
 				csName = name;
 			}
 
-			foreach (var ext in mExtensions)
-				if (csName.EndsWith(ext.Key, StringComparison.InvariantCulture))
-					csName = csName.Substring(0, csName.Length - ext.Value.Length) + ext.Value;
+			//foreach (var ext in mExtensions)
+			//	if (csName.EndsWith(ext.Key, StringComparison.InvariantCulture))
+			//		csName = csName.Substring(0, csName.Length - ext.Value.Length) + ext.Value;
 
 			return csName;
 		}
@@ -844,10 +846,11 @@ namespace CommandGen
 
             foreach (var ext in mExtensions)
             {
-                if (prefix.EndsWith(ext.Value, StringComparison.InvariantCulture))
+                string key = ext.Key;
+                if (prefix.EndsWith(key, StringComparison.InvariantCulture))
                 {
-                    prefix = prefix.Substring(0, prefix.Length - ext.Value.Length);
-                    suffix = ext.Value;
+                    prefix = prefix.Substring(0, prefix.Length - key.Length);
+                    suffix = key;
                 }
             }
 

@@ -3,7 +3,7 @@ using System;
 namespace Magnesium
 {
 	[Flags]
-	public enum MgSurfaceTransformFlagBitsKhr : UInt32
+	public enum MgSurfaceTransformFlagBitsKHR : UInt32
 	{
 		IDENTITY_BIT_KHR = 0x1,
 		ROTATE_90_BIT_KHR = 0x2,

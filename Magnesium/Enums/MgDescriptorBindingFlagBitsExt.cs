@@ -3,7 +3,7 @@ using System;
 namespace Magnesium
 {
 	[Flags]
-	public enum MgDescriptorBindingFlagBitsExt : UInt32
+	public enum MgDescriptorBindingFlagBitsEXT : UInt32
 	{
 		UPDATE_AFTER_BIND_BIT_EXT = 0x1,
 		UPDATE_UNUSED_WHILE_PENDING_BIT_EXT = 0x2,

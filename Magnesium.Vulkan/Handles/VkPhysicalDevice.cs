@@ -288,7 +288,7 @@ namespace Magnesium.Vulkan
 		public void GetPhysicalDeviceFormatProperties(MgFormat format, out MgFormatProperties pFormatProperties)
 		{
 			var formatProperties = default(VkFormatProperties);
-			Interops.vkGetPhysicalDeviceFormatProperties(Handle, (VkFormat)format, ref formatProperties);
+			Interops.vkGetPhysicalDeviceFormatProperties(Handle, format, ref formatProperties);
 
 			pFormatProperties = new MgFormatProperties
 			{
@@ -301,21 +301,17 @@ namespace Magnesium.Vulkan
 
 		public MgResult GetPhysicalDeviceImageFormatProperties(MgFormat format, MgImageType type, MgImageTiling tiling, MgImageUsageFlagBits usage, MgImageCreateFlagBits flags, out MgImageFormatProperties pImageFormatProperties)
 		{
-			var bFormat = (VkFormat)format;
 			var bType = (VkImageType)type;
-			var bUsage = (VkImageUsageFlags)usage;
-			var bTiling = (VkImageTiling)tiling;
-			var bFlags = (VkImageCreateFlags)flags;
 
 			var properties = default(VkImageFormatProperties);
 			var result = Interops.vkGetPhysicalDeviceImageFormatProperties
 			(
 				Handle,
-				bFormat,
+				format,
 				bType,
-				bTiling,
-				bUsage,
-				bFlags,
+				tiling,
+				usage,
+				flags,
 				ref properties
 		   );
 
@@ -578,20 +574,17 @@ namespace Magnesium.Vulkan
 		{
 			uint count = 0;
 
-			var bFormat = (VkFormat) format;
 			var bType = (VkImageType) type;
 			var bSamples = (VkSampleCountFlags) samples;
-			var bUsage = (VkImageUsageFlags) usage;
-			var bTiling = (VkImageTiling) tiling;
 
 			Interops.vkGetPhysicalDeviceSparseImageFormatProperties
 			(
 				Handle,
-				bFormat,
+				format,
 				bType,
 				bSamples,
-				bUsage,
-				bTiling,
+				usage,
+				tiling,
 				ref count,
 				null
 	   	    );
@@ -606,11 +599,11 @@ namespace Magnesium.Vulkan
 			Interops.vkGetPhysicalDeviceSparseImageFormatProperties
 			(
 				Handle,
-				bFormat,
+				format,
 				bType,
 				bSamples,
-				bUsage,
-				bTiling,
+				usage,
+				tiling,
 				ref count,
 				formatProperties
 		   	);
@@ -907,23 +900,19 @@ namespace Magnesium.Vulkan
 			return result;
 		}
 
-        public MgResult GetPhysicalDeviceExternalImageFormatPropertiesNV(MgFormat format, MgImageType type, MgImageTiling tiling, MgImageUsageFlagBits usage, MgImageCreateFlagBits flags, uint externalHandleType, out MgExternalImageFormatPropertiesNV pExternalImageFormatProperties)
+        public MgResult GetPhysicalDeviceExternalImageFormatPropertiesNV(MgFormat format, MgImageType type, MgImageTiling tiling, MgImageUsageFlagBits usage, MgImageCreateFlagBits flags, UInt32 externalHandleType, out MgExternalImageFormatPropertiesNV pExternalImageFormatProperties)
         {
-            var bFormat = (VkFormat)format;
-            var bType = (VkImageType)type;
-            var bUsage = (VkImageUsageFlags)usage;
-            var bTiling = (VkImageTiling)tiling;            
-            var bFlags = (VkImageCreateFlags)flags;
+            var bType = (VkImageType)type;      
 
             var properties = default(VkExternalImageFormatPropertiesNV);
 
             var result = Interops.vkGetPhysicalDeviceExternalImageFormatPropertiesNV(
                 this.Handle,
-                bFormat,
+                format,
                 bType,
-                bTiling,
-                bUsage,               
-                bFlags,
+                tiling,
+                usage,               
+                flags,
                 externalHandleType,
                 ref properties);
 

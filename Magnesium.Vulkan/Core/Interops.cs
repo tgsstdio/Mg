@@ -35,10 +35,10 @@ namespace Magnesium.Vulkan
 		internal extern static void vkGetPhysicalDeviceFeatures(IntPtr physicalDevice, ref VkPhysicalDeviceFeatures pFeatures);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe void vkGetPhysicalDeviceFormatProperties(IntPtr physicalDevice, VkFormat format, ref VkFormatProperties pFormatProperties);
+		internal extern static unsafe void vkGetPhysicalDeviceFormatProperties(IntPtr physicalDevice, MgFormat format, ref VkFormatProperties pFormatProperties);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static MgResult vkGetPhysicalDeviceImageFormatProperties(IntPtr physicalDevice, VkFormat format, VkImageType type, VkImageTiling tiling, VkImageUsageFlags usage, VkImageCreateFlags flags, ref VkImageFormatProperties pImageFormatProperties);
+		internal extern static MgResult vkGetPhysicalDeviceImageFormatProperties(IntPtr physicalDevice, MgFormat format, VkImageType type, MgImageTiling tiling, MgImageUsageFlagBits usage, MgImageCreateFlagBits flags, ref VkImageFormatProperties pImageFormatProperties);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static MgResult vkCreateDevice(IntPtr physicalDevice, ref VkDeviceCreateInfo pCreateInfo, IntPtr pAllocator, ref IntPtr pDevice);
@@ -107,7 +107,7 @@ namespace Magnesium.Vulkan
 		internal extern static unsafe void vkGetImageSparseMemoryRequirements(IntPtr device, UInt64 image, UInt32* pSparseMemoryRequirementCount, Magnesium.MgSparseImageMemoryRequirements* pSparseMemoryRequirements);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static void vkGetPhysicalDeviceSparseImageFormatProperties(IntPtr physicalDevice, VkFormat format, VkImageType type, VkSampleCountFlags samples, VkImageUsageFlags usage, VkImageTiling tiling, ref UInt32 pPropertyCount, [In, Out] VkSparseImageFormatProperties[] pProperties);
+		internal extern static void vkGetPhysicalDeviceSparseImageFormatProperties(IntPtr physicalDevice, MgFormat format, VkImageType type, VkSampleCountFlags samples, MgImageUsageFlagBits usage, MgImageTiling tiling, ref UInt32 pPropertyCount, [In, Out] VkSparseImageFormatProperties[] pProperties);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static unsafe MgResult vkQueueBindSparse(IntPtr queue, UInt32 bindInfoCount, VkBindSparseInfo* pBindInfo, UInt64 fence);
@@ -539,7 +539,7 @@ namespace Magnesium.Vulkan
         internal extern static MgResult vkEnumerateInstanceVersion(ref UInt32 pApiVersion);
 
         [DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static MgResult vkGetPhysicalDeviceExternalImageFormatPropertiesNV(IntPtr physicalDevice, VkFormat format, VkImageType type, VkImageTiling tiling, VkImageUsageFlags usage, VkImageCreateFlags flags, UInt32 externalHandleType, ref VkExternalImageFormatPropertiesNV pExternalImageFormatProperties);
+		internal extern static MgResult vkGetPhysicalDeviceExternalImageFormatPropertiesNV(IntPtr physicalDevice, MgFormat format, VkImageType type, MgImageTiling tiling, MgImageUsageFlagBits usage, MgImageCreateFlagBits flags, UInt32 externalHandleType, ref VkExternalImageFormatPropertiesNV pExternalImageFormatProperties);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static MgResult vkGetMemoryWin32HandleNV(IntPtr device, UInt64 memory, UInt32 handleType, ref IntPtr pHandle);

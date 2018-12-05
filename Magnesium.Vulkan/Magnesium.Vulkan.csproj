@@ -64,15 +64,11 @@
     <Compile Include="Enums\VkDynamicState.cs" />
     <Compile Include="Enums\VkFenceCreateFlags.cs" />
     <Compile Include="Enums\VkFilter.cs" />
-    <Compile Include="Enums\VkFormat.cs" />
     <Compile Include="Enums\VkFormatFeatureFlags.cs" />
     <Compile Include="Enums\VkFrontFace.cs" />
     <Compile Include="Enums\VkImageAspectFlags.cs" />
-    <Compile Include="Enums\VkImageCreateFlags.cs" />
     <Compile Include="Enums\VkImageLayout.cs" />
-    <Compile Include="Enums\VkImageTiling.cs" />
     <Compile Include="Enums\VkImageType.cs" />
-    <Compile Include="Enums\VkImageUsageFlags.cs" />
     <Compile Include="Enums\VkImageViewType.cs" />
     <Compile Include="Enums\VkIndexType.cs" />
     <Compile Include="Enums\VkInternalAllocationType.cs" />

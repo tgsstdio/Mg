@@ -2,7 +2,7 @@ using System;
 
 namespace Magnesium
 {
-	public enum VkBlendOverlapExt : UInt32
+	public enum VkBlendOverlapEXT : UInt32
 	{
 		UNCORRELATED_EXT = 0,
 		DISJOINT_EXT = 1,

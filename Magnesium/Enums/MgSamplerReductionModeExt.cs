@@ -2,7 +2,7 @@ using System;
 
 namespace Magnesium
 {
-	public enum MgSamplerReductionModeExt : UInt32
+	public enum MgSamplerReductionModeEXT : UInt32
 	{
 		WEIGHTED_AVERAGE_EXT = 0,
 		MIN_EXT = 1,

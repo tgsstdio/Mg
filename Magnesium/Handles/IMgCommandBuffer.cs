@@ -54,6 +54,7 @@ namespace Magnesium
 		void CmdExecuteCommands(IMgCommandBuffer[] pCommandBuffers);
 
         void CmdBeginConditionalRenderingEXT(MgConditionalRenderingBeginInfoEXT pConditionalRenderingBegin);
+        void CmdProcessCommandsNVX(MgCmdProcessCommandsInfoNVX pProcessCommandsInfo);
     }
 }
 

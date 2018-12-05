@@ -3,7 +3,7 @@ using System;
 namespace Magnesium
 {
 	[Flags]
-	public enum MgDeviceGroupPresentModeFlagBitsKhr : UInt32
+	public enum MgDeviceGroupPresentModeFlagBitsKHR : UInt32
 	{
 		/// <summary> 
 		/// Present from local memory

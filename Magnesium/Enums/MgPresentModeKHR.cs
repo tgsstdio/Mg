@@ -2,7 +2,7 @@
 
 namespace Magnesium
 {
-    public enum MgPresentModeKhr : UInt32
+    public enum MgPresentModeKHR : UInt32
     {
         IMMEDIATE_KHR = 0,
         MAILBOX_KHR = 1,

@@ -16,42 +16,40 @@ namespace CommandGen
 		static List<VkContainerClass> RefactorMgInterfaces()
 		{
 			var interfaces = new Type[] {
-
-				typeof(IMgEntrypoint),
-				typeof(IMgInstance),
-				typeof(IMgPhysicalDevice),
-				typeof(IMgDevice),
-				typeof(IMgQueue),
-				typeof(IMgCommandBuffer),
-
-				typeof(IMgDeviceMemory),
-				typeof(IMgCommandPool),
+                typeof(IMgAllocationCallbacks),
 				typeof(IMgBuffer),
 				typeof(IMgBufferView),
-				typeof(IMgImage),
-
-				typeof(IMgImageView),
-				typeof(IMgShaderModule),
-				typeof(IMgPipeline),
-				typeof(IMgPipelineLayout),
-				typeof(IMgSampler),
-
+				typeof(IMgCommandBuffer),
+				typeof(IMgCommandPool),
+				typeof(IMgDescriptorPool),
 				typeof(IMgDescriptorSet),
 				typeof(IMgDescriptorSetLayout),
-				typeof(IMgDescriptorPool),
-				typeof(IMgFence),
-				typeof(IMgSemaphore),
-
+				typeof(IMgDevice),
+				typeof(IMgDeviceMemory),
+                typeof(IMgDisplayModeKHR),
 				typeof(IMgEvent),
-				typeof(IMgQueryPool),
+				typeof(IMgFence),
 				typeof(IMgFramebuffer),
-				typeof(IMgRenderPass),
+				typeof(IMgImage),
+				typeof(IMgImageView),
+                typeof(IMgIndirectCommandsLayoutNVX),
+				typeof(IMgInstance),
+                typeof(IMgObjectTableNVX),
+				typeof(IMgPipeline),
 				typeof(IMgPipelineCache),
-
+				typeof(IMgPipelineLayout),
+				typeof(IMgQueryPool),
+				typeof(IMgQueue),
+				typeof(IMgRenderPass),
+				typeof(IMgSampler),
+				typeof(IMgSemaphore),
+				typeof(IMgShaderModule),
 				typeof(IMgSurfaceKHR),
 				typeof(IMgSwapchainKHR),
+                typeof(IMgEntrypoint),
+				typeof(IMgPhysicalDevice),
+
 				typeof(IMgDebugReportCallbackEXT),
-				typeof(IMgAllocationCallbacks),
 			 };
 
 			var uniques = new StringCollection();
