@@ -70,6 +70,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CommandBuffer\MgConditionalRenderingBeginInfoEXT.cs" />
+    <Compile Include="Enums\MgAttachmentDescriptionFlagBits.cs" />
+    <Compile Include="Enums\MgAccelerationStructureMemoryRequirementsTypeNV.cs" />
+    <Compile Include="Enums\MgAccelerationStructureTypeNV.cs" />
+    <Compile Include="Enums\MgBlendOverlapExt.cs" />
+    <Compile Include="Enums\MgBuildAccelerationStructureFlagBitsNV.cs" />
+    <Compile Include="Enums\MgChromaLocation.cs" />
     <Compile Include="PhysicalDevice\MgExternalImageFormatPropertiesNV.cs" />
     <Compile Include="Driver\IMgGraphicsConfiguration.cs" />
     <Compile Include="Driver\IMgPresentationLayer.cs" />
@@ -177,9 +183,8 @@
     <Compile Include="Enums\MgSharingMode.cs" />
     <Compile Include="Enums\MgStencilOp.cs" />
     <Compile Include="Device\MgAttachmentDescription.cs" />
-    <Compile Include="Device\MgAttachmentDescriptionFlagBits.cs" />
-    <Compile Include="Device\MgAttachmentLoadOp.cs" />
-    <Compile Include="Device\MgBufferCreateFlagBits.cs" />
+    <Compile Include="Enums\MgAttachmentLoadOp.cs" />
+    <Compile Include="Enums\MgBufferCreateFlagBits.cs" />
     <Compile Include="Device\MgMappedMemoryRange.cs" />
     <Compile Include="Device\MgSemaphoreCreateInfo.cs" />
     <Compile Include="Device\MgEventCreateInfo.cs" />
@@ -225,7 +230,7 @@
     <Compile Include="Device\MgQueryType.cs" />
     <Compile Include="Device\MgSubpassDescription.cs" />
     <Compile Include="Device\MgAttachmentReference.cs" />
-    <Compile Include="Device\MgBorderColor.cs" />
+    <Compile Include="Enums\MgBorderColor.cs" />
     <Compile Include="Device\MgCommandPoolResetFlagBits.cs" />
     <Compile Include="Device\MgCullModeFlagBits.cs" />
     <Compile Include="Device\MgDescriptorPoolCreateInfo.cs" />
@@ -261,7 +266,7 @@
     <Compile Include="Device\MgCommandBufferLevel.cs" />
     <Compile Include="Device\MgBufferCreateInfo.cs" />
     <Compile Include="Device\MgBufferViewCreateInfo.cs" />
-    <Compile Include="Device\MgAttachmentStoreOp.cs" />
+    <Compile Include="Enums\MgAttachmentStoreOp.cs" />
     <Compile Include="Device\MgImageViewCreateInfo.cs" />
     <Compile Include="Device\IMgDevice.cs" />
     <Compile Include="CommandBuffer\IMgCommandBuffer.cs" />

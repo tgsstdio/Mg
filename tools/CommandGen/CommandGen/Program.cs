@@ -121,17 +121,17 @@ namespace CommandGen
                 if (container.name == "VkSturctureType")
                     continue;
 
-				using (var interfaceFile = new StreamWriter(Path.Combine("Enums", container.name + ".cs"), false))
+				using (var interfaceFile = new StreamWriter(Path.Combine("Enums", "Mg" + (container.name + ".cs").Substring(2)), false))
 				{
 					interfaceFile.WriteLine("using System;");
 					interfaceFile.WriteLine("");
-					interfaceFile.WriteLine("namespace Magnesium.Vulkan");
+					interfaceFile.WriteLine("namespace Magnesium");
 					interfaceFile.WriteLine("{");
 					string tabbedField = "\t";
 
 					if (container.UseFlags)
 						interfaceFile.WriteLine(tabbedField + "[Flags]");
-					interfaceFile.WriteLine(tabbedField + "internal enum {0} : uint", container.name);
+					interfaceFile.WriteLine(tabbedField + "public enum {0} : UInt32", "Mg" + container.name.Substring(2));
 					interfaceFile.WriteLine(tabbedField + "{");
 
 					var methodTabs = tabbedField + "\t";

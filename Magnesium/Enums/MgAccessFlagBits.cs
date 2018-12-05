@@ -2,44 +2,90 @@
 
 namespace Magnesium
 {
-    [Flags] 
-	public enum MgAccessFlagBits : UInt32
-	{
-		// Controls coherency of indirect command reads
-		INDIRECT_COMMAND_READ_BIT = 1 << 0,
-		// Controls coherency of index reads
-		INDEX_READ_BIT = 1 << 1,
-		// Controls coherency of vertex attribute reads
-		VERTEX_ATTRIBUTE_READ_BIT = 1 << 2,
-		// Controls coherency of uniform buffer reads
-		UNIFORM_READ_BIT = 1 << 3,
-		// Controls coherency of input attachment reads
-		INPUT_ATTACHMENT_READ_BIT = 1 << 4,
-		// Controls coherency of shader reads
-		SHADER_READ_BIT = 1 << 5,
-		// Controls coherency of shader writes
-		SHADER_WRITE_BIT = 1 << 6,
-		// Controls coherency of color attachment reads
-		COLOR_ATTACHMENT_READ_BIT = 1 << 7,
-		// Controls coherency of color attachment writes
-		COLOR_ATTACHMENT_WRITE_BIT = 1 << 8,
-		// Controls coherency of depth/stencil attachment reads
-		DEPTH_STENCIL_ATTACHMENT_READ_BIT = 1 << 9,
-		// Controls coherency of depth/stencil attachment writes
-		DEPTH_STENCIL_ATTACHMENT_WRITE_BIT = 1 << 10,
-		// Controls coherency of transfer reads
-		TRANSFER_READ_BIT = 1 << 11,
-		// Controls coherency of transfer writes
-		TRANSFER_WRITE_BIT = 1 << 12,
-		// Controls coherency of host reads
-		HOST_READ_BIT = 1 << 13,
-		// Controls coherency of host writes
-		HOST_WRITE_BIT = 1 << 14,
-		// Controls coherency of memory reads
-		MEMORY_READ_BIT = 1 << 15,
-		// Controls coherency of memory writes
-		MEMORY_WRITE_BIT = 1 << 16,
-	};
+    [Flags]
+    public enum MgAccessFlagBits : UInt32
+    {
+        /// <summary> 
+        /// Controls coherency of indirect command reads
+        /// </summary> 
+        INDIRECT_COMMAND_READ_BIT = 0x1,
+        /// <summary> 
+        /// Controls coherency of index reads
+        /// </summary> 
+        INDEX_READ_BIT = 0x2,
+        /// <summary> 
+        /// Controls coherency of vertex attribute reads
+        /// </summary> 
+        VERTEX_ATTRIBUTE_READ_BIT = 0x4,
+        /// <summary> 
+        /// Controls coherency of uniform buffer reads
+        /// </summary> 
+        UNIFORM_READ_BIT = 0x8,
+        /// <summary> 
+        /// Controls coherency of input attachment reads
+        /// </summary> 
+        INPUT_ATTACHMENT_READ_BIT = 0x10,
+        /// <summary> 
+        /// Controls coherency of shader reads
+        /// </summary> 
+        SHADER_READ_BIT = 0x20,
+        /// <summary> 
+        /// Controls coherency of shader writes
+        /// </summary> 
+        SHADER_WRITE_BIT = 0x40,
+        /// <summary> 
+        /// Controls coherency of color attachment reads
+        /// </summary> 
+        COLOR_ATTACHMENT_READ_BIT = 0x80,
+        /// <summary> 
+        /// Controls coherency of color attachment writes
+        /// </summary> 
+        COLOR_ATTACHMENT_WRITE_BIT = 0x100,
+        /// <summary> 
+        /// Controls coherency of depth/stencil attachment reads
+        /// </summary> 
+        DEPTH_STENCIL_ATTACHMENT_READ_BIT = 0x200,
+        /// <summary> 
+        /// Controls coherency of depth/stencil attachment writes
+        /// </summary> 
+        DEPTH_STENCIL_ATTACHMENT_WRITE_BIT = 0x400,
+        /// <summary> 
+        /// Controls coherency of transfer reads
+        /// </summary> 
+        TRANSFER_READ_BIT = 0x800,
+        /// <summary> 
+        /// Controls coherency of transfer writes
+        /// </summary> 
+        TRANSFER_WRITE_BIT = 0x1000,
+        /// <summary> 
+        /// Controls coherency of host reads
+        /// </summary> 
+        HOST_READ_BIT = 0x2000,
+        /// <summary> 
+        /// Controls coherency of host writes
+        /// </summary> 
+        HOST_WRITE_BIT = 0x4000,
+        /// <summary> 
+        /// Controls coherency of memory reads
+        /// </summary> 
+        MEMORY_READ_BIT = 0x8000,
+        /// <summary> 
+        /// Controls coherency of memory writes
+        /// </summary> 
+        MEMORY_WRITE_BIT = 0x10000,
+        TRANSFORM_FEEDBACK_WRITE_BIT_EXT = 0x2000000,
+        TRANSFORM_FEEDBACK_COUNTER_READ_BIT_EXT = 0x4000000,
+        TRANSFORM_FEEDBACK_COUNTER_WRITE_BIT_EXT = 0x8000000,
+        /// <summary> 
+        /// read access flag for reading conditional rendering predicate
+        /// </summary> 
+        CONDITIONAL_RENDERING_READ_BIT_EXT = 0x100000,
+        COMMAND_PROCESS_READ_BIT_NVX = 0x20000,
+        COMMAND_PROCESS_WRITE_BIT_NVX = 0x40000,
+        COLOR_ATTACHMENT_READ_NONCOHERENT_BIT_EXT = 0x80000,
+        SHADING_RATE_IMAGE_READ_BIT_NV = 0x800000,
+        ACCELERATION_STRUCTURE_READ_BIT_NV = 0x200000,
+        ACCELERATION_STRUCTURE_WRITE_BIT_NV = 0x400000,
+    };
 
 }
-
