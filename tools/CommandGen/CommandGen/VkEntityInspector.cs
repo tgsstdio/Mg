@@ -521,7 +521,7 @@ namespace CommandGen
 				{
 					foreach (var info in mEnumExtensions[csName])
 					{
-						container.Members.Add(WriteExtendedEnumField(info.Key, info.Value, csName, string.Empty, info.UnmodifiedKey, info.UnmodifiedValue));
+						container.Members.Add(WriteExtendedEnumField(info.Key, info.Value, csName, info.Comment, info.UnmodifiedKey, info.UnmodifiedValue));
 					}
 				}
 
@@ -532,33 +532,60 @@ namespace CommandGen
 
 		void LearnExtensions(XElement root)
 		{
-			var elements = from e in root.Elements("extensions").Elements("extension") where e.Attribute("supported").Value != "disabled" select e;
+            var updates = from f in root.Elements("feature") select f;
+            foreach (var feature in updates)
+            {
+                LearnExtension(0, feature);
+            }
 
-			foreach (var element in elements)
-				LearnExtension(element);
-		}
+            var elements = from e in root.Elements("extensions").Elements("extension") where e.Attribute("supported").Value != "disabled" select e;
 
-		void LearnExtension(XElement extensionElement)
+            foreach (var element in elements) {
+                int number = Int32.Parse(element.Attribute("number").Value);
+                LearnExtension(number, element);
+            }
+
+
+        }
+
+		void LearnExtension(int parentExtension, XElement extensionElement)
 		{
-			var extensions = from e in extensionElement.Element("require").Elements("enum") where e.Attribute("extends") != null select e;
-			int number = Int32.Parse(extensionElement.Attribute("number").Value);
+			var extensions = from e in extensionElement.Elements("require").Elements("enum") where e.Attribute("extends") != null select e;
+
 			foreach (var element in extensions)
             {
-                string enumName = GetTypeCsName(element.Attribute("extends").Value, "enum");
-
-                var nameAttr = element.Attribute("name");
-
-                enumName = AppendEnumMember(number, element, enumName, nameAttr);
-
-                var aliasAttr = element.Attribute("alias");
-
-                string memberName = nameAttr?.Value;
-                string memberAlias = aliasAttr?.Value;
-                AppendEnumMemberAlias(enumName, memberName, memberAlias);
+                XAttribute extNoAttr = element.Attribute("extnumber");
+                int extNumber = extNoAttr != null
+                    ? int.Parse(extNoAttr.Value)
+                    : parentExtension;
+                ExtractEnumExtension(extNumber, element);
             }
         }
 
-        private string AppendEnumMember(int number, XElement element, string enumName, XAttribute nameAttr)
+        private void ExtractEnumExtension(int number, XElement element)
+        {
+            string enumName = GetTypeCsName(element.Attribute("extends").Value, "enum");
+
+            var nameAttr = element.Attribute("name");
+
+            string comment = element.Attribute("comment")?.Value;
+
+ 
+            var aliasAttr = element.Attribute("alias");
+            if (aliasAttr == null)
+            {
+                AppendEnumMember(number, element, enumName, nameAttr, comment);
+            }
+            else
+            {
+                string memberName = nameAttr?.Value;
+                string memberAlias = aliasAttr?.Value;
+                AppendEnumMemberAlias(enumName, memberName, memberAlias, comment);
+            }
+            
+        }
+
+        private void AppendEnumMember(int number, XElement element, string enumName, XAttribute nameAttr, string comment)
         {
             SetupEnumExtensionEntry(enumName);
 
@@ -570,10 +597,10 @@ namespace CommandGen
                     Key = nameAttr.Value,
                     UnmodifiedKey = nameAttr.Value,
                     Value = localValue,
-                    UnmodifiedValue = localValue,
+                    UnmodifiedValue = localValue,                    
+                    Comment = comment,
                 }
             );
-            return enumName;
         }
 
         private void SetupEnumExtensionEntry(string enumName)
@@ -582,30 +609,31 @@ namespace CommandGen
                 mEnumExtensions[enumName] = new List<VkEnumExtensionInfo>();
         }
 
-        public void AppendEnumMemberAlias(string enumName, string memberName, string memberAlias)
+        public void AppendEnumMemberAlias(string enumName, string key, string value, string comment)
         {
             if (enumName == null)
             {
                 throw new ArgumentNullException(nameof(enumName));
             }
 
-            if (memberName == null)
+            if (key == null)
             {
-                throw new ArgumentNullException(nameof(memberName));
+                throw new ArgumentNullException(nameof(key));
             }
 
             SetupEnumExtensionEntry(enumName);
 
-            if (!string.IsNullOrEmpty(memberAlias))
+            if (!string.IsNullOrEmpty(value))
             {
                 // add secondary alias
                 mEnumExtensions[enumName].Add(
                     new VkEnumExtensionInfo
                     {
-                        Key  = ExtractStandardizedEnum(memberAlias, enumName),
-                        UnmodifiedKey = memberAlias,
-                        Value = ExtractStandardizedEnum(memberName, enumName),
-                        UnmodifiedValue = memberName,
+                        Key  = ExtractStandardizedEnum(key, enumName),
+                        UnmodifiedKey = key,
+                        Value = ExtractStandardizedEnum(value, enumName),
+                        UnmodifiedValue = value,
+                        Comment = comment,
                     }
                 );
             }
@@ -613,7 +641,16 @@ namespace CommandGen
 
 		string EnumExtensionValue(XElement element, int extensionNo, string csEnumName)
 		{
-			var offsetAttribute = element.Attribute("offset");
+            var bitposAttribute = element.Attribute("bitpos");
+            if (bitposAttribute != null)
+            {
+                //if (csEnumName.EndsWith("FlagBits", StringComparison.InvariantCulture))
+                //	csEnumName = csEnumName.Substring(0, csEnumName.Length - 4) + "s";
+
+                return FormatFlagValue(Int32.Parse(bitposAttribute.Value));
+            }
+
+            var offsetAttribute = element.Attribute("offset");
 			if (offsetAttribute != null)
             {
                 int direction = 1;
@@ -627,24 +664,15 @@ namespace CommandGen
             var valueAttribute = element.Attribute("value");
 			if (valueAttribute != null)
 				return valueAttribute.Value;
-
-			var bitposAttribute = element.Attribute("bitpos");
-			if (bitposAttribute != null)
-			{
-				//if (csEnumName.EndsWith("FlagBits", StringComparison.InvariantCulture))
-				//	csEnumName = csEnumName.Substring(0, csEnumName.Length - 4) + "s";
-
-				return FormatFlagValue(Int32.Parse(bitposAttribute.Value));
-			}
             
             var extendsAttribute = element.Attribute("extends");
             
             if (extendsAttribute != null)
             {
-                //if (extendsAttribute.Value == "VkStructureType")
-                //{
-                //    return GetTypeCsName(extendsAttribute.Value);
-                //}
+                if (extendsAttribute.Value == "VkStructureType")
+                {
+                    return GetTypeCsName(extendsAttribute.Value);
+                }
 
                 int direction = 1;
                 var dirAttr = element.Attribute("dir");
@@ -848,6 +876,10 @@ namespace CommandGen
             {
                 switch (csEnumName)
                 {
+                    case "VkImageCreateFlags":
+                    case "VkImageCreateFlagBits":
+                        fName = "CREATE_" + fName;
+                        break;
                     case "VkImageType":
                         fName = "TYPE_" + fName;
                         break;

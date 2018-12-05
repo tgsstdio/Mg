@@ -311,7 +311,7 @@ namespace Magnesium.Vulkan
 					var region = handle.AddrOfPinnedObject();
 
 					MgImageCopy* regions = (MgImageCopy*)region.ToPointer();
-					Interops.vkCmdCopyImage(this.Handle, bSrcImage.Handle, (VkImageLayout)srcImageLayout, bDstImage.Handle, (VkImageLayout)dstImageLayout, regionCount, regions);
+					Interops.vkCmdCopyImage(this.Handle, bSrcImage.Handle, srcImageLayout, bDstImage.Handle, dstImageLayout, regionCount, regions);
 				}
 			}
 			finally
@@ -827,6 +827,7 @@ namespace Magnesium.Vulkan
 
             var pBegin = new VkConditionalRenderingBeginInfoEXT
             {
+                sType = VkStructureType.StructureTypeConditionalRenderingBeginInfoExt,
                 pNext = IntPtr.Zero,
                 buffer = bBuffer.Handle,
                 offset = pConditionalRenderingBegin.Offset,

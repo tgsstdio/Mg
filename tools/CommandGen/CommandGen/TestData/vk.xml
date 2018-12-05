@@ -7318,7 +7318,7 @@ server.
         <require comment="Promoted from VK_KHR_maintenance2">
             <enum bitpos="7"  extends="VkImageCreateFlagBits"                   name="VK_IMAGE_CREATE_BLOCK_TEXEL_VIEW_COMPATIBLE_BIT"/>
             <enum bitpos="8"  extends="VkImageCreateFlagBits"                   name="VK_IMAGE_CREATE_EXTENDED_USAGE_BIT"/>
-            <enum extends="VkStructureType" f="118" offset="0"          name="VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_POINT_CLIPPING_PROPERTIES"/>
+            <enum extends="VkStructureType" extnumber="118" offset="0"          name="VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_POINT_CLIPPING_PROPERTIES"/>
             <enum extends="VkStructureType" extnumber="118" offset="1"          name="VK_STRUCTURE_TYPE_RENDER_PASS_INPUT_ATTACHMENT_ASPECT_CREATE_INFO"/>
             <enum extends="VkStructureType" extnumber="118" offset="2"          name="VK_STRUCTURE_TYPE_IMAGE_VIEW_USAGE_CREATE_INFO"/>
             <enum extends="VkStructureType" extnumber="118" offset="3"          name="VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_DOMAIN_ORIGIN_STATE_CREATE_INFO"/>

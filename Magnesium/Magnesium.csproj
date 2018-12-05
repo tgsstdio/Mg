@@ -70,6 +70,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CommandBuffer\MgConditionalRenderingBeginInfoEXT.cs" />
+    <Compile Include="PhysicalDevice\MgExternalImageFormatPropertiesNV.cs" />
     <Compile Include="Driver\IMgGraphicsConfiguration.cs" />
     <Compile Include="Driver\IMgPresentationLayer.cs" />
     <Compile Include="Driver\MgDefaultGraphicsConfiguration.cs" />

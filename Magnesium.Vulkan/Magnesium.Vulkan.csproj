@@ -93,7 +93,6 @@
     <Compile Include="Enums\VkQueryType.cs" />
     <Compile Include="Enums\VkQueueFlags.cs" />
     <Compile Include="Enums\VkRasterizationOrderAMD.cs" />
-    <Compile Include="Enums\VkResult.cs" />
     <Compile Include="Enums\VkSampleCountFlags.cs" />
     <Compile Include="Enums\VkSamplerAddressMode.cs" />
     <Compile Include="Enums\VkSamplerMipmapMode.cs" />
@@ -154,6 +153,7 @@
     <Compile Include="Structs\VkDrawIndirectCommand.cs" />
     <Compile Include="Structs\VkEventCreateInfo.cs" />
     <Compile Include="Structs\VkExtensionProperties.cs" />
+    <Compile Include="Structs\VkExternalImageFormatPropertiesNV.cs" />
     <Compile Include="Structs\VkFenceCreateInfo.cs" />
     <Compile Include="Structs\VkFormatProperties.cs" />
     <Compile Include="Structs\VkFramebufferCreateInfo.cs" />

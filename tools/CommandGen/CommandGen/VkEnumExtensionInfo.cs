@@ -6,5 +6,6 @@
 		public string Value { get; internal set; }
         public string UnmodifiedKey { get; internal set; }
         public string UnmodifiedValue { get; internal set; }
+        public string Comment { get; internal set; }
     }
 }

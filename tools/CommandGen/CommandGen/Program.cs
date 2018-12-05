@@ -30,7 +30,7 @@ namespace CommandGen
 			//NativeVk();
 			try
 			{
-				const string DLLNAME = "Vulkan-1.dll";
+				const string DLLNAME = "vulkan-1.dll";
 
 				var doc = XDocument.Load("TestData/vk.xml", LoadOptions.PreserveWhitespace);
 
@@ -91,11 +91,17 @@ namespace CommandGen
 
                     var methodTabs = tabbedField + "\t";
 
+                  //  var uniques = new SortedSet<string>();
                     foreach (var member in container.Members)
                     {
-                        interfaceFile.WriteLine(methodTabs 
+                      //  string key = member.Id;
+                     //   if (!uniques.Contains(key))
+                      //  {
+                            interfaceFile.WriteLine(methodTabs 
                             + VkEntityInspector.ParseVkStructureTypeEnum(member.UnmodifiedKey)
                             + " = " + VkEntityInspector.ParseVkStructureTypeEnum(member.UnmodifiedValue) + ",");
+                        //    uniques.Add(key);
+                       // }
                     }
                     interfaceFile.WriteLine(tabbedField + "}");
                     interfaceFile.WriteLine("}");
@@ -112,6 +118,9 @@ namespace CommandGen
 
 			foreach (var container in inspector.Enums.Values)
 			{
+                if (container.name == "VkSturctureType")
+                    continue;
+
 				using (var interfaceFile = new StreamWriter(Path.Combine("Enums", container.name + ".cs"), false))
 				{
 					interfaceFile.WriteLine("using System;");
@@ -127,11 +136,21 @@ namespace CommandGen
 
 					var methodTabs = tabbedField + "\t";
 
+                    var uniques = new SortedSet<string>();
 					foreach (var member in container.Members)
 					{
-                        if (!string.IsNullOrWhiteSpace(member.Comment))
-                            interfaceFile.WriteLine(methodTabs + "// " + member.Comment);
-                        interfaceFile.WriteLine(methodTabs + member.Id + " = " + member.Value + ",");
+                        string key = member.Id;
+                        //if (!uniques.Contains(key))
+                        //{
+                            if (!string.IsNullOrWhiteSpace(member.Comment))
+                            {
+                                interfaceFile.WriteLine(methodTabs + "/// <summary> ");
+                                interfaceFile.WriteLine(methodTabs + "/// " + member.Comment);
+                                interfaceFile.WriteLine(methodTabs + "/// </summary> ");
+                            }
+                            interfaceFile.WriteLine(methodTabs + member.Id + " = " + member.Value + ",");
+                            //uniques.Add(key);
+                        //}
 					}
 					interfaceFile.WriteLine(tabbedField + "}");
 					interfaceFile.WriteLine("}");

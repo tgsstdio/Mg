@@ -906,5 +906,43 @@ namespace Magnesium.Vulkan
 
 			return result;
 		}
-	}
+
+        public MgResult GetPhysicalDeviceExternalImageFormatPropertiesNV(MgFormat format, MgImageType type, MgImageTiling tiling, MgImageUsageFlagBits usage, MgImageCreateFlagBits flags, uint externalHandleType, out MgExternalImageFormatPropertiesNV pExternalImageFormatProperties)
+        {
+            var bFormat = (VkFormat)format;
+            var bType = (VkImageType)type;
+            var bUsage = (VkImageUsageFlags)usage;
+            var bTiling = (VkImageTiling)tiling;            
+            var bFlags = (VkImageCreateFlags)flags;
+
+            var properties = default(VkExternalImageFormatPropertiesNV);
+
+            var result = Interops.vkGetPhysicalDeviceExternalImageFormatPropertiesNV(
+                this.Handle,
+                bFormat,
+                bType,
+                bTiling,
+                bUsage,               
+                bFlags,
+                externalHandleType,
+                ref properties);
+
+            pExternalImageFormatProperties = new MgExternalImageFormatPropertiesNV
+            {
+                ImageFormatProperties = new MgImageFormatProperties
+                {
+                    MaxExtent = properties.imageFormatProperties.maxExtent,
+                    MaxArrayLayers = properties.imageFormatProperties.maxArrayLayers,
+                    MaxMipLevels = properties.imageFormatProperties.maxMipLevels,
+                    MaxResourceSize = properties.imageFormatProperties.maxResourceSize,
+                    SampleCounts = (MgSampleCountFlagBits) properties.imageFormatProperties.sampleCounts,
+                },
+                CompatibleHandleTypes = properties.compatibleHandleTypes,
+                ExportFromImportedHandleTypes = properties.exportFromImportedHandleTypes,
+                ExternalMemoryFeatures = properties.externalMemoryFeatures,
+            };
+
+            return result;
+        }
+    }
 }
