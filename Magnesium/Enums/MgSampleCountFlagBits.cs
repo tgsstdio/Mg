@@ -2,23 +2,36 @@
 
 namespace Magnesium
 {
-    [Flags] 
-	public enum MgSampleCountFlagBits : byte
-	{
-		// Sample count 1 supported
-		COUNT_1_BIT = 1 << 0,
-		// Sample count 2 supported
-		COUNT_2_BIT = 1 << 1,
-		// Sample count 4 supported
-		COUNT_4_BIT = 1 << 2,
-		// Sample count 8 supported
-		COUNT_8_BIT = 1 << 3,
-		// Sample count 16 supported
-		COUNT_16_BIT = 1 << 4,
-		// Sample count 32 supported
-		COUNT_32_BIT = 1 << 5,
-		// Sample count 64 supported
-		COUNT_64_BIT = 1 << 6,
-	}
+    [Flags]
+    public enum MgSampleCountFlagBits : UInt32
+    {
+        /// <summary> 
+        /// Sample count 1 supported
+        /// </summary> 
+        COUNT_1_BIT = 0x1,
+        /// <summary> 
+        /// Sample count 2 supported
+        /// </summary> 
+        COUNT_2_BIT = 0x2,
+        /// <summary> 
+        /// Sample count 4 supported
+        /// </summary> 
+        COUNT_4_BIT = 0x4,
+        /// <summary> 
+        /// Sample count 8 supported
+        /// </summary> 
+        COUNT_8_BIT = 0x8,
+        /// <summary> 
+        /// Sample count 16 supported
+        /// </summary> 
+        COUNT_16_BIT = 0x10,
+        /// <summary> 
+        /// Sample count 32 supported
+        /// </summary> 
+        COUNT_32_BIT = 0x20,
+        /// <summary> 
+        /// Sample count 64 supported
+        /// </summary> 
+        COUNT_64_BIT = 0x40,
+    }
 }
-
