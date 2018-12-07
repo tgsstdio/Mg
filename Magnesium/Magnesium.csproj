@@ -333,7 +333,7 @@
     <Compile Include="Device\MgImageViewCreateInfo.cs" />
     <Compile Include="Handles\IMgDevice.cs" />
     <Compile Include="Handles\IMgCommandBuffer.cs" />
-    <Compile Include="PhysicalDevice\IMgPhysicalDevice.cs" />
+    <Compile Include="Handles\IMgPhysicalDevice.cs" />
     <Compile Include="Handles\IMgQueue.cs" />
     <Compile Include="Handles\IMgInstance.cs" />
     <Compile Include="Queue\MgSubmitInfo.cs" />
@@ -395,7 +395,7 @@
     <Compile Include="Enums\MgInternalAllocationType.cs" />
     <Compile Include="Handles\IMgPipelineCache.cs" />
     <Compile Include="Handles\IMgSurfaceKHR.cs" />
-    <Compile Include="PhysicalDevice\IMgDisplayKHR.cs" />
+    <Compile Include="Handles\IMgDisplayKHR.cs" />
     <Compile Include="PhysicalDevice\MgDisplayModeCreateInfoKHR.cs" />
     <Compile Include="Driver\MgDeviceExtensionOptions.cs" />
     <Compile Include="Driver\MgRenderPassProfile.cs" />

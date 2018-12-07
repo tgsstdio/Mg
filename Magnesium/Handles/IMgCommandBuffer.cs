@@ -55,6 +55,9 @@ namespace Magnesium
 
         void CmdBeginConditionalRenderingEXT(MgConditionalRenderingBeginInfoEXT pConditionalRenderingBegin);
         void CmdProcessCommandsNVX(MgCmdProcessCommandsInfoNVX pProcessCommandsInfo);
+
+        void CmdSetDiscardRectangleEXT(UInt32 firstDiscardRectangle, MgRect2D[] discardRectangles);
+        void CmdSetExclusiveScissorNV(UInt32 firstExclusiveScissor, MgRect2D[] exclusiveScissors);
     }
 }
 

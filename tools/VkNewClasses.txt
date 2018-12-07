@@ -3,6 +3,10 @@ VkExternalMemoryHandleTypeFlagsNV UINT32 DONE
 VkExternalMemoryHandleTypeFlagsNV UINT32 DONE
 MgImageUsageFlagBits DONE
 VkCmdProcessCommandsInfoNVX
+VkObjectTableNVX         
+VkIndirectCommandsLayoutNVX                      
+VkIndirectCommandsTokenNVX
+                  
 VkCmdReserveSpaceForCommandsInfoNVX
 VkIndirectCommandsLayoutCreateInfoNVX
 VkObjectTableCreateInfoNVX

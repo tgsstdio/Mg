@@ -9,7 +9,7 @@ namespace Magnesium.Vulkan
 	{
 		public UInt32 location { get; set; }
 		public UInt32 binding { get; set; }
-		public VkFormat format { get; set; }
+		public MgFormat format { get; set; }
 		public UInt32 offset { get; set; }
 	}
 }

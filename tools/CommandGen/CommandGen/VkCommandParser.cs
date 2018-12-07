@@ -102,6 +102,7 @@ namespace CommandGen
 					VkHandleInfo found;
 					if (mInspector.Handles.TryGetValue(arg.BaseCsType, out found))
 					{
+                        arg.IsHandleArgument = true;
 						arg.ArgumentCsType = found.csType;
 					}
 					else if (arg.IsNullableIntPtr)
@@ -225,6 +226,8 @@ namespace CommandGen
 				param.IsArrayParameter = !param.Source.IsConst && param.Source.LengthVariable != null;
 				param.IsNullableType = param.Source.IsPointer && param.Source.IsOptional;
 				param.UseRef = param.Source.UseOut && param.Source.IsBlittable && !param.IsArrayParameter;
+                param.IsHandleArgument = param.Source.IsHandleArgument;
+                param.IsNullableIntPtr = param.Source.IsNullableIntPtr;
 			}
 
 			result.MethodSignature = signature;

@@ -27,6 +27,7 @@ namespace Magnesium
 		bool GetPhysicalDeviceWin32PresentationSupportKHR(UInt32 queueFamilyIndex);
 
         MgResult GetPhysicalDeviceExternalImageFormatPropertiesNV(MgFormat format, MgImageType type, MgImageTiling tiling, MgImageUsageFlagBits usage, MgImageCreateFlagBits flags, UInt32 externalHandleType, out MgExternalImageFormatPropertiesNV pExternalImageFormatProperties);
+        MgResult GetPhysicalDevicePresentRectanglesKHR(IMgSurfaceKHR surface, MgRect2D[] pRects);
     }
 }
 

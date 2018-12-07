@@ -33,6 +33,8 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Handles\VkIndirectCommandsLayoutNVX.cs" />
+    <Compile Include="Handles\VkObjectTableNVX.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Enums\VkAccessFlags.cs" />
     <Compile Include="Enums\VkAttachmentDescriptionFlags.cs" />
@@ -76,7 +78,6 @@
     <Compile Include="Enums\VkMemoryHeapFlags.cs" />
     <Compile Include="Enums\VkMemoryPropertyFlags.cs" />
     <Compile Include="Enums\VkPhysicalDeviceType.cs" />
-    <Compile Include="Enums\VkPipelineBindPoint.cs" />
     <Compile Include="Enums\VkPipelineCacheHeaderVersion.cs" />
     <Compile Include="Enums\VkPipelineCreateFlags.cs" />
     <Compile Include="Enums\VkPipelineStageFlags.cs" />
@@ -114,6 +115,7 @@
     <Compile Include="Structs\VkBufferImageCopy.cs" />
     <Compile Include="Structs\VkBufferMemoryBarrier.cs" />
     <Compile Include="Structs\VkBufferViewCreateInfo.cs" />
+    <Compile Include="Structs\VkCmdProcessCommandsInfoNVX.cs" />
     <Compile Include="Structs\VkCommandBufferAllocateInfo.cs" />
     <Compile Include="Structs\VkCommandBufferBeginInfo.cs" />
     <Compile Include="Structs\VkCommandBufferInheritanceInfo.cs" />
@@ -164,6 +166,8 @@
     <Compile Include="Structs\VkImageSubresourceLayers.cs" />
     <Compile Include="Structs\VkImageSubresourceRange.cs" />
     <Compile Include="Structs\VkImageViewCreateInfo.cs" />
+    <Compile Include="Structs\VkIndirectCommandsLayoutCreateInfoNVX.cs" />
+    <Compile Include="Structs\VkIndirectCommandsTokenNVX.cs" />
     <Compile Include="Structs\VkInstanceCreateInfo.cs" />
     <Compile Include="Structs\VkLayerProperties.cs" />
     <Compile Include="Structs\VkMappedMemoryRange.cs" />
@@ -172,6 +176,7 @@
     <Compile Include="Structs\VkMemoryHeap.cs" />
     <Compile Include="Structs\VkMemoryType.cs" />
     <Compile Include="Structs\VkMirSurfaceCreateInfoKHR.cs" />
+    <Compile Include="Structs\VkObjectTableCreateInfoNVX.cs" />
     <Compile Include="Structs\VkPhysicalDeviceFeatures.cs" />
     <Compile Include="Structs\VkPhysicalDeviceLimits.cs" />
     <Compile Include="Structs\VkPhysicalDeviceMemoryProperties.cs" />

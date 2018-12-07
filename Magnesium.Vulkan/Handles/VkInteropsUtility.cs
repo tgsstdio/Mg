@@ -130,6 +130,23 @@ namespace Magnesium.Vulkan
 			return dstArray;
 		}
 
+        internal static IntPtr AllocateHGlobalStructArray<TVkData>(TVkData[] references) where TVkData : struct
+        {
+            var stride = Marshal.SizeOf(typeof(TVkData));
+            var dependencyCount = references.Length;
+            var dstArray = Marshal.AllocHGlobal(stride * dependencyCount);
+
+            var offset = 0;
+            for (var i = 0; i < dependencyCount; ++i)
+            {
+                var localDest = IntPtr.Add(dstArray, offset);
+                Marshal.StructureToPtr(references[i], localDest, false);
+                offset += stride;
+            }
+
+            return dstArray;
+        }
+
         internal static IntPtr CopyStringArrays(List<IntPtr> allocatedItems, string[] array, out uint count)
         {
 

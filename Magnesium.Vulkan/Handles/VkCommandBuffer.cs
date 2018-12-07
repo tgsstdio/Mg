@@ -92,7 +92,7 @@ namespace Magnesium.Vulkan
 			var bPipeline = (VkPipeline) pipeline;
 			Debug.Assert(bPipeline != null);
 
-			Interops.vkCmdBindPipeline(this.Handle, (VkPipelineBindPoint)pipelineBindPoint, bPipeline.Handle);
+			Interops.vkCmdBindPipeline(this.Handle, pipelineBindPoint, bPipeline.Handle);
 		}
 
 		public void CmdSetViewport(UInt32 firstViewport, MgViewport[] pViewports)
@@ -200,7 +200,7 @@ namespace Magnesium.Vulkan
 
             // var dynamic (uint)pDynamicOffsets.Length
             uint dynamicOffsetCount = pDynamicOffsets != null ? (uint)pDynamicOffsets.Length : 0U;
-            Interops.vkCmdBindDescriptorSets(this.Handle, (VkPipelineBindPoint)pipelineBindPoint, bLayout.Handle, firstSet, descriptorSetCount, src, dynamicOffsetCount, pDynamicOffsets);
+            Interops.vkCmdBindDescriptorSets(this.Handle, pipelineBindPoint, bLayout.Handle, firstSet, descriptorSetCount, src, dynamicOffsetCount, pDynamicOffsets);
 		}
 
 		public void CmdBindIndexBuffer(IMgBuffer buffer, UInt64 offset, MgIndexType indexType)
@@ -835,6 +835,76 @@ namespace Magnesium.Vulkan
             };
 
             Interops.vkCmdBeginConditionalRenderingEXT(this.Handle, ref pBegin);
+        }
+
+        public void CmdProcessCommandsNVX(MgCmdProcessCommandsInfoNVX pProcessCommandsInfo)
+        {
+            if (pProcessCommandsInfo == null)
+            {
+                throw new ArgumentNullException(nameof(pProcessCommandsInfo));
+            }
+
+            var bLayout = (VkIndirectCommandsLayoutNVX) pProcessCommandsInfo.IndirectCommandsLayout;
+            Debug.Assert(bLayout != null);
+            var bTargetCommandBuffer = (VkCommandBuffer)pProcessCommandsInfo.TargetCommandBuffer;
+            Debug.Assert(bTargetCommandBuffer != null);
+
+            var processCommands = new VkCmdProcessCommandsInfoNVX
+            {
+                sType = VkStructureType.StructureTypeCmdProcessCommandsInfoNvx,
+                pNext = IntPtr.Zero,
+                indirectCommandsLayout = bLayout.Handle,
+                targetCommandBuffer = bTargetCommandBuffer.Handle,
+                sequencesCountBuffer = bSequenceCountBuffer.Handle,
+
+            };
+
+
+            Interops.vkCmdProcessCommandsNVX(
+                this.Handle,
+                processCommands);
+        }
+
+        public void CmdSetDiscardRectangleEXT(uint firstDiscardRectangle, MgRect2D[] discardRectangles)
+        {
+            unsafe
+            {
+                var pDiscardRectangles = GCHandle.Alloc(discardRectangles, GCHandleType.Pinned);
+
+                try
+                {
+                    var discardRectangleCount = discardRectangles != null ? (uint)discardRectangles.Length : 0U;
+                    var pinnedObject = pDiscardRectangles.AddrOfPinnedObject();
+                    var bRects = (MgRect2D*)pinnedObject.ToPointer();
+                    
+                    Interops.vkCmdSetDiscardRectangleEXT(this.Handle, firstDiscardRectangle, discardRectangleCount, bRects);
+                }
+                finally
+                {
+                    pDiscardRectangles.Free();
+                }
+            }
+        }
+
+        public void CmdSetExclusiveScissorNV(uint firstExclusiveScissor, MgRect2D[] exclusiveScissors)
+        {
+            unsafe
+            {
+                var pExclusiveScissors = GCHandle.Alloc(exclusiveScissors, GCHandleType.Pinned);
+
+                try
+                {
+                    var scissorCount = pExclusiveScissors != null ? (uint)exclusiveScissors.Length : 0U;
+                    var pinnedObject = pExclusiveScissors.AddrOfPinnedObject();
+                    var bRects = (MgRect2D*)pinnedObject.ToPointer();
+
+                    Interops.vkCmdSetExclusiveScissorNV(this.Handle, firstExclusiveScissor, scissorCount, bRects);
+                }
+                finally
+                {
+                    pExclusiveScissors.Free();
+                }
+            }
         }
     }
 }

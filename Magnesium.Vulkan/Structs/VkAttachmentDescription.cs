@@ -8,7 +8,7 @@ namespace Magnesium.Vulkan
 	internal struct VkAttachmentDescription
 	{
 		public VkAttachmentDescriptionFlags flags { get; set; }
-		public VkFormat format { get; set; }
+		public MgFormat format { get; set; }
 		public VkSampleCountFlags samples { get; set; }
 		public VkAttachmentLoadOp loadOp { get; set; }
 		public VkAttachmentStoreOp storeOp { get; set; }

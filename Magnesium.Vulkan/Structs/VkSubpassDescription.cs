@@ -8,7 +8,7 @@ namespace Magnesium.Vulkan
 	internal struct VkSubpassDescription
 	{
 		public UInt32 flags { get; set; }
-		public VkPipelineBindPoint pipelineBindPoint { get; set; }
+		public MgPipelineBindPoint pipelineBindPoint { get; set; }
 		public UInt32 inputAttachmentCount { get; set; }
 		public IntPtr pInputAttachments { get; set; } // VkAttachmentReference
 		public UInt32 colorAttachmentCount { get; set; }

@@ -9,15 +9,15 @@ namespace Magnesium.Vulkan
 	{
 		public VkStructureType sType { get; set; }
 		public IntPtr pNext { get; set; }
-		public VkImageCreateFlags flags { get; set; }
+		public MgImageCreateFlagBits flags { get; set; }
 		public VkImageType imageType { get; set; }
-		public VkFormat format { get; set; }
+		public MgFormat format { get; set; }
 		public MgExtent3D extent { get; set; }
 		public UInt32 mipLevels { get; set; }
 		public UInt32 arrayLayers { get; set; }
 		public VkSampleCountFlags samples { get; set; }
-		public VkImageTiling tiling { get; set; }
-		public VkImageUsageFlags usage { get; set; }
+		public MgImageTiling tiling { get; set; }
+		public MgImageUsageFlagBits usage { get; set; }
 		public VkSharingMode sharingMode { get; set; }
 		public UInt32 queueFamilyIndexCount { get; set; }
 		public IntPtr pQueueFamilyIndices { get; set; }

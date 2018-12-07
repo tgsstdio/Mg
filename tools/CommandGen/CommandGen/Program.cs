@@ -261,44 +261,49 @@ namespace CommandGen
 				}
 
 				using (var interfaceFile = new StreamWriter(Path.Combine("Handles", container.Name + ".cs"), false))
-				{
-					interfaceFile.WriteLine("using Magnesium;");
-					interfaceFile.WriteLine("using System;");
-					interfaceFile.WriteLine("namespace Magnesium.Vulkan");
-					interfaceFile.WriteLine("{");
-					string tabbedField = "\t";
-
-					interfaceFile.WriteLine(tabbedField + "public class {0} : {1}", container.Name, container.InterfaceName);
-					interfaceFile.WriteLine(tabbedField + "{");
-
-					var methodTabs = tabbedField + "\t";
-
-					if (container.Handle != null)
-					{
-						// create internal field
-						interfaceFile.WriteLine(string.Format("{0}internal {1} Handle = {2};", methodTabs, container.Handle.csType ,container.Handle.csType == "IntPtr" ? "IntPtr.Zero" : "0L"));
-
-						// create constructor
-						interfaceFile.WriteLine(string.Format("{0}internal {1}({2} handle)", methodTabs, container.Name, container.Handle.csType));
-						interfaceFile.WriteLine(methodTabs + "{");
-						interfaceFile.WriteLine(methodTabs + "\tHandle = handle;");
-						interfaceFile.WriteLine(methodTabs + "}");
-						interfaceFile.WriteLine("");
-					}
-
-					foreach (var method in container.Methods)
-					{
-		
-						interfaceFile.WriteLine(methodTabs + method.GetImplementation());
-						interfaceFile.WriteLine(methodTabs + "{");
-						interfaceFile.WriteLine(methodTabs + "}");
-						interfaceFile.WriteLine("");
-					}
-					interfaceFile.WriteLine(tabbedField + "}");
-					interfaceFile.WriteLine("}");
-				}
-			}
+                {
+                    FillOutHandleImplementation(container, interfaceFile);
+                }
+            }
 		}
+
+        private static void FillOutHandleImplementation(VkContainerClass container, StreamWriter interfaceFile)
+        {
+            interfaceFile.WriteLine("using Magnesium;");
+            interfaceFile.WriteLine("using System;");
+            interfaceFile.WriteLine("namespace Magnesium.Vulkan");
+            interfaceFile.WriteLine("{");
+            string tabbedField = "\t";
+
+            interfaceFile.WriteLine(tabbedField + "public class {0} : {1}", container.Name, container.InterfaceName);
+            interfaceFile.WriteLine(tabbedField + "{");
+
+            var methodTabs = tabbedField + "\t";
+
+            if (container.Handle != null)
+            {
+                // create internal field
+                interfaceFile.WriteLine(string.Format("{0}internal {1} Handle = {2};", methodTabs, container.Handle.csType, container.Handle.csType == "IntPtr" ? "IntPtr.Zero" : "0L"));
+
+                // create constructor
+                interfaceFile.WriteLine(string.Format("{0}internal {1}({2} handle)", methodTabs, container.Name, container.Handle.csType));
+                interfaceFile.WriteLine(methodTabs + "{");
+                interfaceFile.WriteLine(methodTabs + "\tHandle = handle;");
+                interfaceFile.WriteLine(methodTabs + "}");
+                interfaceFile.WriteLine("");
+            }
+
+            foreach (var method in container.Methods)
+            {
+
+                interfaceFile.WriteLine(methodTabs + method.GetImplementation());
+                interfaceFile.WriteLine(methodTabs + "{");
+                interfaceFile.WriteLine(methodTabs + "}");
+                interfaceFile.WriteLine("");
+            }
+            interfaceFile.WriteLine(tabbedField + "}");
+            interfaceFile.WriteLine("}");
+        }
 
         static void GenerateInterfaces(VkInterfaceCollection implementation, IVkEntityInspector inspector)
         {

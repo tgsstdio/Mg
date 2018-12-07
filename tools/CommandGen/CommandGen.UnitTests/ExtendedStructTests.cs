@@ -30,10 +30,10 @@ namespace CommandGen.UnitTests
             Assert.IsNotNull(first);
 
 
-            const string _EXPECTED_ = "VIEWPORT_KHR";
+            const string _EXPECTED_ = "VIEWPORT";
             Assert.AreEqual(_EXPECTED_, first.Key);
 
-            const string _EXPECTED_1_ = "VIEWPORT";
+            const string _EXPECTED_1_ = "VIEWPORT_KHR";
             Assert.AreEqual(_EXPECTED_1_, first.Value);
         }
 

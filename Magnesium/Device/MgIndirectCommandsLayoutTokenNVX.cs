@@ -1,8 +1,10 @@
 using System;
+using System.Runtime.InteropServices;
 
 namespace Magnesium
 {
-	public class MgIndirectCommandsLayoutTokenNVX
+    [StructLayout(LayoutKind.Sequential)]
+	public struct MgIndirectCommandsLayoutTokenNVX
 	{
 		public MgIndirectCommandsTokenTypeNVX TokenType { get; set; }
         /// <summary>

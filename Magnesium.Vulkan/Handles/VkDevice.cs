@@ -460,7 +460,7 @@ namespace Magnesium.Vulkan
 				pNext = IntPtr.Zero,
 				flags = pCreateInfo.Flags,
 				buffer = bBuffer.Handle,
-				format = (VkFormat)pCreateInfo.Format,
+				format = pCreateInfo.Format,
 				offset = pCreateInfo.Offset,
 				range = pCreateInfo.Range,
 			};
@@ -496,15 +496,15 @@ namespace Magnesium.Vulkan
 				{
 					sType = VkStructureType.StructureTypeImageCreateInfo,
 					pNext = IntPtr.Zero,
-					flags = (VkImageCreateFlags)pCreateInfo.Flags,
+					flags = pCreateInfo.Flags,
 					imageType = (VkImageType)pCreateInfo.ImageType,
-					format = (VkFormat)pCreateInfo.Format,
+					format = pCreateInfo.Format,
 					extent = pCreateInfo.Extent,
 					mipLevels = pCreateInfo.MipLevels,
 					arrayLayers = pCreateInfo.ArrayLayers,
 					samples = (VkSampleCountFlags)pCreateInfo.Samples,
-					tiling = (VkImageTiling)pCreateInfo.Tiling,
-					usage = (VkImageUsageFlags)pCreateInfo.Usage,
+					tiling = pCreateInfo.Tiling,
+					usage = pCreateInfo.Usage,
 					sharingMode = (VkSharingMode)pCreateInfo.SharingMode,
 					queueFamilyIndexCount = queueFamilyIndexCount,
 					pQueueFamilyIndices = pQueueFamilyIndices,
@@ -558,7 +558,7 @@ namespace Magnesium.Vulkan
 				flags = pCreateInfo.Flags,
 				image = bImage.Handle,
 				viewType = (VkImageViewType) pCreateInfo.ViewType,
-				format = (VkFormat) pCreateInfo.Format,
+				format = pCreateInfo.Format,
 				components = new VkComponentMapping
 				{
 					r =	(VkComponentSwizzle) pCreateInfo.Components.R,
@@ -1176,7 +1176,7 @@ namespace Magnesium.Vulkan
 							{
 								location = attr.Location,
 								binding = attr.Binding,
-								format = (VkFormat)attr.Format,
+								format = attr.Format,
 								offset = attr.Offset,
 							};
 						});
@@ -1934,7 +1934,7 @@ namespace Magnesium.Vulkan
 							return new VkAttachmentDescription
 							{
 								flags = (VkAttachmentDescriptionFlags)attachment.Flags,
-								format = (VkFormat)attachment.Format,
+								format = attachment.Format,
 								samples = (VkSampleCountFlags)attachment.Samples,
 								loadOp = (VkAttachmentLoadOp)attachment.LoadOp,
 								storeOp = (VkAttachmentStoreOp)attachment.StoreOp,
@@ -2037,7 +2037,7 @@ namespace Magnesium.Vulkan
 						var description = new VkSubpassDescription
 						{
 							flags = currentSubpass.Flags,
-							pipelineBindPoint = (VkPipelineBindPoint)currentSubpass.PipelineBindPoint,
+							pipelineBindPoint = currentSubpass.PipelineBindPoint,
 							inputAttachmentCount = inputAttachmentCount,
 							pInputAttachments = pInputAttachments,// VkAttachmentReference
 							colorAttachmentCount = colorAttachmentCount, 
@@ -2306,11 +2306,11 @@ namespace Magnesium.Vulkan
 				flags = pCreateInfo.Flags,
 				surface = bSurfacePtr,
 				minImageCount = pCreateInfo.MinImageCount,
-				imageFormat = (VkFormat)pCreateInfo.ImageFormat,
+				imageFormat = pCreateInfo.ImageFormat,
 				imageColorSpace = (VkColorSpaceKhr)pCreateInfo.ImageColorSpace,
 				imageExtent = pCreateInfo.ImageExtent,
 				imageArrayLayers = pCreateInfo.ImageArrayLayers,
-				imageUsage = (VkImageUsageFlags)pCreateInfo.ImageUsage,
+				imageUsage = pCreateInfo.ImageUsage,
 				imageSharingMode = (VkSharingMode)pCreateInfo.ImageSharingMode,
 				queueFamilyIndexCount = queueFamilyIndexCount,
 				pQueueFamilyIndices = pQueueFamilyIndices,
@@ -2371,5 +2371,129 @@ namespace Magnesium.Vulkan
 			return result;
 		}
 
-	}
+        public MgResult CreateObjectTableNVX(MgObjectTableCreateInfoNVX pCreateInfo, IMgAllocationCallbacks allocator, out IMgObjectTableNVX pObjectTable)
+        {
+            if (pCreateInfo == null)
+                throw new ArgumentNullException(nameof(pCreateInfo));
+
+            if (pCreateInfo.Entries == null)
+                throw new ArgumentNullException(nameof(pCreateInfo.Entries));
+
+            Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+
+            var allocatorPtr = GetAllocatorHandle(allocator);
+
+            var pObjectEntryTypes = IntPtr.Zero;
+            var pObjectEntryCounts = IntPtr.Zero;
+            var pObjectEntryUsageFlags = IntPtr.Zero;
+
+            try
+            {
+                var objectCount = (UInt32) pCreateInfo.Entries.Length;
+
+                if (objectCount > 0)
+                {
+                    var counts = new UInt32[objectCount];
+                    var types = new UInt32[objectCount];
+                    var flags = new UInt32[objectCount];
+
+                    for (var i = 0; i < objectCount; i += 1)
+                    {
+                        var current = pCreateInfo.Entries[i];
+
+                        counts[i] = current.ObjectEntryCount;
+                        types[i] = (UInt32)current.ObjectEntryType;
+                        flags[i] = (UInt32)current.UsageFlag;
+                    }
+
+                    pObjectEntryCounts = VkInteropsUtility.AllocateUInt32Array(counts);
+                    pObjectEntryTypes = VkInteropsUtility.AllocateUInt32Array(types);
+                    pObjectEntryUsageFlags = VkInteropsUtility.AllocateUInt32Array(flags);
+                }
+
+                var bCreateInfo = new VkObjectTableCreateInfoNVX
+                {
+                    sType = VkStructureType.StructureTypeObjectTableCreateInfoNvx,
+                    pNext = IntPtr.Zero,
+                    objectCount = objectCount,
+                    pObjectEntryTypes = pObjectEntryTypes,
+                    pObjectEntryCounts = pObjectEntryCounts,
+                    pObjectEntryUsageFlags = pObjectEntryUsageFlags,
+                    maxPipelineLayouts = pCreateInfo.MaxPipelineLayouts,
+                    maxSampledImagesPerDescriptor = pCreateInfo.MaxSampledImagesPerDescriptor,
+                    maxStorageBuffersPerDescriptor = pCreateInfo.MaxStorageBuffersPerDescriptor,
+                    maxStorageImagesPerDescriptor = pCreateInfo.MaxStorageImagesPerDescriptor,
+                    maxUniformBuffersPerDescriptor = pCreateInfo.MaxUniformBuffersPerDescriptor,
+                };
+
+                ulong handle = 0UL;
+                var result = Interops.vkCreateObjectTableNVX(this.Handle, ref bCreateInfo, allocatorPtr, ref handle);
+
+                pObjectTable = new VkObjectTableNVX(handle);
+                return result;
+            }
+            finally
+            {
+                if (pObjectEntryTypes != IntPtr.Zero)
+                {
+                    Marshal.FreeHGlobal(pObjectEntryTypes);
+                }
+
+                if (pObjectEntryCounts != IntPtr.Zero)
+                {
+                    Marshal.FreeHGlobal(pObjectEntryCounts);
+                }
+
+                if (pObjectEntryUsageFlags != IntPtr.Zero)
+                {
+                    Marshal.FreeHGlobal(pObjectEntryUsageFlags);
+                }
+            }
+        }
+
+        public MgResult CreateIndirectCommandsLayoutNVX(MgIndirectCommandsLayoutCreateInfoNVX pCreateInfo, IMgAllocationCallbacks allocator, out IMgIndirectCommandsLayoutNVX pIndirectCommandsLayout)
+        {
+            if (pCreateInfo == null)
+                throw new ArgumentNullException(nameof(pCreateInfo));
+
+            if (pCreateInfo.Tokens == null)
+                throw new ArgumentNullException(nameof(pCreateInfo.Tokens));
+
+            Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+
+            var allocatorPtr = GetAllocatorHandle(allocator);
+
+            var pTokens = IntPtr.Zero;
+
+            try
+            {
+                var tokenCount = (UInt32) pCreateInfo.Tokens.Length;
+
+                pTokens = VkInteropsUtility.AllocateHGlobalStructArray(pCreateInfo.Tokens);
+
+                var createInfo = new VkIndirectCommandsLayoutCreateInfoNVX
+                {
+                    sType = VkStructureType.StructureTypeIndirectCommandsLayoutCreateInfoNvx,
+                    pNext = IntPtr.Zero,
+                    pipelineBindPoint = pCreateInfo.PipelineBindPoint,
+                    flags = pCreateInfo.Flags,
+                    tokenCount = tokenCount,
+                    pTokens = pTokens,
+                };
+
+                ulong bHandle = 0UL;
+                var result = Interops.vkCreateIndirectCommandsLayoutNVX(this.Handle, ref createInfo, allocatorPtr, ref bHandle);
+
+                pIndirectCommandsLayout = new VkIndirectCommandsLayoutNVX(bHandle);
+                return result;
+            }
+            finally
+            {
+                if (pTokens != IntPtr.Zero)
+                {
+                    Marshal.FreeHGlobal(pTokens);
+                }
+            }
+        }
+    }
 }

@@ -34,9 +34,6 @@
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Magnesium, Version=5.2.8.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Magnesium.5.2.8\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.framework, Version=3.11.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnit.3.11.0\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
@@ -45,8 +42,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ImplementationTests.cs" />
     <Compile Include="ExtendedStructTests.cs" />
     <Compile Include="FunctionCallTests.cs" />
+    <Compile Include="MethodBodyNullCheck.cs" />
     <Compile Include="VariableDeclarationTests.cs" />
     <Compile Include="CommandInfoTests.cs" />
     <Compile Include="CallArgumentTests.cs" />
@@ -66,6 +65,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Magnesium\Magnesium.csproj">
+      <Project>{9f9ac448-9d17-43e5-8889-285426290891}</Project>
+      <Name>Magnesium</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CommandGen\CommandGen.csproj">
       <Project>{53D2DC5C-CC72-4F02-B538-3033AD8FD536}</Project>
       <Name>CommandGen</Name>
