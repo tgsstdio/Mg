@@ -107,3 +107,8 @@ examples/*/*/[Pp]ackages/*
 *.ide
 tools/*/.vs/*
 tools/*/*/[Pp]ackages/*
+examples/MinimalCompute/shaders/SPIRVReplace.exe.config
+examples/MinimalCompute/shaders/SPIRVReplace.exe
+examples/MinimalCompute/shaders/spirv-dis.exe
+examples/MinimalCompute/shaders/spirv-as.exe
+examples/MinimalCompute/shaders/glslangValidator.exe

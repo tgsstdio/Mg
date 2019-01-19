@@ -180,6 +180,18 @@ namespace Magnesium.Vulkan
             count = (uint)noOfElements;
             return dest;
         }
+
+        /// <summary>
+        /// Allocator is optional
+        /// </summary>
+        /// <param name="allocator"></param>
+        /// <returns></returns>
+        internal static IntPtr GetAllocatorHandle(IMgAllocationCallbacks allocator)
+        {
+            var bAllocator = (MgVkAllocationCallbacks)allocator;
+            return bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+        }
+
     }
 }
 

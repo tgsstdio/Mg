@@ -835,7 +835,7 @@ namespace Magnesium.Vulkan
             };
 
             Interops.vkCmdBeginConditionalRenderingEXT(this.Handle, ref pBegin);
-        }
+        }      
 
         public void CmdProcessCommandsNVX(MgCmdProcessCommandsInfoNVX pProcessCommandsInfo)
         {
@@ -844,25 +844,66 @@ namespace Magnesium.Vulkan
                 throw new ArgumentNullException(nameof(pProcessCommandsInfo));
             }
 
+            var bObjectTable = (VkObjectTableNVX)pProcessCommandsInfo.ObjectTable;
+            Debug.Assert(bObjectTable != null);
             var bLayout = (VkIndirectCommandsLayoutNVX) pProcessCommandsInfo.IndirectCommandsLayout;
             Debug.Assert(bLayout != null);
             var bTargetCommandBuffer = (VkCommandBuffer)pProcessCommandsInfo.TargetCommandBuffer;
             Debug.Assert(bTargetCommandBuffer != null);
+            var bSequenceCountBuffer = (VkBuffer)pProcessCommandsInfo.SequencesCountBuffer;
+            Debug.Assert(bSequenceCountBuffer != null);
+            var bSequenceIndexBuffer = (VkBuffer)pProcessCommandsInfo.SequencesIndexBuffer;
 
-            var processCommands = new VkCmdProcessCommandsInfoNVX
+            var indirectCommandsTokenCount = pProcessCommandsInfo.IndirectCommandsTokens != null
+                ? (UInt32)pProcessCommandsInfo.IndirectCommandsTokens.Length : 0U;
+
+            var indirectCommandTokens = IntPtr.Zero;
+
+            try
             {
-                sType = VkStructureType.StructureTypeCmdProcessCommandsInfoNvx,
-                pNext = IntPtr.Zero,
-                indirectCommandsLayout = bLayout.Handle,
-                targetCommandBuffer = bTargetCommandBuffer.Handle,
-                sequencesCountBuffer = bSequenceCountBuffer.Handle,
+                indirectCommandTokens = VkInteropsUtility.AllocateHGlobalArray
+                    (
+                        pProcessCommandsInfo.IndirectCommandsTokens,
+                        (token) =>
+                        {
+                            var bBuffer = (VkBuffer)token.Buffer;
+                            Debug.Assert(bBuffer != null);
 
-            };
+                            return new VkIndirectCommandsTokenNVX {
+                                tokenType = token.TokenType,
+                                buffer = bBuffer.Handle,
+                                offset = token.Offset,
+                            };
+                        }
+                    );
 
+                var processCommands = new VkCmdProcessCommandsInfoNVX
+                {
+                    sType = VkStructureType.StructureTypeCmdProcessCommandsInfoNvx,
+                    pNext = IntPtr.Zero,
+                    objectTable = bObjectTable.Handle,
+                    indirectCommandsLayout = bLayout.Handle,
+                    indirectCommandsTokenCount = indirectCommandsTokenCount,
+                    pIndirectCommandsTokens = indirectCommandTokens,
+                    maxSequencesCount = pProcessCommandsInfo.MaxSequencesCount,
+                    targetCommandBuffer = bTargetCommandBuffer.Handle,
+                    sequencesCountBuffer = bSequenceCountBuffer.Handle,
+                    sequencesCountOffset = pProcessCommandsInfo.SequencesCountOffset,
+                    sequencesIndexBuffer = bSequenceIndexBuffer.Handle,
+                    sequencesIndexOffset = pProcessCommandsInfo.SequencesIndexOffset,
+                };
 
-            Interops.vkCmdProcessCommandsNVX(
-                this.Handle,
-                processCommands);
+                Interops.vkCmdProcessCommandsNVX(
+                    this.Handle,
+                    processCommands);
+            }
+            finally
+            {
+                if (indirectCommandTokens != IntPtr.Zero)
+                {
+                    Marshal.FreeHGlobal(indirectCommandTokens);
+                }
+            }
         }
 
         public void CmdSetDiscardRectangleEXT(uint firstDiscardRectangle, MgRect2D[] discardRectangles)

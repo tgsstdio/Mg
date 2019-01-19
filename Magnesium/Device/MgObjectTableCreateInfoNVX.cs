@@ -5,7 +5,7 @@ namespace Magnesium
 
     public class MgObjectTableCreateInfoNVX
 	{
-        public MgObjectTableEntryNVX[] Entries { get; set; }
+        public MgObjectTableCreateInfoEntryNVX[] Entries { get; set; }
 		public UInt32 MaxUniformBuffersPerDescriptor { get; set; }
 		public UInt32 MaxStorageBuffersPerDescriptor { get; set; }
 		public UInt32 MaxStorageImagesPerDescriptor { get; set; }

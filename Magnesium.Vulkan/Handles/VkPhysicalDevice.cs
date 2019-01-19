@@ -933,5 +933,32 @@ namespace Magnesium.Vulkan
 
             return result;
         }
+
+        public MgResult GetPhysicalDevicePresentRectanglesKHR(IMgSurfaceKHR surface, MgRect2D[] pRects)
+        {
+            if (surface == null)
+                throw new ArgumentNullException(nameof(surface));
+
+            var hRects = GCHandle.Alloc(pRects, GCHandleType.Pinned);
+
+            try
+            {
+                var bSurface = (VkSurfaceKHR)surface;
+
+                unsafe
+                {
+                    var count = (UInt32)pRects.Length;
+                    var pinnedObject = hRects.AddrOfPinnedObject();
+
+                    var bRects = (MgRect2D*)pinnedObject.ToPointer();
+
+                    return Interops.vkGetPhysicalDevicePresentRectanglesKHR(this.Handle, bSurface.Handle, count, bRects);
+                }
+            }
+            finally
+            {
+                hRects.Free();
+            }
+        }
     }
 }

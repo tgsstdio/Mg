@@ -128,6 +128,7 @@
     <Compile Include="Structs\VkDebugMarkerObjectNameInfoEXT.cs" />
     <Compile Include="Structs\VkDebugMarkerObjectTagInfoEXT.cs" />
     <Compile Include="Structs\VkDebugReportCallbackCreateInfoEXT.cs" />
+    <Compile Include="Structs\VkDebugUtilsMessengerCreateInfoEXT.cs" />
     <Compile Include="Structs\VkDedicatedAllocationBufferCreateInfoNV.cs" />
     <Compile Include="Structs\VkDedicatedAllocationImageCreateInfoNV.cs" />
     <Compile Include="Structs\VkDedicatedAllocationMemoryAllocateInfoNV.cs" />
@@ -178,6 +179,7 @@
     <Compile Include="Structs\VkMirSurfaceCreateInfoKHR.cs" />
     <Compile Include="Structs\VkObjectTableCreateInfoNVX.cs" />
     <Compile Include="Structs\VkPhysicalDeviceFeatures.cs" />
+    <Compile Include="Structs\VkPhysicalDeviceGroupProperties.cs" />
     <Compile Include="Structs\VkPhysicalDeviceLimits.cs" />
     <Compile Include="Structs\VkPhysicalDeviceMemoryProperties.cs" />
     <Compile Include="Structs\VkPhysicalDeviceProperties.cs" />

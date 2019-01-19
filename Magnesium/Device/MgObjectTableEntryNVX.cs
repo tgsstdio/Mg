@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 namespace Magnesium
 {
-    public class MgObjectTableEntryNVX
+    [StructLayout(LayoutKind.Sequential)]
+    public struct MgObjectTableEntryNVX
     {
-        public MgObjectEntryTypeNVX ObjectEntryType { get; set; }
-        public UInt32 ObjectEntryCount { get; set; }
-        public MgObjectEntryUsageFlagBitsNVX UsageFlag { get; set; }
+        public MgObjectEntryTypeNVX Type { get; set; }
+        public MgObjectEntryUsageFlagBitsNVX Flags { get; set; }
     }
 }

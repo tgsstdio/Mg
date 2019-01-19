@@ -71,6 +71,9 @@
   <ItemGroup>
     <Compile Include="CommandBuffer\MgCmdProcessCommandsInfoNVX.cs" />
     <Compile Include="CommandBuffer\MgConditionalRenderingBeginInfoEXT.cs" />
+    <Compile Include="Device\MgObjectTableCreateInfoEntryNVX.cs" />
+    <Compile Include="Device\MgObjectTableEntryIndexNYX.cs" />
+    <Compile Include="Handles\IMgDebugUtilsMessengerEXT.cs" />
     <Compile Include="Handles\IMgIndirectCommandsLayoutNVX.cs" />
     <Compile Include="Handles\IMgObjectTableNVX.cs" />
     <Compile Include="Device\MgIndirectCommandsLayoutCreateInfoNVX.cs" />
@@ -140,6 +143,11 @@
     <Compile Include="Enums\MgValidationCheckEXT.cs" />
     <Compile Include="Enums\MgVendorId.cs" />
     <Compile Include="Enums\MgViewportCoordinateSwizzleNV.cs" />
+    <Compile Include="Instance\MgDebugUtilsLabelEXT.cs" />
+    <Compile Include="Instance\MgDebugUtilsMessengerCallbackDataEXT.cs" />
+    <Compile Include="Instance\MgDebugUtilsMessengerCreateInfoEXT.cs" />
+    <Compile Include="Instance\MgDebugUtilsObjectNameInfoEXT.cs" />
+    <Compile Include="Instance\MgPhysicalDeviceGroupProperties.cs" />
     <Compile Include="PhysicalDevice\MgExternalImageFormatPropertiesNV.cs" />
     <Compile Include="Driver\IMgGraphicsConfiguration.cs" />
     <Compile Include="Driver\IMgPresentationLayer.cs" />

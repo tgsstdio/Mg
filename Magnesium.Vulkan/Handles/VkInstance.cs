@@ -188,5 +188,61 @@ namespace Magnesium.Vulkan
 			throw new NotImplementedException();
 		}
 
-	}
+        public MgResult CreateDebugUtilsMessengerEXT(MgDebugUtilsMessengerCreateInfoEXT createInfo, IMgAllocationCallbacks allocator, out IMgDebugUtilsMessengerEXT pSurface)
+        {
+            if (createInfo == null)
+                throw new ArgumentNullException(nameof(createInfo));
+
+            Debug.Assert(!mIsDisposed);
+
+            var allocatorHandle = GetAllocatorHandle(allocator);
+
+            var bCreateInfo = new VkDebugUtilsMessengerCreateInfoEXT
+            {
+                 
+            };
+
+          //  Interops.vkCreateDebugUtilsMessengerEXT(bCreateInfo,
+        }
+
+        public MgResult EnumeratePhysicalDeviceGroups(out MgPhysicalDeviceGroupProperties[] pPhysicalDeviceGroupProperties)
+        {
+            Debug.Assert(!mIsDisposed);
+
+            var count = 0U;
+
+            var first = Interops.vkEnumeratePhysicalDeviceGroups(Handle, ref count, null);
+
+            var srcGroups = new VkPhysicalDeviceGroupProperties[count];
+            var final = Interops.vkEnumeratePhysicalDeviceGroups(Handle, ref count, srcGroups);
+
+            var dstGroups = new MgPhysicalDeviceGroupProperties[count];
+            for (var i = 0; i < count; ++i)
+            {
+                var deviceCount = srcGroups[i].physicalDeviceCount;
+
+                var devices = new IMgPhysicalDevice[deviceCount];
+
+                for(var j = 0; j < deviceCount; j += 1)
+                {
+                    devices[j] = new VkPhysicalDevice(srcGroups[i].physicalDevices[j]);
+                }
+
+                dstGroups[i] = new MgPhysicalDeviceGroupProperties
+                {
+                    PhysicalDevices = devices,
+                    SubsetAllocation = VkBool32.ConvertFrom(srcGroups[i].subsetAllocation),
+                };
+            }
+
+            pPhysicalDeviceGroupProperties = dstGroups;
+
+            return final;
+        }
+
+        public void SubmitDebugUtilsMessageEXT(MgDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, MgDebugUtilsMessageTypeFlagBitsEXT messageTypes, MgDebugUtilsMessengerCallbackDataEXT pCallbackData)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

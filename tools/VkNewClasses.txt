@@ -49,7 +49,7 @@ VkDeviceEventInfoExt
 VkDisplayEventInfoExt
 VkSurfaceCounterFlagsExt
 VkSurfaceCapabilities2Ext
-VkPhysicalDeviceGroupProperties
+VkPhysicalDeviceGroupProperties DONE
 VkPeerMemoryFeatureFlags
 VkBindBufferMemoryInfo
 VkBindImageMemoryInfo
