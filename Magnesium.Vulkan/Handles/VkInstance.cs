@@ -197,9 +197,15 @@ namespace Magnesium.Vulkan
 
             var allocatorHandle = GetAllocatorHandle(allocator);
 
+
+
             var bCreateInfo = new VkDebugUtilsMessengerCreateInfoEXT
             {
-                 
+                 sType = VkStructureType.StructureTypeDebugUtilsMessengerCreateInfoExt,
+                 pNext = IntPtr.Zero,
+                 flags = createInfo.Flags,
+                 messageSeverity = createInfo.MessageSeverity,
+                 messageType = createInfo.MessageType,
             };
 
           //  Interops.vkCreateDebugUtilsMessengerEXT(bCreateInfo,
