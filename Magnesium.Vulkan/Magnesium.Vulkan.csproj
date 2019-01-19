@@ -128,7 +128,10 @@
     <Compile Include="Structs\VkDebugMarkerObjectNameInfoEXT.cs" />
     <Compile Include="Structs\VkDebugMarkerObjectTagInfoEXT.cs" />
     <Compile Include="Structs\VkDebugReportCallbackCreateInfoEXT.cs" />
+    <Compile Include="Structs\VkDebugUtilsLabelEXT.cs" />
+    <Compile Include="Structs\VkDebugUtilsMessengerCallbackDataEXT.cs" />
     <Compile Include="Structs\VkDebugUtilsMessengerCreateInfoEXT.cs" />
+    <Compile Include="Structs\VkDebugUtilsObjectNameInfoEXT.cs" />
     <Compile Include="Structs\VkDedicatedAllocationBufferCreateInfoNV.cs" />
     <Compile Include="Structs\VkDedicatedAllocationImageCreateInfoNV.cs" />
     <Compile Include="Structs\VkDedicatedAllocationMemoryAllocateInfoNV.cs" />
