@@ -1,10 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan
 {
-	public class VkInstance : IMgInstance
+    public partial class VkInstance : IMgInstance
 	{
 		internal IntPtr Handle { get; private set; }
 		internal VkInstance(IntPtr handle)
@@ -189,87 +190,6 @@ namespace Magnesium.Vulkan
 			throw new NotImplementedException();
 		}
 
-        delegate VkBool32 PFN_vkDebugUtilsMessengerCallbackEXT(
-            MgDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-            MgDebugUtilsMessageTypeFlagBitsEXT messageType,
-            IntPtr pCallbackData, // const VkDebugUtilsMessengerCallbackDataEXT*
-            IntPtr pUserData);
-
-        [StructLayout(LayoutKind.Sequential)]
-        struct VkUnwrapMessengerCallbackCapsule
-        {
-            public IntPtr PfnCallback { get; set; }
-            public IntPtr UserData { get; set; }
-        }
-
-        static MgDebugUtilsLabelEXT TransformIntoLabelInfo(ref VkDebugUtilsLabelEXT src)
-        {
-            return new MgDebugUtilsLabelEXT
-            {
-                LabelName = VkInteropsUtility.StringFromNativeUtf8(src.pLabelName),
-                Color = src.color,
-            };
-        }
-
-        static MgDebugUtilsObjectNameInfoEXT TransformIntoObjectInfo(ref VkDebugUtilsObjectNameInfoEXT src)
-        {
-            return new MgDebugUtilsObjectNameInfoEXT
-            {
-                ObjectHandle = src.objectHandle,
-                ObjectType = src.objectType,
-                ObjectName = VkInteropsUtility.StringFromNativeUtf8(src.pObjectName),
-            };
-        }
-
-        public static VkBool32 UnwrapCallback(
-            MgDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-            MgDebugUtilsMessageTypeFlagBitsEXT messageType,
-            IntPtr pCallbackData, // const VkDebugUtilsMessengerCallbackDataEXT*
-            IntPtr pUserData
-        )
-        {
-            var callbackData =
-                (VkDebugUtilsMessengerCallbackDataEXT)Marshal.PtrToStructure(
-                    pCallbackData,
-                    typeof(VkDebugUtilsMessengerCallbackDataEXT)
-                );
-            var userDataCapsule = (VkUnwrapMessengerCallbackCapsule)Marshal.PtrToStructure(pUserData, typeof(VkUnwrapMessengerCallbackCapsule));
-
-            var actualCallback = (MgDebugUtilsMessengerCallbackEXT)Marshal.GetDelegateForFunctionPointer(
-                userDataCapsule.PfnCallback,
-                typeof(MgDebugUtilsMessengerCallbackEXT));
-
-            var queueLabelCount = callbackData.queueLabelCount;
-            var queueLabels = VkInteropsUtility.TransformIntoStructArray<VkDebugUtilsLabelEXT, MgDebugUtilsLabelEXT>(
-                callbackData.pQueueLabels,
-                queueLabelCount,
-                TransformIntoLabelInfo);
-            var cmdBufLabels = VkInteropsUtility.TransformIntoStructArray<VkDebugUtilsLabelEXT, MgDebugUtilsLabelEXT>(
-                callbackData.pCmdBufLabels, 
-                callbackData.cmdBufLabelCount,
-                TransformIntoLabelInfo);
-            var objects = VkInteropsUtility.TransformIntoStructArray<VkDebugUtilsObjectNameInfoEXT, MgDebugUtilsObjectNameInfoEXT>(
-                callbackData.pObjects,
-                callbackData.objectCount,
-                TransformIntoObjectInfo
-            );                
-
-            var srcCallbackData = new MgDebugUtilsMessengerCallbackDataEXT
-            {
-                Flags = callbackData.flags,
-                Message = VkInteropsUtility.StringFromNativeUtf8(callbackData.pMessage),
-                MessageIdNumber = callbackData.messageIdNumber,
-                MessageIdName = VkInteropsUtility.StringFromNativeUtf8(callbackData.pMessageIdName),
-                QueueLabels = queueLabels,
-                CmdBufLabels = cmdBufLabels,
-                Objects = objects,
-            };
-
-            var result = actualCallback(messageSeverity, messageType, srcCallbackData, userDataCapsule.UserData);
-
-            return VkBool32.ConvertTo(result);
-        }
-
         public void Wrap(MgDebugUtilsMessengerCallbackDataEXT callbackData)
         {
             var msgIdName = (callbackData.MessageIdName != null)
@@ -283,38 +203,11 @@ namespace Magnesium.Vulkan
             var lbl = new VkDebugUtilsLabelEXT { };
         }
 
-        class VkDebugUtilsMessengerEXT : IMgDebugUtilsMessengerEXT
-        {
-            public IntPtr Handle { get; private set; }
-            public IntPtr UserData { get; private set; }
-            public IntPtr Capsule { get; private set; }
-            public MgDebugUtilsMessengerCallbackEXT Callback { get; private set; }
-            PFN_vkDebugUtilsMessengerCallbackEXT Wrapped { get; set; }
-
-            public VkDebugUtilsMessengerEXT(
-                IntPtr handle,
-                MgDebugUtilsMessengerCallbackEXT callback,
-                PFN_vkDebugUtilsMessengerCallbackEXT wrapped,
-                IntPtr userData,
-                IntPtr capsule
-            )
-            {
-                Handle = handle;
-                UserData = userData;
-                Capsule = IntPtr.Zero;
-                Callback = callback;
-                Wrapped = wrapped;
-            }
-
-            public void DestroyDebugUtilsMessengerEXT(IMgInstance instance, IMgAllocationCallbacks allocator)
-            {
-                Wrapped = null;
-
-                Interops.DestroyDebugUtilsMessengerEXT();
-            }
-        }
-
-        public MgResult CreateDebugUtilsMessengerEXT(MgDebugUtilsMessengerCreateInfoEXT createInfo, IMgAllocationCallbacks allocator, out IMgDebugUtilsMessengerEXT pSurface)
+        public MgResult CreateDebugUtilsMessengerEXT(
+            MgDebugUtilsMessengerCreateInfoEXT createInfo,
+            IMgAllocationCallbacks allocator,
+            out IMgDebugUtilsMessengerEXT pMessenger
+        )
         {
             if (createInfo == null)
                 throw new ArgumentNullException(nameof(createInfo));
@@ -326,20 +219,9 @@ namespace Magnesium.Vulkan
 
             var allocatorHandle = GetAllocatorHandle(allocator);
 
-            PFN_vkDebugUtilsMessengerCallbackEXT del = VkInstance.UnwrapCallback;
-            var bActual = Marshal.GetFunctionPointerForDelegate(createInfo.PfnUserCallback);
-            var bWrapped = Marshal.GetFunctionPointerForDelegate(del);
-
-            var stride = Marshal.SizeOf(typeof(VkUnwrapMessengerCallbackCapsule));
-            var bCapsule = Marshal.AllocHGlobal(stride);
-
-            var capsule = new VkUnwrapMessengerCallbackCapsule
-            {
-                PfnCallback = bActual,
-                UserData = createInfo.PUserData,
-            };
-
-            Marshal.StructureToPtr(capsule, bCapsule, false);
+            var messengerData = new VkDebugUtilsMessengerData(
+                createInfo.PfnUserCallback,
+                createInfo.PUserData);
 
             var bCreateInfo = new VkDebugUtilsMessengerCreateInfoEXT
             {
@@ -348,17 +230,23 @@ namespace Magnesium.Vulkan
                  flags = createInfo.Flags,
                  messageSeverity = createInfo.MessageSeverity,
                  messageType = createInfo.MessageType,
-                 pfnUserCallback = bWrapped,
-                 pUserData = bCapsule,
+                 pfnUserCallback = messengerData.UnwrapFn,
+                 pUserData = messengerData.Capsule,
             };
 
-            var result = Interops.vkCreateDebugUtilsMessengerEXT(
-            pSurface = new VkDebugUtilsMessengerEXT();
+            ulong bHandle = 0UL;
+            var result = Interops.vkCreateDebugUtilsMessengerEXT(this.Handle, ref bCreateInfo, allocatorHandle, ref bHandle);
+            pMessenger = new VkDebugUtilsMessengerEXT(
+                bHandle,
+                messengerData
+            );
 
             return result;
         }
 
-        public MgResult EnumeratePhysicalDeviceGroups(out MgPhysicalDeviceGroupProperties[] pPhysicalDeviceGroupProperties)
+        public MgResult EnumeratePhysicalDeviceGroups(
+            out MgPhysicalDeviceGroupProperties[] pPhysicalDeviceGroupProperties
+        )
         {
             Debug.Assert(!mIsDisposed);
 
@@ -395,7 +283,131 @@ namespace Magnesium.Vulkan
 
         public void SubmitDebugUtilsMessageEXT(MgDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, MgDebugUtilsMessageTypeFlagBitsEXT messageTypes, MgDebugUtilsMessengerCallbackDataEXT pCallbackData)
         {
-            throw new NotImplementedException();
+            Debug.Assert(!mIsDisposed);
+
+            var queueLabelCount =
+                pCallbackData.QueueLabels != null
+                ? (UInt32)pCallbackData.QueueLabels.Length
+                : 0U;
+
+            var pQueueLabels = IntPtr.Zero;
+
+            var cmdBufLabelCount =
+                pCallbackData.CmdBufLabels != null
+                ? (UInt32)pCallbackData.CmdBufLabels.Length
+                : 0U;
+
+            var pCmdBufLabels = IntPtr.Zero;
+
+            var objectCount =
+                pCallbackData.Objects != null
+                ? (UInt32)pCallbackData.Objects.Length
+                : 0U;
+
+            var pObjects = IntPtr.Zero;
+
+            var pinned = new List<IntPtr>();
+            try
+            {
+                if (queueLabelCount > 0)
+                {
+                    pQueueLabels = VkInteropsUtility.AllocateHGlobalArray(pCallbackData.QueueLabels,
+                        (f) =>
+                        {
+                            var lbl = VkInteropsUtility.NativeUtf8FromString(f.LabelName);
+                            pinned.Add(lbl);
+
+                            return new VkDebugUtilsLabelEXT
+                            {
+                                sType = VkStructureType.StructureTypeDebugUtilsLabelExt,
+                                pNext = IntPtr.Zero,
+                                pLabelName = lbl,
+                                color = f.Color,
+                            };
+                        });
+                    pinned.Add(pQueueLabels);
+                }
+
+                if (cmdBufLabelCount > 0)
+                {
+                    pCmdBufLabels = VkInteropsUtility.AllocateHGlobalArray(pCallbackData.CmdBufLabels,
+                        (f) =>
+                        {
+                            var lbl = VkInteropsUtility.NativeUtf8FromString(f.LabelName);
+                            pinned.Add(lbl);
+
+                            return new VkDebugUtilsLabelEXT
+                            {
+                                sType = VkStructureType.StructureTypeDebugUtilsLabelExt,
+                                pNext = IntPtr.Zero,
+                                pLabelName = lbl,
+                                color = f.Color,
+                            };
+                        });
+                    pinned.Add(pCmdBufLabels);
+                }
+
+                if (objectCount > 0)
+                {
+                    pObjects = VkInteropsUtility.AllocateHGlobalArray(pCallbackData.Objects,
+                        (f) =>
+                            {
+                                var pObjectName = IntPtr.Zero;
+                                if (!string.IsNullOrEmpty(f.ObjectName))
+                                {
+                                    pObjectName = VkInteropsUtility.NativeUtf8FromString(f.ObjectName);
+                                    pinned.Add(pObjectName);
+                                }
+
+                                return new VkDebugUtilsObjectNameInfoEXT
+                                {
+                                    sType = VkStructureType.StructureTypeDebugMarkerObjectNameInfoExt,
+                                    pNext = IntPtr.Zero,
+                                    objectHandle = f.ObjectHandle,
+                                    pObjectName = pObjectName,
+                                    objectType = f.ObjectType,
+                                };
+                            }
+                        );
+
+                    pinned.Add(pObjects);
+                }
+
+
+                var pMessageIdName = IntPtr.Zero;
+
+                if (!string.IsNullOrEmpty(pCallbackData.MessageIdName))
+                {
+                    pMessageIdName = VkInteropsUtility.NativeUtf8FromString(pCallbackData.MessageIdName);
+                    pinned.Add(pMessageIdName);
+                }
+
+                var bCallbackData = new VkDebugUtilsMessengerCallbackDataEXT
+                {
+                    sType = VkStructureType.StructureTypeDebugUtilsMessengerCallbackDataExt,
+                    pNext = IntPtr.Zero,
+                    flags = pCallbackData.Flags,
+                    pMessage = VkInteropsUtility.NativeUtf8FromString(pCallbackData.Message),
+                    messageIdNumber = pCallbackData.MessageIdNumber,
+                    pMessageIdName = pMessageIdName,
+                    queueLabelCount = queueLabelCount,
+                    pQueueLabels = pQueueLabels,
+                    cmdBufLabelCount = cmdBufLabelCount,
+                    pCmdBufLabels = pCmdBufLabels,
+                    objectCount = objectCount,
+                    pObjects = pObjects,                    
+                };
+
+                Interops.vkSubmitDebugUtilsMessageEXT(this.Handle, messageSeverity, messageTypes, bCallbackData);
+            }
+            finally
+            {
+                foreach (var pin in pinned)
+                {
+                    Marshal.FreeHGlobal(pin);
+                }
+
+            }
         }
     }
 }

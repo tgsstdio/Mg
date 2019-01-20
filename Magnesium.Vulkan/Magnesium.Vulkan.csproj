@@ -33,6 +33,8 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Handles\VkDebugUtilsMessengerData.cs" />
+    <Compile Include="Handles\VkDebugUtilsMessengerEXT.cs" />
     <Compile Include="Handles\VkIndirectCommandsLayoutNVX.cs" />
     <Compile Include="Handles\VkObjectTableNVX.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
