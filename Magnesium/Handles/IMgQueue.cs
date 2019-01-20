@@ -12,10 +12,10 @@
         void QueueInsertDebugUtilsLabelEXT(MgDebugUtilsLabelEXT labelInfo);
         void QueueEndDebugUtilsLabelEXT();
 
-        MgResult QueueSignalReleaseImageANDROID(
-            IMgSemaphore[] waitSemaphores,
-            IMgImage image,
-            ref int pNativeFenceFd);
+        //MgResult QueueSignalReleaseImageANDROID(
+        //    IMgSemaphore[] waitSemaphores,
+        //    IMgImage image,
+        //    ref int pNativeFenceFd);
     }
 }
 

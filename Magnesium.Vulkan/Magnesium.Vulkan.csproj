@@ -117,6 +117,7 @@
     <Compile Include="Structs\VkBufferImageCopy.cs" />
     <Compile Include="Structs\VkBufferMemoryBarrier.cs" />
     <Compile Include="Structs\VkBufferViewCreateInfo.cs" />
+    <Compile Include="Structs\VkCheckpointDataNV.cs" />
     <Compile Include="Structs\VkCmdProcessCommandsInfoNVX.cs" />
     <Compile Include="Structs\VkCommandBufferAllocateInfo.cs" />
     <Compile Include="Structs\VkCommandBufferBeginInfo.cs" />
