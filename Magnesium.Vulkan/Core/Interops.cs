@@ -880,10 +880,10 @@ namespace Magnesium.Vulkan
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkCmdSetCheckpointNV(IntPtr commandBuffer, IntPtr pCheckpointMarker);
-
+        **/
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static unsafe void vkGetQueueCheckpointDataNV(IntPtr queue, UInt32* pCheckpointDataCount, VkCheckpointDataNV* pCheckpointData);
-
+        /**
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkCmdBindTransformFeedbackBuffersEXT(IntPtr commandBuffer, UInt32 firstBinding, UInt32 bindingCount, UInt64[] pBuffers, UInt64[] pOffsets, UInt64[] pSizes);
 

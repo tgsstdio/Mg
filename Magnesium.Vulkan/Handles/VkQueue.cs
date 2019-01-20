@@ -493,5 +493,84 @@ namespace Magnesium.Vulkan
 			imageIndices = pImageIndices;
 			return count;
 		}
-	}
+
+        public void GetQueueCheckpointDataNV(out MgCheckpointDataNV[] pCheckpointData)
+        {
+            var pCheckpointDataCount = 0U;
+
+            Interops.vkGetQueueCheckpointDataNV(this.Handle, ref pCheckpointDataCount, null);
+
+            pCheckpointData = new MgCheckpointDataNV[pCheckpointDataCount];
+            if (pCheckpointDataCount > 0)
+            {
+                var bCheckpointData = new VkCheckpointDataNV[pCheckpointDataCount];
+
+                Interops.vkGetQueueCheckpointDataNV(this.Handle, ref pCheckpointDataCount, bCheckpointData);
+
+                for (var i = 0U; i < pCheckpointDataCount; i += 1)
+                {
+                    var current = bCheckpointData[i];
+
+                    pCheckpointData[i] = new MgCheckpointDataNV
+                    {
+                        Stage = current.stage,
+                        CheckpointMarker = current.pCheckpointMarker,
+                    };
+                }
+            }
+        }
+
+        public void QueueBeginDebugUtilsLabelEXT(MgDebugUtilsLabelEXT labelInfo)
+        {
+            var pLabelName = IntPtr.Zero;
+
+            try
+            {
+                pLabelName = VkInteropsUtility.NativeUtf8FromString(labelInfo.LabelName);
+
+                var lbl = new VkDebugUtilsLabelEXT
+                {
+                    sType = VkStructureType.StructureTypeDebugUtilsLabelExt,
+                    pNext = IntPtr.Zero,
+                    pLabelName = pLabelName,
+                    color = labelInfo.Color,
+                };
+
+                Interops.vkQueueBeginDebugUtilsLabelEXT(this.Handle, ref lbl);
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(pLabelName);
+            }
+        }
+
+        public void QueueInsertDebugUtilsLabelEXT(MgDebugUtilsLabelEXT labelInfo)
+        {
+            var pLabelName = IntPtr.Zero;
+
+            try
+            {
+                pLabelName = VkInteropsUtility.NativeUtf8FromString(labelInfo.LabelName);
+
+                var lbl = new VkDebugUtilsLabelEXT
+                {
+                    sType = VkStructureType.StructureTypeDebugUtilsLabelExt,
+                    pNext = IntPtr.Zero,
+                    pLabelName = pLabelName,
+                    color = labelInfo.Color,
+                };
+
+                Interops.vkQueueInsertDebugUtilsLabelEXT(this.Handle, ref lbl);
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(pLabelName);
+            }
+        }
+
+        public void QueueEndDebugUtilsLabelEXT()
+        {
+            Interops.vkQueueEndDebugUtilsLabelEXT(this.Handle);
+        }
+    }
 }
