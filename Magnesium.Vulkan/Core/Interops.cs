@@ -820,16 +820,16 @@ namespace Magnesium.Vulkan
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static unsafe MgResult vkSetDebugUtilsObjectTagEXT(IntPtr device, VkDebugUtilsObjectTagInfoExt pTagInfo);
-
+        **/
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static void vkQueueBeginDebugUtilsLabelEXT(IntPtr queue, [In, Out] VkDebugUtilsLabelExt pLabelInfo);
+		internal extern static void vkQueueBeginDebugUtilsLabelEXT(IntPtr queue, ref VkDebugUtilsLabelEXT pLabelInfo);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkQueueEndDebugUtilsLabelEXT(IntPtr queue);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static void vkQueueInsertDebugUtilsLabelEXT(IntPtr queue, [In, Out] VkDebugUtilsLabelExt pLabelInfo);
-
+		internal extern static void vkQueueInsertDebugUtilsLabelEXT(IntPtr queue, ref VkDebugUtilsLabelEXT pLabelInfo);
+        /**
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkCmdBeginDebugUtilsLabelEXT(IntPtr commandBuffer, [In, Out] VkDebugUtilsLabelExt pLabelInfo);
 
@@ -882,7 +882,7 @@ namespace Magnesium.Vulkan
 		internal extern static void vkCmdSetCheckpointNV(IntPtr commandBuffer, IntPtr pCheckpointMarker);
         **/
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe void vkGetQueueCheckpointDataNV(IntPtr queue, UInt32* pCheckpointDataCount, VkCheckpointDataNV* pCheckpointData);
+		internal extern static void vkGetQueueCheckpointDataNV(IntPtr queue, ref UInt32 pCheckpointDataCount, [In, Out] VkCheckpointDataNV[] pCheckpointData);
         /**
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkCmdBindTransformFeedbackBuffersEXT(IntPtr commandBuffer, UInt32 firstBinding, UInt32 bindingCount, UInt64[] pBuffers, UInt64[] pOffsets, UInt64[] pSizes);
