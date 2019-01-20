@@ -960,5 +960,181 @@ namespace Magnesium.Vulkan
                 hRects.Free();
             }
         }
+
+        // TODO: BELOW EXTENSION methods via pNext linked
+
+        public MgResult GetDisplayModeProperties2KHR(IMgDisplayKHR display, out MgDisplayModeProperties2KHR[] pProperties)
+        {
+            if (display == null)
+                throw new ArgumentNullException(nameof(display));
+
+            var bDisplay = (VkDisplayKHR)display;
+            Debug.Assert(bDisplay != null); // MAYBE DUPLICATE CHECK
+            uint count = 0;
+            var first = Interops.vkGetDisplayModeProperties2KHR(Handle, bDisplay.Handle, ref count, null);
+
+            if (first != MgResult.SUCCESS)
+            {
+                pProperties = null;
+                return first;
+            }
+
+            var modeProperties = new VkDisplayModeProperties2KHR[count];
+            // TODO: extension modeProperties[i].pNext ???
+
+            var final = Interops.vkGetDisplayModeProperties2KHR(Handle, bDisplay.Handle, ref count, modeProperties);
+
+            pProperties = new MgDisplayModeProperties2KHR[count];
+            for (var i = 0; i < count; ++i)
+            {
+                var current = modeProperties[i].displayModeProperties;
+                pProperties[i] = new MgDisplayModeProperties2KHR
+                {
+                    DisplayModeProperties = new MgDisplayModePropertiesKHR
+                    {
+                        DisplayMode = new VkDisplayModeKHR(current.displayMode),
+                        Parameters = current.parameters,
+                    },
+                };
+            }
+
+            return final;
+        }
+
+        public MgResult GetDisplayPlaneCapabilities2KHR(MgDisplayPlaneInfo2KHR pDisplayPlaneInfo, out MgDisplayPlaneCapabilities2KHR pCapabilities)
+        {
+            if (pDisplayPlaneInfo == null)
+                throw new ArgumentNullException(nameof(pDisplayPlaneInfo));
+
+            if (pDisplayPlaneInfo.Mode == null)
+                throw new ArgumentNullException(nameof(pDisplayPlaneInfo.Mode));
+
+            var bMode = (VkDisplayModeKHR)pDisplayPlaneInfo.Mode;
+            Debug.Assert(bMode != null);
+
+            var bDisplayPlaneInfo = new VkDisplayPlaneInfo2KHR
+            {
+                sType = VkStructureType.StructureTypeDisplayPlaneInfo2Khr,
+                pNext = IntPtr.Zero, // TODO: extension
+                mode = bMode.Handle,
+                planeIndex = pDisplayPlaneInfo.PlaneIndex,
+            };
+
+            var output = default(VkDisplayPlaneCapabilities2KHR);
+            var result = Interops.vkGetDisplayPlaneCapabilities2KHR(Handle, ref bDisplayPlaneInfo, ref output);
+
+            var caps = output.capabilities;
+            pCapabilities = new MgDisplayPlaneCapabilities2KHR
+            {
+                Capabilities = new MgDisplayPlaneCapabilitiesKHR
+                {
+                    SupportedAlpha = (MgDisplayPlaneAlphaFlagBitsKHR)caps.supportedAlpha,
+                    MinSrcPosition = caps.minSrcPosition,
+                    MaxSrcPosition = caps.maxSrcPosition,
+                    MinSrcExtent = caps.minSrcExtent,
+                    MaxSrcExtent = caps.maxSrcExtent,
+                    MinDstPosition = caps.minDstPosition,
+                    MaxDstPosition = caps.maxDstPosition,
+                    MinDstExtent = caps.minDstExtent,
+                    MaxDstExtent = caps.maxDstExtent,
+                }
+            };
+            return result;
+        }
+
+        public MgResult GetPhysicalDeviceCalibrateableTimeDomainsEXT(out MgTimeDomainEXT[] pTimeDomains)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetPhysicalDeviceDisplayPlaneProperties2KHR(out MgDisplayPlaneProperties2KHR[] pProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetPhysicalDeviceDisplayProperties2KHR(out MgDisplayProperties2KHR[] pProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetPhysicalDeviceImageFormatProperties2(MgPhysicalDeviceImageFormatInfo2 pImageFormatInfo, MgImageFormatProperties2 pImageFormatProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetPhysicalDeviceSurfaceCapabilities2EXT(IMgSurfaceKHR surface, out MgSurfaceCapabilities2EXT pSurfaceCapabilities)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetPhysicalDeviceSurfaceCapabilities2KHR(MgPhysicalDeviceSurfaceInfo2KHR pSurfaceInfo, out MgSurfaceCapabilities2KHR pSurfaceCapabilities)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetPhysicalDeviceSurfaceFormats2KHR(MgPhysicalDeviceSurfaceInfo2KHR pSurfaceInfo, out MgSurfaceFormat2KHR[] pSurfaceFormats)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult ReleaseDisplayEXT(IMgDisplayKHR display)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetPhysicalDeviceExternalBufferProperties(MgPhysicalDeviceExternalBufferInfo pExternalBufferInfo, out MgExternalBufferProperties pExternalBufferProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetPhysicalDeviceExternalFenceProperties(MgPhysicalDeviceExternalFenceInfo pExternalFenceInfo, out MgExternalFenceProperties pExternalFenceProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetPhysicalDeviceExternalSemaphoreProperties(MgPhysicalDeviceExternalSemaphoreInfo pExternalSemaphoreInfo, out MgExternalSemaphoreProperties pExternalSemaphoreProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetPhysicalDeviceFeatures2(out MgPhysicalDeviceFeatures2 pFeatures)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetPhysicalDeviceFormatProperties2(MgFormat format, out MgFormatProperties2 pFormatProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetPhysicalDeviceGeneratedCommandsPropertiesNVX(MgDeviceGeneratedCommandsFeaturesNVX pFeatures, out MgDeviceGeneratedCommandsLimitsNVX pLimits)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetPhysicalDeviceMemoryProperties2(out MgPhysicalDeviceMemoryProperties2 pMemoryProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetPhysicalDeviceMultisamplePropertiesEXT(MgSampleCountFlagBits samples, MgMultisamplePropertiesEXT pMultisampleProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetPhysicalDeviceProperties2(out MgPhysicalDeviceProperties2 pProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetPhysicalDeviceQueueFamilyProperties2(out MgQueueFamilyProperties2[] pQueueFamilyProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetPhysicalDeviceSparseImageFormatProperties2(MgPhysicalDeviceSparseImageFormatInfo2 pFormatInfo, out MgSparseImageFormatProperties2[] pProperties)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

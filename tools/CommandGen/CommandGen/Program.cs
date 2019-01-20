@@ -169,7 +169,6 @@ namespace CommandGen
 			{
 				using (var interfaceFile = new StreamWriter(Path.Combine("Structs", container.Name + ".cs"), false))
 				{
-					interfaceFile.WriteLine("using Magnesium;");
 					interfaceFile.WriteLine("using System;");
 					interfaceFile.WriteLine("using System.Runtime.InteropServices;");
 					interfaceFile.WriteLine("");
@@ -177,7 +176,7 @@ namespace CommandGen
 					interfaceFile.WriteLine("{");
 					string tabbedField = "\t";
 
-					interfaceFile.WriteLine(tabbedField + "[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Ansi)]");
+					interfaceFile.WriteLine(tabbedField + "[StructLayout(LayoutKind.Sequential)]");
 					interfaceFile.WriteLine(tabbedField + "internal struct {0}", container.Name);
 					interfaceFile.WriteLine(tabbedField + "{");
 
@@ -269,7 +268,6 @@ namespace CommandGen
 
         private static void FillOutHandleImplementation(VkContainerClass container, StreamWriter interfaceFile)
         {
-            interfaceFile.WriteLine("using Magnesium;");
             interfaceFile.WriteLine("using System;");
             interfaceFile.WriteLine("namespace Magnesium.Vulkan");
             interfaceFile.WriteLine("{");

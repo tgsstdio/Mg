@@ -1,10 +1,9 @@
-using Magnesium;
 using System;
 using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan
 {
-	[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Ansi)]
+    [StructLayout(LayoutKind.Sequential)]
 	internal struct VkObjectTableCreateInfoNVX
 	{
 		public VkStructureType sType { get; set; }

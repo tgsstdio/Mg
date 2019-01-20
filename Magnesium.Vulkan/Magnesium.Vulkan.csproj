@@ -149,7 +149,10 @@
     <Compile Include="Structs\VkDeviceQueueCreateInfo.cs" />
     <Compile Include="Structs\VkDispatchIndirectCommand.cs" />
     <Compile Include="Structs\VkDisplayModeCreateInfoKHR.cs" />
+    <Compile Include="Structs\VkDisplayModeProperties2KHR.cs" />
+    <Compile Include="Structs\VkDisplayPlaneCapabilities2KHR.cs" />
     <Compile Include="Structs\VkDisplayPlaneCapabilitiesKHR.cs" />
+    <Compile Include="Structs\VkDisplayPlaneInfo2KHR.cs" />
     <Compile Include="Structs\VkDisplayPlanePropertiesKHR.cs" />
     <Compile Include="Structs\VkDisplayPresentInfoKHR.cs" />
     <Compile Include="Structs\VkDisplayPropertiesKHR.cs" />
