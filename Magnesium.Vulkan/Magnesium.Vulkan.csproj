@@ -153,8 +153,10 @@
     <Compile Include="Structs\VkDisplayPlaneCapabilities2KHR.cs" />
     <Compile Include="Structs\VkDisplayPlaneCapabilitiesKHR.cs" />
     <Compile Include="Structs\VkDisplayPlaneInfo2KHR.cs" />
+    <Compile Include="Structs\VkDisplayPlaneProperties2KHR.cs" />
     <Compile Include="Structs\VkDisplayPlanePropertiesKHR.cs" />
     <Compile Include="Structs\VkDisplayPresentInfoKHR.cs" />
+    <Compile Include="Structs\VkDisplayProperties2KHR.cs" />
     <Compile Include="Structs\VkDisplayPropertiesKHR.cs" />
     <Compile Include="Structs\VkDisplaySurfaceCreateInfoKHR.cs" />
     <Compile Include="Structs\VkDrawIndexedIndirectCommand.cs" />
@@ -170,6 +172,7 @@
     <Compile Include="Structs\VkImageCopy.cs" />
     <Compile Include="Structs\VkImageCreateInfo.cs" />
     <Compile Include="Structs\VkImageFormatProperties.cs" />
+    <Compile Include="Structs\VkImageFormatProperties2.cs" />
     <Compile Include="Structs\VkImageMemoryBarrier.cs" />
     <Compile Include="Structs\VkImageResolve.cs" />
     <Compile Include="Structs\VkImageSubresource.cs" />
@@ -189,10 +192,12 @@
     <Compile Include="Structs\VkObjectTableCreateInfoNVX.cs" />
     <Compile Include="Structs\VkPhysicalDeviceFeatures.cs" />
     <Compile Include="Structs\VkPhysicalDeviceGroupProperties.cs" />
+    <Compile Include="Structs\VkPhysicalDeviceImageFormatInfo2.cs" />
     <Compile Include="Structs\VkPhysicalDeviceLimits.cs" />
     <Compile Include="Structs\VkPhysicalDeviceMemoryProperties.cs" />
     <Compile Include="Structs\VkPhysicalDeviceProperties.cs" />
     <Compile Include="Structs\VkPhysicalDeviceSparseProperties.cs" />
+    <Compile Include="Structs\VkPhysicalDeviceSurfaceInfo2KHR.cs" />
     <Compile Include="Structs\VkPipelineCacheCreateInfo.cs" />
     <Compile Include="Structs\VkPipelineColorBlendAttachmentState.cs" />
     <Compile Include="Structs\VkPipelineColorBlendStateCreateInfo.cs" />
@@ -230,6 +235,8 @@
     <Compile Include="Structs\VkSubpassDependency.cs" />
     <Compile Include="Structs\VkSubpassDescription.cs" />
     <Compile Include="Structs\VkSubresourceLayout.cs" />
+    <Compile Include="Structs\VkSurfaceCapabilities2EXT.cs" />
+    <Compile Include="Structs\VkSurfaceCapabilities2KHR.cs" />
     <Compile Include="Structs\VkSurfaceCapabilitiesKHR.cs" />
     <Compile Include="Structs\VkSurfaceFormatKHR.cs" />
     <Compile Include="Structs\VkSwapchainCreateInfoKHR.cs" />

@@ -1044,32 +1044,187 @@ namespace Magnesium.Vulkan
 
         public MgResult GetPhysicalDeviceCalibrateableTimeDomainsEXT(out MgTimeDomainEXT[] pTimeDomains)
         {
-            throw new NotImplementedException();
+            var pTimeDomainCount = 0U;
+            var result = Interops.vkGetPhysicalDeviceCalibrateableTimeDomainsEXT(this.Handle, ref pTimeDomainCount, null);
+
+            if (result != MgResult.SUCCESS)
+            {
+                pTimeDomains = new MgTimeDomainEXT[0];
+                return result;
+            }
+
+            pTimeDomains = new MgTimeDomainEXT[pTimeDomainCount];
+            return Interops.vkGetPhysicalDeviceCalibrateableTimeDomainsEXT(this.Handle, ref pTimeDomainCount, pTimeDomains);
         }
 
         public MgResult GetPhysicalDeviceDisplayPlaneProperties2KHR(out MgDisplayPlaneProperties2KHR[] pProperties)
         {
-            throw new NotImplementedException();
+            uint count = 0;
+            var first = Interops.vkGetPhysicalDeviceDisplayPlaneProperties2KHR(Handle, ref count, null);
+
+            if (first != MgResult.SUCCESS)
+            {
+                pProperties = null;
+                return first;
+            }
+
+            var planeProperties = new VkDisplayPlaneProperties2KHR[count];
+            // TODO: extension
+            var final = Interops.vkGetPhysicalDeviceDisplayPlaneProperties2KHR(Handle, ref count, planeProperties);
+
+            pProperties = new MgDisplayPlaneProperties2KHR[count];
+            for (var i = 0; i < count; ++i)
+            {
+                var currentProperty = planeProperties[i].displayPlaneProperties;
+                pProperties[i] = new MgDisplayPlaneProperties2KHR
+                {
+                    DisplayPlaneProperties = new MgDisplayPlanePropertiesKHR
+                    {
+                        CurrentDisplay = new VkDisplayKHR(currentProperty.currentDisplay),
+                        CurrentStackIndex = currentProperty.currentStackIndex,
+                    }
+                };
+            }
+
+            return final;
         }
 
         public MgResult GetPhysicalDeviceDisplayProperties2KHR(out MgDisplayProperties2KHR[] pProperties)
         {
-            throw new NotImplementedException();
+            uint count = 0;
+            var first = Interops.vkGetPhysicalDeviceDisplayProperties2KHR(Handle, ref count, null);
+
+            if (first != MgResult.SUCCESS)
+            {
+                pProperties = null;
+                return first;
+            }
+
+            var displayProperties = new VkDisplayProperties2KHR[count];
+            // TODO: extension
+            var final = Interops.vkGetPhysicalDeviceDisplayProperties2KHR(Handle, ref count, displayProperties);
+
+            pProperties = new MgDisplayProperties2KHR[count];
+            for (var i = 0; i < count; ++i)
+            {
+                var current = displayProperties[i].displayProperties;
+                var internalDisplay = new VkDisplayKHR(current.display);
+
+                pProperties[i] = new MgDisplayProperties2KHR
+                {
+                    DisplayProperties = new MgDisplayPropertiesKHR
+                    {
+                        Display = internalDisplay,
+                        DisplayName = current.displayName,
+                        PhysicalDimensions = current.physicalDimensions,
+                        PhysicalResolution = current.physicalResolution,
+                        SupportedTransforms = (MgSurfaceTransformFlagBitsKHR)current.supportedTransforms,
+                        PlaneReorderPossible = VkBool32.ConvertFrom(current.planeReorderPossible),
+                        PersistentContent = VkBool32.ConvertFrom(current.persistentContent),
+                    }
+                };
+            }
+            return final;
         }
 
         public MgResult GetPhysicalDeviceImageFormatProperties2(MgPhysicalDeviceImageFormatInfo2 pImageFormatInfo, MgImageFormatProperties2 pImageFormatProperties)
         {
-            throw new NotImplementedException();
+            var bImageFormatInfo = new VkPhysicalDeviceImageFormatInfo2
+            {
+                sType = VkStructureType.StructureTypePhysicalDeviceImageFormatInfo2,
+                pNext = IntPtr.Zero, // TODO: extension
+                type = (VkImageType) pImageFormatInfo.Type,
+                flags = pImageFormatInfo.Flags,
+                format = pImageFormatInfo.Format,
+                tiling = pImageFormatInfo.Tiling,
+                usage = pImageFormatInfo.Usage,
+            };
+
+            var output = default(VkImageFormatProperties2);
+            var result = Interops.vkGetPhysicalDeviceImageFormatProperties2(this.Handle, ref bImageFormatInfo, ref output);
+
+            pImageFormatProperties = new MgImageFormatProperties2
+            {
+                ImageFormatProperties = new MgImageFormatProperties
+                {
+                    MaxExtent = output.imageFormatProperties.maxExtent,
+                    MaxMipLevels = output.imageFormatProperties.maxMipLevels,
+                    MaxArrayLayers = output.imageFormatProperties.maxArrayLayers,
+                    SampleCounts = (MgSampleCountFlagBits)output.imageFormatProperties.sampleCounts,
+                    MaxResourceSize = output.imageFormatProperties.maxResourceSize,
+                }
+            };
+            return result;
         }
 
         public MgResult GetPhysicalDeviceSurfaceCapabilities2EXT(IMgSurfaceKHR surface, out MgSurfaceCapabilities2EXT pSurfaceCapabilities)
         {
-            throw new NotImplementedException();
+            if (surface == null)
+                throw new ArgumentNullException(nameof(surface));
+
+            var bSurface = (VkSurfaceKHR)surface;
+            Debug.Assert(bSurface != null);
+
+            var pCreateInfo = default(VkSurfaceCapabilities2EXT);
+            // TODO: extension
+            var result = Interops.vkGetPhysicalDeviceSurfaceCapabilities2EXT(Handle, bSurface.Handle, ref pCreateInfo);
+
+            pSurfaceCapabilities = new MgSurfaceCapabilities2EXT
+            {
+                MinImageCount = pCreateInfo.minImageCount,
+                MaxImageCount = pCreateInfo.maxImageCount,
+                CurrentExtent = pCreateInfo.currentExtent,
+                MinImageExtent = pCreateInfo.minImageExtent,
+                MaxImageExtent = pCreateInfo.maxImageExtent,
+                MaxImageArrayLayers = pCreateInfo.maxImageArrayLayers,
+                SupportedTransforms = (MgSurfaceTransformFlagBitsKHR)pCreateInfo.supportedTransforms,
+                CurrentTransform = (MgSurfaceTransformFlagBitsKHR)pCreateInfo.currentTransform,
+                SupportedCompositeAlpha = (MgCompositeAlphaFlagBitsKHR)pCreateInfo.supportedCompositeAlpha,
+                SupportedUsageFlags = (MgImageUsageFlagBits)pCreateInfo.supportedUsageFlags,
+                SupportedSurfaceCounters = pCreateInfo.supportedSurfaceCounters,                
+            };
+
+            return result;
         }
 
         public MgResult GetPhysicalDeviceSurfaceCapabilities2KHR(MgPhysicalDeviceSurfaceInfo2KHR pSurfaceInfo, out MgSurfaceCapabilities2KHR pSurfaceCapabilities)
         {
-            throw new NotImplementedException();
+            if (pSurfaceInfo == null)
+                throw new ArgumentNullException(nameof(pSurfaceInfo));
+
+            var bSurface = (VkSurfaceKHR)pSurfaceInfo.Surface;
+            Debug.Assert(bSurface != null);
+
+            var bSurfaceInfo = new VkPhysicalDeviceSurfaceInfo2KHR
+            {
+                sType = VkStructureType.StructureTypePhysicalDeviceSurfaceInfo2Khr,
+                pNext = IntPtr.Zero,
+                surface = bSurface.Handle,
+            };
+
+            var output = default(VkSurfaceCapabilities2KHR);
+            // TODO: extension
+
+            var result = Interops.vkGetPhysicalDeviceSurfaceCapabilities2KHR(Handle, ref bSurfaceInfo, ref output);
+
+            pSurfaceCapabilities = new MgSurfaceCapabilities2KHR
+            {
+                SurfaceCapabilities = new MgSurfaceCapabilitiesKHR
+                {
+                    MinImageCount = output.surfaceCapabilities.minImageCount,
+                    MaxImageCount = output.surfaceCapabilities.maxImageCount,
+                    CurrentExtent = output.surfaceCapabilities.currentExtent,
+                    MinImageExtent = output.surfaceCapabilities.minImageExtent,
+                    MaxImageExtent = output.surfaceCapabilities.maxImageExtent,
+                    MaxImageArrayLayers = output.surfaceCapabilities.maxImageArrayLayers,
+                    SupportedTransforms = (MgSurfaceTransformFlagBitsKHR)output.surfaceCapabilities.supportedTransforms,
+                    CurrentTransform = (MgSurfaceTransformFlagBitsKHR)output.surfaceCapabilities.currentTransform,
+                    SupportedCompositeAlpha = (MgCompositeAlphaFlagBitsKHR)output.surfaceCapabilities.supportedCompositeAlpha,
+                    SupportedUsageFlags = (MgImageUsageFlagBits)output.surfaceCapabilities.supportedUsageFlags,
+                }
+            };
+
+            return result;
         }
 
         public MgResult GetPhysicalDeviceSurfaceFormats2KHR(MgPhysicalDeviceSurfaceInfo2KHR pSurfaceInfo, out MgSurfaceFormat2KHR[] pSurfaceFormats)
