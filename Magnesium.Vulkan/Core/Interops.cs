@@ -516,10 +516,10 @@ namespace Magnesium.Vulkan
 
 		//[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		//internal extern static MgResult vkDebugMarkerSetObjectNameEXT(IntPtr device, [In, Out] ref VkDebugMarkerObjectNameInfoExt pNameInfo);
-
+        /**
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static unsafe MgResult vkDebugMarkerSetObjectTagEXT(IntPtr device, VkDebugMarkerObjectTagInfoEXT* pTagInfo);
-
+        **/
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkCmdDebugMarkerBeginEXT(IntPtr commandBuffer, ref VkDebugMarkerMarkerInfoEXT pMarkerInfo);
 
@@ -588,7 +588,7 @@ namespace Magnesium.Vulkan
 		internal extern static unsafe void vkGetPhysicalDeviceFormatProperties2(IntPtr physicalDevice, MgFormat format, VkFormatProperties2 pFormatProperties);
         **/
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe MgResult vkGetPhysicalDeviceImageFormatProperties2(IntPtr physicalDevice, ref VkPhysicalDeviceImageFormatInfo2 pImageFormatInfo, ref VkImageFormatProperties2 pImageFormatProperties);
+		internal extern static MgResult vkGetPhysicalDeviceImageFormatProperties2(IntPtr physicalDevice, ref VkPhysicalDeviceImageFormatInfo2 pImageFormatInfo, ref VkImageFormatProperties2 pImageFormatProperties);
         /**
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static unsafe void vkGetPhysicalDeviceQueueFamilyProperties2(IntPtr physicalDevice, UInt32* pQueueFamilyPropertyCount, VkQueueFamilyProperties2* pQueueFamilyProperties);
@@ -604,10 +604,10 @@ namespace Magnesium.Vulkan
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkTrimCommandPool(IntPtr device, UInt64 commandPool, VkCommandPoolTrimFlags flags);
-
+        **/
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe void vkGetPhysicalDeviceExternalBufferProperties(IntPtr physicalDevice, VkPhysicalDeviceExternalBufferInfo pExternalBufferInfo, VkExternalBufferProperties pExternalBufferProperties);
-
+		internal extern static void vkGetPhysicalDeviceExternalBufferProperties(IntPtr physicalDevice, ref VkPhysicalDeviceExternalBufferInfo pExternalBufferInfo, ref VkExternalBufferProperties pExternalBufferProperties);
+        /**
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static MgResult vkGetMemoryWin32HandleKHR(IntPtr device, VkMemoryGetWin32HandleInfoKHR pGetWin32HandleInfo, ref IntPtr pHandle);
 
@@ -634,10 +634,10 @@ namespace Magnesium.Vulkan
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static MgResult vkImportSemaphoreFdKHR(IntPtr device, [In, Out] VkImportSemaphoreFdInfoKHR pImportSemaphoreFdInfo);
-
+        **/
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe void vkGetPhysicalDeviceExternalFenceProperties(IntPtr physicalDevice, VkPhysicalDeviceExternalFenceInfo pExternalFenceInfo, VkExternalFenceProperties pExternalFenceProperties);
-
+		internal extern static void vkGetPhysicalDeviceExternalFenceProperties(IntPtr physicalDevice, ref VkPhysicalDeviceExternalFenceInfo pExternalFenceInfo, ref VkExternalFenceProperties pExternalFenceProperties);
+        /**
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static MgResult vkGetFenceWin32HandleKHR(IntPtr device, VkFenceGetWin32HandleInfoKHR pGetWin32HandleInfo, ref IntPtr pHandle);
 
@@ -649,10 +649,10 @@ namespace Magnesium.Vulkan
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static MgResult vkImportFenceFdKHR(IntPtr device, [In, Out] VkImportFenceFdInfoKHR pImportFenceFdInfo);
-
+        **/
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static MgResult vkReleaseDisplayEXT(IntPtr physicalDevice, UInt64 display);
-
+        /**
 		//[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		//internal extern static MgResult vkAcquireXlibDisplayEXT(IntPtr physicalDevice, ref Display dpy, UInt64 display);
 
@@ -748,10 +748,10 @@ namespace Magnesium.Vulkan
         **/
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static MgResult vkGetPhysicalDeviceSurfaceCapabilities2KHR(IntPtr physicalDevice, ref VkPhysicalDeviceSurfaceInfo2KHR pSurfaceInfo, ref VkSurfaceCapabilities2KHR pSurfaceCapabilities);
-        /**
+
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static MgResult vkGetPhysicalDeviceSurfaceFormats2KHR(IntPtr physicalDevice, [In, Out] VkPhysicalDeviceSurfaceInfo2KHR pSurfaceInfo, ref UInt32 pSurfaceFormatCount, VkSurfaceFormat2KHR[] pSurfaceFormats);
-        **/
+		internal extern static MgResult vkGetPhysicalDeviceSurfaceFormats2KHR(IntPtr physicalDevice, ref VkPhysicalDeviceSurfaceInfo2KHR pSurfaceInfo, ref UInt32 pSurfaceFormatCount, [In, Out] VkSurfaceFormat2KHR[] pSurfaceFormats);
+
         [DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static MgResult vkGetPhysicalDeviceDisplayProperties2KHR(IntPtr physicalDevice, ref UInt32 pPropertyCount, [In, Out] VkDisplayProperties2KHR[] pProperties);
 

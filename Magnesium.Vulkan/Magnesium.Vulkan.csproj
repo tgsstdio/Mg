@@ -163,7 +163,10 @@
     <Compile Include="Structs\VkDrawIndirectCommand.cs" />
     <Compile Include="Structs\VkEventCreateInfo.cs" />
     <Compile Include="Structs\VkExtensionProperties.cs" />
+    <Compile Include="Structs\VkExternalBufferProperties.cs" />
+    <Compile Include="Structs\VkExternalFenceProperties.cs" />
     <Compile Include="Structs\VkExternalImageFormatPropertiesNV.cs" />
+    <Compile Include="Structs\VkExternalMemoryProperties.cs" />
     <Compile Include="Structs\VkFenceCreateInfo.cs" />
     <Compile Include="Structs\VkFormatProperties.cs" />
     <Compile Include="Structs\VkFramebufferCreateInfo.cs" />
@@ -190,6 +193,8 @@
     <Compile Include="Structs\VkMemoryType.cs" />
     <Compile Include="Structs\VkMirSurfaceCreateInfoKHR.cs" />
     <Compile Include="Structs\VkObjectTableCreateInfoNVX.cs" />
+    <Compile Include="Structs\VkPhysicalDeviceExternalBufferInfo.cs" />
+    <Compile Include="Structs\VkPhysicalDeviceExternalFenceInfo.cs" />
     <Compile Include="Structs\VkPhysicalDeviceFeatures.cs" />
     <Compile Include="Structs\VkPhysicalDeviceGroupProperties.cs" />
     <Compile Include="Structs\VkPhysicalDeviceImageFormatInfo2.cs" />
@@ -238,6 +243,7 @@
     <Compile Include="Structs\VkSurfaceCapabilities2EXT.cs" />
     <Compile Include="Structs\VkSurfaceCapabilities2KHR.cs" />
     <Compile Include="Structs\VkSurfaceCapabilitiesKHR.cs" />
+    <Compile Include="Structs\VkSurfaceFormat2KHR.cs" />
     <Compile Include="Structs\VkSurfaceFormatKHR.cs" />
     <Compile Include="Structs\VkSwapchainCreateInfoKHR.cs" />
     <Compile Include="Structs\VkVertexInputAttributeDescription.cs" />

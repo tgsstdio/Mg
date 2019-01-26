@@ -980,9 +980,18 @@ namespace Magnesium.Vulkan
             }
 
             var modeProperties = new VkDisplayModeProperties2KHR[count];
-            // TODO: extension modeProperties[i].pNext ???
+            for (var i = 0; i < count; ++i)
+            {
+                modeProperties[i] = new VkDisplayModeProperties2KHR
+                {
+                    sType = VkStructureType.StructureTypeDisplayModeProperties2Khr,
+                    // TODO: extension modeProperties[i].pNext ???
+                    pNext = IntPtr.Zero,
+                };
+            }
 
-            var final = Interops.vkGetDisplayModeProperties2KHR(Handle, bDisplay.Handle, ref count, modeProperties);
+            var final = Interops.vkGetDisplayModeProperties2KHR(
+                Handle, bDisplay.Handle, ref count, modeProperties);
 
             pProperties = new MgDisplayModeProperties2KHR[count];
             for (var i = 0; i < count; ++i)
@@ -1020,7 +1029,13 @@ namespace Magnesium.Vulkan
                 planeIndex = pDisplayPlaneInfo.PlaneIndex,
             };
 
-            var output = default(VkDisplayPlaneCapabilities2KHR);
+            var output = new VkDisplayPlaneCapabilities2KHR
+            {
+                sType = VkStructureType.StructureTypeDisplayPlaneCapabilities2Khr,
+                // TODO: extension
+                pNext = IntPtr.Zero,
+            };
+
             var result = Interops.vkGetDisplayPlaneCapabilities2KHR(Handle, ref bDisplayPlaneInfo, ref output);
 
             var caps = output.capabilities;
@@ -1069,7 +1084,17 @@ namespace Magnesium.Vulkan
             }
 
             var planeProperties = new VkDisplayPlaneProperties2KHR[count];
-            // TODO: extension
+
+            for (var i = 0; i < count; i += 1)
+            {
+                planeProperties[i] = new VkDisplayPlaneProperties2KHR
+                {
+                    sType = VkStructureType.StructureTypeDisplayPlaneProperties2Khr,
+                    // TODO: extension
+                    pNext = IntPtr.Zero,
+                };
+            }
+
             var final = Interops.vkGetPhysicalDeviceDisplayPlaneProperties2KHR(Handle, ref count, planeProperties);
 
             pProperties = new MgDisplayPlaneProperties2KHR[count];
@@ -1101,7 +1126,17 @@ namespace Magnesium.Vulkan
             }
 
             var displayProperties = new VkDisplayProperties2KHR[count];
-            // TODO: extension
+
+            for (var i = 0; i < count; i += 1)
+            {
+                displayProperties[i] = new VkDisplayProperties2KHR
+                {
+                    sType = VkStructureType.StructureTypeDisplayProperties2Khr,
+                    // TODO: extension
+                    pNext = IntPtr.Zero,
+                };
+            }
+
             var final = Interops.vkGetPhysicalDeviceDisplayProperties2KHR(Handle, ref count, displayProperties);
 
             pProperties = new MgDisplayProperties2KHR[count];
@@ -1140,7 +1175,13 @@ namespace Magnesium.Vulkan
                 usage = pImageFormatInfo.Usage,
             };
 
-            var output = default(VkImageFormatProperties2);
+            var output = new VkImageFormatProperties2
+            {
+                sType = VkStructureType.StructureTypeImageFormatProperties2,
+                // TODO: extension
+                pNext = IntPtr.Zero,
+            };
+
             var result = Interops.vkGetPhysicalDeviceImageFormatProperties2(this.Handle, ref bImageFormatInfo, ref output);
 
             pImageFormatProperties = new MgImageFormatProperties2
@@ -1165,8 +1206,13 @@ namespace Magnesium.Vulkan
             var bSurface = (VkSurfaceKHR)surface;
             Debug.Assert(bSurface != null);
 
-            var pCreateInfo = default(VkSurfaceCapabilities2EXT);
-            // TODO: extension
+            var pCreateInfo = new VkSurfaceCapabilities2EXT
+            {
+                sType = VkStructureType.StructureTypeSurfaceCapabilities2Ext,
+                // TODO: extension
+                pNext = IntPtr.Zero,
+            };
+
             var result = Interops.vkGetPhysicalDeviceSurfaceCapabilities2EXT(Handle, bSurface.Handle, ref pCreateInfo);
 
             pSurfaceCapabilities = new MgSurfaceCapabilities2EXT
@@ -1198,12 +1244,17 @@ namespace Magnesium.Vulkan
             var bSurfaceInfo = new VkPhysicalDeviceSurfaceInfo2KHR
             {
                 sType = VkStructureType.StructureTypePhysicalDeviceSurfaceInfo2Khr,
+                // TODO: extension
                 pNext = IntPtr.Zero,
                 surface = bSurface.Handle,
             };
 
-            var output = default(VkSurfaceCapabilities2KHR);
-            // TODO: extension
+            var output = new VkSurfaceCapabilities2KHR
+            {
+                sType = VkStructureType.StructureTypeSurfaceCapabilities2Khr,
+                // TODO: extension
+                pNext = IntPtr.Zero,
+            };
 
             var result = Interops.vkGetPhysicalDeviceSurfaceCapabilities2KHR(Handle, ref bSurfaceInfo, ref output);
 
@@ -1229,22 +1280,130 @@ namespace Magnesium.Vulkan
 
         public MgResult GetPhysicalDeviceSurfaceFormats2KHR(MgPhysicalDeviceSurfaceInfo2KHR pSurfaceInfo, out MgSurfaceFormat2KHR[] pSurfaceFormats)
         {
-            throw new NotImplementedException();
+            if (pSurfaceInfo == null)
+                throw new ArgumentNullException(nameof(pSurfaceInfo));
+
+            var bSurface = (VkSurfaceKHR) pSurfaceInfo.Surface;
+            Debug.Assert(bSurface != null);
+
+            var bSurfaceInfo = new VkPhysicalDeviceSurfaceInfo2KHR
+            {
+                sType = VkStructureType.StructureTypePhysicalDeviceSurfaceInfo2Khr,
+                // TODO: extension
+                pNext = IntPtr.Zero,
+                surface = bSurface.Handle,
+            };
+
+            var count = 0U;
+            var first = Interops.vkGetPhysicalDeviceSurfaceFormats2KHR(Handle, ref bSurfaceInfo, ref count, null);
+
+            if (first != MgResult.SUCCESS)
+            {
+                pSurfaceFormats = null;
+                return first;
+            }
+
+            var surfaceFormats = new VkSurfaceFormat2KHR[count];
+            for (var i = 0; i < count; ++i)
+            {
+                surfaceFormats[i] = new VkSurfaceFormat2KHR
+                {
+                    sType = VkStructureType.StructureTypeSurfaceFormat2Khr,
+                    pNext = IntPtr.Zero,
+                };
+            }
+
+            var final = Interops.vkGetPhysicalDeviceSurfaceFormats2KHR(Handle, ref bSurfaceInfo, ref count, surfaceFormats);
+
+            pSurfaceFormats = new MgSurfaceFormat2KHR[count];
+            for (var i = 0; i < count; ++i)
+            {
+                pSurfaceFormats[i] = new MgSurfaceFormat2KHR
+                {
+                    SurfaceFormat = new MgSurfaceFormatKHR
+                    {
+                        Format = (MgFormat)surfaceFormats[i].surfaceFormat.format,
+                        ColorSpace = (MgColorSpaceKHR)surfaceFormats[i].surfaceFormat.colorSpace,
+                    },
+                };
+            }
+
+            return final;
         }
 
         public MgResult ReleaseDisplayEXT(IMgDisplayKHR display)
         {
-            throw new NotImplementedException();
+            if (display == null)
+                throw new ArgumentNullException(nameof(display));
+
+            var bDisplay = (VkDisplayKHR)display;
+            Debug.Assert(bDisplay != null);
+
+            return Interops.vkReleaseDisplayEXT(this.Handle, bDisplay.Handle);
         }
 
         public void GetPhysicalDeviceExternalBufferProperties(MgPhysicalDeviceExternalBufferInfo pExternalBufferInfo, out MgExternalBufferProperties pExternalBufferProperties)
         {
-            throw new NotImplementedException();
+            if (pExternalBufferInfo == null)
+                throw new ArgumentNullException(nameof(pExternalBufferInfo));
+
+            var bExternalBufferInfo = new VkPhysicalDeviceExternalBufferInfo
+            {
+                sType = VkStructureType.StructureTypePhysicalDeviceExternalBufferInfo,
+                // TODO: extension
+                pNext = IntPtr.Zero,
+                flags = (VkBufferCreateFlags) pExternalBufferInfo.Flags,
+                handleType = pExternalBufferInfo.HandleType,
+                usage = pExternalBufferInfo.Usage,
+            };
+
+            var output = new VkExternalBufferProperties
+            {
+                sType = VkStructureType.StructureTypeExternalBufferProperties,
+                pNext = IntPtr.Zero,
+            };
+
+            Interops.vkGetPhysicalDeviceExternalBufferProperties(this.Handle, ref bExternalBufferInfo, ref output);
+
+            pExternalBufferProperties = new MgExternalBufferProperties
+            {
+                ExternalMemoryProperties = new MgExternalMemoryProperties
+                {
+                    CompatibleHandleTypes = output.externalMemoryProperties.compatibleHandleTypes,
+                    ExportFromImportedHandleTypes = output.externalMemoryProperties.exportFromImportedHandleTypes,
+                    ExternalMemoryFeatures = output.externalMemoryProperties.externalMemoryFeatures,                    
+                },
+            };
+
         }
 
         public void GetPhysicalDeviceExternalFenceProperties(MgPhysicalDeviceExternalFenceInfo pExternalFenceInfo, out MgExternalFenceProperties pExternalFenceProperties)
         {
-            throw new NotImplementedException();
+            if (pExternalFenceInfo == null)
+                throw new ArgumentNullException(nameof(pExternalFenceInfo));
+
+            var bExternalFenceInfo = new VkPhysicalDeviceExternalFenceInfo
+            {
+                sType = VkStructureType.StructureTypePhysicalDeviceExternalFenceInfo,
+                // TODO: extension
+                pNext = IntPtr.Zero,
+                handleType = pExternalFenceInfo.HandleType,
+            };
+
+            var output = new VkExternalFenceProperties
+            {
+                sType = VkStructureType.StructureTypeExternalFenceProperties,
+                pNext = IntPtr.Zero,
+            };
+
+            Interops.vkGetPhysicalDeviceExternalFenceProperties(this.Handle, ref bExternalFenceInfo, ref output);
+
+            pExternalFenceProperties = new MgExternalFenceProperties
+            {
+                CompatibleHandleTypes = output.compatibleHandleTypes,
+                ExternalFenceFeatures = output.externalFenceFeatures,
+                ExportFromImportedHandleTypes = output.exportFromImportedHandleTypes,
+            };
         }
 
         public void GetPhysicalDeviceExternalSemaphoreProperties(MgPhysicalDeviceExternalSemaphoreInfo pExternalSemaphoreInfo, out MgExternalSemaphoreProperties pExternalSemaphoreProperties)
