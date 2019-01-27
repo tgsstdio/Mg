@@ -10,7 +10,7 @@ namespace Magnesium.Vulkan
 		public MgExtent3D maxExtent { get; set; }
 		public UInt32 maxMipLevels { get; set; }
 		public UInt32 maxArrayLayers { get; set; }
-		public VkSampleCountFlags sampleCounts { get; set; }
+		public MgSampleCountFlagBits sampleCounts { get; set; }
 		public UInt64 maxResourceSize { get; set; }
 	}
 }

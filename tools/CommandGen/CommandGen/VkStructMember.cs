@@ -12,9 +12,9 @@
 		public string BaseCppType { get; internal set; }
         public string Comment { get; set; }
 
-        public string GetImplementation()
+        public string GetStructField()
 		{
-			return Attribute != null ? Attribute + " " : "" + "public " + CsType + " " + Name + @" { get; set; }";
+			return Attribute != null ? Attribute + " " : "" + "public " + CsType + " " + Name + @";";
 		}
 
         public string GetClassLine()

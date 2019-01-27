@@ -569,7 +569,7 @@ namespace Magnesium.Vulkan
 							image = bImage.Handle,
 							subresourceRange = new VkImageSubresourceRange
 							{
-								aspectMask = (Magnesium.Vulkan.VkImageAspectFlags)current.SubresourceRange.AspectMask,
+								aspectMask = current.SubresourceRange.AspectMask,
 								baseArrayLayer = current.SubresourceRange.BaseArrayLayer,
 								baseMipLevel = current.SubresourceRange.BaseMipLevel,
 								layerCount = current.SubresourceRange.LayerCount,
@@ -660,7 +660,7 @@ namespace Magnesium.Vulkan
 						image = bImage.Handle,
 						subresourceRange = new VkImageSubresourceRange
 						{
-							aspectMask = (VkImageAspectFlags)current.SubresourceRange.AspectMask,
+							aspectMask = current.SubresourceRange.AspectMask,
 							baseArrayLayer = current.SubresourceRange.BaseArrayLayer,
 							baseMipLevel = current.SubresourceRange.BaseMipLevel,
 							layerCount = current.SubresourceRange.LayerCount,

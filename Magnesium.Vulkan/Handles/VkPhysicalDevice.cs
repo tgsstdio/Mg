@@ -27,140 +27,145 @@ namespace Magnesium.Vulkan
 		}
 
 		public void GetPhysicalDeviceProperties(out MgPhysicalDeviceProperties pProperties)
-		{
-			var pCreateInfo = default(VkPhysicalDeviceProperties);
-			Interops.vkGetPhysicalDeviceProperties(Handle, ref pCreateInfo);
+        {
+            var pCreateInfo = default(VkPhysicalDeviceProperties);
+            Interops.vkGetPhysicalDeviceProperties(Handle, ref pCreateInfo);
 
-			pProperties = new MgPhysicalDeviceProperties
-			{
-				ApiVersion = pCreateInfo.apiVersion,
-				DriverVersion = pCreateInfo.driverVersion,
-				VendorID = pCreateInfo.vendorID,
-				DeviceID = pCreateInfo.deviceID,
-				DeviceType =  (MgPhysicalDeviceType) pCreateInfo.deviceType,
-				DeviceName = VkInteropsUtility.ByteArrayToTrimmedString(pCreateInfo.deviceName),
-				PipelineCacheUUID = new Guid(pCreateInfo.pipelineCacheUUID),
-				Limits = new MgPhysicalDeviceLimits
-				{
-					MaxImageDimension1D = pCreateInfo.limits.maxImageDimension1D,
-					MaxImageDimension2D = pCreateInfo.limits.maxImageDimension2D,
-					MaxImageDimension3D = pCreateInfo.limits.maxImageDimension3D,
-					MaxImageDimensionCube = pCreateInfo.limits.maxImageDimensionCube,
-					MaxImageArrayLayers = pCreateInfo.limits.maxImageArrayLayers,
-					MaxTexelBufferElements = pCreateInfo.limits.maxTexelBufferElements,
-					MaxUniformBufferRange = pCreateInfo.limits.maxUniformBufferRange,
-					MaxStorageBufferRange = pCreateInfo.limits.maxStorageBufferRange,
-					MaxPushConstantsSize = pCreateInfo.limits.maxPushConstantsSize,
-					MaxMemoryAllocationCount = pCreateInfo.limits.maxMemoryAllocationCount,
-					MaxSamplerAllocationCount = pCreateInfo.limits.maxSamplerAllocationCount,
-					BufferImageGranularity = pCreateInfo.limits.bufferImageGranularity,
-					SparseAddressSpaceSize = pCreateInfo.limits.sparseAddressSpaceSize,
-					MaxBoundDescriptorSets = pCreateInfo.limits.maxBoundDescriptorSets,
-					MaxPerStageDescriptorSamplers = pCreateInfo.limits.maxPerStageDescriptorSamplers,
-					MaxPerStageDescriptorUniformBuffers = pCreateInfo.limits.maxPerStageDescriptorUniformBuffers,
-					MaxPerStageDescriptorStorageBuffers = pCreateInfo.limits.maxPerStageDescriptorStorageBuffers,
-					MaxPerStageDescriptorSampledImages = pCreateInfo.limits.maxPerStageDescriptorSampledImages,
-					MaxPerStageDescriptorStorageImages = pCreateInfo.limits.maxPerStageDescriptorStorageImages,
-					MaxPerStageDescriptorInputAttachments = pCreateInfo.limits.maxPerStageDescriptorInputAttachments,
-					MaxPerStageResources = pCreateInfo.limits.maxPerStageResources,
-					MaxDescriptorSetSamplers = pCreateInfo.limits.maxDescriptorSetSamplers,
-					MaxDescriptorSetUniformBuffers = pCreateInfo.limits.maxDescriptorSetUniformBuffers,
-					MaxDescriptorSetUniformBuffersDynamic = pCreateInfo.limits.maxDescriptorSetUniformBuffersDynamic,
-					MaxDescriptorSetStorageBuffers = pCreateInfo.limits.maxDescriptorSetStorageBuffers,
-					MaxDescriptorSetStorageBuffersDynamic = pCreateInfo.limits.maxDescriptorSetStorageBuffersDynamic,
-					MaxDescriptorSetSampledImages = pCreateInfo.limits.maxDescriptorSetSampledImages,
-					MaxDescriptorSetStorageImages = pCreateInfo.limits.maxDescriptorSetStorageImages,
-					MaxDescriptorSetInputAttachments = pCreateInfo.limits.maxDescriptorSetInputAttachments,
-					MaxVertexInputAttributes = pCreateInfo.limits.maxVertexInputAttributes,
-					MaxVertexInputBindings = pCreateInfo.limits.maxVertexInputBindings,
-					MaxVertexInputAttributeOffset = pCreateInfo.limits.maxVertexInputAttributeOffset,
-					MaxVertexInputBindingStride = pCreateInfo.limits.maxVertexInputBindingStride,
-					MaxVertexOutputComponents = pCreateInfo.limits.maxVertexOutputComponents,
-					MaxTessellationGenerationLevel = pCreateInfo.limits.maxTessellationGenerationLevel,
-					MaxTessellationPatchSize = pCreateInfo.limits.maxTessellationPatchSize,
-					MaxTessellationControlPerVertexInputComponents = pCreateInfo.limits.maxTessellationControlPerVertexInputComponents,
-					MaxTessellationControlPerVertexOutputComponents = pCreateInfo.limits.maxTessellationControlPerVertexOutputComponents,
-					MaxTessellationControlPerPatchOutputComponents = pCreateInfo.limits.maxTessellationControlPerPatchOutputComponents,
-					MaxTessellationControlTotalOutputComponents = pCreateInfo.limits.maxTessellationControlTotalOutputComponents,
-					MaxTessellationEvaluationInputComponents = pCreateInfo.limits.maxTessellationEvaluationInputComponents,
-					MaxTessellationEvaluationOutputComponents = pCreateInfo.limits.maxTessellationEvaluationOutputComponents,
-					MaxGeometryShaderInvocations = pCreateInfo.limits.maxGeometryShaderInvocations,
-					MaxGeometryInputComponents = pCreateInfo.limits.maxGeometryInputComponents,
-					MaxGeometryOutputComponents = pCreateInfo.limits.maxGeometryOutputComponents,
-					MaxGeometryOutputVertices = pCreateInfo.limits.maxGeometryOutputVertices,
-					MaxGeometryTotalOutputComponents = pCreateInfo.limits.maxGeometryTotalOutputComponents,
-					MaxFragmentInputComponents = pCreateInfo.limits.maxFragmentInputComponents,
-					MaxFragmentOutputAttachments = pCreateInfo.limits.maxFragmentOutputAttachments,
-					MaxFragmentDualSrcAttachments = pCreateInfo.limits.maxFragmentDualSrcAttachments,
-					MaxFragmentCombinedOutputResources = pCreateInfo.limits.maxFragmentCombinedOutputResources,
-					MaxComputeSharedMemorySize = pCreateInfo.limits.maxComputeSharedMemorySize,
-					MaxComputeWorkGroupCount = pCreateInfo.limits.maxComputeWorkGroupCount,
-					MaxComputeWorkGroupInvocations = pCreateInfo.limits.maxComputeWorkGroupInvocations,
-					MaxComputeWorkGroupSize = pCreateInfo.limits.maxComputeWorkGroupSize,
-					SubPixelPrecisionBits = pCreateInfo.limits.subPixelPrecisionBits,
-					SubTexelPrecisionBits = pCreateInfo.limits.subTexelPrecisionBits,
-					MipmapPrecisionBits = pCreateInfo.limits.mipmapPrecisionBits,
-					MaxDrawIndexedIndexValue = pCreateInfo.limits.maxDrawIndexedIndexValue,
-					MaxDrawIndirectCount = pCreateInfo.limits.maxDrawIndirectCount,
-					MaxSamplerLodBias = pCreateInfo.limits.maxSamplerLodBias,
-					MaxSamplerAnisotropy = pCreateInfo.limits.maxSamplerAnisotropy,
-					MaxViewports = pCreateInfo.limits.maxViewports,
-					MaxViewportDimensions = pCreateInfo.limits.maxViewportDimensions,
-					ViewportBoundsRange = pCreateInfo.limits.viewportBoundsRange,
-					ViewportSubPixelBits = pCreateInfo.limits.viewportSubPixelBits,
-					MinMemoryMapAlignment = pCreateInfo.limits.minMemoryMapAlignment,
-					MinTexelBufferOffsetAlignment = pCreateInfo.limits.minTexelBufferOffsetAlignment,
-					MinUniformBufferOffsetAlignment = pCreateInfo.limits.minUniformBufferOffsetAlignment,
-					MinStorageBufferOffsetAlignment = pCreateInfo.limits.minStorageBufferOffsetAlignment,
-					MinTexelOffset = pCreateInfo.limits.minTexelOffset,
-					MaxTexelOffset = pCreateInfo.limits.maxTexelOffset,
-					MinTexelGatherOffset = pCreateInfo.limits.minTexelGatherOffset,
-					MaxTexelGatherOffset = pCreateInfo.limits.maxTexelGatherOffset,
-					MinInterpolationOffset = pCreateInfo.limits.minInterpolationOffset,
-					MaxInterpolationOffset = pCreateInfo.limits.maxInterpolationOffset,
-					SubPixelInterpolationOffsetBits = pCreateInfo.limits.subPixelInterpolationOffsetBits,
-					MaxFramebufferWidth = pCreateInfo.limits.maxFramebufferWidth,
-					MaxFramebufferHeight = pCreateInfo.limits.maxFramebufferHeight,
-					MaxFramebufferLayers = pCreateInfo.limits.maxFramebufferLayers,
-					FramebufferColorSampleCounts = (MgSampleCountFlagBits) pCreateInfo.limits.framebufferColorSampleCounts,
-					FramebufferDepthSampleCounts = (MgSampleCountFlagBits)pCreateInfo.limits.framebufferDepthSampleCounts,
-					FramebufferStencilSampleCounts = (MgSampleCountFlagBits) pCreateInfo.limits.framebufferStencilSampleCounts,
-					FramebufferNoAttachmentsSampleCounts = (MgSampleCountFlagBits)pCreateInfo.limits.framebufferNoAttachmentsSampleCounts,
-					MaxColorAttachments = pCreateInfo.limits.maxColorAttachments,
-					SampledImageColorSampleCounts = (MgSampleCountFlagBits) pCreateInfo.limits.sampledImageColorSampleCounts,
-					SampledImageIntegerSampleCounts = (MgSampleCountFlagBits) pCreateInfo.limits.sampledImageIntegerSampleCounts,
-					SampledImageDepthSampleCounts = (MgSampleCountFlagBits) pCreateInfo.limits.sampledImageDepthSampleCounts,
-					SampledImageStencilSampleCounts = (MgSampleCountFlagBits) pCreateInfo.limits.sampledImageStencilSampleCounts,
-					StorageImageSampleCounts = (MgSampleCountFlagBits) pCreateInfo.limits.storageImageSampleCounts,
-					MaxSampleMaskWords = pCreateInfo.limits.maxSampleMaskWords,
-					TimestampComputeAndGraphics = VkBool32.ConvertFrom(pCreateInfo.limits.timestampComputeAndGraphics),
-					TimestampPeriod = pCreateInfo.limits.timestampPeriod,
-					MaxClipDistances = pCreateInfo.limits.maxClipDistances,
-					MaxCullDistances = pCreateInfo.limits.maxCullDistances,
-					MaxCombinedClipAndCullDistances = pCreateInfo.limits.maxCombinedClipAndCullDistances,
-					DiscreteQueuePriorities = pCreateInfo.limits.discreteQueuePriorities,
-					PointSizeRange = pCreateInfo.limits.pointSizeRange,
-					LineWidthRange = pCreateInfo.limits.lineWidthRange,
-					PointSizeGranularity = pCreateInfo.limits.pointSizeGranularity,
-					LineWidthGranularity = pCreateInfo.limits.lineWidthGranularity,
-					StrictLines = VkBool32.ConvertFrom(pCreateInfo.limits.strictLines),
-					StandardSampleLocations = VkBool32.ConvertFrom(pCreateInfo.limits.standardSampleLocations),
-					OptimalBufferCopyOffsetAlignment = pCreateInfo.limits.optimalBufferCopyOffsetAlignment,
-					OptimalBufferCopyRowPitchAlignment = pCreateInfo.limits.optimalBufferCopyRowPitchAlignment,
-					NonCoherentAtomSize = pCreateInfo.limits.nonCoherentAtomSize,
-				},
-				SparseProperties = new MgPhysicalDeviceSparseProperties
-				{
-					ResidencyStandard2DBlockShape = VkBool32.ConvertFrom(pCreateInfo.sparseProperties.residencyStandard2DBlockShape),
-					ResidencyStandard2DMultisampleBlockShape = VkBool32.ConvertFrom(pCreateInfo.sparseProperties.residencyStandard2DMultisampleBlockShape),
-					ResidencyStandard3DBlockShape = VkBool32.ConvertFrom(pCreateInfo.sparseProperties.residencyStandard3DBlockShape),
-					ResidencyAlignedMipSize = VkBool32.ConvertFrom(pCreateInfo.sparseProperties.residencyAlignedMipSize),
-					ResidencyNonResidentStrict = VkBool32.ConvertFrom(pCreateInfo.sparseProperties.residencyNonResidentStrict),
-				},
-			};
-		}
+            pProperties = TranslateDeviceProperties(ref pCreateInfo);
+        }
 
-		public void GetPhysicalDeviceQueueFamilyProperties(out MgQueueFamilyProperties[] pQueueFamilyProperties)
+        private static MgPhysicalDeviceProperties TranslateDeviceProperties(ref VkPhysicalDeviceProperties src)
+        {
+            return new MgPhysicalDeviceProperties
+            {
+                ApiVersion = src.apiVersion,
+                DriverVersion = src.driverVersion,
+                VendorID = src.vendorID,
+                DeviceID = src.deviceID,
+                DeviceType = (MgPhysicalDeviceType)src.deviceType,
+                DeviceName = VkInteropsUtility.ByteArrayToTrimmedString(src.deviceName),
+                PipelineCacheUUID = new Guid(src.pipelineCacheUUID),
+                Limits = new MgPhysicalDeviceLimits
+                {
+                    MaxImageDimension1D = src.limits.maxImageDimension1D,
+                    MaxImageDimension2D = src.limits.maxImageDimension2D,
+                    MaxImageDimension3D = src.limits.maxImageDimension3D,
+                    MaxImageDimensionCube = src.limits.maxImageDimensionCube,
+                    MaxImageArrayLayers = src.limits.maxImageArrayLayers,
+                    MaxTexelBufferElements = src.limits.maxTexelBufferElements,
+                    MaxUniformBufferRange = src.limits.maxUniformBufferRange,
+                    MaxStorageBufferRange = src.limits.maxStorageBufferRange,
+                    MaxPushConstantsSize = src.limits.maxPushConstantsSize,
+                    MaxMemoryAllocationCount = src.limits.maxMemoryAllocationCount,
+                    MaxSamplerAllocationCount = src.limits.maxSamplerAllocationCount,
+                    BufferImageGranularity = src.limits.bufferImageGranularity,
+                    SparseAddressSpaceSize = src.limits.sparseAddressSpaceSize,
+                    MaxBoundDescriptorSets = src.limits.maxBoundDescriptorSets,
+                    MaxPerStageDescriptorSamplers = src.limits.maxPerStageDescriptorSamplers,
+                    MaxPerStageDescriptorUniformBuffers = src.limits.maxPerStageDescriptorUniformBuffers,
+                    MaxPerStageDescriptorStorageBuffers = src.limits.maxPerStageDescriptorStorageBuffers,
+                    MaxPerStageDescriptorSampledImages = src.limits.maxPerStageDescriptorSampledImages,
+                    MaxPerStageDescriptorStorageImages = src.limits.maxPerStageDescriptorStorageImages,
+                    MaxPerStageDescriptorInputAttachments = src.limits.maxPerStageDescriptorInputAttachments,
+                    MaxPerStageResources = src.limits.maxPerStageResources,
+                    MaxDescriptorSetSamplers = src.limits.maxDescriptorSetSamplers,
+                    MaxDescriptorSetUniformBuffers = src.limits.maxDescriptorSetUniformBuffers,
+                    MaxDescriptorSetUniformBuffersDynamic = src.limits.maxDescriptorSetUniformBuffersDynamic,
+                    MaxDescriptorSetStorageBuffers = src.limits.maxDescriptorSetStorageBuffers,
+                    MaxDescriptorSetStorageBuffersDynamic = src.limits.maxDescriptorSetStorageBuffersDynamic,
+                    MaxDescriptorSetSampledImages = src.limits.maxDescriptorSetSampledImages,
+                    MaxDescriptorSetStorageImages = src.limits.maxDescriptorSetStorageImages,
+                    MaxDescriptorSetInputAttachments = src.limits.maxDescriptorSetInputAttachments,
+                    MaxVertexInputAttributes = src.limits.maxVertexInputAttributes,
+                    MaxVertexInputBindings = src.limits.maxVertexInputBindings,
+                    MaxVertexInputAttributeOffset = src.limits.maxVertexInputAttributeOffset,
+                    MaxVertexInputBindingStride = src.limits.maxVertexInputBindingStride,
+                    MaxVertexOutputComponents = src.limits.maxVertexOutputComponents,
+                    MaxTessellationGenerationLevel = src.limits.maxTessellationGenerationLevel,
+                    MaxTessellationPatchSize = src.limits.maxTessellationPatchSize,
+                    MaxTessellationControlPerVertexInputComponents = src.limits.maxTessellationControlPerVertexInputComponents,
+                    MaxTessellationControlPerVertexOutputComponents = src.limits.maxTessellationControlPerVertexOutputComponents,
+                    MaxTessellationControlPerPatchOutputComponents = src.limits.maxTessellationControlPerPatchOutputComponents,
+                    MaxTessellationControlTotalOutputComponents = src.limits.maxTessellationControlTotalOutputComponents,
+                    MaxTessellationEvaluationInputComponents = src.limits.maxTessellationEvaluationInputComponents,
+                    MaxTessellationEvaluationOutputComponents = src.limits.maxTessellationEvaluationOutputComponents,
+                    MaxGeometryShaderInvocations = src.limits.maxGeometryShaderInvocations,
+                    MaxGeometryInputComponents = src.limits.maxGeometryInputComponents,
+                    MaxGeometryOutputComponents = src.limits.maxGeometryOutputComponents,
+                    MaxGeometryOutputVertices = src.limits.maxGeometryOutputVertices,
+                    MaxGeometryTotalOutputComponents = src.limits.maxGeometryTotalOutputComponents,
+                    MaxFragmentInputComponents = src.limits.maxFragmentInputComponents,
+                    MaxFragmentOutputAttachments = src.limits.maxFragmentOutputAttachments,
+                    MaxFragmentDualSrcAttachments = src.limits.maxFragmentDualSrcAttachments,
+                    MaxFragmentCombinedOutputResources = src.limits.maxFragmentCombinedOutputResources,
+                    MaxComputeSharedMemorySize = src.limits.maxComputeSharedMemorySize,
+                    MaxComputeWorkGroupCount = src.limits.maxComputeWorkGroupCount,
+                    MaxComputeWorkGroupInvocations = src.limits.maxComputeWorkGroupInvocations,
+                    MaxComputeWorkGroupSize = src.limits.maxComputeWorkGroupSize,
+                    SubPixelPrecisionBits = src.limits.subPixelPrecisionBits,
+                    SubTexelPrecisionBits = src.limits.subTexelPrecisionBits,
+                    MipmapPrecisionBits = src.limits.mipmapPrecisionBits,
+                    MaxDrawIndexedIndexValue = src.limits.maxDrawIndexedIndexValue,
+                    MaxDrawIndirectCount = src.limits.maxDrawIndirectCount,
+                    MaxSamplerLodBias = src.limits.maxSamplerLodBias,
+                    MaxSamplerAnisotropy = src.limits.maxSamplerAnisotropy,
+                    MaxViewports = src.limits.maxViewports,
+                    MaxViewportDimensions = src.limits.maxViewportDimensions,
+                    ViewportBoundsRange = src.limits.viewportBoundsRange,
+                    ViewportSubPixelBits = src.limits.viewportSubPixelBits,
+                    MinMemoryMapAlignment = src.limits.minMemoryMapAlignment,
+                    MinTexelBufferOffsetAlignment = src.limits.minTexelBufferOffsetAlignment,
+                    MinUniformBufferOffsetAlignment = src.limits.minUniformBufferOffsetAlignment,
+                    MinStorageBufferOffsetAlignment = src.limits.minStorageBufferOffsetAlignment,
+                    MinTexelOffset = src.limits.minTexelOffset,
+                    MaxTexelOffset = src.limits.maxTexelOffset,
+                    MinTexelGatherOffset = src.limits.minTexelGatherOffset,
+                    MaxTexelGatherOffset = src.limits.maxTexelGatherOffset,
+                    MinInterpolationOffset = src.limits.minInterpolationOffset,
+                    MaxInterpolationOffset = src.limits.maxInterpolationOffset,
+                    SubPixelInterpolationOffsetBits = src.limits.subPixelInterpolationOffsetBits,
+                    MaxFramebufferWidth = src.limits.maxFramebufferWidth,
+                    MaxFramebufferHeight = src.limits.maxFramebufferHeight,
+                    MaxFramebufferLayers = src.limits.maxFramebufferLayers,
+                    FramebufferColorSampleCounts = (MgSampleCountFlagBits)src.limits.framebufferColorSampleCounts,
+                    FramebufferDepthSampleCounts = (MgSampleCountFlagBits)src.limits.framebufferDepthSampleCounts,
+                    FramebufferStencilSampleCounts = (MgSampleCountFlagBits)src.limits.framebufferStencilSampleCounts,
+                    FramebufferNoAttachmentsSampleCounts = (MgSampleCountFlagBits)src.limits.framebufferNoAttachmentsSampleCounts,
+                    MaxColorAttachments = src.limits.maxColorAttachments,
+                    SampledImageColorSampleCounts = (MgSampleCountFlagBits)src.limits.sampledImageColorSampleCounts,
+                    SampledImageIntegerSampleCounts = (MgSampleCountFlagBits)src.limits.sampledImageIntegerSampleCounts,
+                    SampledImageDepthSampleCounts = (MgSampleCountFlagBits)src.limits.sampledImageDepthSampleCounts,
+                    SampledImageStencilSampleCounts = (MgSampleCountFlagBits)src.limits.sampledImageStencilSampleCounts,
+                    StorageImageSampleCounts = (MgSampleCountFlagBits)src.limits.storageImageSampleCounts,
+                    MaxSampleMaskWords = src.limits.maxSampleMaskWords,
+                    TimestampComputeAndGraphics = VkBool32.ConvertFrom(src.limits.timestampComputeAndGraphics),
+                    TimestampPeriod = src.limits.timestampPeriod,
+                    MaxClipDistances = src.limits.maxClipDistances,
+                    MaxCullDistances = src.limits.maxCullDistances,
+                    MaxCombinedClipAndCullDistances = src.limits.maxCombinedClipAndCullDistances,
+                    DiscreteQueuePriorities = src.limits.discreteQueuePriorities,
+                    PointSizeRange = src.limits.pointSizeRange,
+                    LineWidthRange = src.limits.lineWidthRange,
+                    PointSizeGranularity = src.limits.pointSizeGranularity,
+                    LineWidthGranularity = src.limits.lineWidthGranularity,
+                    StrictLines = VkBool32.ConvertFrom(src.limits.strictLines),
+                    StandardSampleLocations = VkBool32.ConvertFrom(src.limits.standardSampleLocations),
+                    OptimalBufferCopyOffsetAlignment = src.limits.optimalBufferCopyOffsetAlignment,
+                    OptimalBufferCopyRowPitchAlignment = src.limits.optimalBufferCopyRowPitchAlignment,
+                    NonCoherentAtomSize = src.limits.nonCoherentAtomSize,
+                },
+                SparseProperties = new MgPhysicalDeviceSparseProperties
+                {
+                    ResidencyStandard2DBlockShape = VkBool32.ConvertFrom(src.sparseProperties.residencyStandard2DBlockShape),
+                    ResidencyStandard2DMultisampleBlockShape = VkBool32.ConvertFrom(src.sparseProperties.residencyStandard2DMultisampleBlockShape),
+                    ResidencyStandard3DBlockShape = VkBool32.ConvertFrom(src.sparseProperties.residencyStandard3DBlockShape),
+                    ResidencyAlignedMipSize = VkBool32.ConvertFrom(src.sparseProperties.residencyAlignedMipSize),
+                    ResidencyNonResidentStrict = VkBool32.ConvertFrom(src.sparseProperties.residencyNonResidentStrict),
+                },
+            };
+        }
+
+        public void GetPhysicalDeviceQueueFamilyProperties(out MgQueueFamilyProperties[] pQueueFamilyProperties)
 		{
 			unsafe
 			{
@@ -175,131 +180,154 @@ namespace Magnesium.Vulkan
 
 				pQueueFamilyProperties = new MgQueueFamilyProperties[queueFamilyCount];
 				for (var i = 0; i < queueFamilyCount; ++i)
-				{
-					pQueueFamilyProperties[i] = new MgQueueFamilyProperties
-					{
-						QueueFlags = (MgQueueFlagBits)familyProperties[i].queueFlags,
-						QueueCount = familyProperties[i].queueCount,
-						TimestampValidBits = familyProperties[i].timestampValidBits,
-						MinImageTransferGranularity = familyProperties[i].minImageTransferGranularity,
-					};
-				}
-			}
-		}	
-
-		public void GetPhysicalDeviceMemoryProperties(out MgPhysicalDeviceMemoryProperties pMemoryProperties)
-		{
-			var memoryProperties = default(VkPhysicalDeviceMemoryProperties);
-			Interops.vkGetPhysicalDeviceMemoryProperties(Handle, ref memoryProperties);
-
-			var memoryHeaps = new MgMemoryHeap[memoryProperties.memoryHeapCount];
-			for (var i = 0; i < memoryProperties.memoryHeapCount; ++i)
-			{
-				memoryHeaps[i] = new MgMemoryHeap
-				{
-					Size = memoryProperties.memoryHeaps[i].size,
-					Flags = (MgMemoryHeapFlagBits)memoryProperties.memoryHeaps[i].flags,
-				};
-			}
-
-			var memoryTypes = new MgMemoryType[memoryProperties.memoryTypeCount];
-			for (var i = 0; i < memoryProperties.memoryTypeCount; ++i)
-			{
-				memoryTypes[i] = new MgMemoryType
-				{
-					PropertyFlags = (uint)memoryProperties.memoryTypes[i].propertyFlags,
-					HeapIndex = memoryProperties.memoryTypes[i].heapIndex, 
-				};
-			}
-
-			pMemoryProperties = new MgPhysicalDeviceMemoryProperties
-			{
-				MemoryHeaps = memoryHeaps,
-				MemoryTypes = memoryTypes,
-			};
+                {
+                    pQueueFamilyProperties[i] = TranslateQueueFamilyProperties(ref familyProperties[i]);
+                }
+            }
 		}
 
-		public void GetPhysicalDeviceFeatures(out MgPhysicalDeviceFeatures pFeatures)
-		{
-			var features = default(VkPhysicalDeviceFeatures);
+        private static unsafe MgQueueFamilyProperties TranslateQueueFamilyProperties(
+            ref VkQueueFamilyProperties src)
+        {
+            return new MgQueueFamilyProperties
+            {
+                QueueFlags = src.queueFlags,
+                QueueCount = src.queueCount,
+                TimestampValidBits = src.timestampValidBits,
+                MinImageTransferGranularity = src.minImageTransferGranularity,
+            };
+        }
 
-			Interops.vkGetPhysicalDeviceFeatures(Handle, ref features);
+        public void GetPhysicalDeviceMemoryProperties(out MgPhysicalDeviceMemoryProperties pMemoryProperties)
+        {
+            var memoryProperties = default(VkPhysicalDeviceMemoryProperties);
+            Interops.vkGetPhysicalDeviceMemoryProperties(Handle, ref memoryProperties);
 
-			pFeatures = new MgPhysicalDeviceFeatures
-			{
-				RobustBufferAccess = VkBool32.ConvertFrom(features.robustBufferAccess),
-				FullDrawIndexUint32 = VkBool32.ConvertFrom(features.fullDrawIndexUint32),
-				ImageCubeArray = VkBool32.ConvertFrom(features.imageCubeArray),
-				IndependentBlend = VkBool32.ConvertFrom(features.independentBlend),
-				GeometryShader = VkBool32.ConvertFrom(features.geometryShader),
-				TessellationShader = VkBool32.ConvertFrom(features.tessellationShader),
-				SampleRateShading = VkBool32.ConvertFrom(features.sampleRateShading),
-				DualSrcBlend = VkBool32.ConvertFrom(features.dualSrcBlend),
-				LogicOp = VkBool32.ConvertFrom(features.logicOp),
-				MultiDrawIndirect = VkBool32.ConvertFrom(features.multiDrawIndirect),
-				DrawIndirectFirstInstance = VkBool32.ConvertFrom(features.drawIndirectFirstInstance),
-				DepthClamp = VkBool32.ConvertFrom(features.depthClamp),
-				DepthBiasClamp = VkBool32.ConvertFrom(features.depthBiasClamp),
-				FillModeNonSolid = VkBool32.ConvertFrom(features.fillModeNonSolid),
-				DepthBounds = VkBool32.ConvertFrom(features.depthBounds),
-				WideLines = VkBool32.ConvertFrom(features.wideLines),
-				LargePoints = VkBool32.ConvertFrom(features.largePoints),
-				AlphaToOne = VkBool32.ConvertFrom(features.alphaToOne),
-				MultiViewport = VkBool32.ConvertFrom(features.multiViewport),
-				SamplerAnisotropy = VkBool32.ConvertFrom(features.samplerAnisotropy),
-				TextureCompressionETC2 = VkBool32.ConvertFrom(features.textureCompressionETC2),
-				TextureCompressionASTC_LDR = VkBool32.ConvertFrom(features.textureCompressionASTC_LDR),
-				TextureCompressionBC = VkBool32.ConvertFrom(features.textureCompressionBC),
-				OcclusionQueryPrecise = VkBool32.ConvertFrom(features.occlusionQueryPrecise),
-				PipelineStatisticsQuery = VkBool32.ConvertFrom(features.pipelineStatisticsQuery),
-				VertexPipelineStoresAndAtomics = VkBool32.ConvertFrom(features.vertexPipelineStoresAndAtomics),
-				FragmentStoresAndAtomics = VkBool32.ConvertFrom(features.fragmentStoresAndAtomics),
-				ShaderTessellationAndGeometryPointSize = VkBool32.ConvertFrom(features.shaderTessellationAndGeometryPointSize),
-				ShaderImageGatherExtended = VkBool32.ConvertFrom(features.shaderImageGatherExtended),
-				ShaderStorageImageExtendedFormats = VkBool32.ConvertFrom(features.shaderStorageImageExtendedFormats),
-				ShaderStorageImageMultisample = VkBool32.ConvertFrom(features.shaderStorageImageMultisample),
-				ShaderStorageImageReadWithoutFormat = VkBool32.ConvertFrom(features.shaderStorageImageReadWithoutFormat),
-				ShaderStorageImageWriteWithoutFormat = VkBool32.ConvertFrom(features.shaderStorageImageWriteWithoutFormat),
-				ShaderUniformBufferArrayDynamicIndexing = VkBool32.ConvertFrom(features.shaderUniformBufferArrayDynamicIndexing),
-				ShaderSampledImageArrayDynamicIndexing = VkBool32.ConvertFrom(features.shaderSampledImageArrayDynamicIndexing),
-				ShaderStorageBufferArrayDynamicIndexing = VkBool32.ConvertFrom(features.shaderStorageBufferArrayDynamicIndexing),
-				ShaderStorageImageArrayDynamicIndexing = VkBool32.ConvertFrom(features.shaderStorageImageArrayDynamicIndexing),
-				ShaderClipDistance = VkBool32.ConvertFrom(features.shaderClipDistance),
-				ShaderCullDistance = VkBool32.ConvertFrom(features.shaderCullDistance),
-				ShaderFloat64 = VkBool32.ConvertFrom(features.shaderFloat64),
-				ShaderInt64 = VkBool32.ConvertFrom(features.shaderInt64),
-				ShaderInt16 = VkBool32.ConvertFrom(features.shaderInt16),
-				ShaderResourceResidency = VkBool32.ConvertFrom(features.shaderResourceResidency),
-				ShaderResourceMinLod = VkBool32.ConvertFrom(features.shaderResourceMinLod),
-				SparseBinding = VkBool32.ConvertFrom(features.sparseBinding),
-				SparseResidencyBuffer = VkBool32.ConvertFrom(features.sparseResidencyBuffer),
-				SparseResidencyImage2D = VkBool32.ConvertFrom(features.sparseResidencyImage2D),
-				SparseResidencyImage3D = VkBool32.ConvertFrom(features.sparseResidencyImage3D),
-				SparseResidency2Samples = VkBool32.ConvertFrom(features.sparseResidency2Samples),
-				SparseResidency4Samples = VkBool32.ConvertFrom(features.sparseResidency4Samples),
-				SparseResidency8Samples = VkBool32.ConvertFrom(features.sparseResidency8Samples),
-				SparseResidency16Samples = VkBool32.ConvertFrom(features.sparseResidency16Samples),
-				SparseResidencyAliased = VkBool32.ConvertFrom(features.sparseResidencyAliased),
-				VariableMultisampleRate = VkBool32.ConvertFrom(features.variableMultisampleRate),
-				InheritedQueries = VkBool32.ConvertFrom(features.inheritedQueries),
-			};
-		}
+            pMemoryProperties = TranslateMemoryProperties(ref memoryProperties);
+        }
 
-		public void GetPhysicalDeviceFormatProperties(MgFormat format, out MgFormatProperties pFormatProperties)
-		{
-			var formatProperties = default(VkFormatProperties);
-			Interops.vkGetPhysicalDeviceFormatProperties(Handle, format, ref formatProperties);
+        private static MgPhysicalDeviceMemoryProperties TranslateMemoryProperties(ref VkPhysicalDeviceMemoryProperties memoryProperties)
+        {
+            MgPhysicalDeviceMemoryProperties pMemoryProperties;
+            var memoryHeaps = new MgMemoryHeap[memoryProperties.memoryHeapCount];
+            for (var i = 0; i < memoryProperties.memoryHeapCount; ++i)
+            {
+                memoryHeaps[i] = new MgMemoryHeap
+                {
+                    Size = memoryProperties.memoryHeaps[i].size,
+                    Flags = (MgMemoryHeapFlagBits)memoryProperties.memoryHeaps[i].flags,
+                };
+            }
 
-			pFormatProperties = new MgFormatProperties
-			{
-				Format = format,
-				LinearTilingFeatures = (MgFormatFeatureFlagBits)formatProperties.linearTilingFeatures,
-				OptimalTilingFeatures = (MgFormatFeatureFlagBits)formatProperties.optimalTilingFeatures,
-				BufferFeatures = (MgFormatFeatureFlagBits)formatProperties.bufferFeatures,
-			};
-		}
+            var memoryTypes = new MgMemoryType[memoryProperties.memoryTypeCount];
+            for (var i = 0; i < memoryProperties.memoryTypeCount; ++i)
+            {
+                memoryTypes[i] = new MgMemoryType
+                {
+                    PropertyFlags = (uint)memoryProperties.memoryTypes[i].propertyFlags,
+                    HeapIndex = memoryProperties.memoryTypes[i].heapIndex,
+                };
+            }
 
-		public MgResult GetPhysicalDeviceImageFormatProperties(MgFormat format, MgImageType type, MgImageTiling tiling, MgImageUsageFlagBits usage, MgImageCreateFlagBits flags, out MgImageFormatProperties pImageFormatProperties)
+            pMemoryProperties = new MgPhysicalDeviceMemoryProperties
+            {
+                MemoryHeaps = memoryHeaps,
+                MemoryTypes = memoryTypes,
+            };
+            return pMemoryProperties;
+        }
+
+        public void GetPhysicalDeviceFeatures(out MgPhysicalDeviceFeatures pFeatures)
+        {
+            var features = default(VkPhysicalDeviceFeatures);
+
+            Interops.vkGetPhysicalDeviceFeatures(Handle, ref features);
+
+            pFeatures = TranslateFeatures(ref features);
+        }
+
+        private static MgPhysicalDeviceFeatures TranslateFeatures(ref VkPhysicalDeviceFeatures features)
+        {
+            return new MgPhysicalDeviceFeatures
+            {
+                RobustBufferAccess = VkBool32.ConvertFrom(features.robustBufferAccess),
+                FullDrawIndexUint32 = VkBool32.ConvertFrom(features.fullDrawIndexUint32),
+                ImageCubeArray = VkBool32.ConvertFrom(features.imageCubeArray),
+                IndependentBlend = VkBool32.ConvertFrom(features.independentBlend),
+                GeometryShader = VkBool32.ConvertFrom(features.geometryShader),
+                TessellationShader = VkBool32.ConvertFrom(features.tessellationShader),
+                SampleRateShading = VkBool32.ConvertFrom(features.sampleRateShading),
+                DualSrcBlend = VkBool32.ConvertFrom(features.dualSrcBlend),
+                LogicOp = VkBool32.ConvertFrom(features.logicOp),
+                MultiDrawIndirect = VkBool32.ConvertFrom(features.multiDrawIndirect),
+                DrawIndirectFirstInstance = VkBool32.ConvertFrom(features.drawIndirectFirstInstance),
+                DepthClamp = VkBool32.ConvertFrom(features.depthClamp),
+                DepthBiasClamp = VkBool32.ConvertFrom(features.depthBiasClamp),
+                FillModeNonSolid = VkBool32.ConvertFrom(features.fillModeNonSolid),
+                DepthBounds = VkBool32.ConvertFrom(features.depthBounds),
+                WideLines = VkBool32.ConvertFrom(features.wideLines),
+                LargePoints = VkBool32.ConvertFrom(features.largePoints),
+                AlphaToOne = VkBool32.ConvertFrom(features.alphaToOne),
+                MultiViewport = VkBool32.ConvertFrom(features.multiViewport),
+                SamplerAnisotropy = VkBool32.ConvertFrom(features.samplerAnisotropy),
+                TextureCompressionETC2 = VkBool32.ConvertFrom(features.textureCompressionETC2),
+                TextureCompressionASTC_LDR = VkBool32.ConvertFrom(features.textureCompressionASTC_LDR),
+                TextureCompressionBC = VkBool32.ConvertFrom(features.textureCompressionBC),
+                OcclusionQueryPrecise = VkBool32.ConvertFrom(features.occlusionQueryPrecise),
+                PipelineStatisticsQuery = VkBool32.ConvertFrom(features.pipelineStatisticsQuery),
+                VertexPipelineStoresAndAtomics = VkBool32.ConvertFrom(features.vertexPipelineStoresAndAtomics),
+                FragmentStoresAndAtomics = VkBool32.ConvertFrom(features.fragmentStoresAndAtomics),
+                ShaderTessellationAndGeometryPointSize = VkBool32.ConvertFrom(features.shaderTessellationAndGeometryPointSize),
+                ShaderImageGatherExtended = VkBool32.ConvertFrom(features.shaderImageGatherExtended),
+                ShaderStorageImageExtendedFormats = VkBool32.ConvertFrom(features.shaderStorageImageExtendedFormats),
+                ShaderStorageImageMultisample = VkBool32.ConvertFrom(features.shaderStorageImageMultisample),
+                ShaderStorageImageReadWithoutFormat = VkBool32.ConvertFrom(features.shaderStorageImageReadWithoutFormat),
+                ShaderStorageImageWriteWithoutFormat = VkBool32.ConvertFrom(features.shaderStorageImageWriteWithoutFormat),
+                ShaderUniformBufferArrayDynamicIndexing = VkBool32.ConvertFrom(features.shaderUniformBufferArrayDynamicIndexing),
+                ShaderSampledImageArrayDynamicIndexing = VkBool32.ConvertFrom(features.shaderSampledImageArrayDynamicIndexing),
+                ShaderStorageBufferArrayDynamicIndexing = VkBool32.ConvertFrom(features.shaderStorageBufferArrayDynamicIndexing),
+                ShaderStorageImageArrayDynamicIndexing = VkBool32.ConvertFrom(features.shaderStorageImageArrayDynamicIndexing),
+                ShaderClipDistance = VkBool32.ConvertFrom(features.shaderClipDistance),
+                ShaderCullDistance = VkBool32.ConvertFrom(features.shaderCullDistance),
+                ShaderFloat64 = VkBool32.ConvertFrom(features.shaderFloat64),
+                ShaderInt64 = VkBool32.ConvertFrom(features.shaderInt64),
+                ShaderInt16 = VkBool32.ConvertFrom(features.shaderInt16),
+                ShaderResourceResidency = VkBool32.ConvertFrom(features.shaderResourceResidency),
+                ShaderResourceMinLod = VkBool32.ConvertFrom(features.shaderResourceMinLod),
+                SparseBinding = VkBool32.ConvertFrom(features.sparseBinding),
+                SparseResidencyBuffer = VkBool32.ConvertFrom(features.sparseResidencyBuffer),
+                SparseResidencyImage2D = VkBool32.ConvertFrom(features.sparseResidencyImage2D),
+                SparseResidencyImage3D = VkBool32.ConvertFrom(features.sparseResidencyImage3D),
+                SparseResidency2Samples = VkBool32.ConvertFrom(features.sparseResidency2Samples),
+                SparseResidency4Samples = VkBool32.ConvertFrom(features.sparseResidency4Samples),
+                SparseResidency8Samples = VkBool32.ConvertFrom(features.sparseResidency8Samples),
+                SparseResidency16Samples = VkBool32.ConvertFrom(features.sparseResidency16Samples),
+                SparseResidencyAliased = VkBool32.ConvertFrom(features.sparseResidencyAliased),
+                VariableMultisampleRate = VkBool32.ConvertFrom(features.variableMultisampleRate),
+                InheritedQueries = VkBool32.ConvertFrom(features.inheritedQueries),
+            };
+        }
+
+        public void GetPhysicalDeviceFormatProperties(MgFormat format, out MgFormatProperties pFormatProperties)
+        {
+            var formatProperties = default(VkFormatProperties);
+            Interops.vkGetPhysicalDeviceFormatProperties(Handle, format, ref formatProperties);
+
+            pFormatProperties = TranslateFormatProperties(format, ref formatProperties);
+        }
+
+        private static MgFormatProperties TranslateFormatProperties(MgFormat format, ref VkFormatProperties formatProperties)
+        {
+            return new MgFormatProperties
+            {
+                Format = format,
+                LinearTilingFeatures = (MgFormatFeatureFlagBits)formatProperties.linearTilingFeatures,
+                OptimalTilingFeatures = (MgFormatFeatureFlagBits)formatProperties.optimalTilingFeatures,
+                BufferFeatures = (MgFormatFeatureFlagBits)formatProperties.bufferFeatures,
+            };
+        }
+
+        public MgResult GetPhysicalDeviceImageFormatProperties(MgFormat format, MgImageType type, MgImageTiling tiling, MgImageUsageFlagBits usage, MgImageCreateFlagBits flags, out MgImageFormatProperties pImageFormatProperties)
 		{
 			var bType = (VkImageType)type;
 
@@ -575,7 +603,7 @@ namespace Magnesium.Vulkan
 			uint count = 0;
 
 			var bType = (VkImageType) type;
-			var bSamples = (VkSampleCountFlags) samples;
+			var bSamples = samples;
 
 			Interops.vkGetPhysicalDeviceSparseImageFormatProperties
 			(
@@ -610,17 +638,22 @@ namespace Magnesium.Vulkan
 
 			pProperties = new MgSparseImageFormatProperties[count];
 			for (var i = 0; i < count; ++i)
-			{
-				pProperties[i] = new MgSparseImageFormatProperties
-				{
-					AspectMask = (MgImageAspectFlagBits)formatProperties[i].aspectMask,
-					ImageGranularity = formatProperties[i].imageGranularity,
-					Flags = (MgSparseImageFormatFlagBits)formatProperties[i].flags,
-				};
-			}
-		}
+            {
+                pProperties[i] = TranslateSparseImageFormatProperties(ref formatProperties[i]);
+            }
+        }
 
-		public MgResult GetPhysicalDeviceDisplayPropertiesKHR(out MgDisplayPropertiesKHR[] pProperties)
+        private static MgSparseImageFormatProperties TranslateSparseImageFormatProperties(ref VkSparseImageFormatProperties src)
+        {
+            return new MgSparseImageFormatProperties
+            {
+                AspectMask = src.aspectMask,
+                ImageGranularity = src.imageGranularity,
+                Flags = (MgSparseImageFormatFlagBits) src.flags,
+            };
+        }
+
+        public MgResult GetPhysicalDeviceDisplayPropertiesKHR(out MgDisplayPropertiesKHR[] pProperties)
 		{
 			uint count = 0;
 			var first = Interops.vkGetPhysicalDeviceDisplayPropertiesKHR(Handle, ref count, null);
@@ -776,34 +809,38 @@ namespace Magnesium.Vulkan
 		}
 
 		public MgResult GetPhysicalDeviceSurfaceCapabilitiesKHR(IMgSurfaceKHR surface, out MgSurfaceCapabilitiesKHR pSurfaceCapabilities)
-		{
-			if (surface == null)
-				throw new ArgumentNullException(nameof(surface));
+        {
+            if (surface == null)
+                throw new ArgumentNullException(nameof(surface));
 
-			var bSurface = (VkSurfaceKHR)surface;
-			Debug.Assert(bSurface != null);
+            var bSurface = (VkSurfaceKHR)surface;
+            Debug.Assert(bSurface != null);
 
-			var pCreateInfo = default(VkSurfaceCapabilitiesKHR);
-			var result = Interops.vkGetPhysicalDeviceSurfaceCapabilitiesKHR(Handle, bSurface.Handle, ref pCreateInfo);
+            var pCreateInfo = default(VkSurfaceCapabilitiesKHR);
+            var result = Interops.vkGetPhysicalDeviceSurfaceCapabilitiesKHR(Handle, bSurface.Handle, ref pCreateInfo);
+            pSurfaceCapabilities = TranslateSurfaceCapabilities(ref pCreateInfo);
 
-			pSurfaceCapabilities = new MgSurfaceCapabilitiesKHR
-			{
-				MinImageCount = pCreateInfo.minImageCount,
-				MaxImageCount = pCreateInfo.maxImageCount,
-				CurrentExtent = pCreateInfo.currentExtent,
-				MinImageExtent = pCreateInfo.minImageExtent,
-				MaxImageExtent = pCreateInfo.maxImageExtent,
-				MaxImageArrayLayers = pCreateInfo.maxImageArrayLayers,
-				SupportedTransforms = (MgSurfaceTransformFlagBitsKHR) pCreateInfo.supportedTransforms,
-				CurrentTransform = (MgSurfaceTransformFlagBitsKHR) pCreateInfo.currentTransform,
-				SupportedCompositeAlpha = (MgCompositeAlphaFlagBitsKHR) pCreateInfo.supportedCompositeAlpha,
-				SupportedUsageFlags = (MgImageUsageFlagBits) pCreateInfo.supportedUsageFlags,
-			};
+            return result;
+        }
 
-			return result;
-		}
+        private static MgSurfaceCapabilitiesKHR TranslateSurfaceCapabilities(ref VkSurfaceCapabilitiesKHR src)
+        {
+            return new MgSurfaceCapabilitiesKHR
+            {
+                MinImageCount = src.minImageCount,
+                MaxImageCount = src.maxImageCount,
+                CurrentExtent = src.currentExtent,
+                MinImageExtent = src.minImageExtent,
+                MaxImageExtent = src.maxImageExtent,
+                MaxImageArrayLayers = src.maxImageArrayLayers,
+                SupportedTransforms = (MgSurfaceTransformFlagBitsKHR)src.supportedTransforms,
+                CurrentTransform = (MgSurfaceTransformFlagBitsKHR)src.currentTransform,
+                SupportedCompositeAlpha = (MgCompositeAlphaFlagBitsKHR)src.supportedCompositeAlpha,
+                SupportedUsageFlags = (MgImageUsageFlagBits)src.supportedUsageFlags,
+            };
+        }
 
-		public MgResult GetPhysicalDeviceSurfaceFormatsKHR(IMgSurfaceKHR surface, out MgSurfaceFormatKHR[] pSurfaceFormats)
+        public MgResult GetPhysicalDeviceSurfaceFormatsKHR(IMgSurfaceKHR surface, out MgSurfaceFormatKHR[] pSurfaceFormats)
 		{
 			if (surface == null)
 				throw new ArgumentNullException(nameof(surface));
@@ -1260,19 +1297,7 @@ namespace Magnesium.Vulkan
 
             pSurfaceCapabilities = new MgSurfaceCapabilities2KHR
             {
-                SurfaceCapabilities = new MgSurfaceCapabilitiesKHR
-                {
-                    MinImageCount = output.surfaceCapabilities.minImageCount,
-                    MaxImageCount = output.surfaceCapabilities.maxImageCount,
-                    CurrentExtent = output.surfaceCapabilities.currentExtent,
-                    MinImageExtent = output.surfaceCapabilities.minImageExtent,
-                    MaxImageExtent = output.surfaceCapabilities.maxImageExtent,
-                    MaxImageArrayLayers = output.surfaceCapabilities.maxImageArrayLayers,
-                    SupportedTransforms = (MgSurfaceTransformFlagBitsKHR)output.surfaceCapabilities.supportedTransforms,
-                    CurrentTransform = (MgSurfaceTransformFlagBitsKHR)output.surfaceCapabilities.currentTransform,
-                    SupportedCompositeAlpha = (MgCompositeAlphaFlagBitsKHR)output.surfaceCapabilities.supportedCompositeAlpha,
-                    SupportedUsageFlags = (MgImageUsageFlagBits)output.surfaceCapabilities.supportedUsageFlags,
-                }
+                SurfaceCapabilities = TranslateSurfaceCapabilities(ref output.surfaceCapabilities),
             };
 
             return result;
@@ -1320,15 +1345,20 @@ namespace Magnesium.Vulkan
             {
                 pSurfaceFormats[i] = new MgSurfaceFormat2KHR
                 {
-                    SurfaceFormat = new MgSurfaceFormatKHR
-                    {
-                        Format = (MgFormat)surfaceFormats[i].surfaceFormat.format,
-                        ColorSpace = (MgColorSpaceKHR)surfaceFormats[i].surfaceFormat.colorSpace,
-                    },
+                    SurfaceFormat = TranslateSurfaceFormatKHR(ref surfaceFormats[i].surfaceFormat),
                 };
             }
 
             return final;
+        }
+
+        private static MgSurfaceFormatKHR TranslateSurfaceFormatKHR(ref VkSurfaceFormatKHR src)
+        {
+            return new MgSurfaceFormatKHR
+            {
+                Format = (MgFormat) src.format,
+                ColorSpace = (MgColorSpaceKHR) src.colorSpace,
+            };
         }
 
         public MgResult ReleaseDisplayEXT(IMgDisplayKHR display)
@@ -1408,47 +1438,237 @@ namespace Magnesium.Vulkan
 
         public void GetPhysicalDeviceExternalSemaphoreProperties(MgPhysicalDeviceExternalSemaphoreInfo pExternalSemaphoreInfo, out MgExternalSemaphoreProperties pExternalSemaphoreProperties)
         {
-            throw new NotImplementedException();
+            if (pExternalSemaphoreInfo == null)
+                throw new ArgumentNullException(nameof(pExternalSemaphoreInfo));
+
+            var bExternalSemaphoreInfo = new VkPhysicalDeviceExternalSemaphoreInfo
+            {
+                sType = VkStructureType.StructureTypePhysicalDeviceExternalSemaphoreInfo,
+                pNext = IntPtr.Zero, // TODO: extension
+                handleType = pExternalSemaphoreInfo.HandleType,
+            };
+
+            var output = new VkExternalSemaphoreProperties
+            {
+                sType = VkStructureType.StructureTypeExternalSemaphoreProperties,
+                pNext = IntPtr.Zero,
+            };
+
+            Interops.vkGetPhysicalDeviceExternalSemaphoreProperties(this.Handle, 
+                ref bExternalSemaphoreInfo,
+                ref output);
+
+            pExternalSemaphoreProperties = new MgExternalSemaphoreProperties
+            {
+                CompatibleHandleTypes = output.compatibleHandleTypes,
+                ExportFromImportedHandleTypes = output.exportFromImportedHandleTypes,
+                ExternalSemaphoreFeatures = output.externalSemaphoreFeatures,
+            };
         }
 
         public void GetPhysicalDeviceFeatures2(out MgPhysicalDeviceFeatures2 pFeatures)
         {
-            throw new NotImplementedException();
+            var bFeatures = new VkPhysicalDeviceFeatures2
+            {
+                sType = VkStructureType.StructureTypePhysicalDeviceFeatures2,
+                pNext = IntPtr.Zero, // TODO: extension
+            };
+
+            Interops.vkGetPhysicalDeviceFeatures2(this.Handle, ref bFeatures);
+
+            pFeatures = new MgPhysicalDeviceFeatures2
+            {
+                Features = TranslateFeatures(ref bFeatures.features),
+            };
         }
 
         public void GetPhysicalDeviceFormatProperties2(MgFormat format, out MgFormatProperties2 pFormatProperties)
         {
-            throw new NotImplementedException();
+            var output = new VkFormatProperties2
+            {
+                sType = VkStructureType.StructureTypeFormatProperties2,
+                pNext = IntPtr.Zero, // TODO: extension
+            };
+            Interops.vkGetPhysicalDeviceFormatProperties2(Handle, format, ref output);
+
+            pFormatProperties = new MgFormatProperties2
+            {
+                FormatProperties = TranslateFormatProperties(format, ref output.formatProperties),
+            };
         }
 
         public void GetPhysicalDeviceGeneratedCommandsPropertiesNVX(MgDeviceGeneratedCommandsFeaturesNVX pFeatures, out MgDeviceGeneratedCommandsLimitsNVX pLimits)
         {
-            throw new NotImplementedException();
+            if (pFeatures == null)
+                throw new ArgumentNullException(nameof(pFeatures));
+
+            var bFeatures = new VkDeviceGeneratedCommandsFeaturesNVX
+            {
+                sType = VkStructureType.StructureTypeDeviceGeneratedCommandsFeaturesNvx,
+                pNext = IntPtr.Zero, // TODO: extension
+                computeBindingPointSupport = VkBool32.ConvertTo(pFeatures.ComputeBindingPointSupport),
+            };
+
+            var output = new VkDeviceGeneratedCommandsLimitsNVX
+            {
+                sType = VkStructureType.StructureTypeDeviceGeneratedCommandsLimitsNvx,
+                pNext = IntPtr.Zero, // TODO : extension
+            };
+
+            Interops.vkGetPhysicalDeviceGeneratedCommandsPropertiesNVX(
+                this.Handle,
+                ref bFeatures,
+                ref output);
+
+            pLimits = new MgDeviceGeneratedCommandsLimitsNVX
+            {
+                MaxIndirectCommandsLayoutTokenCount = output.maxIndirectCommandsLayoutTokenCount,
+                MaxObjectEntryCounts = output.maxObjectEntryCounts,
+                MinCommandsTokenBufferOffsetAlignment = output.minCommandsTokenBufferOffsetAlignment,
+                MinSequenceCountBufferOffsetAlignment = output.minSequenceCountBufferOffsetAlignment,
+                MinSequenceIndexBufferOffsetAlignment = output.minSequenceIndexBufferOffsetAlignment,                
+            };
         }
 
         public void GetPhysicalDeviceMemoryProperties2(out MgPhysicalDeviceMemoryProperties2 pMemoryProperties)
         {
-            throw new NotImplementedException();
+            var bMemoryProperties = new VkPhysicalDeviceMemoryProperties2
+            {
+                sType = VkStructureType.StructureTypePhysicalDeviceMemoryProperties2,
+                pNext = IntPtr.Zero, // TODO: extension
+            };
+
+            Interops.vkGetPhysicalDeviceMemoryProperties2(this.Handle, ref bMemoryProperties);
+
+            pMemoryProperties = new MgPhysicalDeviceMemoryProperties2
+            {
+                MemoryProperties = TranslateMemoryProperties(ref bMemoryProperties.memoryProperties),
+            };
         }
 
         public void GetPhysicalDeviceMultisamplePropertiesEXT(MgSampleCountFlagBits samples, MgMultisamplePropertiesEXT pMultisampleProperties)
         {
-            throw new NotImplementedException();
+            var output = new VkMultisamplePropertiesEXT
+            {
+                sType = VkStructureType.StructureTypeMultisamplePropertiesExt,
+                pNext = IntPtr.Zero, // TODO: extension
+            };
+
+            Interops.vkGetPhysicalDeviceMultisamplePropertiesEXT(this.Handle, samples, ref output);
+
+            pMultisampleProperties = new MgMultisamplePropertiesEXT
+            {
+                MaxSampleLocationGridSize = output.maxSampleLocationGridSize,
+            };
         }
 
         public void GetPhysicalDeviceProperties2(out MgPhysicalDeviceProperties2 pProperties)
         {
-            throw new NotImplementedException();
+            var bProperties = new VkPhysicalDeviceProperties2
+            {
+                sType = VkStructureType.StructureTypePhysicalDeviceProperties2,
+                pNext = IntPtr.Zero, // TODO: extension
+            };
+
+            Interops.vkGetPhysicalDeviceProperties2(this.Handle, ref bProperties);
+
+            pProperties = new MgPhysicalDeviceProperties2
+            {
+                Properties = TranslateDeviceProperties(ref bProperties.properties),
+            };
         }
 
         public void GetPhysicalDeviceQueueFamilyProperties2(out MgQueueFamilyProperties2[] pQueueFamilyProperties)
         {
-            throw new NotImplementedException();
+            var count = 0U;
+            Interops.vkGetPhysicalDeviceQueueFamilyProperties2(this.Handle, ref count, null);
+
+            var bProperties = new VkQueueFamilyProperties2[count];
+
+            for (var i = 0; i < count; i += 1)
+            {
+                bProperties[i] = new VkQueueFamilyProperties2
+                {
+                    sType = VkStructureType.StructureTypeQueueFamilyProperties2,
+                    pNext = IntPtr.Zero, // TODO : extension
+                };
+            }
+
+            if (count > 0)
+            {
+                Interops.vkGetPhysicalDeviceQueueFamilyProperties2(this.Handle, ref count, bProperties);
+            }
+
+            pQueueFamilyProperties = new MgQueueFamilyProperties2[count];
+
+            for (var i = 0; i < count; i += 1)
+            {
+                pQueueFamilyProperties[i] = new MgQueueFamilyProperties2
+                {
+                    QueueFamilyProperties = TranslateQueueFamilyProperties(ref bProperties[i].queueFamilyProperties),
+                };
+            }
         }
 
         public void GetPhysicalDeviceSparseImageFormatProperties2(MgPhysicalDeviceSparseImageFormatInfo2 pFormatInfo, out MgSparseImageFormatProperties2[] pProperties)
         {
-            throw new NotImplementedException();
+            if (pFormatInfo == null)
+                throw new ArgumentNullException(nameof(pFormatInfo));
+
+            uint count = 0;
+
+            var bFormatInfo = new VkPhysicalDeviceSparseImageFormatInfo2
+            {
+                sType = VkStructureType.StructureTypePhysicalDeviceSparseImageFormatInfo2,
+                pNext = IntPtr.Zero, // TODO: extension
+                format = pFormatInfo.Format,
+                samples = pFormatInfo.Samples,
+                tiling = pFormatInfo.Tiling,
+                type = (VkImageType) pFormatInfo.Type,
+                usage = pFormatInfo.Usage,
+            };
+
+            Interops.vkGetPhysicalDeviceSparseImageFormatProperties2
+            (
+                Handle,
+                ref bFormatInfo,
+                ref count,
+                null
+            );
+
+            
+            pProperties = new MgSparseImageFormatProperties2[count];
+
+            if (count > 0)
+            {
+
+                var bFormatProperties = new VkSparseImageFormatProperties2[count];
+                for (var i = 0; i < count; i += 1)
+                {
+                    bFormatProperties[i] = new VkSparseImageFormatProperties2
+                    {
+                        sType = VkStructureType.StructureTypeSparseImageFormatProperties2,
+                        pNext = IntPtr.Zero, // TODO: extension
+                    };
+                }
+
+                Interops.vkGetPhysicalDeviceSparseImageFormatProperties2
+                (
+                    Handle,
+                    ref bFormatInfo,
+                    ref count,
+                    bFormatProperties
+                );
+
+                for (var i = 0; i < count; i += 1)
+                {
+                    pProperties[i] = new MgSparseImageFormatProperties2
+                    {
+                        Properties = TranslateSparseImageFormatProperties(ref bFormatProperties[i].properties),
+                    };
+                }
+            }
+
         }
     }
 }

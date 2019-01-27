@@ -6,8 +6,8 @@ namespace Magnesium.Vulkan
 	[StructLayout(LayoutKind.Sequential)]
 	internal struct VkSurfaceCapabilities2KHR
 	{
-		public VkStructureType sType { get; set; }
-		public IntPtr pNext { get; set; }
-		public VkSurfaceCapabilitiesKHR surfaceCapabilities { get; set; }
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkSurfaceCapabilitiesKHR surfaceCapabilities;
 	}
 }

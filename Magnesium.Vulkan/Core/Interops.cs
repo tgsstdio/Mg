@@ -107,7 +107,7 @@ namespace Magnesium.Vulkan
 		internal extern static unsafe void vkGetImageSparseMemoryRequirements(IntPtr device, UInt64 image, UInt32* pSparseMemoryRequirementCount, Magnesium.MgSparseImageMemoryRequirements* pSparseMemoryRequirements);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static void vkGetPhysicalDeviceSparseImageFormatProperties(IntPtr physicalDevice, MgFormat format, VkImageType type, VkSampleCountFlags samples, MgImageUsageFlagBits usage, MgImageTiling tiling, ref UInt32 pPropertyCount, [In, Out] VkSparseImageFormatProperties[] pProperties);
+		internal extern static void vkGetPhysicalDeviceSparseImageFormatProperties(IntPtr physicalDevice, MgFormat format, VkImageType type, MgSampleCountFlagBits samples, MgImageUsageFlagBits usage, MgImageTiling tiling, ref UInt32 pPropertyCount, [In, Out] VkSparseImageFormatProperties[] pProperties);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static unsafe MgResult vkQueueBindSparse(IntPtr queue, UInt32 bindInfoCount, VkBindSparseInfo* pBindInfo, UInt64 fence);
@@ -574,38 +574,38 @@ namespace Magnesium.Vulkan
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static MgResult vkUnregisterObjectsNVX(IntPtr device, UInt64 objectTable, UInt32 objectCount, ref MgObjectTableEntryNVX[] pObjectEntryTypes, UInt32[] pObjectIndices);
-        /***
+        
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe void vkGetPhysicalDeviceGeneratedCommandsPropertiesNVX(IntPtr physicalDevice, VkDeviceGeneratedCommandsFeaturesNVX* pFeatures, VkDeviceGeneratedCommandsLimitsNVX* pLimits);
+		internal extern static void vkGetPhysicalDeviceGeneratedCommandsPropertiesNVX(IntPtr physicalDevice, ref VkDeviceGeneratedCommandsFeaturesNVX pFeatures, ref VkDeviceGeneratedCommandsLimitsNVX pLimits);
+        
+		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		internal extern static void vkGetPhysicalDeviceFeatures2(IntPtr physicalDevice, ref VkPhysicalDeviceFeatures2 pFeatures);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe void vkGetPhysicalDeviceFeatures2(IntPtr physicalDevice, VkPhysicalDeviceFeatures2* pFeatures);
+		internal extern static void vkGetPhysicalDeviceProperties2(IntPtr physicalDevice, ref VkPhysicalDeviceProperties2 pProperties);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static void vkGetPhysicalDeviceProperties2(IntPtr physicalDevice, [In, Out] VkPhysicalDeviceProperties2 pProperties);
-
-		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe void vkGetPhysicalDeviceFormatProperties2(IntPtr physicalDevice, MgFormat format, VkFormatProperties2 pFormatProperties);
-        **/
+		internal extern static void vkGetPhysicalDeviceFormatProperties2(IntPtr physicalDevice, MgFormat format, ref VkFormatProperties2 pFormatProperties);
+        
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static MgResult vkGetPhysicalDeviceImageFormatProperties2(IntPtr physicalDevice, ref VkPhysicalDeviceImageFormatInfo2 pImageFormatInfo, ref VkImageFormatProperties2 pImageFormatProperties);
+
+		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		internal extern static void vkGetPhysicalDeviceQueueFamilyProperties2(IntPtr physicalDevice, ref UInt32 pQueueFamilyPropertyCount, [In, Out] VkQueueFamilyProperties2[] pQueueFamilyProperties);
+
+		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		internal extern static void vkGetPhysicalDeviceMemoryProperties2(IntPtr physicalDevice, ref VkPhysicalDeviceMemoryProperties2 pMemoryProperties);
+
+		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		internal extern static void vkGetPhysicalDeviceSparseImageFormatProperties2(IntPtr physicalDevice, ref VkPhysicalDeviceSparseImageFormatInfo2 pFormatInfo, ref UInt32 pPropertyCount, [In, Out] VkSparseImageFormatProperties2[] pProperties);
         /**
-		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe void vkGetPhysicalDeviceQueueFamilyProperties2(IntPtr physicalDevice, UInt32* pQueueFamilyPropertyCount, VkQueueFamilyProperties2* pQueueFamilyProperties);
+        [DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+        internal extern static void vkCmdPushDescriptorSetKHR(IntPtr commandBuffer, MgPipelineBindPoint pipelineBindPoint, UInt64 layout, UInt32 set, UInt32 descriptorWriteCount, [In, Out] VkWriteDescriptorSet[] pDescriptorWrites);
 
-		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static void vkGetPhysicalDeviceMemoryProperties2(IntPtr physicalDevice, [In, Out] VkPhysicalDeviceMemoryProperties2 pMemoryProperties);
-
-		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe void vkGetPhysicalDeviceSparseImageFormatProperties2(IntPtr physicalDevice, VkPhysicalDeviceSparseImageFormatInfo2 pFormatInfo, UInt32* pPropertyCount, VkSparseImageFormatProperties2* pProperties);
-
-		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static void vkCmdPushDescriptorSetKHR(IntPtr commandBuffer, MgPipelineBindPoint pipelineBindPoint, UInt64 layout, UInt32 set, UInt32 descriptorWriteCount, [In, Out] VkWriteDescriptorSet[] pDescriptorWrites);
-
-		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static void vkTrimCommandPool(IntPtr device, UInt64 commandPool, VkCommandPoolTrimFlags flags);
+        [DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+        internal extern static void vkTrimCommandPool(IntPtr device, UInt64 commandPool, VkCommandPoolTrimFlags flags);
         **/
-		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+        [DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkGetPhysicalDeviceExternalBufferProperties(IntPtr physicalDevice, ref VkPhysicalDeviceExternalBufferInfo pExternalBufferInfo, ref VkExternalBufferProperties pExternalBufferProperties);
         /**
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
@@ -619,10 +619,10 @@ namespace Magnesium.Vulkan
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static MgResult vkGetMemoryFdPropertiesKHR(IntPtr device, VkExternalMemoryHandleTypeFlags handleType, int fd, VkMemoryFdPropertiesKHR pMemoryFdProperties);
-
+        **/
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe void vkGetPhysicalDeviceExternalSemaphoreProperties(IntPtr physicalDevice, VkPhysicalDeviceExternalSemaphoreInfo pExternalSemaphoreInfo, VkExternalSemaphoreProperties pExternalSemaphoreProperties);
-
+		internal extern static void vkGetPhysicalDeviceExternalSemaphoreProperties(IntPtr physicalDevice, ref VkPhysicalDeviceExternalSemaphoreInfo pExternalSemaphoreInfo, ref VkExternalSemaphoreProperties pExternalSemaphoreProperties);
+        /**
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static MgResult vkGetSemaphoreWin32HandleKHR(IntPtr device, VkSemaphoreGetWin32HandleInfoKHR pGetWin32HandleInfo, ref IntPtr pHandle);
 
@@ -742,10 +742,10 @@ namespace Magnesium.Vulkan
         /**
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static unsafe void vkCmdSetSampleLocationsEXT(IntPtr commandBuffer, VkSampleLocationsInfoExt pSampleLocationsInfo);
-
-		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe void vkGetPhysicalDeviceMultisamplePropertiesEXT(IntPtr physicalDevice, VkSampleCountFlags samples, VkMultisamplePropertiesExt pMultisampleProperties);
         **/
+		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		internal extern static void vkGetPhysicalDeviceMultisamplePropertiesEXT(IntPtr physicalDevice, MgSampleCountFlagBits samples, ref VkMultisamplePropertiesEXT pMultisampleProperties);
+        
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static MgResult vkGetPhysicalDeviceSurfaceCapabilities2KHR(IntPtr physicalDevice, ref VkPhysicalDeviceSurfaceInfo2KHR pSurfaceInfo, ref VkSurfaceCapabilities2KHR pSurfaceCapabilities);
 

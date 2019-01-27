@@ -8,6 +8,6 @@ namespace Magnesium.Vulkan
 	internal struct VkSurfaceFormatKHR
 	{
 		public MgFormat format { get; set; }
-		public VkColorSpaceKhr colorSpace { get; set; }
+		public MgColorSpaceKHR colorSpace { get; set; }
 	}
 }

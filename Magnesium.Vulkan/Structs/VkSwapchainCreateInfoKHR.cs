@@ -13,7 +13,7 @@ namespace Magnesium.Vulkan
 		public UInt64 surface { get; set; }
 		public UInt32 minImageCount { get; set; }
 		public MgFormat imageFormat { get; set; }
-		public VkColorSpaceKhr imageColorSpace { get; set; }
+		public MgColorSpaceKHR imageColorSpace { get; set; }
 		public MgExtent2D imageExtent { get; set; }
 		public UInt32 imageArrayLayers { get; set; }
 		public MgImageUsageFlagBits imageUsage { get; set; }

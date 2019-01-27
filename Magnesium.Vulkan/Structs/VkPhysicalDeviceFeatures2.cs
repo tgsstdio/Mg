@@ -4,10 +4,10 @@ using System.Runtime.InteropServices;
 namespace Magnesium.Vulkan
 {
 	[StructLayout(LayoutKind.Sequential)]
-	internal struct VkSurfaceFormat2KHR
+	internal struct VkPhysicalDeviceFeatures2
 	{
         public VkStructureType sType;
         public IntPtr pNext;
-        public VkSurfaceFormatKHR surfaceFormat;
+        public VkPhysicalDeviceFeatures features;
 	}
 }

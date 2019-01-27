@@ -15,7 +15,7 @@ namespace Magnesium.Vulkan
 		public MgExtent3D extent { get; set; }
 		public UInt32 mipLevels { get; set; }
 		public UInt32 arrayLayers { get; set; }
-		public VkSampleCountFlags samples { get; set; }
+		public MgSampleCountFlagBits samples { get; set; }
 		public MgImageTiling tiling { get; set; }
 		public MgImageUsageFlagBits usage { get; set; }
 		public VkSharingMode sharingMode { get; set; }

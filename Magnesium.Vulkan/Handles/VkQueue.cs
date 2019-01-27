@@ -231,7 +231,7 @@ namespace Magnesium.Vulkan
 									{
 										subresource = new VkImageSubresource
 										{
-											aspectMask = (VkImageAspectFlags)arg.Subresource.AspectMask,
+											aspectMask = arg.Subresource.AspectMask,
 											arrayLayer = arg.Subresource.ArrayLayer,
 											mipLevel= arg.Subresource.MipLevel,
 										},

@@ -10,7 +10,7 @@ namespace Magnesium.Vulkan
 		public VkStructureType sType { get; set; }
 		public IntPtr pNext { get; set; }
 		public UInt32 flags { get; set; }
-		public VkSampleCountFlags rasterizationSamples { get; set; }
+		public MgSampleCountFlagBits rasterizationSamples { get; set; }
 		public VkBool32 sampleShadingEnable { get; set; }
 		public float minSampleShading { get; set; }
 		public IntPtr pSampleMask { get; set; } // UInt32

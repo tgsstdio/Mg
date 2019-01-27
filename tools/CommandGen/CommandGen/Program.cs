@@ -186,7 +186,7 @@ namespace CommandGen
 					{
                         if (!string.IsNullOrWhiteSpace(member.Comment))
                             interfaceFile.WriteLine(methodTabs + "// " + member.Comment);
-                        interfaceFile.WriteLine(methodTabs + member.GetImplementation());
+                        interfaceFile.WriteLine(methodTabs + member.GetStructField());
 					}
 					interfaceFile.WriteLine(tabbedField + "}");
 					interfaceFile.WriteLine("}");
