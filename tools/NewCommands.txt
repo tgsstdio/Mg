@@ -33,7 +33,7 @@ commandBuffer vkCmdSetViewportWScalingNV
 commandBuffer vkCmdTraceRaysNV
 commandBuffer vkCmdWriteAccelerationStructuresPropertiesNV
 commandBuffer vkCmdWriteBufferMarkerAMD
-device vkAcquireImageANDROID
+device vkAcquireImageANDROID N/A
 device vkAcquireNextImage2KHR
 device vkBindAccelerationStructureMemoryNV
 device vkBindBufferMemory2
@@ -65,27 +65,27 @@ device vkGetDeviceGroupPresentCapabilitiesKHR
 device vkGetDeviceGroupSurfacePresentModesKHR
 device vkGetDeviceQueue2
 device vkGetFenceFdKHR
-device vkGetFenceWin32HandleKHR
+device vkGetFenceWin32HandleKHR N/A
 device vkGetImageDrmFormatModifierPropertiesEXT
 device vkGetImageMemoryRequirements2
 device vkGetImageSparseMemoryRequirements2
 device vkGetMemoryFdKHR
 device vkGetMemoryFdPropertiesKHR
 device vkGetMemoryHostPointerPropertiesEXT
-device vkGetMemoryWin32HandleKHR
-device vkGetMemoryWin32HandlePropertiesKHR
+device vkGetMemoryWin32HandleKHR N/A
+device vkGetMemoryWin32HandlePropertiesKHR N/A
 device vkGetRayTracingShaderGroupHandlesNV
 device vkGetSemaphoreFdKHR
-device vkGetSemaphoreWin32HandleKHR
+device vkGetSemaphoreWin32HandleKHR N/A
 device vkGetShaderInfoAMD
 device vkGetSwapchainCounterEXT
-device vkGetSwapchainGrallocUsageANDROID
+device vkGetSwapchainGrallocUsageANDROID N/A
 device vkGetSwapchainStatusKHR
 device vkGetValidationCacheDataEXT
 device vkImportFenceFdKHR
-device vkImportFenceWin32HandleKHR
+device vkImportFenceWin32HandleKHR N/A
 device vkImportSemaphoreFdKHR
-device vkImportSemaphoreWin32HandleKHR
+device vkImportSemaphoreWin32HandleKHR N/A
 device vkMergeValidationCachesEXT
 device vkRegisterDeviceEventEXT
 device vkRegisterDisplayEventEXT
@@ -127,4 +127,4 @@ queue vkGetQueueCheckpointDataNV DONE
 queue vkQueueBeginDebugUtilsLabelEXT DONE
 queue vkQueueEndDebugUtilsLabelEXT DONE
 queue vkQueueInsertDebugUtilsLabelEXT DONE
-queue vkQueueSignalReleaseImageANDROID
+queue vkQueueSignalReleaseImageANDROID N/A
