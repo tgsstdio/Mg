@@ -2495,5 +2495,253 @@ namespace Magnesium.Vulkan
                 }
             }
         }
+
+        public MgResult AcquireNextImage2KHR(MgAcquireNextImageInfoKHR pAcquireInfo, ref uint pImageIndex)
+        {
+            if (pAcquireInfo == null)
+                throw new ArgumentNullException(nameof(pAcquireInfo));
+
+            Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+
+            var bSwapchain = (VkSwapchainKHR)pAcquireInfo.Swapchain;
+            Debug.Assert(bSwapchain != null);
+
+            var bSemaphore = (VkSemaphore) pAcquireInfo.Semaphore;
+            var bSemaphorePtr = bSemaphore != null ? bSemaphore.Handle : 0UL;
+
+            var bFence = (VkFence) pAcquireInfo.Fence;
+            var bFencePtr = bFence != null ? bFence.Handle : 0UL;
+
+            var bAcquireInfo = new VkAcquireNextImageInfoKHR
+            {
+                sType = VkStructureType.StructureTypeAcquireNextImageInfoKhr,
+                pNext = IntPtr.Zero,
+                fence = bFencePtr,
+                semaphore = bSemaphorePtr,
+                swapchain = bSemaphorePtr,
+                timeout = pAcquireInfo.Timeout,
+                deviceMask = pAcquireInfo.DeviceMask,                
+            };
+
+            uint imageIndex = 0;
+            var result = Interops.vkAcquireNextImage2KHR(Handle, bAcquireInfo, ref imageIndex);
+            pImageIndex = imageIndex;
+            return result;
+        }
+
+        public MgResult BindAccelerationStructureMemoryNV(MgBindAccelerationStructureMemoryInfoNV[] pBindInfos)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult BindBufferMemory2(MgBindBufferMemoryInfo[] pBindInfos)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult BindImageMemory2(MgBindImageMemoryInfo[] pBindInfos)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult CompileDeferredNV(IMgPipeline pipeline, uint shader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult CreateAccelerationStructureNV(MgAccelerationStructureCreateInfoNV pCreateInfo, IMgAllocationCallbacks pAllocator, out IMgAcceleratedStructureNV pAccelerationStructure)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult CreateDescriptorUpdateTemplate(MgDescriptorUpdateTemplateCreateInfo pCreateInfo, IMgAllocationCallbacks pAllocator, ref IMgDescriptorUpdateTemplate pDescriptorUpdateTemplate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult CreateRayTracingPipelinesNV(IMgPipelineCache pipelineCache, MgRayTracingPipelineCreateInfoNV[] pCreateInfos, IMgAllocationCallbacks pAllocator, IMgPipeline[] pPipelines)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult CreateRenderPass2KHR(MgRenderPassCreateInfo2KHR pCreateInfo, IMgAllocationCallbacks pAllocator, out IMgRenderPass pRenderPass)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult CreateSamplerYcbcrConversion(MgSamplerYcbcrConversionCreateInfo pCreateInfo, IMgAllocationCallbacks pAllocator, IMgSamplerYcbcrConversion pYcbcrConversion)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult CreateValidationCacheEXT(MgValidationCacheCreateInfoEXT pCreateInfo, IMgAllocationCallbacks pAllocator, IMgValidationCacheEXT pValidationCache)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult DisplayPowerControlEXT(IMgDisplayKHR display, out MgDisplayPowerInfoEXT pDisplayPowerInfo)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetAccelerationStructureHandleNV(IMgAcceleratedStructureNV accelerationStructure, UIntPtr dataSize, out IntPtr pData)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetCalibratedTimestampsEXT(MgCalibratedTimestampInfoEXT[] pTimestampInfos, out ulong[] pTimestamps, out ulong pMaxDeviation)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetDeviceGroupPresentCapabilitiesKHR(out MgDeviceGroupPresentCapabilitiesKHR pDeviceGroupPresentCapabilities)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetDeviceGroupSurfacePresentModesKHR(IMgSurfaceKHR surface, out MgDeviceGroupPresentModeFlagBitsKHR pModes)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetFenceFdKHR(MgFenceGetFdInfoKHR pGetFdInfo, out int pFd)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetImageDrmFormatModifierPropertiesEXT(IMgImage image, out MgImageDrmFormatModifierPropertiesEXT pProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetMemoryFdKHR(MgMemoryGetFdInfoKHR pGetFdInfo, ref int pFd)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetMemoryFdPropertiesKHR(MgExternalMemoryHandleTypeFlagBits handleType, int fd, out MgMemoryFdPropertiesKHR pMemoryFdProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetMemoryHostPointerPropertiesEXT(MgExternalMemoryHandleTypeFlagBits handleType, IntPtr pHostPointer, out MgMemoryHostPointerPropertiesEXT pMemoryHostPointerProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetRayTracingShaderGroupHandlesNV(IMgPipeline pipeline, uint firstGroup, uint groupCount, UIntPtr dataSize, IntPtr[] pData)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetSemaphoreFdKHR(MgSemaphoreGetFdInfoKHR pGetFdInfo, ref int pFd)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetShaderInfoAMD(IMgPipeline pipeline, MgShaderStageFlagBits shaderStage, MgShaderInfoTypeAMD infoType, out UIntPtr pInfoSize, out IntPtr pInfo)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetSwapchainCounterEXT(IMgSwapchainKHR swapchain, MgSurfaceCounterFlagBitsEXT counter, ref ulong pCounterValue)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetSwapchainStatusKHR(IMgSwapchainKHR swapchain)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetValidationCacheDataEXT(IMgValidationCacheEXT validationCache, ref UIntPtr pDataSize, IntPtr[] pData)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult ImportFenceFdKHR(MgImportFenceFdInfoKHR pImportFenceFdInfo)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult ImportSemaphoreFdKHR(MgImportSemaphoreFdInfoKHR pImportSemaphoreFdInfo)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult MergeValidationCachesEXT(IMgValidationCacheEXT dstCache, IMgValidationCacheEXT[] pSrcCaches)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult RegisterDeviceEventEXT(MgDeviceEventInfoEXT pDeviceEventInfo, IntPtr pAllocator, IMgFence pFence)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult RegisterDisplayEventEXT(IMgDisplayKHR display, MgDisplayEventInfoEXT pDisplayEventInfo, IMgAllocationCallbacks pAllocator, IMgFence pFence)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult SetDebugUtilsObjectNameEXT(MgDebugUtilsObjectNameInfoEXT pNameInfo)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult SetDebugUtilsObjectTagEXT(MgDebugUtilsObjectTagInfoEXT pTagInfo)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetAccelerationStructureMemoryRequirementsNV(MgAccelerationStructureMemoryRequirementsInfoNV pInfo, out MgMemoryRequirements2 pMemoryRequirements)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetBufferMemoryRequirements2(MgBufferMemoryRequirementsInfo2 pInfo, out MgMemoryRequirements2 pMemoryRequirements)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetDescriptorSetLayoutSupport(MgDescriptorSetLayoutCreateInfo pCreateInfo, out MgDescriptorSetLayoutSupport pSupport)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetDeviceGroupPeerMemoryFeatures(uint heapIndex, uint localDeviceIndex, uint remoteDeviceIndex, out MgPeerMemoryFeatureFlagBits pPeerMemoryFeatures)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetDeviceQueue2(MgDeviceQueueInfo2 pQueueInfo, IMgQueue pQueue)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetImageMemoryRequirements2(MgImageMemoryRequirementsInfo2 pInfo, out MgMemoryRequirements2 pMemoryRequirements)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetImageSparseMemoryRequirements2(MgImageSparseMemoryRequirementsInfo2 pInfo, out MgSparseImageMemoryRequirements2[] pSparseMemoryRequirements)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetHdrMetadataEXT(IMgSwapchainKHR[] pSwapchains, MgHdrMetadataEXT pMetadata)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void TrimCommandPool(IMgCommandPool commandPool, uint flags)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateDescriptorSetWithTemplate(IMgDescriptorSet descriptorSet, IMgDescriptorUpdateTemplate descriptorUpdateTemplate, IntPtr pData)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

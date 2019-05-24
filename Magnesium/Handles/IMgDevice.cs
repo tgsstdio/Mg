@@ -90,7 +90,7 @@ namespace Magnesium
         MgResult BindAccelerationStructureMemoryNV(MgBindAccelerationStructureMemoryInfoNV[] pBindInfos);
         MgResult BindBufferMemory2(MgBindBufferMemoryInfo[] pBindInfos);
         MgResult BindImageMemory2(MgBindImageMemoryInfo[] pBindInfos);
-        MgResult CompileDeferredNV( UInt64 pipeline, UInt32 shader);
+        MgResult CompileDeferredNV(IMgPipeline pipeline, UInt32 shader);
         MgResult CreateAccelerationStructureNV(MgAccelerationStructureCreateInfoNV pCreateInfo, IMgAllocationCallbacks pAllocator, out IMgAcceleratedStructureNV pAccelerationStructure);
         MgResult CreateDescriptorUpdateTemplate(MgDescriptorUpdateTemplateCreateInfo pCreateInfo, IMgAllocationCallbacks pAllocator, ref IMgDescriptorUpdateTemplate pDescriptorUpdateTemplate);
         MgResult CreateRayTracingPipelinesNV(IMgPipelineCache pipelineCache, MgRayTracingPipelineCreateInfoNV[] pCreateInfos, IMgAllocationCallbacks pAllocator, IMgPipeline[] pPipelines);
@@ -104,36 +104,38 @@ namespace Magnesium
         MgResult GetDeviceGroupSurfacePresentModesKHR(IMgSurfaceKHR surface, out MgDeviceGroupPresentModeFlagBitsKHR pModes);
         MgResult GetFenceFdKHR(MgFenceGetFdInfoKHR pGetFdInfo, out int pFd);
         MgResult GetImageDrmFormatModifierPropertiesEXT(IMgImage image, out MgImageDrmFormatModifierPropertiesEXT pProperties);
-        MgResult GetMemoryFdKHR( VkMemoryGetFdInfoKHR pGetFdInfo, ref int pFd);
-        MgResult GetMemoryFdPropertiesKHR( VkExternalMemoryHandleTypeFlags handleType, int fd, VkMemoryFdPropertiesKHR pMemoryFdProperties);
-        MgResult GetMemoryHostPointerPropertiesEXT( VkExternalMemoryHandleTypeFlags handleType, IntPtr pHostPointer, VkMemoryHostPointerPropertiesExt* pMemoryHostPointerProperties);
-        MgResult GetRayTracingShaderGroupHandlesNV( UInt64 pipeline, UInt32 firstGroup, UInt32 groupCount, UIntPtr dataSize, IntPtr[] pData);
-        MgResult GetSemaphoreFdKHR( VkSemaphoreGetFdInfoKHR pGetFdInfo, ref int pFd);
-        MgResult GetShaderInfoAMD( UInt64 pipeline, VkShaderStageFlags shaderStage, VkShaderInfoTypeAMD infoType, ref UIntPtr pInfoSize, IntPtr[] pInfo);
-        MgResult GetSwapchainCounterEXT( UInt64 swapchain, VkSurfaceCounterFlagsExt counter, ref UInt64 pCounterValue);
-        MgResult GetSwapchainStatusKHR( UInt64 swapchain);
-        MgResult GetValidationCacheDataEXT( UInt64 validationCache, ref UIntPtr pDataSize, IntPtr[] pData);
-        MgResult ImportFenceFdKHR( [In, Out] VkImportFenceFdInfoKHR pImportFenceFdInfo);
-        MgResult ImportSemaphoreFdKHR( [In, Out] VkImportSemaphoreFdInfoKHR pImportSemaphoreFdInfo);
-        MgResult MergeValidationCachesEXT( UInt64 dstCache, UInt32 srcCacheCount, UInt64[] pSrcCaches);
-        MgResult RegisterDeviceEventEXT( VkDeviceEventInfoExt pDeviceEventInfo, IntPtr pAllocator, UInt64* pFence);
-        MgResult RegisterDisplayEventEXT( UInt64 display, VkDisplayEventInfoExt pDisplayEventInfo, IntPtr pAllocator, UInt64* pFence);
-        MgResult SetDebugUtilsObjectNameEXT( [In, Out] VkDebugUtilsObjectNameInfoExt pNameInfo);
-        MgResult SetDebugUtilsObjectTagEXT( VkDebugUtilsObjectTagInfoExt pTagInfo);
-        void DestroyAccelerationStructureNV( UInt64 accelerationStructure, IntPtr pAllocator);
-        void DestroyDescriptorUpdateTemplate( UInt64 descriptorUpdateTemplate, IntPtr pAllocator);
-        void DestroySamplerYcbcrConversion( UInt64 ycbcrConversion, IntPtr pAllocator);
-        void DestroyValidationCacheEXT( UInt64 validationCache, IntPtr pAllocator);
-        void GetAccelerationStructureMemoryRequirementsNV( VkAccelerationStructureMemoryRequirementsInfoNV pInfo, VkMemoryRequirements2KHR* pMemoryRequirements);
-        void GetBufferMemoryRequirements2( VkBufferMemoryRequirementsInfo2 pInfo, [In, Out] VkMemoryRequirements2 pMemoryRequirements);
-        void GetDescriptorSetLayoutSupport( [In, Out] VkDescriptorSetLayoutCreateInfo pCreateInfo, VkDescriptorSetLayoutSupport pSupport);
-        void GetDeviceGroupPeerMemoryFeatures( UInt32 heapIndex, UInt32 localDeviceIndex, UInt32 remoteDeviceIndex, ref VkPeerMemoryFeatureFlags pPeerMemoryFeatures);
-        void GetDeviceQueue2( [In, Out] VkDeviceQueueInfo2 pQueueInfo, ref IntPtr pQueue);
-        void GetImageMemoryRequirements2( VkImageMemoryRequirementsInfo2 pInfo, [In, Out] VkMemoryRequirements2 pMemoryRequirements);
-        void GetImageSparseMemoryRequirements2( VkImageSparseMemoryRequirementsInfo2 pInfo, UInt32* pSparseMemoryRequirementCount, VkSparseImageMemoryRequirements2* pSparseMemoryRequirements);
-        void SetHdrMetadataEXT( UInt32 swapchainCount, UInt64* pSwapchains, VkHdrMetadataExt* pMetadata);
-        void TrimCommandPool( UInt64 commandPool, VkCommandPoolTrimFlags flags);
-        void UpdateDescriptorSetWithTemplate( UInt64 descriptorSet, UInt64 descriptorUpdateTemplate, IntPtr pData);
+        MgResult GetMemoryFdKHR(MgMemoryGetFdInfoKHR pGetFdInfo, ref int pFd);
+        MgResult GetMemoryFdPropertiesKHR(MgExternalMemoryHandleTypeFlagBits handleType, int fd, out MgMemoryFdPropertiesKHR pMemoryFdProperties);
+        MgResult GetMemoryHostPointerPropertiesEXT(MgExternalMemoryHandleTypeFlagBits handleType, IntPtr pHostPointer, out MgMemoryHostPointerPropertiesEXT pMemoryHostPointerProperties);
+        MgResult GetRayTracingShaderGroupHandlesNV(IMgPipeline pipeline, UInt32 firstGroup, UInt32 groupCount, UIntPtr dataSize, IntPtr[] pData);
+        MgResult GetSemaphoreFdKHR(MgSemaphoreGetFdInfoKHR pGetFdInfo, ref int pFd);
+        MgResult GetShaderInfoAMD(IMgPipeline pipeline, MgShaderStageFlagBits shaderStage, MgShaderInfoTypeAMD infoType, out UIntPtr pInfoSize, out IntPtr pInfo);
+        MgResult GetSwapchainCounterEXT(IMgSwapchainKHR swapchain, MgSurfaceCounterFlagBitsEXT counter, ref UInt64 pCounterValue);
+        MgResult GetSwapchainStatusKHR(IMgSwapchainKHR swapchain);
+        MgResult GetValidationCacheDataEXT(IMgValidationCacheEXT validationCache, ref UIntPtr pDataSize, IntPtr[] pData);
+        MgResult ImportFenceFdKHR(MgImportFenceFdInfoKHR pImportFenceFdInfo);
+        MgResult ImportSemaphoreFdKHR(MgImportSemaphoreFdInfoKHR pImportSemaphoreFdInfo);
+        MgResult MergeValidationCachesEXT(IMgValidationCacheEXT dstCache, IMgValidationCacheEXT[] pSrcCaches);
+        MgResult RegisterDeviceEventEXT(MgDeviceEventInfoEXT pDeviceEventInfo, IntPtr pAllocator, IMgFence pFence);
+        MgResult RegisterDisplayEventEXT( IMgDisplayKHR display, MgDisplayEventInfoEXT pDisplayEventInfo, IMgAllocationCallbacks pAllocator, IMgFence pFence);
+        MgResult SetDebugUtilsObjectNameEXT(MgDebugUtilsObjectNameInfoEXT pNameInfo);
+        MgResult SetDebugUtilsObjectTagEXT(MgDebugUtilsObjectTagInfoEXT pTagInfo);
+
+        //void DestroyAccelerationStructureNV( UInt64 accelerationStructure, IMgAllocationCallbacks pAllocator);
+        //void DestroyDescriptorUpdateTemplate( UInt64 descriptorUpdateTemplate, IMgAllocationCallbacks pAllocator);
+        //void DestroySamplerYcbcrConversion( UInt64 ycbcrConversion, IMgAllocationCallbacks pAllocator);
+        //void DestroyValidationCacheEXT( UInt64 validationCache, IMgAllocationCallbacks pAllocator);
+
+        void GetAccelerationStructureMemoryRequirementsNV(MgAccelerationStructureMemoryRequirementsInfoNV pInfo, out MgMemoryRequirements2 pMemoryRequirements);
+        void GetBufferMemoryRequirements2(MgBufferMemoryRequirementsInfo2 pInfo, out MgMemoryRequirements2 pMemoryRequirements);
+        void GetDescriptorSetLayoutSupport(MgDescriptorSetLayoutCreateInfo pCreateInfo, out MgDescriptorSetLayoutSupport pSupport);
+        void GetDeviceGroupPeerMemoryFeatures( UInt32 heapIndex, UInt32 localDeviceIndex, UInt32 remoteDeviceIndex, out MgPeerMemoryFeatureFlagBits pPeerMemoryFeatures);
+        void GetDeviceQueue2(MgDeviceQueueInfo2 pQueueInfo, IMgQueue pQueue);
+        void GetImageMemoryRequirements2(MgImageMemoryRequirementsInfo2 pInfo, out MgMemoryRequirements2 pMemoryRequirements);
+        void GetImageSparseMemoryRequirements2(MgImageSparseMemoryRequirementsInfo2 pInfo, out MgSparseImageMemoryRequirements2[] pSparseMemoryRequirements);
+        void SetHdrMetadataEXT(IMgSwapchainKHR[] pSwapchains, MgHdrMetadataEXT pMetadata);
+        void TrimCommandPool(IMgCommandPool commandPool, UInt32 flags);
+        void UpdateDescriptorSetWithTemplate(IMgDescriptorSet descriptorSet, IMgDescriptorUpdateTemplate descriptorUpdateTemplate, IntPtr pData);
 
     }
 }

@@ -34,7 +34,7 @@ commandBuffer vkCmdTraceRaysNV
 commandBuffer vkCmdWriteAccelerationStructuresPropertiesNV
 commandBuffer vkCmdWriteBufferMarkerAMD
 device vkAcquireImageANDROID N/A
-device vkAcquireNextImage2KHR
+device vkAcquireNextImage2KHR DONE
 device vkBindAccelerationStructureMemoryNV
 device vkBindBufferMemory2
 device vkBindImageMemory2

@@ -694,10 +694,10 @@ namespace Magnesium.Vulkan
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static MgResult vkGetDeviceGroupSurfacePresentModesKHR(IntPtr device, UInt64 surface, ref VkDeviceGroupPresentModeFlagsKHR pModes);
-
-		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+        ***/
+        [DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static MgResult vkAcquireNextImage2KHR(IntPtr device, [In, Out] VkAcquireNextImageInfoKHR pAcquireInfo, ref UInt32 pImageIndex);
-
+        /***
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkCmdDispatchBase(IntPtr commandBuffer, UInt32 baseGroupX, UInt32 baseGroupY, UInt32 baseGroupZ, UInt32 groupCountX, UInt32 groupCountY, UInt32 groupCountZ);
         ***/

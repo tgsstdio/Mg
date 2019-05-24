@@ -101,6 +101,7 @@
     <Compile Include="Enums\VkSurfaceTransformFlagsKhr.cs" />
     <Compile Include="Enums\VkSystemAllocationScope.cs" />
     <Compile Include="Enums\VkVertexInputRate.cs" />
+    <Compile Include="Structs\VkAcquireNextImageInfoKHR.cs" />
     <Compile Include="Structs\VkAllocationCallbacks.cs" />
     <Compile Include="Structs\VkAndroidSurfaceCreateInfoKHR.cs" />
     <Compile Include="Structs\VkApplicationInfo.cs" />

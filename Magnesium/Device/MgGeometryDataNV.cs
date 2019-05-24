@@ -1,10 +1,6 @@
-using System;
-using System.Runtime.InteropServices;
-
 namespace Magnesium
 {
-	[StructLayout(LayoutKind.Sequential)]
-	internal struct MgGeometryDataNV
+    public class MgGeometryDataNV
 	{
 		public MgGeometryTrianglesNV triangles;
 		public MgGeometryAABBNV aabbs;
