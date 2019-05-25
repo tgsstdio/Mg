@@ -11,7 +11,6 @@ namespace Magnesium.Vulkan
             Handle = handle;
         }
 
-
         private bool mIsDisposed = false;
         public void DestroyDescriptorUpdateTemplate(IMgDevice device, IMgAllocationCallbacks allocator)
         {

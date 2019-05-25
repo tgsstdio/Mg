@@ -13,7 +13,7 @@ namespace Magnesium.Vulkan
 		public UInt32 dstBinding { get; set; }
 		public UInt32 dstArrayElement { get; set; }
 		public UInt32 descriptorCount { get; set; }
-		public VkDescriptorType descriptorType { get; set; }
+		public MgDescriptorType descriptorType { get; set; }
 		public IntPtr pImageInfo { get; set; } // VkDescriptorImageInfo[]
 		public IntPtr pBufferInfo { get; set; } // VkDescriptorBufferInfo[]
 		public IntPtr pTexelBufferView { get; set; } // UInt64[]

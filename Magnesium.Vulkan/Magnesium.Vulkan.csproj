@@ -36,6 +36,7 @@
     <Compile Include="Handles\VkAcceleratedStructureNV.cs" />
     <Compile Include="Handles\VkDebugUtilsMessengerData.cs" />
     <Compile Include="Handles\VkDebugUtilsMessengerEXT.cs" />
+    <Compile Include="Handles\VkDescriptorUpdateTemplate.cs" />
     <Compile Include="Handles\VkIndirectCommandsLayoutNVX.cs" />
     <Compile Include="Handles\VkObjectTableNVX.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -63,7 +64,6 @@
     <Compile Include="Enums\VkDebugReportObjectTypeExt.cs" />
     <Compile Include="Enums\VkDependencyFlags.cs" />
     <Compile Include="Enums\VkDescriptorPoolCreateFlags.cs" />
-    <Compile Include="Enums\VkDescriptorType.cs" />
     <Compile Include="Enums\VkDisplayPlaneAlphaFlagsKhr.cs" />
     <Compile Include="Enums\VkDynamicState.cs" />
     <Compile Include="Enums\VkFenceCreateFlags.cs" />
@@ -146,6 +146,8 @@
     <Compile Include="Structs\VkDescriptorSetAllocateInfo.cs" />
     <Compile Include="Structs\VkDescriptorSetLayoutBinding.cs" />
     <Compile Include="Structs\VkDescriptorSetLayoutCreateInfo.cs" />
+    <Compile Include="Structs\VkDescriptorUpdateTemplateCreateInfo.cs" />
+    <Compile Include="Structs\VkDescriptorUpdateTemplateEntry.cs" />
     <Compile Include="Structs\VkDeviceCreateInfo.cs" />
     <Compile Include="Structs\VkDeviceGeneratedCommandsFeaturesNVX.cs" />
     <Compile Include="Structs\VkDeviceGeneratedCommandsLimitsNVX.cs" />

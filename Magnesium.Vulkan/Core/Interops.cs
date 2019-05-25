@@ -927,7 +927,7 @@ internal extern static MgResult vkGetDeviceGroupSurfacePresentModesKHR(IntPtr de
 		internal extern static MgResult vkCompileDeferredNV(IntPtr device, UInt64 pipeline, UInt32 shader);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static MgResult vkCreateAccelerationStructureNV(IntPtr device, [In, Out] VkAccelerationStructureCreateInfoNV pCreateInfo, IntPtr pAllocator, ref UInt64 pAccelerationStructure);
+		internal extern static MgResult vkCreateAccelerationStructureNV(IntPtr device, ref VkAccelerationStructureCreateInfoNV pCreateInfo, IntPtr pAllocator, ref UInt64 pAccelerationStructure);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkDestroyAccelerationStructureNV(IntPtr device, UInt64 accelerationStructure, IntPtr pAllocator);

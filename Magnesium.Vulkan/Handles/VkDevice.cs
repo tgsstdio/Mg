@@ -1507,7 +1507,7 @@ namespace Magnesium.Vulkan
 							var binding = new VkDescriptorSetLayoutBinding
 							{
 								binding = currentBinding.Binding,
-								descriptorType = (VkDescriptorType) currentBinding.DescriptorType,
+								descriptorType = currentBinding.DescriptorType,
 								descriptorCount = currentBinding.DescriptorCount,
 								stageFlags = (VkShaderStageFlags) currentBinding.StageFlags,
 								pImmutableSamplers = pImmutableSamplers,
@@ -1568,7 +1568,7 @@ namespace Magnesium.Vulkan
 							{
 								return new VkDescriptorPoolSize
 								{
-									type = (VkDescriptorType) current.Type,
+									type = current.Type,
 									descriptorCount = current.DescriptorCount,
 								};
 							});
@@ -1798,7 +1798,7 @@ namespace Magnesium.Vulkan
 								dstBinding = currentWrite.DstBinding,
 								dstArrayElement = currentWrite.DstArrayElement,
 								descriptorCount = currentWrite.DescriptorCount,
-								descriptorType = (VkDescriptorType)currentWrite.DescriptorType,
+								descriptorType = currentWrite.DescriptorType,
 								pImageInfo = pImageInfo,
 								pBufferInfo = pBufferInfo,
 								pTexelBufferView = pTexelBufferView,
@@ -2707,7 +2707,7 @@ namespace Magnesium.Vulkan
                 };
 
                 var pHandle = 0UL;
-                var result = Interops.vkCreateAccelerationStructureNV(this.Handle, bCreateInfo, allocatorPtr, ref pHandle);
+                var result = Interops.vkCreateAccelerationStructureNV(this.Handle, ref bCreateInfo, allocatorPtr, ref pHandle);
                 pAccelerationStructure = new VkAccelerationStructureNV(pHandle);
                 return result;
             }
@@ -2808,9 +2808,10 @@ namespace Magnesium.Vulkan
                     flags = pCreateInfo.Flags,
                     descriptorUpdateEntryCount = descriptorUpdateEntryCount,
                     pDescriptorUpdateEntries = pDescriptorUpdateEntries,
+                    templateType = pCreateInfo.TemplateType,
                     descriptorSetLayout = bSetLayoutPtr,
                     pipelineBindPoint = pCreateInfo.PipelineBindPoint,
-                    pipelineLayout = pCreateInfo.
+                    pipelineLayout = bPipelineLayoutPtr,
                     set = pCreateInfo.Set,
                 };
 

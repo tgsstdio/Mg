@@ -8,7 +8,7 @@ namespace Magnesium.Vulkan
 	internal struct VkDescriptorSetLayoutBinding
 	{
 		public UInt32 binding { get; set; }
-		public VkDescriptorType descriptorType { get; set; }
+		public MgDescriptorType descriptorType { get; set; }
 		public UInt32 descriptorCount { get; set; }
 		public VkShaderStageFlags stageFlags { get; set; }
 		public IntPtr pImmutableSamplers { get; set; }
