@@ -9,10 +9,10 @@ namespace Magnesium.Vulkan
 	{
 		public UInt32 srcSubpass { get; set; }
 		public UInt32 dstSubpass { get; set; }
-		public VkPipelineStageFlags srcStageMask { get; set; }
-		public VkPipelineStageFlags dstStageMask { get; set; }
-		public VkAccessFlags srcAccessMask { get; set; }
-		public VkAccessFlags dstAccessMask { get; set; }
-		public VkDependencyFlags dependencyFlags { get; set; }
+		public MgPipelineStageFlagBits srcStageMask { get; set; }
+		public MgPipelineStageFlagBits dstStageMask { get; set; }
+		public MgAccessFlagBits srcAccessMask { get; set; }
+		public MgAccessFlagBits dstAccessMask { get; set; }
+		public MgDependencyFlagBits dependencyFlags { get; set; }
 	}
 }

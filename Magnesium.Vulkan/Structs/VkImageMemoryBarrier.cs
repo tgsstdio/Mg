@@ -9,10 +9,10 @@ namespace Magnesium.Vulkan
 	{
 		public VkStructureType sType { get; set; }
 		public IntPtr pNext { get; set; }
-		public VkAccessFlags srcAccessMask { get; set; }
-		public VkAccessFlags dstAccessMask { get; set; }
-		public VkImageLayout oldLayout { get; set; }
-		public VkImageLayout newLayout { get; set; }
+		public MgAccessFlagBits srcAccessMask { get; set; }
+		public MgAccessFlagBits dstAccessMask { get; set; }
+		public MgImageLayout oldLayout { get; set; }
+		public MgImageLayout newLayout { get; set; }
 		public UInt32 srcQueueFamilyIndex { get; set; }
 		public UInt32 dstQueueFamilyIndex { get; set; }
 		public UInt64 image { get; set; }

@@ -9,7 +9,7 @@ namespace Magnesium.Vulkan
 	{
 		public VkStructureType sType { get; set; }
 		public IntPtr pNext { get; set; }
-		public VkPipelineCreateFlags flags { get; set; }
+		public MgPipelineCreateFlagBits flags { get; set; }
 		public UInt32 stageCount { get; set; }
 		public IntPtr pStages { get; set; } // VkPipelineShaderStageCreateInfo[]
 		public IntPtr pVertexInputState { get; set; } // VkPipelineVertexInputStateCreateInfo

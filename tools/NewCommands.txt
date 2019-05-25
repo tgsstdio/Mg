@@ -44,8 +44,8 @@ device vkCreateAccelerationStructureNV DONE
 device vkCreateDescriptorUpdateTemplate DONE
 device vkCreateIndirectCommandsLayoutNVX
 device vkCreateObjectTableNVX
-device vkCreateRayTracingPipelinesNV
-device vkCreateRenderPass2KHR
+device vkCreateRayTracingPipelinesNV DONE
+device vkCreateRenderPass2KHR DONE
 device vkCreateSamplerYcbcrConversion
 device vkCreateValidationCacheEXT
 device vkDestroyAccelerationStructureNV DONE

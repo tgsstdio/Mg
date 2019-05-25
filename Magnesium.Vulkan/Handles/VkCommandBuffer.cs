@@ -472,7 +472,7 @@ namespace Magnesium.Vulkan
 			var bEvent = (VkEvent) @event;
 			Debug.Assert(bEvent != null);
 
-			Interops.vkCmdSetEvent(this.Handle, bEvent.Handle, (VkPipelineStageFlags)stageMask);
+			Interops.vkCmdSetEvent(this.Handle, bEvent.Handle, stageMask);
 		}
 
 		public void CmdResetEvent(IMgEvent @event, MgPipelineStageFlagBits stageMask)
@@ -480,7 +480,7 @@ namespace Magnesium.Vulkan
 			var bEvent = (VkEvent) @event;
 			Debug.Assert(bEvent != null);
 
-			Interops.vkCmdResetEvent(this.Handle, bEvent.Handle, (VkPipelineStageFlags)stageMask);
+			Interops.vkCmdResetEvent(this.Handle, bEvent.Handle, stageMask);
 		}
 
 		public void CmdWaitEvents(IMgEvent[] pEvents, MgPipelineStageFlagBits srcStageMask, MgPipelineStageFlagBits dstStageMask, MgMemoryBarrier[] pMemoryBarriers, MgBufferMemoryBarrier[] pBufferMemoryBarriers, MgImageMemoryBarrier[] pImageMemoryBarriers)
@@ -508,8 +508,8 @@ namespace Magnesium.Vulkan
 						{
 							sType = VkStructureType.StructureTypeMemoryBarrier,
 							pNext = IntPtr.Zero,
-							srcAccessMask = (VkAccessFlags)pMemoryBarriers[i].SrcAccessMask,
-							dstAccessMask = (VkAccessFlags)pMemoryBarriers[i].DstAccessMask,
+							srcAccessMask = pMemoryBarriers[i].SrcAccessMask,
+							dstAccessMask = pMemoryBarriers[i].DstAccessMask,
 						};
 					}
 					pMemBarriers = tempMem;
@@ -531,8 +531,8 @@ namespace Magnesium.Vulkan
 						{
 							sType = VkStructureType.StructureTypeBufferMemoryBarrier,
 							pNext = IntPtr.Zero,
-							dstAccessMask = (VkAccessFlags)current.DstAccessMask,
-							srcAccessMask = (VkAccessFlags)current.SrcAccessMask,
+							dstAccessMask = current.DstAccessMask,
+							srcAccessMask = current.SrcAccessMask,
 							srcQueueFamilyIndex = current.SrcQueueFamilyIndex,
 							dstQueueFamilyIndex = current.DstQueueFamilyIndex,
 							buffer = bBuffer.Handle,
@@ -560,10 +560,10 @@ namespace Magnesium.Vulkan
 						{
 							sType = VkStructureType.StructureTypeImageMemoryBarrier,
 							pNext = IntPtr.Zero,
-							dstAccessMask = (VkAccessFlags)current.DstAccessMask,
-							srcAccessMask = (VkAccessFlags)current.SrcAccessMask,
-							oldLayout = (Magnesium.Vulkan.VkImageLayout)current.OldLayout,
-							newLayout = (Magnesium.Vulkan.VkImageLayout)current.NewLayout,
+							dstAccessMask = current.DstAccessMask,
+							srcAccessMask = current.SrcAccessMask,
+							oldLayout = current.OldLayout,
+							newLayout = current.NewLayout,
 							srcQueueFamilyIndex = current.SrcQueueFamilyIndex,
 							dstQueueFamilyIndex = current.DstQueueFamilyIndex,
 							image = bImage.Handle,
@@ -584,8 +584,8 @@ namespace Magnesium.Vulkan
 					this.Handle,
 					eventCount,
 					eventHandles, 
-					(VkPipelineStageFlags)srcStageMask,
-					(VkPipelineStageFlags)dstStageMask,
+					srcStageMask,
+					dstStageMask,
 					memBarrierCount,
 					pMemBarriers,
 					bufBarrierCount,
@@ -609,8 +609,8 @@ namespace Magnesium.Vulkan
 					{
 						sType = VkStructureType.StructureTypeMemoryBarrier,
 						pNext = IntPtr.Zero,
-						srcAccessMask = (VkAccessFlags)pMemoryBarriers[i].SrcAccessMask,
-						dstAccessMask = (VkAccessFlags)pMemoryBarriers[i].DstAccessMask,
+						srcAccessMask = pMemoryBarriers[i].SrcAccessMask,
+						dstAccessMask = pMemoryBarriers[i].DstAccessMask,
 					};
 				}
 
@@ -627,8 +627,8 @@ namespace Magnesium.Vulkan
 					{
 						sType = VkStructureType.StructureTypeBufferMemoryBarrier,
 						pNext = IntPtr.Zero,
-						dstAccessMask = (VkAccessFlags)current.DstAccessMask,
-						srcAccessMask = (VkAccessFlags)current.SrcAccessMask,
+						dstAccessMask = current.DstAccessMask,
+						srcAccessMask = current.SrcAccessMask,
 						srcQueueFamilyIndex = current.SrcQueueFamilyIndex,
 						dstQueueFamilyIndex = current.DstQueueFamilyIndex,
 						buffer = bBuffer.Handle,
@@ -651,10 +651,10 @@ namespace Magnesium.Vulkan
 					{
 						sType = VkStructureType.StructureTypeImageMemoryBarrier,
 						pNext = IntPtr.Zero,
-						dstAccessMask = (VkAccessFlags)current.DstAccessMask,
-						srcAccessMask = (VkAccessFlags)current.SrcAccessMask,
-						oldLayout = (VkImageLayout)current.OldLayout,
-						newLayout = (VkImageLayout)current.NewLayout,
+						dstAccessMask = current.DstAccessMask,
+						srcAccessMask = current.SrcAccessMask,
+						oldLayout = current.OldLayout,
+						newLayout = current.NewLayout,
 						srcQueueFamilyIndex = current.SrcQueueFamilyIndex,
 						dstQueueFamilyIndex = current.DstQueueFamilyIndex,
 						image = bImage.Handle,
@@ -675,9 +675,9 @@ namespace Magnesium.Vulkan
 
 
                 Interops.vkCmdPipelineBarrier(Handle,
-                      (VkPipelineStageFlags)srcStageMask,
-                      (VkPipelineStageFlags)dstStageMask,
-                      (VkDependencyFlags)dependencyFlags,
+                      srcStageMask,
+                      dstStageMask,
+                      dependencyFlags,
                       memBarrierCount,
                       mems, 
                       bufBarrierCount,
@@ -716,7 +716,7 @@ namespace Magnesium.Vulkan
 			var bQueryPool = (VkQueryPool) queryPool;
 			Debug.Assert(bQueryPool != null);
 
-			Interops.vkCmdWriteTimestamp(this.Handle, (VkPipelineStageFlags)pipelineStage, bQueryPool.Handle, query);
+			Interops.vkCmdWriteTimestamp(this.Handle, pipelineStage, bQueryPool.Handle, query);
 		}
 
 		public void CmdCopyQueryPoolResults(IMgQueryPool queryPool, UInt32 firstQuery, UInt32 queryCount, IMgBuffer dstBuffer, UInt64 dstOffset, UInt64 stride, MgQueryResultFlagBits flags)

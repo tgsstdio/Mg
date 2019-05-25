@@ -80,6 +80,8 @@
     <Compile Include="Device\MgBindImageMemoryInfo.cs" />
     <Compile Include="Device\MgBufferMemoryRequirementsInfo2.cs" />
     <Compile Include="Device\MgCalibratedTimestampInfoEXT.cs" />
+    <Compile Include="Device\MgColorAndResolveAttachmentInfo.cs" />
+    <Compile Include="Device\MgColorResolveAttachmentReference.cs" />
     <Compile Include="Device\MgDebugUtilsObjectTagInfoEXT.cs" />
     <Compile Include="Device\MgDescriptorSetLayoutSupport.cs" />
     <Compile Include="Device\MgDescriptorUpdateTemplateCreateInfo.cs" />

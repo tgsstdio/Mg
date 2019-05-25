@@ -8,6 +8,6 @@ namespace Magnesium.Vulkan
 	internal struct VkAttachmentReference
 	{
 		public UInt32 attachment { get; set; }
-		public VkImageLayout layout { get; set; }
+		public MgImageLayout layout { get; set; }
 	}
 }

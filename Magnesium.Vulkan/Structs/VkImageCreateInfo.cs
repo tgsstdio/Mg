@@ -21,6 +21,6 @@ namespace Magnesium.Vulkan
 		public VkSharingMode sharingMode { get; set; }
 		public UInt32 queueFamilyIndexCount { get; set; }
 		public IntPtr pQueueFamilyIndices { get; set; }
-		public VkImageLayout initialLayout { get; set; }
+		public MgImageLayout initialLayout { get; set; }
 	}
 }

@@ -508,7 +508,7 @@ namespace Magnesium.Vulkan
 					sharingMode = (VkSharingMode)pCreateInfo.SharingMode,
 					queueFamilyIndexCount = queueFamilyIndexCount,
 					pQueueFamilyIndices = pQueueFamilyIndices,
-					initialLayout = (VkImageLayout)pCreateInfo.InitialLayout,
+					initialLayout = pCreateInfo.InitialLayout,
 				};
 				var result = Interops.vkCreateImage(Handle, ref createInfo, allocatorPtr, ref internalHandle);
 				pImage = new VkImage(internalHandle);
@@ -783,7 +783,7 @@ namespace Magnesium.Vulkan
 					{
 						sType = VkStructureType.StructureTypeGraphicsPipelineCreateInfo,
 						pNext = IntPtr.Zero,
-						flags = (VkPipelineCreateFlags)current.Flags,
+						flags = current.Flags,
 						stageCount = stageCount,
 						pStages = pStages,
 						pVertexInputState = pVertexInputState,
@@ -1238,7 +1238,7 @@ namespace Magnesium.Vulkan
 					{
 						sType = VkStructureType.StructureTypeComputePipelineCreateInfo,
 						pNext = IntPtr.Zero,
-						flags = (VkPipelineCreateFlags)currentCreateInfo.Flags,
+						flags = currentCreateInfo.Flags,
 						stage = pStage,
 						layout = bPipelineLayout.Handle,
 						basePipelineHandle = basePipelineHandle,
@@ -1742,7 +1742,7 @@ namespace Magnesium.Vulkan
 											{
 												sampler = bSampler.Handle,
 												imageView = bImageView.Handle,
-												imageLayout = (VkImageLayout) srcInfo.ImageLayout,
+												imageLayout = srcInfo.ImageLayout,
 											};
 										});				
 									attachedItems.Add(pImageInfo);								
@@ -1933,15 +1933,15 @@ namespace Magnesium.Vulkan
 						{
 							return new VkAttachmentDescription
 							{
-								flags = (VkAttachmentDescriptionFlags)attachment.Flags,
+								flags = attachment.Flags,
 								format = attachment.Format,
 								samples = attachment.Samples,
 								loadOp = (VkAttachmentLoadOp)attachment.LoadOp,
 								storeOp = (VkAttachmentStoreOp)attachment.StoreOp,
 								stencilLoadOp = (VkAttachmentLoadOp)attachment.StencilLoadOp,
 								stencilStoreOp = (VkAttachmentStoreOp)attachment.StencilStoreOp,
-								initialLayout = (VkImageLayout)attachment.InitialLayout,
-								finalLayout = (VkImageLayout)attachment.FinalLayout
+								initialLayout = attachment.InitialLayout,
+								finalLayout = attachment.FinalLayout
 							};
 						});
 					attachedItems.Add(pAttachments);
@@ -1967,14 +1967,17 @@ namespace Magnesium.Vulkan
 							var attachment = new VkAttachmentReference
 							{
 								attachment = currentSubpass.DepthStencilAttachment.Attachment,
-								layout = (VkImageLayout)currentSubpass.DepthStencilAttachment.Layout,
+								layout = currentSubpass.DepthStencilAttachment.Layout,
 							};
 							Marshal.StructureToPtr(attachment, depthStencil, false);
 							attachedItems.Add(depthStencil);
 						}
 
 						var pInputAttachments = IntPtr.Zero;
-						var inputAttachmentCount = currentSubpass.InputAttachments != null ? (uint) currentSubpass.ColorAttachments.Length : 0;
+						var inputAttachmentCount = 
+                            currentSubpass.InputAttachments != null 
+                            ? (uint) currentSubpass.InputAttachments.Length
+                            : 0;
 
 						if (inputAttachmentCount > 0)
 						{
@@ -1985,13 +1988,17 @@ namespace Magnesium.Vulkan
 									return new VkAttachmentReference
 									{
 										attachment = input.Attachment,
-										layout = (VkImageLayout)input.Layout,
+										layout = input.Layout,
 									};
 								});
 							attachedItems.Add(pInputAttachments);					
 						}
 
-						var colorAttachmentCount = currentSubpass.ColorAttachments != null ? (uint)currentSubpass.ColorAttachments.Length : 0;
+						var colorAttachmentCount = 
+                            currentSubpass.ColorAttachments != null 
+                            ? (uint)currentSubpass.ColorAttachments.Length
+                            : 0;
+
 						var pColorAttachments = IntPtr.Zero;
 						var pResolveAttachments = IntPtr.Zero;
 
@@ -2004,7 +2011,7 @@ namespace Magnesium.Vulkan
 									return new VkAttachmentReference
 									{
 										attachment = color.Attachment,
-										layout = (VkImageLayout)color.Layout,
+										layout = color.Layout,
 									};
 								});
 							attachedItems.Add(pColorAttachments);
@@ -2018,14 +2025,17 @@ namespace Magnesium.Vulkan
 										return new VkAttachmentReference
 										{
 											attachment = resolve.Attachment,
-											layout = (VkImageLayout)resolve.Layout,
+											layout = resolve.Layout,
 										};
 									});
 								attachedItems.Add(pResolveAttachments);
 							}
 						}
 
-						var preserveAttachmentCount = currentSubpass.PreserveAttachments != null ? (uint) currentSubpass.PreserveAttachments.Length : 0U;
+						var preserveAttachmentCount = 
+                            currentSubpass.PreserveAttachments != null 
+                            ? (uint) currentSubpass.PreserveAttachments.Length 
+                            : 0U;
 						var pPreserveAttachments = IntPtr.Zero;
 
 						if (preserveAttachmentCount > 0)
@@ -2065,11 +2075,11 @@ namespace Magnesium.Vulkan
 						{
 							srcSubpass = src.SrcSubpass,
 							dstSubpass = src.DstSubpass,
-							srcStageMask = (VkPipelineStageFlags)src.SrcStageMask,
-							dstStageMask = (VkPipelineStageFlags)src.DstStageMask,
-							srcAccessMask = (VkAccessFlags)src.SrcAccessMask,
-							dstAccessMask = (VkAccessFlags)src.DstAccessMask,
-							dependencyFlags = (VkDependencyFlags)src.DependencyFlags,
+							srcStageMask = src.SrcStageMask,
+							dstStageMask = src.DstStageMask,
+							srcAccessMask = src.SrcAccessMask,
+							dstAccessMask = src.DstAccessMask,
+							dependencyFlags = src.DependencyFlags,
 						};
 					});
 					attachedItems.Add(pDependencies);
@@ -2830,14 +2840,380 @@ namespace Magnesium.Vulkan
             }            
         }
 
-        public MgResult CreateRayTracingPipelinesNV(IMgPipelineCache pipelineCache, MgRayTracingPipelineCreateInfoNV[] pCreateInfos, IMgAllocationCallbacks pAllocator, IMgPipeline[] pPipelines)
+        public MgResult CreateRayTracingPipelinesNV(IMgPipelineCache pipelineCache, MgRayTracingPipelineCreateInfoNV[] pCreateInfos, IMgAllocationCallbacks pAllocator, out IMgPipeline[] pPipelines)
         {
-            throw new NotImplementedException();
+            if (pCreateInfos == null)
+                throw new ArgumentNullException(nameof(pCreateInfos));
+
+            var allocatedItems = new List<IntPtr>();
+            var gcHandles = new List<GCHandle>();
+
+            var bPipelineCache = (VkPipelineCache) pipelineCache;
+            var bPipelineCachePtr = bPipelineCache != null ? bPipelineCache.Handle : 0UL;
+
+            var createInfoCount = (uint)pCreateInfos.Length;            
+
+            var allocatorPtr = GetAllocatorHandle(pAllocator);
+
+            var bCreateInfos = new VkRayTracingPipelineCreateInfoNV[createInfoCount];
+
+            try
+            {
+                for (var i = 0; i < createInfoCount; i += 1)
+                {
+                    var current = pCreateInfos[i];
+
+                    var stageCount = (current.Stages != null) 
+                        ? (uint) current.Stages.Length 
+                        : 0U;
+                    var pStages = IntPtr.Zero;
+
+                    if (stageCount > 0)
+                    {
+                        var bStages = new VkPipelineShaderStageCreateInfo[stageCount];
+                        for (var j = 0; j < stageCount; j += 1)
+                        {
+                            bStages[j] = ExtractPipelineShaderStage(
+                                allocatedItems,
+                                gcHandles,
+                                current.Stages[j]);
+                        }
+
+                        pStages = VkInteropsUtility.AllocateHGlobalStructArray(bStages);
+                        allocatedItems.Add(pStages);
+                    }
+
+                    var groupCount = (current.Groups != null)
+                        ? (uint)current.Groups.Length
+                        : 0U;
+
+                    var pGroups = IntPtr.Zero;
+
+                    if (groupCount > 0)
+                    { 
+                        pGroups = VkInteropsUtility.AllocateHGlobalArray(
+                        current.Groups,
+                        (src) => {
+                            return new VkRayTracingShaderGroupCreateInfoNV
+                            {
+                                sType = VkStructureType.StructureTypeRayTracingShaderGroupCreateInfoNv,
+                                pNext = IntPtr.Zero,
+                                type = src.Type,
+                                generalShader = src.GeneralShader,
+                                closestHitShader = src.ClosestHitShader,
+                                anyHitShader = src.AnyHitShader,
+                                intersectionShader = src.IntersectionShader,
+                            };
+                        });
+                        allocatedItems.Add(pGroups);
+                    }
+
+                    var bLayout = (VkPipelineLayout)current.Layout;
+                    var bLayoutPtr = bLayout != null ? bLayout.Handle : 0UL;
+
+                    var bBasePipelineHandle = (VkPipeline)current.BasePipelineHandle;
+                    var bBasePipelineHandlePtr = bBasePipelineHandle != null 
+                        ? bBasePipelineHandle.Handle
+                        : 0UL;
+
+                    bCreateInfos[i] = new VkRayTracingPipelineCreateInfoNV
+                    {
+                        sType = VkStructureType.StructureTypeRayTracingPipelineCreateInfoNv,
+                        pNext = IntPtr.Zero,
+                        flags = current.Flags,
+                        stageCount = stageCount,
+                        pStages = pStages,
+                        groupCount = groupCount,
+                        pGroups = pGroups,
+                        maxRecursionDepth = current.MaxRecursionDepth,
+                        layout = bLayoutPtr,
+                        basePipelineHandle = bBasePipelineHandlePtr,
+                        basePipelineIndex = current.BasePipelineIndex,
+                    };
+                }
+
+                var handles = new ulong[createInfoCount];
+                var result = Interops.vkCreateRayTracingPipelinesNV(
+                    this.Handle,
+                    bPipelineCachePtr,
+                    createInfoCount,
+                    bCreateInfos,
+                    allocatorPtr,
+                    handles);
+
+                pPipelines = new VkPipeline[createInfoCount];
+                for (var i = 0; i < createInfoCount; ++i)
+                {
+                    pPipelines[i] = new VkPipeline(handles[i]);
+                }
+                return result;
+            }
+            finally
+            {
+                foreach (var item in allocatedItems)
+                {
+                    Marshal.FreeHGlobal(item);
+                }
+
+                foreach (var handle in gcHandles)
+                {
+                    handle.Free();
+                }
+            }
         }
 
         public MgResult CreateRenderPass2KHR(MgRenderPassCreateInfo2KHR pCreateInfo, IMgAllocationCallbacks pAllocator, out IMgRenderPass pRenderPass)
         {
-            throw new NotImplementedException();
+            if (pCreateInfo == null)
+                throw new ArgumentNullException(nameof(pCreateInfo));
+
+            Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+
+            var allocatorPtr = GetAllocatorHandle(pAllocator);
+
+            var allocatedItems = new List<IntPtr>();
+
+            try
+            {
+                var pAttachments = IntPtr.Zero;
+                var attachmentCount = pCreateInfo.Attachments != null
+                    ? (uint)pCreateInfo.Attachments.Length 
+                    : 0U;
+                if (attachmentCount > 0)
+                {
+                    pAttachments = VkInteropsUtility.AllocateHGlobalArray(
+                        pCreateInfo.Attachments,
+                        (attachment) =>
+                        {
+                            return new VkAttachmentDescription2KHR
+                            {
+                                sType = VkStructureType.StructureTypeAttachmentDescription2Khr,
+                                // TODO: extension here
+                                pNext = IntPtr.Zero,
+                                flags = attachment.Flags,
+                                format = attachment.Format,
+                                samples = attachment.Samples,
+                                loadOp = (VkAttachmentLoadOp)attachment.LoadOp,
+                                storeOp = (VkAttachmentStoreOp)attachment.StoreOp,
+                                stencilLoadOp = (VkAttachmentLoadOp)attachment.StencilLoadOp,
+                                stencilStoreOp = (VkAttachmentStoreOp)attachment.StencilStoreOp,
+                                initialLayout = attachment.InitialLayout,
+                                finalLayout = attachment.FinalLayout
+                            };
+                        });
+                    allocatedItems.Add(pAttachments);
+                }
+
+                var subpassCount = pCreateInfo.Subpasses != null
+                    ? (uint)pCreateInfo.Subpasses.Length 
+                    : 0U;
+                var pSubpasses = IntPtr.Zero;
+                if (subpassCount > 0)
+                {
+                    pSubpasses = VkInteropsUtility.AllocateHGlobalArray
+                        <MgSubpassDescription2KHR, VkSubpassDescription2KHR>
+                        (
+                            pCreateInfo.Subpasses,
+                            (src) =>
+                            {
+                                var inputAttachmentCount =
+                                    src.InputAttachments != null
+                                    ? (uint)src.InputAttachments.Length
+                                    : 0U;
+
+                                var pInputAttachments = IntPtr.Zero;
+                                if (inputAttachmentCount > 0)
+                                {
+                                    pInputAttachments = VkInteropsUtility.AllocateHGlobalArray
+                                        <MgAttachmentReference2KHR, VkAttachmentReference2KHR>
+                                        (
+                                            src.InputAttachments,
+                                            (input) =>
+                                            {
+                                                return new VkAttachmentReference2KHR
+                                                {
+                                                    sType = VkStructureType.StructureTypeAttachmentReference2Khr,
+                                                    // TODO: extension here
+                                                    pNext = IntPtr.Zero,
+                                                    attachment = input.Attachment,
+                                                    layout = input.Layout,
+                                                    aspectMask = input.AspectMask,
+                                                };
+                                            }
+                                        );
+                                    allocatedItems.Add(pInputAttachments);
+                                }
+
+                                var colorAttachmentCount =
+                                    src.ColorAndResolveAttachments != null
+                                    ? (uint)src.ColorAndResolveAttachments.Length
+                                    : 0U;
+                                var pColorAttachments = IntPtr.Zero;
+                                var pResolveAttachments = IntPtr.Zero;
+
+                                if (colorAttachmentCount > 0)
+                                {
+                                    pColorAttachments = VkInteropsUtility.AllocateHGlobalArray
+                                        <MgColorAndResolveAttachmentInfo, VkAttachmentReference2KHR>
+                                        (
+                                            src.ColorAndResolveAttachments,
+                                            (cnr) =>
+                                            {
+                                                return new VkAttachmentReference2KHR
+                                                {
+                                                    sType = VkStructureType.StructureTypeAttachmentReference2Khr,
+                                                    // TODO: extension here
+                                                    pNext = IntPtr.Zero,
+                                                    attachment = cnr.Color.Attachment,
+                                                    layout = cnr.Color.Layout,
+                                                    aspectMask = cnr.Color.AspectMask,
+                                                };
+                                            }
+                                        );
+                                    allocatedItems.Add(pColorAttachments);
+
+                                    pResolveAttachments = VkInteropsUtility.AllocateHGlobalArray
+                                        <MgColorAndResolveAttachmentInfo, VkAttachmentReference2KHR>
+                                        (
+                                            src.ColorAndResolveAttachments,
+                                            (cnr) =>
+                                            {
+                                                return new VkAttachmentReference2KHR
+                                                {
+                                                    sType = VkStructureType.StructureTypeAttachmentReference2Khr,
+                                                    // TODO: extension here
+                                                    pNext = IntPtr.Zero,
+                                                    attachment = cnr.Resolve.Attachment,
+                                                    layout = cnr.Resolve.Layout,
+                                                    aspectMask = cnr.Resolve.AspectMask,
+                                                };
+                                            }
+                                        );
+                                    allocatedItems.Add(pResolveAttachments);
+                                }
+
+                                var preserveAttachmentCount = src.PreserveAttachments != null
+                                    ? (uint)src.PreserveAttachments.Length
+                                    : 0U;
+                                var pPreserveAttachments = IntPtr.Zero;
+
+                                if (preserveAttachmentCount > 0)
+                                {
+                                    pPreserveAttachments = VkInteropsUtility.AllocateUInt32Array(src.PreserveAttachments);
+                                    allocatedItems.Add(pPreserveAttachments);
+                                }
+
+                                return new VkSubpassDescription2KHR
+                                {
+                                    sType = VkStructureType.StructureTypeSubpassDescription2Khr,
+                                    // TODO: extension here
+                                    pNext = IntPtr.Zero,
+                                    flags = src.Flags,
+                                    pipelineBindPoint = src.PipelineBindPoint,
+                                    viewMask = src.ViewMask,
+                                    inputAttachmentCount = inputAttachmentCount,
+                                    pInputAttachments = pInputAttachments,
+                                    colorAttachmentCount = colorAttachmentCount,
+                                    pColorAttachments = pColorAttachments,
+                                    pResolveAttachments = pResolveAttachments,
+                                    pDepthStencilAttachment = ExtractDepthStencilAttachment2KHR(
+                                        allocatedItems,
+                                        src.DepthStencilAttachment),
+                                    preserveAttachmentCount = preserveAttachmentCount,
+                                    pPreserveAttachments = pPreserveAttachments,
+                                };
+                            }
+                        );
+                    }
+
+                var dependencyCount = pCreateInfo.Dependencies != null ? 
+                    (uint) pCreateInfo.Dependencies.Length : 0U;
+                var pDependencies = IntPtr.Zero;
+                if (dependencyCount > 0)
+                {
+                    pDependencies = VkInteropsUtility.AllocateHGlobalArray(
+                        pCreateInfo.Dependencies,
+                         (src) => {
+                             return new VkSubpassDependency2KHR
+                             {
+                                 srcSubpass = src.SrcSubpass,
+                                 dstSubpass = src.DstSubpass,
+                                 srcStageMask = src.SrcStageMask,
+                                 dstStageMask = src.DstStageMask,
+                                 srcAccessMask = src.SrcAccessMask,
+                                 dstAccessMask = src.DstAccessMask,
+                                 dependencyFlags = src.DependencyFlags,
+                             };
+                         });
+                    allocatedItems.Add(pDependencies);
+                }
+
+                var correlatedViewMaskCount = pCreateInfo.CorrelatedViewMasks != null 
+                    ? (uint)pCreateInfo.CorrelatedViewMasks.Length
+                    : 0U;
+
+                var pCorrelatedViewMasks = IntPtr.Zero;
+
+                if (correlatedViewMaskCount > 0)
+                {
+                    pCorrelatedViewMasks = VkInteropsUtility.AllocateUInt32Array(pCreateInfo.CorrelatedViewMasks);
+                    allocatedItems.Add(pCorrelatedViewMasks);
+                }
+
+                var createInfo = new VkRenderPassCreateInfo2KHR
+                {
+                    sType = VkStructureType.StructureTypeRenderPassCreateInfo2Khr,
+                    pNext = IntPtr.Zero,
+                    flags = pCreateInfo.Flags,
+                    attachmentCount = attachmentCount,
+                    pAttachments = pAttachments,
+                    subpassCount = subpassCount,
+                    pSubpasses = pSubpasses,
+                    dependencyCount = dependencyCount,
+                    pDependencies = pDependencies,
+                    correlatedViewMaskCount = correlatedViewMaskCount,
+                    pCorrelatedViewMasks = pCorrelatedViewMasks,
+                };
+
+                ulong internalHandle = 0;
+                var result = Interops.vkCreateRenderPass2KHR(Handle, ref createInfo, allocatorPtr, ref internalHandle);
+                pRenderPass = new VkRenderPass(internalHandle);
+                return result;
+            }
+            finally
+            {
+                foreach (var ptr in allocatedItems)
+                {
+                    Marshal.FreeHGlobal(ptr);
+                }
+            }
+        }
+
+        private static IntPtr ExtractDepthStencilAttachment2KHR(List<IntPtr> allocatedItems, MgAttachmentReference2KHR src)
+        {
+            var result = IntPtr.Zero;
+
+            if (src != null)
+            {
+                result = VkInteropsUtility.AllocateHGlobalStructArray(
+                    new[]
+                    {
+                        new VkAttachmentReference2KHR
+                        {
+                            sType = VkStructureType.StructureTypeAttachmentReference2Khr,
+                            // TODO: extension here
+                            pNext = IntPtr.Zero,
+                            attachment = src.Attachment,
+                            layout = src.Layout,
+                            aspectMask = src.AspectMask,
+
+                        }
+                    }
+                );
+                allocatedItems.Add(result);
+            }
+
+            return result;
         }
 
         public MgResult CreateSamplerYcbcrConversion(MgSamplerYcbcrConversionCreateInfo pCreateInfo, IMgAllocationCallbacks pAllocator, IMgSamplerYcbcrConversion pYcbcrConversion)

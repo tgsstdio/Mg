@@ -40,8 +40,6 @@
     <Compile Include="Handles\VkIndirectCommandsLayoutNVX.cs" />
     <Compile Include="Handles\VkObjectTableNVX.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Enums\VkAccessFlags.cs" />
-    <Compile Include="Enums\VkAttachmentDescriptionFlags.cs" />
     <Compile Include="Enums\VkAttachmentLoadOp.cs" />
     <Compile Include="Enums\VkAttachmentStoreOp.cs" />
     <Compile Include="Enums\VkBlendFactor.cs" />
@@ -62,14 +60,12 @@
     <Compile Include="Enums\VkDebugReportErrorExt.cs" />
     <Compile Include="Enums\VkDebugReportFlagsExt.cs" />
     <Compile Include="Enums\VkDebugReportObjectTypeExt.cs" />
-    <Compile Include="Enums\VkDependencyFlags.cs" />
     <Compile Include="Enums\VkDescriptorPoolCreateFlags.cs" />
     <Compile Include="Enums\VkDisplayPlaneAlphaFlagsKhr.cs" />
     <Compile Include="Enums\VkDynamicState.cs" />
     <Compile Include="Enums\VkFenceCreateFlags.cs" />
     <Compile Include="Enums\VkFilter.cs" />
     <Compile Include="Enums\VkFrontFace.cs" />
-    <Compile Include="Enums\VkImageLayout.cs" />
     <Compile Include="Enums\VkImageType.cs" />
     <Compile Include="Enums\VkImageViewType.cs" />
     <Compile Include="Enums\VkInternalAllocationType.cs" />
@@ -78,8 +74,6 @@
     <Compile Include="Enums\VkMemoryPropertyFlags.cs" />
     <Compile Include="Enums\VkPhysicalDeviceType.cs" />
     <Compile Include="Enums\VkPipelineCacheHeaderVersion.cs" />
-    <Compile Include="Enums\VkPipelineCreateFlags.cs" />
-    <Compile Include="Enums\VkPipelineStageFlags.cs" />
     <Compile Include="Enums\VkPolygonMode.cs" />
     <Compile Include="Enums\VkPresentModeKhr.cs" />
     <Compile Include="Enums\VkPrimitiveTopology.cs" />
@@ -108,7 +102,9 @@
     <Compile Include="Structs\VkAndroidSurfaceCreateInfoKHR.cs" />
     <Compile Include="Structs\VkApplicationInfo.cs" />
     <Compile Include="Structs\VkAttachmentDescription.cs" />
+    <Compile Include="Structs\VkAttachmentDescription2KHR.cs" />
     <Compile Include="Structs\VkAttachmentReference.cs" />
+    <Compile Include="Structs\VkAttachmentReference2KHR.cs" />
     <Compile Include="Structs\VkBindAccelerationStructureMemoryInfoNV.cs" />
     <Compile Include="Structs\VkBindBufferMemoryInfo.cs" />
     <Compile Include="Structs\VkBindImageMemoryInfo.cs" />
@@ -239,8 +235,11 @@
     <Compile Include="Structs\VkQueryPoolCreateInfo.cs" />
     <Compile Include="Structs\VkQueueFamilyProperties.cs" />
     <Compile Include="Structs\VkQueueFamilyProperties2.cs" />
+    <Compile Include="Structs\VkRayTracingPipelineCreateInfoNV.cs" />
+    <Compile Include="Structs\VkRayTracingShaderGroupCreateInfoNV.cs" />
     <Compile Include="Structs\VkRenderPassBeginInfo.cs" />
     <Compile Include="Structs\VkRenderPassCreateInfo.cs" />
+    <Compile Include="Structs\VkRenderPassCreateInfo2KHR.cs" />
     <Compile Include="Structs\VkSamplerCreateInfo.cs" />
     <Compile Include="Structs\VkSemaphoreCreateInfo.cs" />
     <Compile Include="Structs\VkShaderModuleCreateInfo.cs" />
@@ -257,7 +256,9 @@
     <Compile Include="Structs\VkStencilOpState.cs" />
     <Compile Include="Structs\VkSubmitInfo.cs" />
     <Compile Include="Structs\VkSubpassDependency.cs" />
+    <Compile Include="Structs\VkSubpassDependency2KHR.cs" />
     <Compile Include="Structs\VkSubpassDescription.cs" />
+    <Compile Include="Structs\VkSubpassDescription2KHR.cs" />
     <Compile Include="Structs\VkSubresourceLayout.cs" />
     <Compile Include="Structs\VkSurfaceCapabilities2EXT.cs" />
     <Compile Include="Structs\VkSurfaceCapabilities2KHR.cs" />

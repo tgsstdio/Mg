@@ -9,8 +9,8 @@ namespace Magnesium.Vulkan
 	{
 		public VkStructureType sType { get; set; }
 		public IntPtr pNext { get; set; }
-		public VkAccessFlags srcAccessMask { get; set; }
-		public VkAccessFlags dstAccessMask { get; set; }
+		public MgAccessFlagBits srcAccessMask { get; set; }
+		public MgAccessFlagBits dstAccessMask { get; set; }
 		public UInt32 srcQueueFamilyIndex { get; set; }
 		public UInt32 dstQueueFamilyIndex { get; set; }
 		public UInt64 buffer { get; set; }
