@@ -208,7 +208,7 @@ namespace Magnesium.Vulkan
 			var bBuffer = (VkBuffer) buffer;
 			Debug.Assert(bBuffer != null);
 
-			Interops.vkCmdBindIndexBuffer(this.Handle, bBuffer.Handle, offset, (VkIndexType)indexType);
+			Interops.vkCmdBindIndexBuffer(this.Handle, bBuffer.Handle, offset, indexType);
 		}
 
 		public void CmdBindVertexBuffers(UInt32 firstBinding, IMgBuffer[] pBuffers, UInt64[] pOffsets)

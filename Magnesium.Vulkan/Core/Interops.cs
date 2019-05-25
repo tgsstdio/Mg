@@ -320,7 +320,7 @@ namespace Magnesium.Vulkan
 		internal extern static void vkCmdBindDescriptorSets(IntPtr commandBuffer, MgPipelineBindPoint pipelineBindPoint, UInt64 layout, UInt32 firstSet, UInt32 descriptorSetCount, [In] UInt64[] pDescriptorSets, UInt32 dynamicOffsetCount, [In] UInt32[] pDynamicOffsets);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static void vkCmdBindIndexBuffer(IntPtr commandBuffer, UInt64 buffer, UInt64 offset, VkIndexType indexType);
+		internal extern static void vkCmdBindIndexBuffer(IntPtr commandBuffer, UInt64 buffer, UInt64 offset, MgIndexType indexType);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkCmdBindVertexBuffers(IntPtr commandBuffer, UInt32 firstBinding, UInt32 bindingCount, [In] UInt64[] pBuffers, [In] UInt64[] pOffsets);
@@ -679,22 +679,22 @@ namespace Magnesium.Vulkan
         /**
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkGetDeviceGroupPeerMemoryFeatures(IntPtr device, UInt32 heapIndex, UInt32 localDeviceIndex, UInt32 remoteDeviceIndex, ref VkPeerMemoryFeatureFlags pPeerMemoryFeatures);
+        **/
+		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		internal extern static MgResult vkBindBufferMemory2(IntPtr device, UInt32 bindInfoCount, [In] VkBindBufferMemoryInfo[] pBindInfos);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe MgResult vkBindBufferMemory2(IntPtr device, UInt32 bindInfoCount, VkBindBufferMemoryInfo* pBindInfos);
+		internal extern static MgResult vkBindImageMemory2(IntPtr device, UInt32 bindInfoCount, [In] VkBindImageMemoryInfo[] pBindInfos);
+        /**
+[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+internal extern static void vkCmdSetDeviceMask(IntPtr commandBuffer, UInt32 deviceMask);
 
-		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe MgResult vkBindImageMemory2(IntPtr device, UInt32 bindInfoCount, VkBindImageMemoryInfo* pBindInfos);
+[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+internal extern static MgResult vkGetDeviceGroupPresentCapabilitiesKHR(IntPtr device, [In, Out] VkDeviceGroupPresentCapabilitiesKHR pDeviceGroupPresentCapabilities);
 
-		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static void vkCmdSetDeviceMask(IntPtr commandBuffer, UInt32 deviceMask);
-
-		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static MgResult vkGetDeviceGroupPresentCapabilitiesKHR(IntPtr device, [In, Out] VkDeviceGroupPresentCapabilitiesKHR pDeviceGroupPresentCapabilities);
-
-		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static MgResult vkGetDeviceGroupSurfacePresentModesKHR(IntPtr device, UInt64 surface, ref VkDeviceGroupPresentModeFlagsKHR pModes);
-        ***/
+[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+internal extern static MgResult vkGetDeviceGroupSurfacePresentModesKHR(IntPtr device, UInt64 surface, ref VkDeviceGroupPresentModeFlagsKHR pModes);
+***/
         [DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static MgResult vkAcquireNextImage2KHR(IntPtr device, [In, Out] VkAcquireNextImageInfoKHR pAcquireInfo, ref UInt32 pImageIndex);
         /***
@@ -703,13 +703,13 @@ namespace Magnesium.Vulkan
         ***/
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static unsafe MgResult vkGetPhysicalDevicePresentRectanglesKHR(IntPtr physicalDevice, UInt64 surface, UInt32 pRectCount, MgRect2D* pRects);
-        /**
+
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static MgResult vkCreateDescriptorUpdateTemplate(IntPtr device, [In, Out] VkDescriptorUpdateTemplateCreateInfo pCreateInfo, IntPtr pAllocator, ref UInt64 pDescriptorUpdateTemplate);
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkDestroyDescriptorUpdateTemplate(IntPtr device, UInt64 descriptorUpdateTemplate, IntPtr pAllocator);
-
+        /**
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkUpdateDescriptorSetWithTemplate(IntPtr device, UInt64 descriptorSet, UInt64 descriptorUpdateTemplate, IntPtr pData);
 
@@ -737,7 +737,7 @@ namespace Magnesium.Vulkan
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static unsafe void vkCmdSetViewportWScalingNV(IntPtr commandBuffer, UInt32 firstViewport, UInt32 viewportCount, VkViewportWScalingNV* pViewportWScalings);
         **/
-		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+        [DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static unsafe void vkCmdSetDiscardRectangleEXT(IntPtr commandBuffer, UInt32 firstDiscardRectangle, UInt32 discardRectangleCount, MgRect2D* pDiscardRectangles);
         /**
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
@@ -922,7 +922,7 @@ namespace Magnesium.Vulkan
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkCmdDrawMeshTasksIndirectCountNV(IntPtr commandBuffer, UInt64 buffer, UInt64 offset, UInt64 countBuffer, UInt64 countBufferOffset, UInt32 maxDrawCount, UInt32 stride);
-
+        **/
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static MgResult vkCompileDeferredNV(IntPtr device, UInt64 pipeline, UInt32 shader);
 
@@ -931,13 +931,13 @@ namespace Magnesium.Vulkan
 
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkDestroyAccelerationStructureNV(IntPtr device, UInt64 accelerationStructure, IntPtr pAllocator);
-
+        /**
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static unsafe void vkGetAccelerationStructureMemoryRequirementsNV(IntPtr device, VkAccelerationStructureMemoryRequirementsInfoNV pInfo, VkMemoryRequirements2KHR* pMemoryRequirements);
-
+        **/
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe MgResult vkBindAccelerationStructureMemoryNV(IntPtr device, UInt32 bindInfoCount, VkBindAccelerationStructureMemoryInfoNV* pBindInfos);
-
+		internal extern static MgResult vkBindAccelerationStructureMemoryNV(IntPtr device, UInt32 bindInfoCount, [In, Out] VkBindAccelerationStructureMemoryInfoNV[] pBindInfos);
+        /**
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkCmdCopyAccelerationStructureNV(IntPtr commandBuffer, UInt64 dst, UInt64 src, VkCopyAccelerationStructureModeNV mode);
 

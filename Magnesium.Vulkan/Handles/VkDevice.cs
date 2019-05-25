@@ -2515,6 +2515,7 @@ namespace Magnesium.Vulkan
             var bAcquireInfo = new VkAcquireNextImageInfoKHR
             {
                 sType = VkStructureType.StructureTypeAcquireNextImageInfoKhr,
+                // TODO: extensible
                 pNext = IntPtr.Zero,
                 fence = bFencePtr,
                 semaphore = bSemaphorePtr,
@@ -2531,32 +2532,301 @@ namespace Magnesium.Vulkan
 
         public MgResult BindAccelerationStructureMemoryNV(MgBindAccelerationStructureMemoryInfoNV[] pBindInfos)
         {
-            throw new NotImplementedException();
+            if (pBindInfos == null)
+                throw new ArgumentNullException(nameof(pBindInfos));
+
+            var attachedItems = new List<IntPtr>();
+
+            try
+            {
+                var bindInfoCount = (UInt32) pBindInfos.Length;
+
+                var bBindInfos = new VkBindAccelerationStructureMemoryInfoNV[bindInfoCount];
+
+                for (var i = 0; i < bindInfoCount; i += 1)
+                {
+                    var currentInfo = pBindInfos[i];
+
+                    var bAccelerationStructure = (VkAccelerationStructureNV) currentInfo.AccelerationStructure;
+                    var bAccelerationStructurePtr = bAccelerationStructure != null ? bAccelerationStructure.Handle : 0UL;
+
+                    var bDeviceMemory = (VkDeviceMemory)currentInfo.Memory;
+                    var bDeviceMemoryPtr = bDeviceMemory != null ? bDeviceMemory.Handle : 0UL;
+
+                    var pDeviceIndices = VkInteropsUtility.AllocateUInt32Array(currentInfo.DeviceIndices);
+                    if (pDeviceIndices != IntPtr.Zero)
+                        attachedItems.Add(pDeviceIndices);
+
+                    var deviceIndexCount = currentInfo.DeviceIndices != null ? (uint) currentInfo.DeviceIndices.Length : 0U;
+
+                    bBindInfos[i] = new VkBindAccelerationStructureMemoryInfoNV
+                    {
+                        sType = VkStructureType.StructureTypeBindAccelerationStructureMemoryInfoNv,
+                        // TODO: extensible
+                        pNext = IntPtr.Zero,
+                        accelerationStructure = bAccelerationStructurePtr,
+                        memory = bDeviceMemoryPtr,
+                        memoryOffset = currentInfo.MemoryOffset,
+                        deviceIndexCount = deviceIndexCount,
+                        pDeviceIndices = pDeviceIndices,                        
+                    };
+                }
+
+                return Interops.vkBindAccelerationStructureMemoryNV(this.Handle, bindInfoCount, bBindInfos);
+            }
+            finally
+            {
+                foreach (var handle in attachedItems)
+                {
+                    Marshal.FreeHGlobal(handle);
+                }
+            }
         }
 
         public MgResult BindBufferMemory2(MgBindBufferMemoryInfo[] pBindInfos)
         {
-            throw new NotImplementedException();
+            if (pBindInfos == null)
+                throw new ArgumentNullException(nameof(pBindInfos));
+
+            var bindInfoCount = (UInt32)pBindInfos.Length;
+
+            var bBindInfos = new VkBindBufferMemoryInfo[bindInfoCount];
+
+            for (var i = 0; i < bindInfoCount; i += 1)
+            {
+                var currentInfo = pBindInfos[i];
+
+                var bBuffer = (VkBuffer)currentInfo.Memory;
+                var bBufferPtr = bBuffer != null ? bBuffer.Handle : 0UL;
+
+                var bDeviceMemory = (VkDeviceMemory)currentInfo.Memory;
+                var bDeviceMemoryPtr = bDeviceMemory != null ? bDeviceMemory.Handle : 0UL;
+
+                bBindInfos[i] = new VkBindBufferMemoryInfo
+                {
+                    sType = VkStructureType.StructureTypeBindBufferMemoryInfo,
+                    // TODO: extensible
+                    pNext = IntPtr.Zero,
+                    buffer = bBufferPtr,
+                    memory = bDeviceMemoryPtr,
+                    memoryOffset = currentInfo.MemoryOffset,
+                };
+            }
+
+            return Interops.vkBindBufferMemory2(this.Handle, bindInfoCount, bBindInfos);
         }
 
         public MgResult BindImageMemory2(MgBindImageMemoryInfo[] pBindInfos)
         {
-            throw new NotImplementedException();
+            if (pBindInfos == null)
+                throw new ArgumentNullException(nameof(pBindInfos));
+
+            var bindInfoCount = (UInt32)pBindInfos.Length;
+
+            var bBindInfos = new VkBindImageMemoryInfo[bindInfoCount];
+
+            for (var i = 0; i < bindInfoCount; i += 1)
+            {
+                var currentInfo = pBindInfos[i];
+
+                var bImage = (VkImage)currentInfo.Image;
+                var bImagePtr = bImage != null ? bImage.Handle : 0UL;
+
+                var bDeviceMemory = (VkDeviceMemory)currentInfo.Memory;
+                var bDeviceMemoryPtr = bDeviceMemory != null ? bDeviceMemory.Handle : 0UL;
+
+                bBindInfos[i] = new VkBindImageMemoryInfo
+                {
+                    sType = VkStructureType.StructureTypeBindImageMemoryInfo,
+                    // TODO: extensible
+                    pNext = IntPtr.Zero,
+                    image = bImagePtr,
+                    memory = bDeviceMemoryPtr,
+                    memoryOffset = currentInfo.MemoryOffset,
+                }; 
+            }
+
+            return Interops.vkBindImageMemory2(this.Handle, bindInfoCount, bBindInfos);
         }
 
-        public MgResult CompileDeferredNV(IMgPipeline pipeline, uint shader)
+        public MgResult CreateAccelerationStructureNV(MgAccelerationStructureCreateInfoNV pCreateInfo, IMgAllocationCallbacks pAllocator, out IMgAccelerationStructureNV pAccelerationStructure)
         {
-            throw new NotImplementedException();
+            if (pCreateInfo == null)
+                throw new ArgumentNullException(nameof(pCreateInfo));
+
+            if (pCreateInfo.Info == null)
+                throw new ArgumentNullException(nameof(pCreateInfo.Info));
+
+            var allocatorPtr = GetAllocatorHandle(pAllocator);
+
+            var geometryCount = (pCreateInfo.Info.Geometries != null) 
+                ? (uint) pCreateInfo.Info.Geometries.Length
+                : 0U;
+
+            var pGeometries = IntPtr.Zero;
+
+            try
+            {
+
+                pGeometries = VkInteropsUtility.AllocateHGlobalArray<MgGeometryNV, VkGeometryNV>(
+                        pCreateInfo.Info.Geometries,
+                        (src) =>
+                        {
+                            return new VkGeometryNV
+                            {
+                                sType = VkStructureType.StructureTypeGeometryNv,
+                                pNext = IntPtr.Zero,
+                                flags = src.flags,
+                                geometry = new VkGeometryDataNV
+                                {
+                                    aabbs = ExtractAabbs(src.geometry.aabbs),
+                                    triangles = ExtractTriangleData(src.geometry.triangles)
+                                },
+                                geometryType = src.geometryType,
+                            };
+                        }
+                    );
+
+                var bCreateInfo = new VkAccelerationStructureCreateInfoNV
+                {
+                    sType = VkStructureType.StructureTypeAccelerationStructureCreateInfoNv,
+                    // TODO: extensible
+                    pNext = IntPtr.Zero,
+                    compactedSize = pCreateInfo.CompactedSize,
+                    info = new VkAccelerationStructureInfoNV
+                    {
+                        sType = VkStructureType.StructureTypeAccelerationStructureInfoNv,
+                        // TODO: extensible
+                        pNext = IntPtr.Zero,
+                        type = pCreateInfo.Info.Type,
+                        flags = pCreateInfo.Info.Flags,
+                        instanceCount = pCreateInfo.Info.InstanceCount,
+                        geometryCount = geometryCount,
+                        pGeometries = pGeometries,
+                    },
+                };
+
+                var pHandle = 0UL;
+                var result = Interops.vkCreateAccelerationStructureNV(this.Handle, bCreateInfo, allocatorPtr, ref pHandle);
+                pAccelerationStructure = new VkAccelerationStructureNV(pHandle);
+                return result;
+            }
+            finally
+            {
+                if (pGeometries != IntPtr.Zero)
+                {
+                    Marshal.FreeHGlobal(pGeometries);
+                }
+            }
         }
 
-        public MgResult CreateAccelerationStructureNV(MgAccelerationStructureCreateInfoNV pCreateInfo, IMgAllocationCallbacks pAllocator, out IMgAcceleratedStructureNV pAccelerationStructure)
+        private static VkGeometryTrianglesNV ExtractTriangleData(MgGeometryTrianglesNV src)
         {
-            throw new NotImplementedException();
+            var bVertexData = (VkBuffer) src.VertexData;
+
+            var bIndexData = (VkBuffer)src.IndexData;
+
+            var bTransformData = (VkBuffer)src.TransformData;
+
+            return new VkGeometryTrianglesNV
+            {
+                sType = VkStructureType.StructureTypeGeometryTrianglesNv,
+                pNext = IntPtr.Zero,
+                vertexData = bVertexData.Handle,
+                vertexOffset = src.VertexOffset,
+                vertexCount = src.VertexCount,
+                vertexStride = src.VertexStride,
+                vertexFormat = src.VertexFormat,
+                indexData = bIndexData.Handle,
+                indexOffset = src.IndexOffset,
+                indexCount = src.IndexCount,
+                indexType = src.IndexType,
+                
+                transformData = bTransformData.Handle,
+                transformOffset = src.TransformOffset,
+            };
         }
 
-        public MgResult CreateDescriptorUpdateTemplate(MgDescriptorUpdateTemplateCreateInfo pCreateInfo, IMgAllocationCallbacks pAllocator, ref IMgDescriptorUpdateTemplate pDescriptorUpdateTemplate)
+        private static VkGeometryAABBNV ExtractAabbs(MgGeometryAABBNV aabbs)
         {
-            throw new NotImplementedException();
+            var bAabbData = (VkBuffer) aabbs.AabbData;
+
+            return new VkGeometryAABBNV
+            {
+                sType = VkStructureType.StructureTypeGeometryAabbNv,
+                pNext = IntPtr.Zero,
+                aabbData = bAabbData.Handle,
+                numAABBs = aabbs.NumAABBs,
+                offset = aabbs.Offset,
+                stride = aabbs.Stride,
+            };
+        }
+
+        public MgResult CreateDescriptorUpdateTemplate(MgDescriptorUpdateTemplateCreateInfo pCreateInfo, IMgAllocationCallbacks pAllocator, out IMgDescriptorUpdateTemplate pDescriptorUpdateTemplate)
+        {
+            if (pCreateInfo == null)
+                throw new ArgumentNullException(nameof(pCreateInfo));
+
+            if (pCreateInfo.DescriptorUpdateEntries == null)
+                throw new ArgumentNullException(nameof(pCreateInfo.DescriptorUpdateEntries));
+
+
+            var allocatorPtr = GetAllocatorHandle(pAllocator);
+
+            var descriptorUpdateEntryCount = (UInt32) pCreateInfo.DescriptorUpdateEntries.Length;
+
+            var pDescriptorUpdateEntries = IntPtr.Zero;
+
+            try
+            {
+                pDescriptorUpdateEntries = VkInteropsUtility.AllocateHGlobalArray(
+                    pCreateInfo.DescriptorUpdateEntries,
+                    (src) =>
+                    {
+                        return new VkDescriptorUpdateTemplateEntry
+                        {
+                            dstBinding = src.DstBinding,
+                            dstArrayElement = src.DstArrayElement,
+                            descriptorCount = src.DescriptorCount,
+                            descriptorType = src.DescriptorType,
+                            offset = src.Offset,
+                            stride = src.Stride,
+                        };
+                    }
+                );
+
+                var bSetLayout = (VkDescriptorSetLayout)pCreateInfo.DescriptorSetLayout;
+                var bSetLayoutPtr = bSetLayout != null ? bSetLayout.Handle : 0UL;
+
+                var bPipelineLayout = (VkPipelineLayout)pCreateInfo.PipelineLayout;
+                var bPipelineLayoutPtr = bPipelineLayout != null ? bPipelineLayout.Handle : 0UL;
+
+                var bCreateInfo = new VkDescriptorUpdateTemplateCreateInfo
+                {
+                    sType = VkStructureType.StructureTypeDescriptorUpdateTemplateCreateInfo,
+                    pNext = IntPtr.Zero,
+                    flags = pCreateInfo.Flags,
+                    descriptorUpdateEntryCount = descriptorUpdateEntryCount,
+                    pDescriptorUpdateEntries = pDescriptorUpdateEntries,
+                    descriptorSetLayout = bSetLayoutPtr,
+                    pipelineBindPoint = pCreateInfo.PipelineBindPoint,
+                    pipelineLayout = pCreateInfo.
+                    set = pCreateInfo.Set,
+                };
+
+                var pHandle = 0UL;
+                var result = Interops.vkCreateDescriptorUpdateTemplate(this.Handle, bCreateInfo, allocatorPtr, ref pHandle);
+
+                pDescriptorUpdateTemplate = new VkDescriptorUpdateTemplate(pHandle);
+                return result;
+            }
+            finally
+            {
+                if (pDescriptorUpdateEntries != IntPtr.Zero)
+                {
+                    Marshal.FreeHGlobal(pDescriptorUpdateEntries);
+                }
+            }            
         }
 
         public MgResult CreateRayTracingPipelinesNV(IMgPipelineCache pipelineCache, MgRayTracingPipelineCreateInfoNV[] pCreateInfos, IMgAllocationCallbacks pAllocator, IMgPipeline[] pPipelines)
@@ -2584,7 +2854,7 @@ namespace Magnesium.Vulkan
             throw new NotImplementedException();
         }
 
-        public MgResult GetAccelerationStructureHandleNV(IMgAcceleratedStructureNV accelerationStructure, UIntPtr dataSize, out IntPtr pData)
+        public MgResult GetAccelerationStructureHandleNV(IMgAccelerationStructureNV accelerationStructure, UIntPtr dataSize, out IntPtr pData)
         {
             throw new NotImplementedException();
         }

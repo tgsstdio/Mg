@@ -30,5 +30,12 @@ namespace Magnesium.Vulkan
 			mIsDisposed = true;
 		}
 
-	}
+        public MgResult CompileDeferredNV(IMgDevice device, uint shader)
+        {
+            var bDevice = (VkDevice)device;
+            Debug.Assert(bDevice != null);
+
+            return Interops.vkCompileDeferredNV(bDevice.Handle, this.Handle, shader);
+        }
+    }
 }

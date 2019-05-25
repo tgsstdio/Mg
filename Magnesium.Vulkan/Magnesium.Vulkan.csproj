@@ -33,6 +33,7 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Handles\VkAcceleratedStructureNV.cs" />
     <Compile Include="Handles\VkDebugUtilsMessengerData.cs" />
     <Compile Include="Handles\VkDebugUtilsMessengerEXT.cs" />
     <Compile Include="Handles\VkIndirectCommandsLayoutNVX.cs" />
@@ -71,7 +72,6 @@
     <Compile Include="Enums\VkImageLayout.cs" />
     <Compile Include="Enums\VkImageType.cs" />
     <Compile Include="Enums\VkImageViewType.cs" />
-    <Compile Include="Enums\VkIndexType.cs" />
     <Compile Include="Enums\VkInternalAllocationType.cs" />
     <Compile Include="Enums\VkLogicOp.cs" />
     <Compile Include="Enums\VkMemoryHeapFlags.cs" />
@@ -101,12 +101,17 @@
     <Compile Include="Enums\VkSurfaceTransformFlagsKhr.cs" />
     <Compile Include="Enums\VkSystemAllocationScope.cs" />
     <Compile Include="Enums\VkVertexInputRate.cs" />
+    <Compile Include="Structs\VkAccelerationStructureCreateInfoNV.cs" />
+    <Compile Include="Structs\VkAccelerationStructureInfoNV.cs" />
     <Compile Include="Structs\VkAcquireNextImageInfoKHR.cs" />
     <Compile Include="Structs\VkAllocationCallbacks.cs" />
     <Compile Include="Structs\VkAndroidSurfaceCreateInfoKHR.cs" />
     <Compile Include="Structs\VkApplicationInfo.cs" />
     <Compile Include="Structs\VkAttachmentDescription.cs" />
     <Compile Include="Structs\VkAttachmentReference.cs" />
+    <Compile Include="Structs\VkBindAccelerationStructureMemoryInfoNV.cs" />
+    <Compile Include="Structs\VkBindBufferMemoryInfo.cs" />
+    <Compile Include="Structs\VkBindImageMemoryInfo.cs" />
     <Compile Include="Structs\VkBindSparseInfo.cs" />
     <Compile Include="Structs\VkBufferCopy.cs" />
     <Compile Include="Structs\VkBufferCreateInfo.cs" />
@@ -170,6 +175,10 @@
     <Compile Include="Structs\VkFormatProperties.cs" />
     <Compile Include="Structs\VkFormatProperties2.cs" />
     <Compile Include="Structs\VkFramebufferCreateInfo.cs" />
+    <Compile Include="Structs\VkGeometryAABBNV.cs" />
+    <Compile Include="Structs\VkGeometryDataNV.cs" />
+    <Compile Include="Structs\VkGeometryNV.cs" />
+    <Compile Include="Structs\VkGeometryTrianglesNV.cs" />
     <Compile Include="Structs\VkGraphicsPipelineCreateInfo.cs" />
     <Compile Include="Structs\VkImageBlit.cs" />
     <Compile Include="Structs\VkImageCopy.cs" />

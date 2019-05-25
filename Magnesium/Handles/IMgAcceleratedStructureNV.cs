@@ -1,6 +1,6 @@
 ﻿namespace Magnesium
 {
-    public interface IMgAcceleratedStructureNV
+    public interface IMgAccelerationStructureNV
     {
         void DestroyAccelerationStructureNV(IMgDevice device, IMgAllocationCallbacks pAllocator);
     }
