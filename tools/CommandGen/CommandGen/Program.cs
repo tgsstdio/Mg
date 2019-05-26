@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Xml.Linq;
 
 namespace CommandGen
@@ -55,11 +57,13 @@ namespace CommandGen
 				int totalNativeInterfaces = 0;
 
 				var implementation = new VkInterfaceCollection();
-				GenerateInterops(DLLNAME, lookup, ref noOfUnsafe, ref totalNativeInterfaces);
-				GenerateHandles(implementation, inspector);
+                GenerateInterops(DLLNAME, lookup, ref noOfUnsafe, ref totalNativeInterfaces);
+                GenerateHandles(implementation, inspector);
+                const string destFolder = "UHandles";
+                GenerateNeuHandles(destFolder, "Vulkan", null, implementation, inspector);
                 GenerateInterfaces(implementation, inspector);
                 GenerateVkEnums(inspector);
-				GenerateVkStructs(inspector);
+                GenerateVkStructs(inspector);
                 GenerateVkClasses(inspector);
                 GenerateVkStructureTypes(inspector);
 
@@ -71,6 +75,345 @@ namespace CommandGen
 				Console.WriteLine(ex);
 			}
 		}
+
+        const string TAB_FIELD = "\t";
+
+        static void GenerateNeuHandles(string destFolder, string libraryName, string argumentPrefix, VkInterfaceCollection implementation, IVkEntityInspector inspector)
+        {
+            const string VALIDATION_NAMESPACE = "Validation";
+            const string FUNCTION_NAMESPACE = "Functions";
+
+            CreateFolderIfMissing(destFolder);
+
+            var methodDirectoryPath = System.IO.Path.Combine(destFolder, FUNCTION_NAMESPACE);
+            CreateFolderIfMissing(methodDirectoryPath);
+
+            var checkDirectoryPath = System.IO.Path.Combine(destFolder, VALIDATION_NAMESPACE);
+            CreateFolderIfMissing(checkDirectoryPath);
+
+            var groups = new SortedSet<string>();
+
+            groups.Add("VkQueue");
+            groups.Add("VkDevice");
+            groups.Add("VkPhysicalDevice");
+            groups.Add("VkCommandBuffer");
+
+            foreach (var group in implementation.Interfaces)
+            {
+                if (groups.Contains(group.Name))
+                {
+
+                    if (inspector.Handles.TryGetValue(group.Name, out VkHandleInfo found))
+                    {
+                        group.Handle = found;
+                    }
+
+                    string subCategoryNs = group.Name.Substring(2);
+
+                    // 1. TOP LEVEL FILE 
+
+                    foreach (var flag in new bool[] { true, false })
+                    {
+                        string decoratorName = ((flag) ? "Safe" : "Fast") + subCategoryNs;
+
+                        string topLevelFile = System.IO.Path.Combine(destFolder, decoratorName + ".cs");
+                        GeneratorDecoratorFile(libraryName, argumentPrefix, group, subCategoryNs, flag, decoratorName, topLevelFile);
+                    }
+
+                    foreach (var fn in group.Methods)
+                    {
+                        var methodTabs = TAB_FIELD + "\t";
+
+                        CreateValidateStubFiles(libraryName, VALIDATION_NAMESPACE, checkDirectoryPath, subCategoryNs, fn, methodTabs);
+
+                        CreateImplSectionFiles(libraryName, FUNCTION_NAMESPACE, methodDirectoryPath, subCategoryNs, fn, methodTabs);
+                    }
+                }
+            }
+        }
+
+        private static void CreateFolderIfMissing(string destFolder)
+        {
+            if (!Directory.Exists(destFolder))
+            {
+                Directory.CreateDirectory(destFolder);
+            }
+        }
+
+        private static void GeneratorDecoratorFile(string libraryName, string argumentPrefix, VkContainerClass group, string subCategoryNs, bool flag, string decoratorName, string topLevelFile)
+        {
+            using (var fs = new StreamWriter(topLevelFile, false))
+            {
+                var methodTabs = TAB_FIELD + "\t";
+                var validationPrefix = methodTabs + TAB_FIELD + "Validation." + subCategoryNs + ".";
+
+                fs.WriteLine("using System;");
+
+                fs.WriteLine("namespace Magnesium." + libraryName);
+                fs.WriteLine("{");
+
+                fs.WriteLine(TAB_FIELD + "public class {0} : {1}", decoratorName, group.InterfaceName);
+                fs.WriteLine(TAB_FIELD + "{");
+
+                // ctor
+                // create internal field
+                fs.WriteLine(string.Format("{0}internal {1} mImpl = null;", methodTabs, group.InterfaceName));
+
+                // create constructor
+                fs.WriteLine(string.Format("{0}internal {1}({2} impl)", methodTabs, decoratorName, group.InterfaceName));
+                fs.WriteLine(methodTabs + "{");
+                fs.WriteLine(methodTabs + "\tmImpl = impl;");
+                fs.WriteLine(methodTabs + "}");
+                fs.WriteLine("");
+
+
+                foreach (var fn in group.Methods)
+                {
+                    GenerateDecoratorStub(flag, argumentPrefix, fs, methodTabs, validationPrefix, fn);
+                }
+
+                fs.WriteLine(TAB_FIELD + "}");
+                fs.WriteLine("}");
+            }
+        }
+
+        private static void CreateImplSectionFiles(string libraryName, string category, string methodDirectoryPath, string subCategoryNs, VkMethodSignature fn, string methodTabs)
+        {
+            var implDirectoryPath = CreateSubDirectory(methodDirectoryPath, subCategoryNs);
+
+            string className = fn.Name + "Section";
+            string implFilePath = System.IO.Path.Combine(implDirectoryPath, className + ".cs");
+            using (var fs = new StreamWriter(implFilePath, false))
+            {
+                fs.WriteLine("using System;");
+
+                fs.WriteLine("namespace Magnesium." + libraryName + "." + category + "." + subCategoryNs);
+
+                fs.WriteLine("{");
+
+                fs.WriteLine(TAB_FIELD + "public class {0}", className);
+                fs.WriteLine(TAB_FIELD + "{");
+
+                fs.WriteLine(methodTabs + fn.GetImplementation());
+                fs.WriteLine(methodTabs + "{");
+                fs.WriteLine(methodTabs + TAB_FIELD + "// TODO: add implementation");
+                fs.WriteLine(methodTabs + "}");
+
+
+                fs.WriteLine(TAB_FIELD + "}");
+                fs.WriteLine("}");
+            }
+        }
+
+        private static void CreateValidateStubFiles(string libraryName, string category, string checkDirectoryPath, string subCategoryNs, VkMethodSignature fn, string methodTabs)
+        {
+            var validateDirectoryPath = CreateSubDirectory(checkDirectoryPath, subCategoryNs);
+
+            string checkFilePath = System.IO.Path.Combine(validateDirectoryPath, fn.Name + ".cs");
+            using (var fs = new StreamWriter(checkFilePath, false))
+            {
+                fs.WriteLine("using System;");
+
+                fs.WriteLine("namespace Magnesium." + libraryName + "." + category + "." + subCategoryNs);
+                fs.WriteLine("{");
+
+                fs.WriteLine(TAB_FIELD + "public class {0}", fn.Name);
+                fs.WriteLine(TAB_FIELD + "{");
+
+                var validateArgs = new StringBuilder();
+                validateArgs.Append(methodTabs);
+                validateArgs.Append("public static void Validate(");
+
+                bool needComma = false;
+                foreach (var param in fn.Parameters)
+                {
+                    if (param.UseOut)
+                    {
+                        continue;
+                    }
+
+                    if (needComma)
+                    {
+                        validateArgs.Append(", ");
+                    }
+                    else
+                    {
+                        needComma = true;
+                    }
+
+
+                    if (param.UseRef)
+                    {
+                        validateArgs.Append("ref ");
+                    }
+
+                    validateArgs.Append(param.BaseCsType);
+                    validateArgs.Append(" ");
+
+                    validateArgs.Append(param.Name);
+                }
+                validateArgs.Append(")");
+
+                fs.WriteLine(validateArgs.ToString());
+
+                fs.WriteLine(methodTabs + "{");
+                fs.WriteLine(methodTabs + TAB_FIELD + "// TODO: add validation");
+                fs.WriteLine(methodTabs + "}");
+
+
+                fs.WriteLine(TAB_FIELD + "}");
+                fs.WriteLine("}");
+            }
+            
+        }
+
+        private static void GenerateDecoratorStub(bool enableValidation, string argumentPrefix, StreamWriter fs, string methodTabs, string validationPrefix, VkMethodSignature fn)
+        {
+            fs.WriteLine(methodTabs + fn.GetImplementation());
+            fs.WriteLine(methodTabs + "{");
+            if (enableValidation)
+            {
+                GenerateValidateMethodCall(fs, validationPrefix, fn);
+            }
+
+            GenerateImplMethodCall(argumentPrefix, fs, methodTabs, fn);
+
+            fs.WriteLine(methodTabs + "}");
+            fs.WriteLine("");
+        }
+
+        private static void GenerateImplMethodCall(string argumentPrefix, StreamWriter fs, string methodTabs, VkMethodSignature fn)
+        {
+            var returnType = fn.ReturnType == "void"
+                ? ""
+                : "return ";
+
+
+            var validateArgs = new StringBuilder();
+            validateArgs.Append(methodTabs);
+            validateArgs.Append(TAB_FIELD);
+            validateArgs.Append(returnType);
+            validateArgs.Append("mImpl.");
+            validateArgs.Append(fn.Name);
+            validateArgs.Append("(");
+
+            if (!string.IsNullOrWhiteSpace(argumentPrefix))
+            {
+                validateArgs.Append(argumentPrefix);
+            }
+
+            bool needComma = false;
+            foreach (var param in fn.Parameters)
+            {
+                if (needComma)
+                {
+                    validateArgs.Append(", ");
+                }
+                else
+                {
+                    needComma = true;
+                }
+
+                if (param.UseOut)
+                {
+                    validateArgs.Append("out ");
+                }
+                else if (param.UseRef)
+                {
+                    validateArgs.Append("ref ");
+                }
+
+                validateArgs.Append(param.Name);
+            }
+            validateArgs.Append(");");
+
+            fs.WriteLine(validateArgs.ToString());
+
+        }
+
+        private static void GenerateValidateMethodCall(StreamWriter fs, string validationPrefix, VkMethodSignature fn)
+        {
+            var validateArgs = new StringBuilder();
+            validateArgs.Append(validationPrefix);
+            validateArgs.Append(fn.Name);
+            validateArgs.Append(".Validate(");
+            bool needComma = false;
+            foreach (var param in fn.Parameters)
+            {
+                if (param.UseOut)
+                {
+                    continue;
+                }
+
+                if (needComma)
+                {
+                    validateArgs.Append(", ");
+                }
+                else
+                {
+                    needComma = true;
+                }
+
+
+                if (param.UseRef)
+                {
+                    validateArgs.Append("ref ");
+                }
+
+                validateArgs.Append(param.Name);
+            }
+            validateArgs.Append(");");
+
+            fs.WriteLine(validateArgs.ToString());
+        }
+
+        private static string CreateSubDirectory(string methodDirectoryPath, string folderName)
+        {
+            // 2A. DELEGATE
+            var subDirectoryPath = System.IO.Path.Combine(methodDirectoryPath, folderName);
+            if (!Directory.Exists(subDirectoryPath))
+            {
+                Directory.CreateDirectory(subDirectoryPath);
+            }
+            return subDirectoryPath;
+        }
+
+        private static void FillOutHandleImplementation(VkContainerClass container, StreamWriter interfaceFile)
+        {
+            interfaceFile.WriteLine("using System;");
+            interfaceFile.WriteLine("namespace Magnesium.Vulkan");
+            interfaceFile.WriteLine("{");
+            string tabbedField = "\t";
+
+            interfaceFile.WriteLine(tabbedField + "public class {0} : {1}", container.Name, container.InterfaceName);
+            interfaceFile.WriteLine(tabbedField + "{");
+
+            var methodTabs = tabbedField + "\t";
+
+            if (container.Handle != null)
+            {
+                // create internal field
+                interfaceFile.WriteLine(string.Format("{0}internal {1} Handle = {2};", methodTabs, container.Handle.csType, container.Handle.csType == "IntPtr" ? "IntPtr.Zero" : "0L"));
+
+                // create constructor
+                interfaceFile.WriteLine(string.Format("{0}internal {1}({2} handle)", methodTabs, container.Name, container.Handle.csType));
+                interfaceFile.WriteLine(methodTabs + "{");
+                interfaceFile.WriteLine(methodTabs + "\tHandle = handle;");
+                interfaceFile.WriteLine(methodTabs + "}");
+                interfaceFile.WriteLine("");
+            }
+
+            foreach (var method in container.Methods)
+            {
+
+                interfaceFile.WriteLine(methodTabs + method.GetImplementation());
+                interfaceFile.WriteLine(methodTabs + "{");
+                interfaceFile.WriteLine(methodTabs + "}");
+                interfaceFile.WriteLine("");
+            }
+            interfaceFile.WriteLine(tabbedField + "}");
+            interfaceFile.WriteLine("}");
+        }
 
         static void GenerateVkStructureTypes(VkEntityInspector inspector)
         {
@@ -265,43 +608,6 @@ namespace CommandGen
                 }
             }
 		}
-
-        private static void FillOutHandleImplementation(VkContainerClass container, StreamWriter interfaceFile)
-        {
-            interfaceFile.WriteLine("using System;");
-            interfaceFile.WriteLine("namespace Magnesium.Vulkan");
-            interfaceFile.WriteLine("{");
-            string tabbedField = "\t";
-
-            interfaceFile.WriteLine(tabbedField + "public class {0} : {1}", container.Name, container.InterfaceName);
-            interfaceFile.WriteLine(tabbedField + "{");
-
-            var methodTabs = tabbedField + "\t";
-
-            if (container.Handle != null)
-            {
-                // create internal field
-                interfaceFile.WriteLine(string.Format("{0}internal {1} Handle = {2};", methodTabs, container.Handle.csType, container.Handle.csType == "IntPtr" ? "IntPtr.Zero" : "0L"));
-
-                // create constructor
-                interfaceFile.WriteLine(string.Format("{0}internal {1}({2} handle)", methodTabs, container.Name, container.Handle.csType));
-                interfaceFile.WriteLine(methodTabs + "{");
-                interfaceFile.WriteLine(methodTabs + "\tHandle = handle;");
-                interfaceFile.WriteLine(methodTabs + "}");
-                interfaceFile.WriteLine("");
-            }
-
-            foreach (var method in container.Methods)
-            {
-
-                interfaceFile.WriteLine(methodTabs + method.GetImplementation());
-                interfaceFile.WriteLine(methodTabs + "{");
-                interfaceFile.WriteLine(methodTabs + "}");
-                interfaceFile.WriteLine("");
-            }
-            interfaceFile.WriteLine(tabbedField + "}");
-            interfaceFile.WriteLine("}");
-        }
 
         static void GenerateInterfaces(VkInterfaceCollection implementation, IVkEntityInspector inspector)
         {

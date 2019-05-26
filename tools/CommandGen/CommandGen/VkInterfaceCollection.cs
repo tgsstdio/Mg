@@ -117,8 +117,12 @@ namespace CommandGen
 						{
 							p.BaseCsType = "string";
 						}
-						     
-						method.Parameters.Add(p);
+                        else if (p.BaseCsType == "Single")
+                        {
+                            p.BaseCsType = "float";
+                        }
+
+                        method.Parameters.Add(p);
 					}
 
 					container.Methods.Add(method);
