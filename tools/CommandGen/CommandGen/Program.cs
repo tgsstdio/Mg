@@ -59,8 +59,9 @@ namespace CommandGen
 				var implementation = new VkInterfaceCollection();
                 GenerateInterops(DLLNAME, lookup, ref noOfUnsafe, ref totalNativeInterfaces);
                 GenerateHandles(implementation, inspector);
-                const string destFolder = "UHandles";
-                GenerateNeuHandles(destFolder, "Vulkan", null, implementation, inspector);
+                const string libFolder = "Toolkit";
+                const string platformFolder = "Vulkan";
+                GenerateNeuHandles(libFolder, platformFolder, "Toolkit", "Vulkan", "Vk", null, implementation, inspector);
                 GenerateInterfaces(implementation, inspector);
                 GenerateVkEnums(inspector);
                 GenerateVkStructs(inspector);
@@ -78,18 +79,19 @@ namespace CommandGen
 
         const string TAB_FIELD = "\t";
 
-        static void GenerateNeuHandles(string destFolder, string libraryName, string argumentPrefix, VkInterfaceCollection implementation, IVkEntityInspector inspector)
+        static void GenerateNeuHandles(string toolkitFolder, string platformFolder, string toolkitNamespace, string platformNamespace, string platformPrefix, string argumentPrefix, VkInterfaceCollection implementation, IVkEntityInspector inspector)
         {
             const string VALIDATION_NAMESPACE = "Validation";
             const string FUNCTION_NAMESPACE = "Functions";
 
-            CreateFolderIfMissing(destFolder);
+            CreateFolderIfMissing(toolkitFolder);
+            CreateFolderIfMissing(platformFolder);
 
-            var methodDirectoryPath = System.IO.Path.Combine(destFolder, FUNCTION_NAMESPACE);
-            CreateFolderIfMissing(methodDirectoryPath);
+            var platformDirectoryPath = System.IO.Path.Combine(platformFolder, FUNCTION_NAMESPACE);
+            CreateFolderIfMissing(platformDirectoryPath);
 
-            var checkDirectoryPath = System.IO.Path.Combine(destFolder, VALIDATION_NAMESPACE);
-            CreateFolderIfMissing(checkDirectoryPath);
+            var toolkitDirectoryPath = System.IO.Path.Combine(toolkitFolder, VALIDATION_NAMESPACE);
+            CreateFolderIfMissing(toolkitDirectoryPath);
 
             var groups = new SortedSet<string>();
 
@@ -116,17 +118,17 @@ namespace CommandGen
                     {
                         string decoratorName = ((flag) ? "Safe" : "Fast") + subCategoryNs;
 
-                        string topLevelFile = System.IO.Path.Combine(destFolder, decoratorName + ".cs");
-                        GeneratorDecoratorFile(libraryName, argumentPrefix, group, subCategoryNs, flag, decoratorName, topLevelFile);
+                        string topLevelFile = System.IO.Path.Combine(toolkitFolder, decoratorName + ".cs");
+                        GeneratorDecoratorFile(toolkitNamespace, argumentPrefix, group, subCategoryNs, flag, decoratorName, topLevelFile);
                     }
 
                     foreach (var fn in group.Methods)
                     {
                         var methodTabs = TAB_FIELD + "\t";
 
-                        CreateValidateStubFiles(libraryName, VALIDATION_NAMESPACE, checkDirectoryPath, subCategoryNs, fn, methodTabs);
+                        CreateValidateStubFiles(toolkitNamespace, VALIDATION_NAMESPACE, toolkitDirectoryPath, subCategoryNs, fn, methodTabs);
 
-                        CreateImplSectionFiles(libraryName, FUNCTION_NAMESPACE, methodDirectoryPath, subCategoryNs, fn, methodTabs);
+                        CreateImplSectionFiles(platformNamespace, platformPrefix, FUNCTION_NAMESPACE, platformDirectoryPath, subCategoryNs, fn, methodTabs);
                     }
                 }
             }
@@ -177,11 +179,11 @@ namespace CommandGen
             }
         }
 
-        private static void CreateImplSectionFiles(string libraryName, string category, string methodDirectoryPath, string subCategoryNs, VkMethodSignature fn, string methodTabs)
+        private static void CreateImplSectionFiles(string libraryName, string libraryPrefix, string category, string methodDirectoryPath, string subCategoryNs, VkMethodSignature fn, string methodTabs)
         {
             var implDirectoryPath = CreateSubDirectory(methodDirectoryPath, subCategoryNs);
 
-            string className = fn.Name + "Section";
+            string className = libraryPrefix + fn.Name + "Section";
             string implFilePath = System.IO.Path.Combine(implDirectoryPath, className + ".cs");
             using (var fs = new StreamWriter(implFilePath, false))
             {
@@ -210,59 +212,73 @@ namespace CommandGen
             var validateDirectoryPath = CreateSubDirectory(checkDirectoryPath, subCategoryNs);
 
             string checkFilePath = System.IO.Path.Combine(validateDirectoryPath, fn.Name + ".cs");
-            using (var fs = new StreamWriter(checkFilePath, false))
+
+            var validateArgs = new StringBuilder();
+            validateArgs.Append(methodTabs);
+            validateArgs.Append("public static void Validate(");
+
+            var noOfParameters = 0;
+            bool needComma = false;
+            foreach (var param in fn.Parameters)
             {
-                fs.WriteLine("using System;");
-
-                fs.WriteLine("namespace Magnesium." + libraryName + "." + category + "." + subCategoryNs);
-                fs.WriteLine("{");
-
-                fs.WriteLine(TAB_FIELD + "public class {0}", fn.Name);
-                fs.WriteLine(TAB_FIELD + "{");
-
-                var validateArgs = new StringBuilder();
-                validateArgs.Append(methodTabs);
-                validateArgs.Append("public static void Validate(");
-
-                bool needComma = false;
-                foreach (var param in fn.Parameters)
+                if (param.UseOut)
                 {
-                    if (param.UseOut)
-                    {
-                        continue;
-                    }
-
-                    if (needComma)
-                    {
-                        validateArgs.Append(", ");
-                    }
-                    else
-                    {
-                        needComma = true;
-                    }
-
-
-                    if (param.UseRef)
-                    {
-                        validateArgs.Append("ref ");
-                    }
-
-                    validateArgs.Append(param.BaseCsType);
-                    validateArgs.Append(" ");
-
-                    validateArgs.Append(param.Name);
+                    continue;
                 }
-                validateArgs.Append(")");
 
-                fs.WriteLine(validateArgs.ToString());
+                if (needComma)
+                {
+                    validateArgs.Append(", ");
+                }
+                else
+                {
+                    needComma = true;
+                }
 
-                fs.WriteLine(methodTabs + "{");
-                fs.WriteLine(methodTabs + TAB_FIELD + "// TODO: add validation");
-                fs.WriteLine(methodTabs + "}");
+
+                if (param.UseRef)
+                {
+                    validateArgs.Append("ref ");
+                }
+
+                validateArgs.Append(param.BaseCsType);
+                validateArgs.Append(" ");
+
+                validateArgs.Append(param.Name);
+                noOfParameters++;
+            }
+
+            if (noOfParameters <= 0)
+            {
+                return;
+            }
+
+            validateArgs.Append(")");
+
+            var sr = new StringBuilder();
+
+            sr.AppendLine("using System;");
+
+            sr.AppendLine("namespace Magnesium." + libraryName + "." + category + "." + subCategoryNs);
+            sr.AppendLine("{");
+
+            sr.AppendFormat(TAB_FIELD + "public class {0}", fn.Name);
+            sr.AppendLine();
+            sr.AppendLine(TAB_FIELD + "{");
+
+            sr.AppendLine(validateArgs.ToString());
+
+            sr.AppendLine(methodTabs + "{");
+            sr.AppendLine(methodTabs + TAB_FIELD + "// TODO: add validation");
+            sr.AppendLine(methodTabs + "}");
 
 
-                fs.WriteLine(TAB_FIELD + "}");
-                fs.WriteLine("}");
+            sr.AppendLine(TAB_FIELD + "}");
+            sr.AppendLine("}");
+
+            using (var fs2 = new StreamWriter(checkFilePath, false))
+            {
+                fs2.Write(sr.ToString());
             }
             
         }
@@ -337,6 +353,8 @@ namespace CommandGen
             validateArgs.Append(validationPrefix);
             validateArgs.Append(fn.Name);
             validateArgs.Append(".Validate(");
+
+            var noOfParameters = 0;
             bool needComma = false;
             foreach (var param in fn.Parameters)
             {
@@ -361,10 +379,12 @@ namespace CommandGen
                 }
 
                 validateArgs.Append(param.Name);
+                ++noOfParameters;
             }
             validateArgs.Append(");");
 
-            fs.WriteLine(validateArgs.ToString());
+            if (noOfParameters > 0)
+                fs.WriteLine(validateArgs.ToString());
         }
 
         private static string CreateSubDirectory(string methodDirectoryPath, string folderName)
