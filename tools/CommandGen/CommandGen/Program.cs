@@ -59,14 +59,14 @@ namespace CommandGen
 				var implementation = new VkInterfaceCollection();
                 GenerateInterops(DLLNAME, lookup, ref noOfUnsafe, ref totalNativeInterfaces);
                 GenerateHandles(implementation, inspector);
-                const string libFolder = "Toolkit";
-                const string platformFolder = "Vulkan";
-                GenerateNeuHandles(libFolder, platformFolder, "Toolkit", "Vulkan", "Vk", null, implementation, inspector);
                 GenerateInterfaces(implementation, inspector);
                 GenerateVkEnums(inspector);
                 GenerateVkStructs(inspector);
                 GenerateVkClasses(inspector);
                 GenerateVkStructureTypes(inspector);
+                const string libFolder = "Toolkit";
+                const string platformFolder = "Vulkan";
+                GenerateNeuHandles(libFolder, platformFolder, "Toolkit", "Vulkan", "Vk", null, implementation, inspector);
 
                 Console.WriteLine("totalNativeInterfaces :" + totalNativeInterfaces);
 				Console.WriteLine("noOfUnsafe :" + noOfUnsafe);
@@ -223,6 +223,7 @@ namespace CommandGen
             {
                 if (param.UseOut)
                 {
+
                     continue;
                 }
 
@@ -285,8 +286,7 @@ namespace CommandGen
 
         private static void GenerateDecoratorStub(bool enableValidation, string argumentPrefix, StreamWriter fs, string methodTabs, string validationPrefix, VkMethodSignature fn)
         {
-            fs.WriteLine(methodTabs + fn.GetImplementation());
-            fs.WriteLine(methodTabs + "{");
+            fs.WriteLine(methodTabs + fn.GetImplementation() + "{");
             if (enableValidation)
             {
                 GenerateValidateMethodCall(fs, validationPrefix, fn);

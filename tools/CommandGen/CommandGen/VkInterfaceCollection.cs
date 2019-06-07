@@ -69,7 +69,7 @@ namespace CommandGen
 
 			var reservedNames = new StringCollection() { "event", "object" };
 
-			var implementation = new List<VkContainerClass>();
+    		var implementation = new List<VkContainerClass>();
 			foreach (var i in interfaces)
 			{
 				var container = new VkContainerClass { Name = i.Name.Replace("IMg", "Vk") };
@@ -95,6 +95,7 @@ namespace CommandGen
 							Name = param.Name,
 							BaseCsType = param.ParameterType.Name,
 							UseOut = param.IsOut,
+                            UseRef = param.ParameterType.IsByRef,
 						};
 
 						// Name
@@ -104,12 +105,7 @@ namespace CommandGen
 						}
 
 
-						// BaseCsType
-						if (p.UseOut)
-						{
-							p.BaseCsType = p.BaseCsType.Replace("&", "");
-						}
-						else if (p.BaseCsType == "Void")
+                        if (p.BaseCsType == "Void")
 						{
 							p.BaseCsType = "void";
 						}
@@ -120,6 +116,14 @@ namespace CommandGen
                         else if (p.BaseCsType == "Single")
                         {
                             p.BaseCsType = "float";
+                        }
+
+                        // BaseCsType
+                        if (p.BaseCsType.EndsWith("&"))
+                        {
+                            //Remove & suffix
+                            var len = p.BaseCsType.Length;
+                            p.BaseCsType = p.BaseCsType.Substring(0, len - 1);
                         }
 
                         method.Parameters.Add(p);
