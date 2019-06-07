@@ -286,7 +286,7 @@ namespace CommandGen
 
         private static void GenerateDecoratorStub(bool enableValidation, string argumentPrefix, StreamWriter fs, string methodTabs, string validationPrefix, VkMethodSignature fn)
         {
-            fs.WriteLine(methodTabs + fn.GetImplementation() + "{");
+            fs.WriteLine(methodTabs + fn.GetImplementation() + " {");
             if (enableValidation)
             {
                 GenerateValidateMethodCall(fs, validationPrefix, fn);
