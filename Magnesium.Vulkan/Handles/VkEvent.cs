@@ -18,7 +18,7 @@ namespace Magnesium.Vulkan
 			var bDevice = (VkDevice) device;
 			Debug.Assert(bDevice != null);		
 
-			return Interops.vkGetEventStatus(bDevice.Handle, this.Handle);
+			return Interops.vkGetEventStatus(bDevice.mHandle, this.Handle);
 		}
 
 		public MgResult SetEvent(IMgDevice device)
@@ -28,7 +28,7 @@ namespace Magnesium.Vulkan
 			var bDevice = (VkDevice) device;
 			Debug.Assert(bDevice != null);		
 
-			return Interops.vkSetEvent(bDevice.Handle, this.Handle);
+			return Interops.vkSetEvent(bDevice.mHandle, this.Handle);
 		}
 
 		public MgResult ResetEvent(IMgDevice device)
@@ -38,7 +38,7 @@ namespace Magnesium.Vulkan
 			var bDevice = (VkDevice) device;
 			Debug.Assert(bDevice != null);		
 
-			return (MgResult)Interops.vkResetEvent(bDevice.Handle, this.Handle);
+			return (MgResult)Interops.vkResetEvent(bDevice.mHandle, this.Handle);
 		}
 
 		private bool mIsDisposed = false;
@@ -53,7 +53,7 @@ namespace Magnesium.Vulkan
 			var bAllocator = (MgVkAllocationCallbacks) allocator;
 			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;	
 
-			Interops.vkDestroyEvent(bDevice.Handle, this.Handle, allocatorPtr);
+			Interops.vkDestroyEvent(bDevice.mHandle, this.Handle, allocatorPtr);
 
 			this.Handle = 0UL;
 			mIsDisposed = true;

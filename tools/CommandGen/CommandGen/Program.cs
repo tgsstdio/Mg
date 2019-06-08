@@ -66,7 +66,7 @@ namespace CommandGen
                 GenerateVkStructureTypes(inspector);
                 const string libFolder = "Toolkit";
                 const string platformFolder = "Vulkan";
-                GenerateNeuHandles(libFolder, platformFolder, "Toolkit", "Vulkan", "Vk", null, implementation, inspector);
+                GenerateNeuHandles(libFolder, platformFolder, "Toolkit", "Vulkan", "Vk", null, implementation, inspector, lookup);
 
                 Console.WriteLine("totalNativeInterfaces :" + totalNativeInterfaces);
 				Console.WriteLine("noOfUnsafe :" + noOfUnsafe);
@@ -79,7 +79,7 @@ namespace CommandGen
 
         const string TAB_FIELD = "\t";
 
-        static void GenerateNeuHandles(string toolkitFolder, string platformFolder, string toolkitNamespace, string platformNamespace, string platformPrefix, string argumentPrefix, VkInterfaceCollection implementation, IVkEntityInspector inspector)
+        static void GenerateNeuHandles(string toolkitFolder, string platformFolder, string toolkitNamespace, string platformNamespace, string platformPrefix, string argumentPrefix, VkInterfaceCollection implementation, IVkEntityInspector inspector, Dictionary<string, VkCommandInfo> lookup)
         {
             const string VALIDATION_NAMESPACE = "Validation";
             const string FUNCTION_NAMESPACE = "Functions";
@@ -128,7 +128,7 @@ namespace CommandGen
 
                         CreateValidateStubFiles(toolkitNamespace, VALIDATION_NAMESPACE, toolkitDirectoryPath, subCategoryNs, fn, methodTabs);
 
-                        CreateImplSectionFiles(platformNamespace, platformPrefix, FUNCTION_NAMESPACE, platformDirectoryPath, subCategoryNs, fn, methodTabs);
+                        CreateImplSectionFiles(platformNamespace, platformPrefix, FUNCTION_NAMESPACE, platformDirectoryPath, subCategoryNs, fn, methodTabs, lookup);
                     }
                 }
             }
@@ -179,7 +179,7 @@ namespace CommandGen
             }
         }
 
-        private static void CreateImplSectionFiles(string libraryName, string libraryPrefix, string category, string methodDirectoryPath, string subCategoryNs, VkMethodSignature fn, string methodTabs)
+        private static void CreateImplSectionFiles(string libraryName, string libraryPrefix, string category, string methodDirectoryPath, string subCategoryNs, VkMethodSignature fn, string methodTabs, Dictionary<string, VkCommandInfo> lookup)
         {
             var implDirectoryPath = CreateSubDirectory(methodDirectoryPath, subCategoryNs);
 
@@ -188,6 +188,8 @@ namespace CommandGen
             using (var fs = new StreamWriter(implFilePath, false))
             {
                 fs.WriteLine("using System;");
+                fs.WriteLine("using System.Runtime.InteropServices;");
+                fs.WriteLine();
 
                 fs.WriteLine("namespace Magnesium." + libraryName + "." + category + "." + subCategoryNs);
 
@@ -196,7 +198,15 @@ namespace CommandGen
                 fs.WriteLine(TAB_FIELD + "public class {0}", className);
                 fs.WriteLine(TAB_FIELD + "{");
 
-                fs.WriteLine(methodTabs + fn.GetImplementation());
+                if (lookup.TryGetValue("vk" + fn.Name, out VkCommandInfo found))
+                {
+                    fs.WriteLine(methodTabs + "[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]");
+                    fs.WriteLine(methodTabs + found.NativeFunction.GetImplementation());
+                    fs.WriteLine();
+                }
+
+
+                fs.WriteLine(methodTabs + GetImplementationMethod(fn, libraryPrefix, subCategoryNs));
                 fs.WriteLine(methodTabs + "{");
                 fs.WriteLine(methodTabs + TAB_FIELD + "// TODO: add implementation");
                 fs.WriteLine(methodTabs + "}");
@@ -205,6 +215,62 @@ namespace CommandGen
                 fs.WriteLine(TAB_FIELD + "}");
                 fs.WriteLine("}");
             }
+        }
+
+        public static string GetImplementationMethod(VkMethodSignature fn, string libraryPrefix, string subCategoryNs)
+        {
+            var builder = new StringBuilder();
+            builder.Append("public");
+
+            if (fn.IsStatic)
+                builder.Append(" static");
+
+            builder.Append(" ");
+            builder.Append(fn.ReturnType);
+            builder.Append(" ");
+
+            builder.Append(fn.Name);
+            builder.Append("(");
+            // foreach arg in arguments
+
+            var combos = new List<VkMethodParameter>();
+            combos.Add(
+                new VkMethodParameter {
+                    BaseCsType = libraryPrefix + subCategoryNs + "Info",
+                    Name = "info",
+                }
+            );
+            combos.AddRange(fn.Parameters);
+
+            bool needComma = false;
+
+            foreach (var param in combos)
+            {
+                if (needComma)
+                {
+                    builder.Append(", ");
+                }
+                else
+                {
+                    needComma = true;
+                }
+
+                if (param.UseOut)
+                {
+                    builder.Append("out ");
+                }
+                else if (param.UseRef)
+                {
+                    builder.Append("ref ");
+                }
+
+                builder.Append(param.BaseCsType);
+                builder.Append(" ");
+                builder.Append(param.Name);
+            }
+            builder.Append(")");
+
+            return builder.ToString();
         }
 
         private static void CreateValidateStubFiles(string libraryName, string category, string checkDirectoryPath, string subCategoryNs, VkMethodSignature fn, string methodTabs)

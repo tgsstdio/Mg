@@ -3,47 +3,48 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.IO;
 using System.Collections.Generic;
+using Magnesium.Vulkan.Functions.Device;
 
 namespace Magnesium.Vulkan
 {
+    public class VkDeviceInfo
+    {
+        internal IntPtr Handle = IntPtr.Zero;
+        public VkDeviceInfo(IntPtr handle)
+        {
+            Handle = handle;
+        }
+
+        internal bool IsDisposed = false;
+
+        /// <summary>
+        /// Allocator is optional
+        /// </summary>
+        /// <param name="allocator"></param>
+        /// <returns></returns>
+        public static IntPtr GetAllocatorHandle(IMgAllocationCallbacks allocator)
+        {
+            var bAllocator = (MgVkAllocationCallbacks)allocator;
+            return bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+        }
+    }
+
 	public class VkDevice : IMgDevice
 	{
-		internal IntPtr Handle = IntPtr.Zero;
+		readonly VkDeviceInfo mHandle;
 		internal VkDevice(IntPtr handle)
 		{
-			Handle = handle;
+			mHandle = new VkDeviceInfo(handle);
 		}
 
 		public PFN_vkVoidFunction GetDeviceProcAddr(string pName)
 		{
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
-
-			return Interops.vkGetDeviceProcAddr(Handle, pName);
+			return VkGetDeviceProcAddrSection.GetDeviceProcAddr(mHandle, pName);
 		}
 
-		/// <summary>
-		/// Allocator is optional
-		/// </summary>
-		/// <param name="allocator"></param>
-		/// <returns></returns>
-		static IntPtr GetAllocatorHandle(IMgAllocationCallbacks allocator)
-		{
-			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			return bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
-		}
-
-		private bool mIsDisposed = false;
 		public void DestroyDevice(IMgAllocationCallbacks allocator)
 		{
-			if (mIsDisposed)
-				return;
-
-			var allocatorPtr = GetAllocatorHandle(allocator);
-
-			Interops.vkDestroyDevice(Handle, allocatorPtr);
-
-			Handle = IntPtr.Zero;
-			mIsDisposed = true;
+            VkDestroyDeviceSection.DestroyDevice(mHandle, allocator);
 		}
 
 		public void GetDeviceQueue(uint queueFamilyIndex, uint queueIndex, out IMgQueue pQueue)
@@ -51,7 +52,7 @@ namespace Magnesium.Vulkan
 			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
 			var queueHandle = IntPtr.Zero;
-			Interops.vkGetDeviceQueue(Handle, queueFamilyIndex, queueIndex, ref queueHandle);
+			Interops.vkGetDeviceQueue(mHandle, queueFamilyIndex, queueIndex, ref queueHandle);
 			pQueue = new VkQueue(queueHandle);
 		}
 
@@ -59,7 +60,7 @@ namespace Magnesium.Vulkan
 		{
 			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
 
-			return Interops.vkDeviceWaitIdle(Handle);
+			return Interops.vkDeviceWaitIdle(mHandle);
 		}
 
 		public MgResult AllocateMemory(MgMemoryAllocateInfo pAllocateInfo, IMgAllocationCallbacks allocator, out IMgDeviceMemory pMemory)
@@ -84,7 +85,7 @@ namespace Magnesium.Vulkan
 				};
 
 				var memoryHandle = stackalloc ulong[1];
-				var result = Interops.vkAllocateMemory(Handle, allocateInfo, allocatorPtr, memoryHandle);
+				var result = Interops.vkAllocateMemory(mHandle, allocateInfo, allocatorPtr, memoryHandle);
 
 				pMemory = new VkDeviceMemory(memoryHandle[0]);
 				return result;
@@ -120,7 +121,7 @@ namespace Magnesium.Vulkan
 					};
 				}		
 
-				return Interops.vkFlushMappedMemoryRanges(Handle, rangeCount, ranges);
+				return Interops.vkFlushMappedMemoryRanges(mHandle, rangeCount, ranges);
 			}
 		}
 
@@ -153,7 +154,7 @@ namespace Magnesium.Vulkan
 					};
 				}
 
-				return Interops.vkInvalidateMappedMemoryRanges(Handle, rangeCount, ranges);
+				return Interops.vkInvalidateMappedMemoryRanges(mHandle, rangeCount, ranges);
 			}
 		}
 
@@ -162,7 +163,7 @@ namespace Magnesium.Vulkan
 			var bDeviceMemory = (VkDeviceMemory)memory;
 			Debug.Assert(bDeviceMemory != null);
 
-			Interops.vkGetDeviceMemoryCommitment(Handle, bDeviceMemory.Handle, ref pCommittedMemoryInBytes);
+			Interops.vkGetDeviceMemoryCommitment(mHandle, bDeviceMemory.Handle, ref pCommittedMemoryInBytes);
 		}
 
 		public void GetBufferMemoryRequirements(IMgBuffer buffer, out MgMemoryRequirements pMemoryRequirements)
@@ -175,7 +176,7 @@ namespace Magnesium.Vulkan
 			unsafe
 			{
 				var memReqs = stackalloc MgMemoryRequirements[1];
-				Interops.vkGetBufferMemoryRequirements(Handle, bBuffer.Handle, memReqs);
+				Interops.vkGetBufferMemoryRequirements(mHandle, bBuffer.Handle, memReqs);
 				pMemoryRequirements = memReqs[0];
 			}
 		}
@@ -190,7 +191,7 @@ namespace Magnesium.Vulkan
 			unsafe
 			{
 				var memReqs = stackalloc MgMemoryRequirements[1];
-				Interops.vkGetImageMemoryRequirements(Handle, bImage.Handle, memReqs);
+				Interops.vkGetImageMemoryRequirements(mHandle, bImage.Handle, memReqs);
 				memoryRequirements = memReqs[0];
 			}
 		}
@@ -207,7 +208,7 @@ namespace Magnesium.Vulkan
 			{
 				fixed (uint* count = &requirements[0])
 				{
-					Interops.vkGetImageSparseMemoryRequirements(Handle, bImage.Handle, count, null);
+					Interops.vkGetImageSparseMemoryRequirements(mHandle, bImage.Handle, count, null);
 				}
 			}
 
@@ -225,7 +226,7 @@ namespace Magnesium.Vulkan
 
 					fixed (uint* count = &requirements[0])
 					{
-						Interops.vkGetImageSparseMemoryRequirements(Handle, bImage.Handle, count, sparseReqs);
+						Interops.vkGetImageSparseMemoryRequirements(mHandle, bImage.Handle, count, sparseReqs);
 					}
 				}
 			}
@@ -252,7 +253,7 @@ namespace Magnesium.Vulkan
 			};
 
 			ulong pFence = 0UL;
-			var result = Interops.vkCreateFence(Handle, ref createInfo, allocatorPtr, ref pFence);
+			var result = Interops.vkCreateFence(mHandle, ref createInfo, allocatorPtr, ref pFence);
 			fence = new VkFence(pFence);
 			return result;
 		}
@@ -274,7 +275,7 @@ namespace Magnesium.Vulkan
 				fenceHandles[i] = bFence.Handle;
 			}
 
-			return Interops.vkResetFences(Handle, fenceCount, fenceHandles);
+			return Interops.vkResetFences(mHandle, fenceCount, fenceHandles);
 		}
 
 		public MgResult GetFenceStatus(IMgFence fence)
@@ -287,7 +288,7 @@ namespace Magnesium.Vulkan
 			var bFence = (VkFence) fence;
 			Debug.Assert(bFence != null);
 
-			return Interops.vkGetFenceStatus(Handle, bFence.Handle);
+			return Interops.vkGetFenceStatus(mHandle, bFence.Handle);
 		}
 
 		public MgResult WaitForFences(IMgFence[] pFences, bool waitAll, ulong timeout)
@@ -307,7 +308,7 @@ namespace Magnesium.Vulkan
 				fenceHandles[i] = bFence.Handle;
 			}
 
-			return Interops.vkWaitForFences(Handle, fenceCount, fenceHandles, VkBool32.ConvertTo(waitAll), timeout);
+			return Interops.vkWaitForFences(mHandle, fenceCount, fenceHandles, VkBool32.ConvertTo(waitAll), timeout);
 		}
 
 		public MgResult CreateSemaphore(MgSemaphoreCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgSemaphore pSemaphore)
@@ -327,7 +328,7 @@ namespace Magnesium.Vulkan
 			};
 
 			var internalHandle = 0UL;
-			var result = Interops.vkCreateSemaphore(Handle, ref createInfo, allocatorPtr, ref internalHandle);
+			var result = Interops.vkCreateSemaphore(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
 			pSemaphore = new VkSemaphore(internalHandle);
 
 			return result;
@@ -350,7 +351,7 @@ namespace Magnesium.Vulkan
 			};
 
 			var eventHandle = 0UL;
-			var result = Interops.vkCreateEvent(Handle, ref createInfo, allocatorPtr, ref eventHandle);
+			var result = Interops.vkCreateEvent(mHandle, ref createInfo, allocatorPtr, ref eventHandle);
 			@event = new VkEvent(eventHandle);
 
 			return result;
@@ -376,7 +377,7 @@ namespace Magnesium.Vulkan
 			};
 
 			var internalHandle = 0UL;
-			var result = Interops.vkCreateQueryPool(Handle, ref createInfo, allocatorPtr, ref internalHandle);
+			var result = Interops.vkCreateQueryPool(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
 			queryPool = new VkQueryPool(internalHandle);
 
 			return result;
@@ -392,7 +393,7 @@ namespace Magnesium.Vulkan
 			var bQueryPool = (VkQueryPool)queryPool;
 			Debug.Assert(bQueryPool != null);
 
-			return Interops.vkGetQueryPoolResults(Handle, bQueryPool.Handle, firstQuery, queryCount, dataSize, pData, stride, (VkQueryResultFlags)flags);
+			return Interops.vkGetQueryPoolResults(mHandle, bQueryPool.Handle, firstQuery, queryCount, dataSize, pData, stride, (VkQueryResultFlags)flags);
 		}
 
 		public MgResult CreateBuffer(MgBufferCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgBuffer pBuffer)
@@ -429,7 +430,7 @@ namespace Magnesium.Vulkan
 				};
 
 				var internalHandle = 0UL;
-				var result = Interops.vkCreateBuffer(Handle, ref createInfo, allocatorPtr, ref internalHandle);
+				var result = Interops.vkCreateBuffer(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
 				pBuffer = new VkBuffer(internalHandle);
 				return result;
 			}
@@ -465,7 +466,7 @@ namespace Magnesium.Vulkan
 				range = pCreateInfo.Range,
 			};
 			var internalHandle = 0UL;
-			var result = Interops.vkCreateBufferView(Handle, ref createInfo, allocatorPtr, ref internalHandle);
+			var result = Interops.vkCreateBufferView(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
 			pView = new VkBufferView(internalHandle);
 			return result;
 		}
@@ -510,7 +511,7 @@ namespace Magnesium.Vulkan
 					pQueueFamilyIndices = pQueueFamilyIndices,
 					initialLayout = pCreateInfo.InitialLayout,
 				};
-				var result = Interops.vkCreateImage(Handle, ref createInfo, allocatorPtr, ref internalHandle);
+				var result = Interops.vkCreateImage(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
 				pImage = new VkImage(internalHandle);
 				return result;
 			}
@@ -534,7 +535,7 @@ namespace Magnesium.Vulkan
 			Debug.Assert(bImage != null);
 
 			var layout = default(MgSubresourceLayout);
-			Interops.vkGetImageSubresourceLayout(this.Handle, bImage.Handle, pSubresource, layout);
+			Interops.vkGetImageSubresourceLayout(this.mHandle, bImage.Handle, pSubresource, layout);
 			pLayout = layout;
 		}
 
@@ -569,7 +570,7 @@ namespace Magnesium.Vulkan
 				subresourceRange = pCreateInfo.SubresourceRange,                
 			};
 			ulong internalHandle = 0;
-			var result = Interops.vkCreateImageView(Handle, ref createInfo, allocatorPtr, ref internalHandle);
+			var result = Interops.vkCreateImageView(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
 			pView = new VkImageView(internalHandle);
 			return result;
 		}
@@ -606,7 +607,7 @@ namespace Magnesium.Vulkan
 					pCode = dest
 				};
 				ulong internalHandle = 0;
-				var result = Interops.vkCreateShaderModule(Handle, ref createInfo, allocatorPtr, ref internalHandle);
+				var result = Interops.vkCreateShaderModule(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
 				pShaderModule = new VkShaderModule(internalHandle);
 				return result;
 			}
@@ -635,7 +636,7 @@ namespace Magnesium.Vulkan
 			};
 
 			ulong internalHandle = 0;
-			var result = Interops.vkCreatePipelineCache(Handle, ref createInfo, allocatorPtr, ref internalHandle);
+			var result = Interops.vkCreatePipelineCache(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
 			pPipelineCache = new VkPipelineCache(internalHandle);
 			return result;
 		}
@@ -651,7 +652,7 @@ namespace Magnesium.Vulkan
 			Debug.Assert(bPipelineCache != null);
 
 			UIntPtr dataSize = UIntPtr.Zero;
-			var first = Interops.vkGetPipelineCacheData(Handle, bPipelineCache.Handle, ref dataSize, IntPtr.Zero);
+			var first = Interops.vkGetPipelineCacheData(mHandle, bPipelineCache.Handle, ref dataSize, IntPtr.Zero);
 
 			if (first != MgResult.SUCCESS)
 			{
@@ -664,7 +665,7 @@ namespace Magnesium.Vulkan
 			try
 			{
 				var dest = pinnedArray.AddrOfPinnedObject();
-				return Interops.vkGetPipelineCacheData(Handle, bPipelineCache.Handle, ref dataSize, dest);
+				return Interops.vkGetPipelineCacheData(mHandle, bPipelineCache.Handle, ref dataSize, dest);
 			}
 			finally
 			{
@@ -692,7 +693,7 @@ namespace Magnesium.Vulkan
 				cacheHandles[i] = bCache.Handle;
 			}
 
-			return Interops.vkMergePipelineCaches(Handle, bDstCache.Handle, srcCacheCount, cacheHandles);
+			return Interops.vkMergePipelineCaches(mHandle, bDstCache.Handle, srcCacheCount, cacheHandles);
 		}
 
 		public MgResult CreateGraphicsPipelines(IMgPipelineCache pipelineCache, MgGraphicsPipelineCreateInfo[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgPipeline[] pPipelines)
@@ -804,7 +805,7 @@ namespace Magnesium.Vulkan
 				}
 
 				var handles = new ulong[createInfoCount];
-				var result = Interops.vkCreateGraphicsPipelines(Handle, bPipelineCachePtr, createInfoCount, createInfos, allocatorPtr, handles);
+				var result = Interops.vkCreateGraphicsPipelines(mHandle, bPipelineCachePtr, createInfoCount, createInfos, allocatorPtr, handles);
 
 				pPipelines = new VkPipeline[createInfoCount];
 				for (var i = 0; i < createInfoCount; ++i)
@@ -1247,7 +1248,7 @@ namespace Magnesium.Vulkan
 				}
 
 				var handles = new ulong[createInfoCount];
-				var result = Interops.vkCreateComputePipelines(Handle, bPipelineCachePtr, createInfoCount, createInfos, allocatorPtr, handles);
+				var result = Interops.vkCreateComputePipelines(mHandle, bPipelineCachePtr, createInfoCount, createInfos, allocatorPtr, handles);
 
 				pPipelines = new VkPipeline[createInfoCount];
 				for(var i = 0; i < createInfoCount; ++i)
@@ -1395,7 +1396,7 @@ namespace Magnesium.Vulkan
 					pPushConstantRanges = pPushConstantRanges,
 
 				};
-				var result = Interops.vkCreatePipelineLayout(Handle, ref createInfo, allocatorPtr, ref internalHandle);
+				var result = Interops.vkCreatePipelineLayout(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
 				pPipelineLayout = new VkPipelineLayout(internalHandle);
 				return result;
 			}
@@ -1445,7 +1446,7 @@ namespace Magnesium.Vulkan
 				unnormalizedCoordinates = VkBool32.ConvertTo(pCreateInfo.UnnormalizedCoordinates),
 			};
 
-			var result = Interops.vkCreateSampler(Handle, ref createInfo, allocatorPtr, ref internalHandle);
+			var result = Interops.vkCreateSampler(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
 			pSampler = new VkSampler(internalHandle);
 			return result;
 		}
@@ -1530,7 +1531,7 @@ namespace Magnesium.Vulkan
 					bindingCount = bindingCount,
 					pBindings = pBindings,
 				};
-				var result = Interops.vkCreateDescriptorSetLayout(Handle, ref createInfo, allocatorPtr, ref internalHandle);
+				var result = Interops.vkCreateDescriptorSetLayout(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
 				pSetLayout = new VkDescriptorSetLayout(internalHandle);
 				return result;
 			}
@@ -1585,7 +1586,7 @@ namespace Magnesium.Vulkan
 				};
 
 				var internalHandle = 0UL;
-				var result = Interops.vkCreateDescriptorPool(Handle, ref createInfo, allocatorPtr, ref internalHandle);
+				var result = Interops.vkCreateDescriptorPool(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
 				pDescriptorPool = new VkDescriptorPool(internalHandle);
 				return result;
 			}
@@ -1640,7 +1641,7 @@ namespace Magnesium.Vulkan
 				};
 
 				var internalHandles = new ulong[pAllocateInfo.DescriptorSetCount];
-				var result = Interops.vkAllocateDescriptorSets(this.Handle, ref allocateInfo, internalHandles);
+				var result = Interops.vkAllocateDescriptorSets(this.mHandle, ref allocateInfo, internalHandles);
 
 				pDescriptorSets = new VkDescriptorSet[pAllocateInfo.DescriptorSetCount];
 				for (var i = 0; i < pAllocateInfo.DescriptorSetCount; ++i)
@@ -1683,7 +1684,7 @@ namespace Magnesium.Vulkan
 				internalHandles[i] = bDescriptorSet.Handle;
 			}
 
-			return Interops.vkFreeDescriptorSets(Handle, bDescriptorPool.Handle, descriptorSetCount, internalHandles);
+			return Interops.vkFreeDescriptorSets(mHandle, bDescriptorPool.Handle, descriptorSetCount, internalHandles);
 		}
 
 		public void UpdateDescriptorSets(MgWriteDescriptorSet[] pDescriptorWrites, MgCopyDescriptorSet[] pDescriptorCopies)
@@ -1839,7 +1840,7 @@ namespace Magnesium.Vulkan
 						copies = bCopySets;
 					}
 
-					Interops.vkUpdateDescriptorSets(Handle, writeCount, writes, copyCount, copies);
+					Interops.vkUpdateDescriptorSets(mHandle, writeCount, writes, copyCount, copies);
 				}			
 			}
 			finally
@@ -1897,7 +1898,7 @@ namespace Magnesium.Vulkan
 				};
 
 				var internalHandle = 0UL;
-				var result = Interops.vkCreateFramebuffer(Handle, ref createInfo, allocatorPtr, ref internalHandle);
+				var result = Interops.vkCreateFramebuffer(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
 				pFramebuffer = new VkFramebuffer(internalHandle);
 				return result;
 			}
@@ -2099,7 +2100,7 @@ namespace Magnesium.Vulkan
 				};
 
 				ulong internalHandle = 0;
-				var result = Interops.vkCreateRenderPass(Handle, ref createInfo, allocatorPtr, ref internalHandle);
+				var result = Interops.vkCreateRenderPass(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
 				pRenderPass = new VkRenderPass(internalHandle);
 				return result;
 			}
@@ -2122,7 +2123,7 @@ namespace Magnesium.Vulkan
 			unsafe
 			{
 				var grans = stackalloc MgExtent2D[1];
-				Interops.vkGetRenderAreaGranularity(Handle, bRenderPass.Handle, grans);
+				Interops.vkGetRenderAreaGranularity(mHandle, bRenderPass.Handle, grans);
 				pGranularity = grans[0];
 			}
 		}
@@ -2144,7 +2145,7 @@ namespace Magnesium.Vulkan
 				flags = (VkCommandPoolCreateFlags)pCreateInfo.Flags,
 				queueFamilyIndex = pCreateInfo.QueueFamilyIndex,
 			};
-			var result = Interops.vkCreateCommandPool(Handle, ref createInfo, allocatorPtr, ref internalHandle);
+			var result = Interops.vkCreateCommandPool(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
 			pCommandPool = new VkCommandPool(internalHandle);
 			return result;
 		}
@@ -2182,7 +2183,7 @@ namespace Magnesium.Vulkan
 					level = (VkCommandBufferLevel)pAllocateInfo.Level,
 				};
 
-				var result = Interops.vkAllocateCommandBuffers(Handle, allocateInfo, pBufferHandle);
+				var result = Interops.vkAllocateCommandBuffers(mHandle, allocateInfo, pBufferHandle);
 
 				for (var i = 0; i < arraySize; ++i)
 				{
@@ -2210,7 +2211,7 @@ namespace Magnesium.Vulkan
 					bufferHandles[i] = bCommandBuffer.Handle;
 				}
 
-				Interops.vkFreeCommandBuffers(Handle, bCommandPool.Handle, commandBufferCount, bufferHandles);
+				Interops.vkFreeCommandBuffers(mHandle, bCommandPool.Handle, commandBufferCount, bufferHandles);
 			}
 		}
 
@@ -2243,7 +2244,7 @@ namespace Magnesium.Vulkan
 				}
 
 				var sharedSwapchains = new ulong[swapChainCount];
-				var result = Interops.vkCreateSharedSwapchainsKHR(Handle, swapChainCount, swapChainCreateInfos, allocatorPtr, sharedSwapchains);
+				var result = Interops.vkCreateSharedSwapchainsKHR(mHandle, swapChainCount, swapChainCreateInfos, allocatorPtr, sharedSwapchains);
 
 				pSwapchains = new VkSwapchainKHR[swapChainCount];
 				for (var i = 0; i < swapChainCount; ++i)
@@ -2277,7 +2278,7 @@ namespace Magnesium.Vulkan
 				var createInfo = GenerateSwapchainCreateInfoKHR(pCreateInfo, attachedItems);
 
 				ulong internalHandle = 0;
-				var result = Interops.vkCreateSwapchainKHR(Handle, ref createInfo, allocatorPtr, ref internalHandle);
+				var result = Interops.vkCreateSwapchainKHR(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
 				pSwapchain = new VkSwapchainKHR(internalHandle);
 				return result;
 			}
@@ -2342,7 +2343,7 @@ namespace Magnesium.Vulkan
 			Debug.Assert(bSwapchain != null);
 
 			uint noOfImages = 0;
-			var first = Interops.vkGetSwapchainImagesKHR(Handle, bSwapchain.Handle, ref noOfImages, null);
+			var first = Interops.vkGetSwapchainImagesKHR(mHandle, bSwapchain.Handle, ref noOfImages, null);
 
 			if (first != MgResult.SUCCESS)
 			{
@@ -2351,7 +2352,7 @@ namespace Magnesium.Vulkan
 			}
 
 			var images = new ulong[noOfImages];
-			var final = Interops.vkGetSwapchainImagesKHR(Handle, bSwapchain.Handle, ref noOfImages, images);
+			var final = Interops.vkGetSwapchainImagesKHR(mHandle, bSwapchain.Handle, ref noOfImages, images);
 
 			pSwapchainImages = new VkImage[noOfImages];
 			for (var i = 0; i < noOfImages; ++i)
@@ -2376,7 +2377,7 @@ namespace Magnesium.Vulkan
 			var bFencePtr = bFence != null ? bFence.Handle : 0UL;
 
 			uint imageIndex = 0;
-			var result = Interops.vkAcquireNextImageKHR(Handle, bSwapchain.Handle, timeout, bSemaphorePtr, bFencePtr, ref imageIndex);
+			var result = Interops.vkAcquireNextImageKHR(mHandle, bSwapchain.Handle, timeout, bSemaphorePtr, bFencePtr, ref imageIndex);
 			pImageIndex = imageIndex;
 			return result;
 		}
@@ -2437,7 +2438,7 @@ namespace Magnesium.Vulkan
                 };
 
                 ulong handle = 0UL;
-                var result = Interops.vkCreateObjectTableNVX(this.Handle, ref bCreateInfo, allocatorPtr, ref handle);
+                var result = Interops.vkCreateObjectTableNVX(this.mHandle, ref bCreateInfo, allocatorPtr, ref handle);
 
                 pObjectTable = new VkObjectTableNVX(handle);
                 return result;
@@ -2492,7 +2493,7 @@ namespace Magnesium.Vulkan
                 };
 
                 ulong bHandle = 0UL;
-                var result = Interops.vkCreateIndirectCommandsLayoutNVX(this.Handle, ref createInfo, allocatorPtr, ref bHandle);
+                var result = Interops.vkCreateIndirectCommandsLayoutNVX(this.mHandle, ref createInfo, allocatorPtr, ref bHandle);
 
                 pIndirectCommandsLayout = new VkIndirectCommandsLayoutNVX(bHandle);
                 return result;
@@ -2535,7 +2536,7 @@ namespace Magnesium.Vulkan
             };
 
             uint imageIndex = 0;
-            var result = Interops.vkAcquireNextImage2KHR(Handle, bAcquireInfo, ref imageIndex);
+            var result = Interops.vkAcquireNextImage2KHR(mHandle, bAcquireInfo, ref imageIndex);
             pImageIndex = imageIndex;
             return result;
         }
@@ -2582,7 +2583,7 @@ namespace Magnesium.Vulkan
                     };
                 }
 
-                return Interops.vkBindAccelerationStructureMemoryNV(this.Handle, bindInfoCount, bBindInfos);
+                return Interops.vkBindAccelerationStructureMemoryNV(this.mHandle, bindInfoCount, bBindInfos);
             }
             finally
             {
@@ -2623,7 +2624,7 @@ namespace Magnesium.Vulkan
                 };
             }
 
-            return Interops.vkBindBufferMemory2(this.Handle, bindInfoCount, bBindInfos);
+            return Interops.vkBindBufferMemory2(this.mHandle, bindInfoCount, bBindInfos);
         }
 
         public MgResult BindImageMemory2(MgBindImageMemoryInfo[] pBindInfos)
@@ -2656,7 +2657,7 @@ namespace Magnesium.Vulkan
                 }; 
             }
 
-            return Interops.vkBindImageMemory2(this.Handle, bindInfoCount, bBindInfos);
+            return Interops.vkBindImageMemory2(this.mHandle, bindInfoCount, bBindInfos);
         }
 
         public MgResult CreateAccelerationStructureNV(MgAccelerationStructureCreateInfoNV pCreateInfo, IMgAllocationCallbacks pAllocator, out IMgAccelerationStructureNV pAccelerationStructure)
@@ -2717,7 +2718,7 @@ namespace Magnesium.Vulkan
                 };
 
                 var pHandle = 0UL;
-                var result = Interops.vkCreateAccelerationStructureNV(this.Handle, ref bCreateInfo, allocatorPtr, ref pHandle);
+                var result = Interops.vkCreateAccelerationStructureNV(this.mHandle, ref bCreateInfo, allocatorPtr, ref pHandle);
                 pAccelerationStructure = new VkAccelerationStructureNV(pHandle);
                 return result;
             }
@@ -2826,7 +2827,7 @@ namespace Magnesium.Vulkan
                 };
 
                 var pHandle = 0UL;
-                var result = Interops.vkCreateDescriptorUpdateTemplate(this.Handle, bCreateInfo, allocatorPtr, ref pHandle);
+                var result = Interops.vkCreateDescriptorUpdateTemplate(this.mHandle, bCreateInfo, allocatorPtr, ref pHandle);
 
                 pDescriptorUpdateTemplate = new VkDescriptorUpdateTemplate(pHandle);
                 return result;
@@ -2934,7 +2935,7 @@ namespace Magnesium.Vulkan
 
                 var handles = new ulong[createInfoCount];
                 var result = Interops.vkCreateRayTracingPipelinesNV(
-                    this.Handle,
+                    this.mHandle,
                     bPipelineCachePtr,
                     createInfoCount,
                     bCreateInfos,
@@ -3176,7 +3177,7 @@ namespace Magnesium.Vulkan
                 };
 
                 ulong internalHandle = 0;
-                var result = Interops.vkCreateRenderPass2KHR(Handle, ref createInfo, allocatorPtr, ref internalHandle);
+                var result = Interops.vkCreateRenderPass2KHR(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
                 pRenderPass = new VkRenderPass(internalHandle);
                 return result;
             }

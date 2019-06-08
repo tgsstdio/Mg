@@ -79,7 +79,7 @@ namespace CommandGen
 					var method = new VkMethodSignature
 					{
 						Name = info.Name,
-						IsStatic = false,
+						IsStatic = true,
 						ReturnType = info.ReturnType.Name,
 					};
 

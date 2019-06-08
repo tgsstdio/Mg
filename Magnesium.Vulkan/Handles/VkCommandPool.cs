@@ -24,7 +24,7 @@ namespace Magnesium.Vulkan
 			var bAllocator = (MgVkAllocationCallbacks) allocator;
 			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
-			Interops.vkDestroyCommandPool(bDevice.Handle, this.Handle, allocatorPtr);
+			Interops.vkDestroyCommandPool(bDevice.mHandle, this.Handle, allocatorPtr);
 
 			this.Handle = 0UL;
 			mIsDisposed = true;
@@ -37,7 +37,7 @@ namespace Magnesium.Vulkan
 			var bDevice = (VkDevice) device;
 			Debug.Assert(bDevice != null);
 
-			return Interops.vkResetCommandPool(bDevice.Handle, this.Handle, (VkCommandPoolResetFlags)flags);
+			return Interops.vkResetCommandPool(bDevice.mHandle, this.Handle, (VkCommandPoolResetFlags)flags);
 		}
 
 	}

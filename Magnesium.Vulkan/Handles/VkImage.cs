@@ -22,7 +22,7 @@ namespace Magnesium.Vulkan
 			var bMemory = (VkDeviceMemory) memory;
 			Debug.Assert(bMemory != null);
 
-			return Interops.vkBindImageMemory(bDevice.Handle, this.Handle, bMemory.Handle, memoryOffset);
+			return Interops.vkBindImageMemory(bDevice.mHandle, this.Handle, bMemory.Handle, memoryOffset);
 		}
 
 		private bool mIsDisposed = false;
@@ -37,7 +37,7 @@ namespace Magnesium.Vulkan
 			var bAllocator = (MgVkAllocationCallbacks) allocator;
 			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;	
 
-			Interops.vkDestroyImage(bDevice.Handle, this.Handle, allocatorPtr);
+			Interops.vkDestroyImage(bDevice.mHandle, this.Handle, allocatorPtr);
 
 			this.Handle = 0UL;
 			mIsDisposed = true;

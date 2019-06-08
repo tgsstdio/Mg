@@ -1,11 +1,19 @@
 using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+
 namespace Magnesium.Vulkan.Functions.Device
 {
 	public class VkGetDeviceProcAddrSection
 	{
-		public PFN_vkVoidFunction GetDeviceProcAddr(string pName)
+        [DllImport(Interops.VULKAN_LIB, CallingConvention = CallingConvention.Winapi)]
+        internal extern static PFN_vkVoidFunction vkGetDeviceProcAddr(IntPtr device, [MarshalAs(UnmanagedType.LPStr)] string pName);
+
+        public static PFN_vkVoidFunction GetDeviceProcAddr(VkDeviceInfo info, string pName)
 		{
-			// TODO: add implementation
-		}
+            Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
+
+            return vkGetDeviceProcAddr(info.Handle, pName);
+        }
 	}
 }
