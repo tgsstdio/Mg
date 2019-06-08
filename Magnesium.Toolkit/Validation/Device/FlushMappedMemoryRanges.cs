@@ -5,7 +5,8 @@ namespace Magnesium.Toolkit.Validation.Device
 	{
 		public static void Validate(MgMappedMemoryRange[] pMemoryRanges)
 		{
-			// TODO: add validation
-		}
+            if (pMemoryRanges == null)
+                throw new ArgumentNullException(nameof(pMemoryRanges));
+        }
 	}
 }

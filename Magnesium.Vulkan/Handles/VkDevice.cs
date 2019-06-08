@@ -9,159 +9,60 @@ namespace Magnesium.Vulkan
 {
     public class VkDevice : IMgDevice
 	{
-		readonly VkDeviceInfo mHandle;
+		readonly VkDeviceInfo info;
 		internal VkDevice(IntPtr handle)
 		{
-			mHandle = new VkDeviceInfo(handle);
+			info = new VkDeviceInfo(handle);
 		}
 
 		public PFN_vkVoidFunction GetDeviceProcAddr(string pName)
 		{
-			return VkGetDeviceProcAddrSection.GetDeviceProcAddr(mHandle, pName);
+			return VkGetDeviceProcAddrSection.GetDeviceProcAddr(info, pName);
 		}
 
 		public void DestroyDevice(IMgAllocationCallbacks allocator)
 		{
-            VkDestroyDeviceSection.DestroyDevice(mHandle, allocator);
+            VkDestroyDeviceSection.DestroyDevice(info, allocator);
 		}
 
 		public void GetDeviceQueue(uint queueFamilyIndex, uint queueIndex, out IMgQueue pQueue)
 		{
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
-
-			var queueHandle = IntPtr.Zero;
-			Interops.vkGetDeviceQueue(mHandle, queueFamilyIndex, queueIndex, ref queueHandle);
-			pQueue = new VkQueue(queueHandle);
+            VkGetDeviceQueueSection.GetDeviceQueue(info, queueFamilyIndex, queueIndex, out pQueue);
 		}
 
 		public MgResult DeviceWaitIdle()
 		{
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
-
-			return Interops.vkDeviceWaitIdle(mHandle);
+			return VkDeviceWaitIdleSection.DeviceWaitIdle(info);
 		}
 
 		public MgResult AllocateMemory(MgMemoryAllocateInfo pAllocateInfo, IMgAllocationCallbacks allocator, out IMgDeviceMemory pMemory)
 		{
-			if (pAllocateInfo == null)
-				throw new ArgumentNullException(nameof(pAllocateInfo));
-
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
-
-			var allocatorPtr = GetAllocatorHandle(allocator);
-
-			unsafe
-			{
-				var allocateInfo = stackalloc VkMemoryAllocateInfo[1];
-
-				allocateInfo[0] = new VkMemoryAllocateInfo
-				{
-					sType = VkStructureType.StructureTypeMemoryAllocateInfo,
-					pNext = IntPtr.Zero,
-					allocationSize = pAllocateInfo.AllocationSize,
-					memoryTypeIndex = pAllocateInfo.MemoryTypeIndex,
-				};
-
-				var memoryHandle = stackalloc ulong[1];
-				var result = Interops.vkAllocateMemory(mHandle, allocateInfo, allocatorPtr, memoryHandle);
-
-				pMemory = new VkDeviceMemory(memoryHandle[0]);
-				return result;
-			}
-		}
+            return VkAllocateMemorySection.AllocateMemory(info, pAllocateInfo, allocator, out pMemory);
+        }
 
 		public MgResult FlushMappedMemoryRanges(MgMappedMemoryRange[] pMemoryRanges)
 		{
-			if (pMemoryRanges == null)
-				throw new ArgumentNullException(nameof(pMemoryRanges));
-
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
-
-			unsafe
-			{
-				var rangeCount = (uint)pMemoryRanges.Length;
-
-				var ranges = stackalloc VkMappedMemoryRange[pMemoryRanges.Length];
-
-				for (var i = 0; i < rangeCount; ++i)
-				{
-					var current = pMemoryRanges[i];
-					var bDeviceMemory = (VkDeviceMemory) current.Memory;
-					Debug.Assert(bDeviceMemory != null);
-
-					ranges[i] = new VkMappedMemoryRange
-					{
-						sType = VkStructureType.StructureTypeMappedMemoryRange,
-						pNext = IntPtr.Zero,
-						memory = bDeviceMemory.Handle,
-						offset = current.Offset,
-						size = current.Size
-					};
-				}		
-
-				return Interops.vkFlushMappedMemoryRanges(mHandle, rangeCount, ranges);
-			}
+            return VkFlushMappedMemoryRangesSection.FlushMappedMemoryRanges(info, pMemoryRanges);
 		}
 
 		public MgResult InvalidateMappedMemoryRanges(MgMappedMemoryRange[] pMemoryRanges)
 		{
-			if (pMemoryRanges == null)
-				throw new ArgumentNullException(nameof(pMemoryRanges));
-
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
-
-			unsafe
-			{
-				var rangeCount = (uint)pMemoryRanges.Length;
-
-				var ranges = stackalloc VkMappedMemoryRange[pMemoryRanges.Length];
-
-				for (var i = 0; i < rangeCount; ++i)
-				{
-					var current = pMemoryRanges[i];
-					var bDeviceMemory = (VkDeviceMemory)current.Memory;
-					Debug.Assert(bDeviceMemory != null);
-
-					ranges[i] = new VkMappedMemoryRange
-					{
-						sType = VkStructureType.StructureTypeMappedMemoryRange,
-						pNext = IntPtr.Zero,
-						memory = bDeviceMemory.Handle,
-						offset = current.Offset,
-						size = current.Size
-					};
-				}
-
-				return Interops.vkInvalidateMappedMemoryRanges(mHandle, rangeCount, ranges);
-			}
-		}
+            return VkInvalidateMappedMemoryRangesSection.InvalidateMappedMemoryRanges(info, pMemoryRanges);
+        }
 
 		public void GetDeviceMemoryCommitment(IMgDeviceMemory memory, ref ulong pCommittedMemoryInBytes)
 		{
-			var bDeviceMemory = (VkDeviceMemory)memory;
-			Debug.Assert(bDeviceMemory != null);
-
-			Interops.vkGetDeviceMemoryCommitment(mHandle, bDeviceMemory.Handle, ref pCommittedMemoryInBytes);
-		}
+            VkGetDeviceMemoryCommitmentSection.GetDeviceMemoryCommitment(info, memory, ref pCommittedMemoryInBytes);
+        }
 
 		public void GetBufferMemoryRequirements(IMgBuffer buffer, out MgMemoryRequirements pMemoryRequirements)
 		{
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
-
-			var bBuffer = (VkBuffer)buffer;
-			Debug.Assert(bBuffer != null);
-
-			unsafe
-			{
-				var memReqs = stackalloc MgMemoryRequirements[1];
-				Interops.vkGetBufferMemoryRequirements(mHandle, bBuffer.Handle, memReqs);
-				pMemoryRequirements = memReqs[0];
-			}
+             VkGetBufferMemoryRequirementsSection.GetBufferMemoryRequirements(info, buffer, out pMemoryRequirements);
 		}
 
 		public void GetImageMemoryRequirements(IMgImage image, out MgMemoryRequirements memoryRequirements)
 		{
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var bImage = (VkImage)image;
 			Debug.Assert(bImage != null);
@@ -169,14 +70,14 @@ namespace Magnesium.Vulkan
 			unsafe
 			{
 				var memReqs = stackalloc MgMemoryRequirements[1];
-				Interops.vkGetImageMemoryRequirements(mHandle, bImage.Handle, memReqs);
+				Interops.vkGetImageMemoryRequirements(info, bImage.Handle, memReqs);
 				memoryRequirements = memReqs[0];
 			}
 		}
 
 		public void GetImageSparseMemoryRequirements(IMgImage image, out MgSparseImageMemoryRequirements[] sparseMemoryRequirements)
 		{
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var bImage = (VkImage)image;
 			Debug.Assert(bImage != null);
@@ -186,7 +87,7 @@ namespace Magnesium.Vulkan
 			{
 				fixed (uint* count = &requirements[0])
 				{
-					Interops.vkGetImageSparseMemoryRequirements(mHandle, bImage.Handle, count, null);
+					Interops.vkGetImageSparseMemoryRequirements(info, bImage.Handle, count, null);
 				}
 			}
 
@@ -204,7 +105,7 @@ namespace Magnesium.Vulkan
 
 					fixed (uint* count = &requirements[0])
 					{
-						Interops.vkGetImageSparseMemoryRequirements(mHandle, bImage.Handle, count, sparseReqs);
+						Interops.vkGetImageSparseMemoryRequirements(info, bImage.Handle, count, sparseReqs);
 					}
 				}
 			}
@@ -219,7 +120,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -231,7 +132,7 @@ namespace Magnesium.Vulkan
 			};
 
 			ulong pFence = 0UL;
-			var result = Interops.vkCreateFence(mHandle, ref createInfo, allocatorPtr, ref pFence);
+			var result = Interops.vkCreateFence(info, ref createInfo, allocatorPtr, ref pFence);
 			fence = new VkFence(pFence);
 			return result;
 		}
@@ -241,7 +142,7 @@ namespace Magnesium.Vulkan
 			if (pFences == null)
 				throw new ArgumentNullException(nameof(pFences));
 
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");		
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");		
 
 			var fenceCount = (uint)pFences.Length;
 
@@ -253,7 +154,7 @@ namespace Magnesium.Vulkan
 				fenceHandles[i] = bFence.Handle;
 			}
 
-			return Interops.vkResetFences(mHandle, fenceCount, fenceHandles);
+			return Interops.vkResetFences(info, fenceCount, fenceHandles);
 		}
 
 		public MgResult GetFenceStatus(IMgFence fence)
@@ -261,12 +162,12 @@ namespace Magnesium.Vulkan
 			if (fence == null)
 				throw new ArgumentNullException(nameof(fence));
 
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var bFence = (VkFence) fence;
 			Debug.Assert(bFence != null);
 
-			return Interops.vkGetFenceStatus(mHandle, bFence.Handle);
+			return Interops.vkGetFenceStatus(info, bFence.Handle);
 		}
 
 		public MgResult WaitForFences(IMgFence[] pFences, bool waitAll, ulong timeout)
@@ -274,7 +175,7 @@ namespace Magnesium.Vulkan
 			if (pFences == null)
 				throw new ArgumentNullException(nameof(pFences));
 
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var fenceCount = (uint)pFences.Length;
 
@@ -286,7 +187,7 @@ namespace Magnesium.Vulkan
 				fenceHandles[i] = bFence.Handle;
 			}
 
-			return Interops.vkWaitForFences(mHandle, fenceCount, fenceHandles, VkBool32.ConvertTo(waitAll), timeout);
+			return Interops.vkWaitForFences(info, fenceCount, fenceHandles, VkBool32.ConvertTo(waitAll), timeout);
 		}
 
 		public MgResult CreateSemaphore(MgSemaphoreCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgSemaphore pSemaphore)
@@ -294,7 +195,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -306,7 +207,7 @@ namespace Magnesium.Vulkan
 			};
 
 			var internalHandle = 0UL;
-			var result = Interops.vkCreateSemaphore(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
+			var result = Interops.vkCreateSemaphore(info, ref createInfo, allocatorPtr, ref internalHandle);
 			pSemaphore = new VkSemaphore(internalHandle);
 
 			return result;
@@ -317,7 +218,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -329,7 +230,7 @@ namespace Magnesium.Vulkan
 			};
 
 			var eventHandle = 0UL;
-			var result = Interops.vkCreateEvent(mHandle, ref createInfo, allocatorPtr, ref eventHandle);
+			var result = Interops.vkCreateEvent(info, ref createInfo, allocatorPtr, ref eventHandle);
 			@event = new VkEvent(eventHandle);
 
 			return result;
@@ -340,7 +241,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -355,7 +256,7 @@ namespace Magnesium.Vulkan
 			};
 
 			var internalHandle = 0UL;
-			var result = Interops.vkCreateQueryPool(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
+			var result = Interops.vkCreateQueryPool(info, ref createInfo, allocatorPtr, ref internalHandle);
 			queryPool = new VkQueryPool(internalHandle);
 
 			return result;
@@ -366,12 +267,12 @@ namespace Magnesium.Vulkan
 			if (queryPool == null)
 				throw new ArgumentNullException(nameof(queryPool));
 
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var bQueryPool = (VkQueryPool)queryPool;
 			Debug.Assert(bQueryPool != null);
 
-			return Interops.vkGetQueryPoolResults(mHandle, bQueryPool.Handle, firstQuery, queryCount, dataSize, pData, stride, (VkQueryResultFlags)flags);
+			return Interops.vkGetQueryPoolResults(info, bQueryPool.Handle, firstQuery, queryCount, dataSize, pData, stride, (VkQueryResultFlags)flags);
 		}
 
 		public MgResult CreateBuffer(MgBufferCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgBuffer pBuffer)
@@ -379,7 +280,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -408,7 +309,7 @@ namespace Magnesium.Vulkan
 				};
 
 				var internalHandle = 0UL;
-				var result = Interops.vkCreateBuffer(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
+				var result = Interops.vkCreateBuffer(info, ref createInfo, allocatorPtr, ref internalHandle);
 				pBuffer = new VkBuffer(internalHandle);
 				return result;
 			}
@@ -426,7 +327,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -444,7 +345,7 @@ namespace Magnesium.Vulkan
 				range = pCreateInfo.Range,
 			};
 			var internalHandle = 0UL;
-			var result = Interops.vkCreateBufferView(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
+			var result = Interops.vkCreateBufferView(info, ref createInfo, allocatorPtr, ref internalHandle);
 			pView = new VkBufferView(internalHandle);
 			return result;
 		}
@@ -454,7 +355,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -489,7 +390,7 @@ namespace Magnesium.Vulkan
 					pQueueFamilyIndices = pQueueFamilyIndices,
 					initialLayout = pCreateInfo.InitialLayout,
 				};
-				var result = Interops.vkCreateImage(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
+				var result = Interops.vkCreateImage(info, ref createInfo, allocatorPtr, ref internalHandle);
 				pImage = new VkImage(internalHandle);
 				return result;
 			}
@@ -507,13 +408,13 @@ namespace Magnesium.Vulkan
 			if (image == null)
 				throw new ArgumentNullException(nameof(image));
 
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var bImage = (VkImage)image;
 			Debug.Assert(bImage != null);
 
 			var layout = default(MgSubresourceLayout);
-			Interops.vkGetImageSubresourceLayout(this.mHandle, bImage.Handle, pSubresource, layout);
+			Interops.vkGetImageSubresourceLayout(this.info, bImage.Handle, pSubresource, layout);
 			pLayout = layout;
 		}
 
@@ -522,7 +423,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -548,7 +449,7 @@ namespace Magnesium.Vulkan
 				subresourceRange = pCreateInfo.SubresourceRange,                
 			};
 			ulong internalHandle = 0;
-			var result = Interops.vkCreateImageView(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
+			var result = Interops.vkCreateImageView(info, ref createInfo, allocatorPtr, ref internalHandle);
 			pView = new VkImageView(internalHandle);
 			return result;
 		}
@@ -558,7 +459,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -585,7 +486,7 @@ namespace Magnesium.Vulkan
 					pCode = dest
 				};
 				ulong internalHandle = 0;
-				var result = Interops.vkCreateShaderModule(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
+				var result = Interops.vkCreateShaderModule(info, ref createInfo, allocatorPtr, ref internalHandle);
 				pShaderModule = new VkShaderModule(internalHandle);
 				return result;
 			}
@@ -600,7 +501,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -614,7 +515,7 @@ namespace Magnesium.Vulkan
 			};
 
 			ulong internalHandle = 0;
-			var result = Interops.vkCreatePipelineCache(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
+			var result = Interops.vkCreatePipelineCache(info, ref createInfo, allocatorPtr, ref internalHandle);
 			pPipelineCache = new VkPipelineCache(internalHandle);
 			return result;
 		}
@@ -624,13 +525,13 @@ namespace Magnesium.Vulkan
 			if (pipelineCache == null)
 				throw new ArgumentNullException(nameof(pipelineCache));
 
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var bPipelineCache = (VkPipelineCache)pipelineCache;
 			Debug.Assert(bPipelineCache != null);
 
 			UIntPtr dataSize = UIntPtr.Zero;
-			var first = Interops.vkGetPipelineCacheData(mHandle, bPipelineCache.Handle, ref dataSize, IntPtr.Zero);
+			var first = Interops.vkGetPipelineCacheData(info, bPipelineCache.Handle, ref dataSize, IntPtr.Zero);
 
 			if (first != MgResult.SUCCESS)
 			{
@@ -643,7 +544,7 @@ namespace Magnesium.Vulkan
 			try
 			{
 				var dest = pinnedArray.AddrOfPinnedObject();
-				return Interops.vkGetPipelineCacheData(mHandle, bPipelineCache.Handle, ref dataSize, dest);
+				return Interops.vkGetPipelineCacheData(info, bPipelineCache.Handle, ref dataSize, dest);
 			}
 			finally
 			{
@@ -656,7 +557,7 @@ namespace Magnesium.Vulkan
 			if (pSrcCaches == null)
 				throw new ArgumentNullException(nameof(pSrcCaches));			
 
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var bDstCache = (VkPipelineCache)dstCache;
 			Debug.Assert(bDstCache != null);
@@ -671,7 +572,7 @@ namespace Magnesium.Vulkan
 				cacheHandles[i] = bCache.Handle;
 			}
 
-			return Interops.vkMergePipelineCaches(mHandle, bDstCache.Handle, srcCacheCount, cacheHandles);
+			return Interops.vkMergePipelineCaches(info, bDstCache.Handle, srcCacheCount, cacheHandles);
 		}
 
 		public MgResult CreateGraphicsPipelines(IMgPipelineCache pipelineCache, MgGraphicsPipelineCreateInfo[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgPipeline[] pPipelines)
@@ -684,7 +585,7 @@ namespace Magnesium.Vulkan
 				throw new ArgumentOutOfRangeException(nameof(pCreateInfos) + " == 0");
 			}
 
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -783,7 +684,7 @@ namespace Magnesium.Vulkan
 				}
 
 				var handles = new ulong[createInfoCount];
-				var result = Interops.vkCreateGraphicsPipelines(mHandle, bPipelineCachePtr, createInfoCount, createInfos, allocatorPtr, handles);
+				var result = Interops.vkCreateGraphicsPipelines(info, bPipelineCachePtr, createInfoCount, createInfos, allocatorPtr, handles);
 
 				pPipelines = new VkPipeline[createInfoCount];
 				for (var i = 0; i < createInfoCount; ++i)
@@ -1188,7 +1089,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfos == null)
 				throw new ArgumentNullException(nameof(pCreateInfos));
 
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -1226,7 +1127,7 @@ namespace Magnesium.Vulkan
 				}
 
 				var handles = new ulong[createInfoCount];
-				var result = Interops.vkCreateComputePipelines(mHandle, bPipelineCachePtr, createInfoCount, createInfos, allocatorPtr, handles);
+				var result = Interops.vkCreateComputePipelines(info, bPipelineCachePtr, createInfoCount, createInfos, allocatorPtr, handles);
 
 				pPipelines = new VkPipeline[createInfoCount];
 				for(var i = 0; i < createInfoCount; ++i)
@@ -1312,7 +1213,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -1374,7 +1275,7 @@ namespace Magnesium.Vulkan
 					pPushConstantRanges = pPushConstantRanges,
 
 				};
-				var result = Interops.vkCreatePipelineLayout(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
+				var result = Interops.vkCreatePipelineLayout(info, ref createInfo, allocatorPtr, ref internalHandle);
 				pPipelineLayout = new VkPipelineLayout(internalHandle);
 				return result;
 			}
@@ -1397,7 +1298,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -1424,7 +1325,7 @@ namespace Magnesium.Vulkan
 				unnormalizedCoordinates = VkBool32.ConvertTo(pCreateInfo.UnnormalizedCoordinates),
 			};
 
-			var result = Interops.vkCreateSampler(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
+			var result = Interops.vkCreateSampler(info, ref createInfo, allocatorPtr, ref internalHandle);
 			pSampler = new VkSampler(internalHandle);
 			return result;
 		}
@@ -1434,7 +1335,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -1509,7 +1410,7 @@ namespace Magnesium.Vulkan
 					bindingCount = bindingCount,
 					pBindings = pBindings,
 				};
-				var result = Interops.vkCreateDescriptorSetLayout(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
+				var result = Interops.vkCreateDescriptorSetLayout(info, ref createInfo, allocatorPtr, ref internalHandle);
 				pSetLayout = new VkDescriptorSetLayout(internalHandle);
 				return result;
 			}
@@ -1527,7 +1428,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -1564,7 +1465,7 @@ namespace Magnesium.Vulkan
 				};
 
 				var internalHandle = 0UL;
-				var result = Interops.vkCreateDescriptorPool(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
+				var result = Interops.vkCreateDescriptorPool(info, ref createInfo, allocatorPtr, ref internalHandle);
 				pDescriptorPool = new VkDescriptorPool(internalHandle);
 				return result;
 			}
@@ -1589,7 +1490,7 @@ namespace Magnesium.Vulkan
 			if (descriptorSetCount != pAllocateInfo.SetLayouts.Length)
 				throw new ArgumentOutOfRangeException(nameof(pAllocateInfo.DescriptorSetCount) + " must equal to " + nameof(pAllocateInfo.SetLayouts.Length));
 
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var bDescriptorPool = (VkDescriptorPool)pAllocateInfo.DescriptorPool;
 			Debug.Assert(bDescriptorPool != null);
@@ -1619,7 +1520,7 @@ namespace Magnesium.Vulkan
 				};
 
 				var internalHandles = new ulong[pAllocateInfo.DescriptorSetCount];
-				var result = Interops.vkAllocateDescriptorSets(this.mHandle, ref allocateInfo, internalHandles);
+				var result = Interops.vkAllocateDescriptorSets(this.info, ref allocateInfo, internalHandles);
 
 				pDescriptorSets = new VkDescriptorSet[pAllocateInfo.DescriptorSetCount];
 				for (var i = 0; i < pAllocateInfo.DescriptorSetCount; ++i)
@@ -1649,7 +1550,7 @@ namespace Magnesium.Vulkan
 			if (descriptorSetCount == 0)
 				throw new ArgumentOutOfRangeException(nameof(pDescriptorSets.Length) + " == 0");
 
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var bDescriptorPool = (VkDescriptorPool)descriptorPool;
 			Debug.Assert(bDescriptorPool != null); // MAYBE DUPLICATE TESTING 
@@ -1662,12 +1563,12 @@ namespace Magnesium.Vulkan
 				internalHandles[i] = bDescriptorSet.Handle;
 			}
 
-			return Interops.vkFreeDescriptorSets(mHandle, bDescriptorPool.Handle, descriptorSetCount, internalHandles);
+			return Interops.vkFreeDescriptorSets(info, bDescriptorPool.Handle, descriptorSetCount, internalHandles);
 		}
 
 		public void UpdateDescriptorSets(MgWriteDescriptorSet[] pDescriptorWrites, MgCopyDescriptorSet[] pDescriptorCopies)
 		{
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var writeCount = 0U;
 			if (pDescriptorWrites != null)
@@ -1818,7 +1719,7 @@ namespace Magnesium.Vulkan
 						copies = bCopySets;
 					}
 
-					Interops.vkUpdateDescriptorSets(mHandle, writeCount, writes, copyCount, copies);
+					Interops.vkUpdateDescriptorSets(info, writeCount, writes, copyCount, copies);
 				}			
 			}
 			finally
@@ -1835,7 +1736,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -1876,7 +1777,7 @@ namespace Magnesium.Vulkan
 				};
 
 				var internalHandle = 0UL;
-				var result = Interops.vkCreateFramebuffer(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
+				var result = Interops.vkCreateFramebuffer(info, ref createInfo, allocatorPtr, ref internalHandle);
 				pFramebuffer = new VkFramebuffer(internalHandle);
 				return result;
 			}
@@ -1894,7 +1795,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -2078,7 +1979,7 @@ namespace Magnesium.Vulkan
 				};
 
 				ulong internalHandle = 0;
-				var result = Interops.vkCreateRenderPass(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
+				var result = Interops.vkCreateRenderPass(info, ref createInfo, allocatorPtr, ref internalHandle);
 				pRenderPass = new VkRenderPass(internalHandle);
 				return result;
 			}
@@ -2093,7 +1994,7 @@ namespace Magnesium.Vulkan
 
 		public void GetRenderAreaGranularity(IMgRenderPass renderPass, out MgExtent2D pGranularity)
 		{
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var bRenderPass = (VkRenderPass)renderPass;
 			Debug.Assert(bRenderPass != null);
@@ -2101,7 +2002,7 @@ namespace Magnesium.Vulkan
 			unsafe
 			{
 				var grans = stackalloc MgExtent2D[1];
-				Interops.vkGetRenderAreaGranularity(mHandle, bRenderPass.Handle, grans);
+				Interops.vkGetRenderAreaGranularity(info, bRenderPass.Handle, grans);
 				pGranularity = grans[0];
 			}
 		}
@@ -2111,7 +2012,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -2123,7 +2024,7 @@ namespace Magnesium.Vulkan
 				flags = (VkCommandPoolCreateFlags)pCreateInfo.Flags,
 				queueFamilyIndex = pCreateInfo.QueueFamilyIndex,
 			};
-			var result = Interops.vkCreateCommandPool(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
+			var result = Interops.vkCreateCommandPool(info, ref createInfo, allocatorPtr, ref internalHandle);
 			pCommandPool = new VkCommandPool(internalHandle);
 			return result;
 		}
@@ -2139,7 +2040,7 @@ namespace Magnesium.Vulkan
 			if (pAllocateInfo.CommandBufferCount != pCommandBuffers.Length)
 				throw new ArgumentOutOfRangeException(nameof(pAllocateInfo.CommandBufferCount) + " !=  " + nameof(pCommandBuffers.Length));
 
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var bCommandPool = (VkCommandPool)pAllocateInfo.CommandPool;
 			Debug.Assert(bCommandPool != null);
@@ -2161,7 +2062,7 @@ namespace Magnesium.Vulkan
 					level = (VkCommandBufferLevel)pAllocateInfo.Level,
 				};
 
-				var result = Interops.vkAllocateCommandBuffers(mHandle, allocateInfo, pBufferHandle);
+				var result = Interops.vkAllocateCommandBuffers(info, allocateInfo, pBufferHandle);
 
 				for (var i = 0; i < arraySize; ++i)
 				{
@@ -2173,7 +2074,7 @@ namespace Magnesium.Vulkan
 
 		public void FreeCommandBuffers(IMgCommandPool commandPool, IMgCommandBuffer[] pCommandBuffers)
 		{
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var bCommandPool = (VkCommandPool) commandPool;
 			Debug.Assert(bCommandPool != null);
@@ -2189,7 +2090,7 @@ namespace Magnesium.Vulkan
 					bufferHandles[i] = bCommandBuffer.Handle;
 				}
 
-				Interops.vkFreeCommandBuffers(mHandle, bCommandPool.Handle, commandBufferCount, bufferHandles);
+				Interops.vkFreeCommandBuffers(info, bCommandPool.Handle, commandBufferCount, bufferHandles);
 			}
 		}
 
@@ -2198,7 +2099,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfos == null)
 				throw new ArgumentNullException(nameof(pCreateInfos));
 
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -2222,7 +2123,7 @@ namespace Magnesium.Vulkan
 				}
 
 				var sharedSwapchains = new ulong[swapChainCount];
-				var result = Interops.vkCreateSharedSwapchainsKHR(mHandle, swapChainCount, swapChainCreateInfos, allocatorPtr, sharedSwapchains);
+				var result = Interops.vkCreateSharedSwapchainsKHR(info, swapChainCount, swapChainCreateInfos, allocatorPtr, sharedSwapchains);
 
 				pSwapchains = new VkSwapchainKHR[swapChainCount];
 				for (var i = 0; i < swapChainCount; ++i)
@@ -2245,7 +2146,7 @@ namespace Magnesium.Vulkan
 			if (pCreateInfo == null)
 				throw new ArgumentNullException(nameof(pCreateInfo));
 
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -2256,7 +2157,7 @@ namespace Magnesium.Vulkan
 				var createInfo = GenerateSwapchainCreateInfoKHR(pCreateInfo, attachedItems);
 
 				ulong internalHandle = 0;
-				var result = Interops.vkCreateSwapchainKHR(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
+				var result = Interops.vkCreateSwapchainKHR(info, ref createInfo, allocatorPtr, ref internalHandle);
 				pSwapchain = new VkSwapchainKHR(internalHandle);
 				return result;
 			}
@@ -2315,13 +2216,13 @@ namespace Magnesium.Vulkan
 
 		public MgResult GetSwapchainImagesKHR(IMgSwapchainKHR swapchain, out IMgImage[] pSwapchainImages)
 		{
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var bSwapchain = (VkSwapchainKHR)swapchain;
 			Debug.Assert(bSwapchain != null);
 
 			uint noOfImages = 0;
-			var first = Interops.vkGetSwapchainImagesKHR(mHandle, bSwapchain.Handle, ref noOfImages, null);
+			var first = Interops.vkGetSwapchainImagesKHR(info, bSwapchain.Handle, ref noOfImages, null);
 
 			if (first != MgResult.SUCCESS)
 			{
@@ -2330,7 +2231,7 @@ namespace Magnesium.Vulkan
 			}
 
 			var images = new ulong[noOfImages];
-			var final = Interops.vkGetSwapchainImagesKHR(mHandle, bSwapchain.Handle, ref noOfImages, images);
+			var final = Interops.vkGetSwapchainImagesKHR(info, bSwapchain.Handle, ref noOfImages, images);
 
 			pSwapchainImages = new VkImage[noOfImages];
 			for (var i = 0; i < noOfImages; ++i)
@@ -2343,7 +2244,7 @@ namespace Magnesium.Vulkan
 
 		public MgResult AcquireNextImageKHR(IMgSwapchainKHR swapchain, ulong timeout, IMgSemaphore semaphore, IMgFence fence, out uint pImageIndex)
 		{
-			Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
 			var bSwapchain = (VkSwapchainKHR)swapchain;
 			Debug.Assert(bSwapchain != null);
@@ -2355,7 +2256,7 @@ namespace Magnesium.Vulkan
 			var bFencePtr = bFence != null ? bFence.Handle : 0UL;
 
 			uint imageIndex = 0;
-			var result = Interops.vkAcquireNextImageKHR(mHandle, bSwapchain.Handle, timeout, bSemaphorePtr, bFencePtr, ref imageIndex);
+			var result = Interops.vkAcquireNextImageKHR(info, bSwapchain.Handle, timeout, bSemaphorePtr, bFencePtr, ref imageIndex);
 			pImageIndex = imageIndex;
 			return result;
 		}
@@ -2368,7 +2269,7 @@ namespace Magnesium.Vulkan
             if (pCreateInfo.Entries == null)
                 throw new ArgumentNullException(nameof(pCreateInfo.Entries));
 
-            Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+            Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
             var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -2416,7 +2317,7 @@ namespace Magnesium.Vulkan
                 };
 
                 ulong handle = 0UL;
-                var result = Interops.vkCreateObjectTableNVX(this.mHandle, ref bCreateInfo, allocatorPtr, ref handle);
+                var result = Interops.vkCreateObjectTableNVX(this.info, ref bCreateInfo, allocatorPtr, ref handle);
 
                 pObjectTable = new VkObjectTableNVX(handle);
                 return result;
@@ -2448,7 +2349,7 @@ namespace Magnesium.Vulkan
             if (pCreateInfo.Tokens == null)
                 throw new ArgumentNullException(nameof(pCreateInfo.Tokens));
 
-            Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+            Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
             var allocatorPtr = GetAllocatorHandle(allocator);
 
@@ -2471,7 +2372,7 @@ namespace Magnesium.Vulkan
                 };
 
                 ulong bHandle = 0UL;
-                var result = Interops.vkCreateIndirectCommandsLayoutNVX(this.mHandle, ref createInfo, allocatorPtr, ref bHandle);
+                var result = Interops.vkCreateIndirectCommandsLayoutNVX(this.info, ref createInfo, allocatorPtr, ref bHandle);
 
                 pIndirectCommandsLayout = new VkIndirectCommandsLayoutNVX(bHandle);
                 return result;
@@ -2490,7 +2391,7 @@ namespace Magnesium.Vulkan
             if (pAcquireInfo == null)
                 throw new ArgumentNullException(nameof(pAcquireInfo));
 
-            Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+            Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
             var bSwapchain = (VkSwapchainKHR)pAcquireInfo.Swapchain;
             Debug.Assert(bSwapchain != null);
@@ -2514,7 +2415,7 @@ namespace Magnesium.Vulkan
             };
 
             uint imageIndex = 0;
-            var result = Interops.vkAcquireNextImage2KHR(mHandle, bAcquireInfo, ref imageIndex);
+            var result = Interops.vkAcquireNextImage2KHR(info, bAcquireInfo, ref imageIndex);
             pImageIndex = imageIndex;
             return result;
         }
@@ -2561,7 +2462,7 @@ namespace Magnesium.Vulkan
                     };
                 }
 
-                return Interops.vkBindAccelerationStructureMemoryNV(this.mHandle, bindInfoCount, bBindInfos);
+                return Interops.vkBindAccelerationStructureMemoryNV(this.info, bindInfoCount, bBindInfos);
             }
             finally
             {
@@ -2602,7 +2503,7 @@ namespace Magnesium.Vulkan
                 };
             }
 
-            return Interops.vkBindBufferMemory2(this.mHandle, bindInfoCount, bBindInfos);
+            return Interops.vkBindBufferMemory2(this.info, bindInfoCount, bBindInfos);
         }
 
         public MgResult BindImageMemory2(MgBindImageMemoryInfo[] pBindInfos)
@@ -2635,7 +2536,7 @@ namespace Magnesium.Vulkan
                 }; 
             }
 
-            return Interops.vkBindImageMemory2(this.mHandle, bindInfoCount, bBindInfos);
+            return Interops.vkBindImageMemory2(this.info, bindInfoCount, bBindInfos);
         }
 
         public MgResult CreateAccelerationStructureNV(MgAccelerationStructureCreateInfoNV pCreateInfo, IMgAllocationCallbacks pAllocator, out IMgAccelerationStructureNV pAccelerationStructure)
@@ -2696,7 +2597,7 @@ namespace Magnesium.Vulkan
                 };
 
                 var pHandle = 0UL;
-                var result = Interops.vkCreateAccelerationStructureNV(this.mHandle, ref bCreateInfo, allocatorPtr, ref pHandle);
+                var result = Interops.vkCreateAccelerationStructureNV(this.info, ref bCreateInfo, allocatorPtr, ref pHandle);
                 pAccelerationStructure = new VkAccelerationStructureNV(pHandle);
                 return result;
             }
@@ -2805,7 +2706,7 @@ namespace Magnesium.Vulkan
                 };
 
                 var pHandle = 0UL;
-                var result = Interops.vkCreateDescriptorUpdateTemplate(this.mHandle, bCreateInfo, allocatorPtr, ref pHandle);
+                var result = Interops.vkCreateDescriptorUpdateTemplate(this.info, bCreateInfo, allocatorPtr, ref pHandle);
 
                 pDescriptorUpdateTemplate = new VkDescriptorUpdateTemplate(pHandle);
                 return result;
@@ -2913,7 +2814,7 @@ namespace Magnesium.Vulkan
 
                 var handles = new ulong[createInfoCount];
                 var result = Interops.vkCreateRayTracingPipelinesNV(
-                    this.mHandle,
+                    this.info,
                     bPipelineCachePtr,
                     createInfoCount,
                     bCreateInfos,
@@ -2946,7 +2847,7 @@ namespace Magnesium.Vulkan
             if (pCreateInfo == null)
                 throw new ArgumentNullException(nameof(pCreateInfo));
 
-            Debug.Assert(!mIsDisposed, "VkDevice has been disposed");
+            Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
             var allocatorPtr = GetAllocatorHandle(pAllocator);
 
@@ -3155,7 +3056,7 @@ namespace Magnesium.Vulkan
                 };
 
                 ulong internalHandle = 0;
-                var result = Interops.vkCreateRenderPass2KHR(mHandle, ref createInfo, allocatorPtr, ref internalHandle);
+                var result = Interops.vkCreateRenderPass2KHR(info, ref createInfo, allocatorPtr, ref internalHandle);
                 pRenderPass = new VkRenderPass(internalHandle);
                 return result;
             }

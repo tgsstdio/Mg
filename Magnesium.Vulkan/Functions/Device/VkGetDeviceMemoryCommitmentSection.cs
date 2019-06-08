@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan.Functions.Device
@@ -6,11 +7,14 @@ namespace Magnesium.Vulkan.Functions.Device
 	public class VkGetDeviceMemoryCommitmentSection
 	{
 		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static void vkGetDeviceMemoryCommitment(IntPtr device, UInt64 memory, ref VkDeviceSize pCommittedMemoryInBytes);
+        internal extern static void vkGetDeviceMemoryCommitment(IntPtr device, UInt64 memory, ref UInt64 pCommittedMemoryInBytes);
 
-		public static void GetDeviceMemoryCommitment(VkDeviceInfo info, IMgDeviceMemory memory, ref UInt64 pCommittedMemoryInBytes)
+        public static void GetDeviceMemoryCommitment(VkDeviceInfo info, IMgDeviceMemory memory, ref UInt64 pCommittedMemoryInBytes)
 		{
-			// TODO: add implementation
-		}
+            var bDeviceMemory = (VkDeviceMemory)memory;
+            Debug.Assert(bDeviceMemory != null);
+
+            vkGetDeviceMemoryCommitment(info.Handle, bDeviceMemory.Handle, ref pCommittedMemoryInBytes);
+        }
 	}
 }

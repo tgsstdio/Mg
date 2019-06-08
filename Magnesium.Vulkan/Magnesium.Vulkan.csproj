@@ -82,6 +82,7 @@
     <Compile Include="Functions\CommandBuffer\VkCmdUpdateBufferSection.cs" />
     <Compile Include="Functions\CommandBuffer\VkCmdWaitEventsSection.cs" />
     <Compile Include="Functions\CommandBuffer\VkCmdWriteTimestampSection.cs" />
+    <Compile Include="Functions\CommandBuffer\VkCommandBufferInfo.cs" />
     <Compile Include="Functions\CommandBuffer\VkEndCommandBufferSection.cs" />
     <Compile Include="Functions\CommandBuffer\VkResetCommandBufferSection.cs" />
     <Compile Include="Functions\Device\VkDestroyDeviceSection.cs" />
