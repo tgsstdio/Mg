@@ -1,9 +1,14 @@
 using System;
+using System.Runtime.InteropServices;
+
 namespace Magnesium.Vulkan.Functions.Device
 {
 	public class VkBindAccelerationStructureMemoryNVSection
 	{
-		public MgResult BindAccelerationStructureMemoryNV(MgBindAccelerationStructureMemoryInfoNV[] pBindInfos)
+		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		internal extern static unsafe VkResult vkBindAccelerationStructureMemoryNV(IntPtr device, UInt32 bindInfoCount, VkBindAccelerationStructureMemoryInfoNV* pBindInfos);
+
+		public static MgResult BindAccelerationStructureMemoryNV(VkDeviceInfo info, MgBindAccelerationStructureMemoryInfoNV[] pBindInfos)
 		{
 			// TODO: add implementation
 		}

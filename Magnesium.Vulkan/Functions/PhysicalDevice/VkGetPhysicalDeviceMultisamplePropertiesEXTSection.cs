@@ -1,9 +1,14 @@
 using System;
+using System.Runtime.InteropServices;
+
 namespace Magnesium.Vulkan.Functions.PhysicalDevice
 {
 	public class VkGetPhysicalDeviceMultisamplePropertiesEXTSection
 	{
-		public void GetPhysicalDeviceMultisamplePropertiesEXT(MgSampleCountFlagBits samples, MgMultisamplePropertiesEXT pMultisampleProperties)
+		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		internal extern static unsafe void vkGetPhysicalDeviceMultisamplePropertiesEXT(IntPtr physicalDevice, VkSampleCountFlagBits samples, VkMultisamplePropertiesEXT pMultisampleProperties);
+
+		public static void GetPhysicalDeviceMultisamplePropertiesEXT(VkPhysicalDeviceInfo info, MgSampleCountFlagBits samples, MgMultisamplePropertiesEXT pMultisampleProperties)
 		{
 			// TODO: add implementation
 		}

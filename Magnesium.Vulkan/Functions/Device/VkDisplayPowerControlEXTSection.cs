@@ -1,9 +1,14 @@
 using System;
+using System.Runtime.InteropServices;
+
 namespace Magnesium.Vulkan.Functions.Device
 {
 	public class VkDisplayPowerControlEXTSection
 	{
-		public MgResult DisplayPowerControlEXT(IMgDisplayKHR display, out MgDisplayPowerInfoEXT pDisplayPowerInfo)
+		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		internal extern static unsafe VkResult vkDisplayPowerControlEXT(IntPtr device, UInt64 display, VkDisplayPowerInfoEXT pDisplayPowerInfo);
+
+		public static MgResult DisplayPowerControlEXT(VkDeviceInfo info, IMgDisplayKHR display, out MgDisplayPowerInfoEXT pDisplayPowerInfo)
 		{
 			// TODO: add implementation
 		}

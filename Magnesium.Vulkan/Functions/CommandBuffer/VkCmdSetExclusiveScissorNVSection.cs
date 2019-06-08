@@ -1,9 +1,14 @@
 using System;
+using System.Runtime.InteropServices;
+
 namespace Magnesium.Vulkan.Functions.CommandBuffer
 {
 	public class VkCmdSetExclusiveScissorNVSection
 	{
-		public void CmdSetExclusiveScissorNV(UInt32 firstExclusiveScissor, MgRect2D[] exclusiveScissors)
+		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		internal extern static unsafe void vkCmdSetExclusiveScissorNV(IntPtr commandBuffer, UInt32 firstExclusiveScissor, UInt32 exclusiveScissorCount, VkRect2D* pExclusiveScissors);
+
+		public static void CmdSetExclusiveScissorNV(VkCommandBufferInfo info, UInt32 firstExclusiveScissor, MgRect2D[] exclusiveScissors)
 		{
 			// TODO: add implementation
 		}

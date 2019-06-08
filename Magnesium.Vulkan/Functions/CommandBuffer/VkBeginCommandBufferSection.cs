@@ -1,9 +1,14 @@
 using System;
+using System.Runtime.InteropServices;
+
 namespace Magnesium.Vulkan.Functions.CommandBuffer
 {
 	public class VkBeginCommandBufferSection
 	{
-		public MgResult BeginCommandBuffer(MgCommandBufferBeginInfo pBeginInfo)
+		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		internal extern static VkResult vkBeginCommandBuffer(IntPtr commandBuffer, [In, Out] VkCommandBufferBeginInfo pBeginInfo);
+
+		public static MgResult BeginCommandBuffer(VkCommandBufferInfo info, MgCommandBufferBeginInfo pBeginInfo)
 		{
 			// TODO: add implementation
 		}

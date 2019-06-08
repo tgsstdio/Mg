@@ -7,29 +7,7 @@ using Magnesium.Vulkan.Functions.Device;
 
 namespace Magnesium.Vulkan
 {
-    public class VkDeviceInfo
-    {
-        internal IntPtr Handle = IntPtr.Zero;
-        public VkDeviceInfo(IntPtr handle)
-        {
-            Handle = handle;
-        }
-
-        internal bool IsDisposed = false;
-
-        /// <summary>
-        /// Allocator is optional
-        /// </summary>
-        /// <param name="allocator"></param>
-        /// <returns></returns>
-        public static IntPtr GetAllocatorHandle(IMgAllocationCallbacks allocator)
-        {
-            var bAllocator = (MgVkAllocationCallbacks)allocator;
-            return bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
-        }
-    }
-
-	public class VkDevice : IMgDevice
+    public class VkDevice : IMgDevice
 	{
 		readonly VkDeviceInfo mHandle;
 		internal VkDevice(IntPtr handle)

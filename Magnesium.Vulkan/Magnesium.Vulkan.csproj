@@ -84,6 +84,8 @@
     <Compile Include="Functions\CommandBuffer\VkCmdWriteTimestampSection.cs" />
     <Compile Include="Functions\CommandBuffer\VkEndCommandBufferSection.cs" />
     <Compile Include="Functions\CommandBuffer\VkResetCommandBufferSection.cs" />
+    <Compile Include="Functions\Device\VkDestroyDeviceSection.cs" />
+    <Compile Include="Functions\Device\VkGetDeviceProcAddrSection.cs" />
     <Compile Include="Functions\Device\VkAcquireNextImage2KHRSection.cs" />
     <Compile Include="Functions\Device\VkAcquireNextImageKHRSection.cs" />
     <Compile Include="Functions\Device\VkAllocateCommandBuffersSection.cs" />
@@ -121,7 +123,6 @@
     <Compile Include="Functions\Device\VkCreateSharedSwapchainsKHRSection.cs" />
     <Compile Include="Functions\Device\VkCreateSwapchainKHRSection.cs" />
     <Compile Include="Functions\Device\VkCreateValidationCacheEXTSection.cs" />
-    <Compile Include="Functions\Device\VkDestroyDeviceSection.cs" />
     <Compile Include="Functions\Device\VkDeviceWaitIdleSection.cs" />
     <Compile Include="Functions\Device\VkDisplayPowerControlEXTSection.cs" />
     <Compile Include="Functions\Device\VkFlushMappedMemoryRangesSection.cs" />
@@ -137,7 +138,6 @@
     <Compile Include="Functions\Device\VkGetDeviceGroupPresentCapabilitiesKHRSection.cs" />
     <Compile Include="Functions\Device\VkGetDeviceGroupSurfacePresentModesKHRSection.cs" />
     <Compile Include="Functions\Device\VkGetDeviceMemoryCommitmentSection.cs" />
-    <Compile Include="Functions\Device\VkGetDeviceProcAddrSection.cs" />
     <Compile Include="Functions\Device\VkGetDeviceQueue2Section.cs" />
     <Compile Include="Functions\Device\VkGetDeviceQueueSection.cs" />
     <Compile Include="Functions\Device\VkGetFenceFdKHRSection.cs" />
@@ -232,6 +232,7 @@
     <Compile Include="Handles\VkDebugUtilsMessengerData.cs" />
     <Compile Include="Handles\VkDebugUtilsMessengerEXT.cs" />
     <Compile Include="Handles\VkDescriptorUpdateTemplate.cs" />
+    <Compile Include="Handles\VkDeviceInfo.cs" />
     <Compile Include="Handles\VkIndirectCommandsLayoutNVX.cs" />
     <Compile Include="Handles\VkObjectTableNVX.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

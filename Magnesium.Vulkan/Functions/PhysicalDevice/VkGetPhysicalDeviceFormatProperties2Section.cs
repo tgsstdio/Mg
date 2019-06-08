@@ -1,9 +1,14 @@
 using System;
+using System.Runtime.InteropServices;
+
 namespace Magnesium.Vulkan.Functions.PhysicalDevice
 {
 	public class VkGetPhysicalDeviceFormatProperties2Section
 	{
-		public void GetPhysicalDeviceFormatProperties2(MgFormat format, out MgFormatProperties2 pFormatProperties)
+		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		internal extern static void vkGetPhysicalDeviceFormatProperties2(IntPtr physicalDevice, VkFormat format, [In, Out] VkFormatProperties2 pFormatProperties);
+
+		public static void GetPhysicalDeviceFormatProperties2(VkPhysicalDeviceInfo info, MgFormat format, out MgFormatProperties2 pFormatProperties)
 		{
 			// TODO: add implementation
 		}

@@ -1,9 +1,14 @@
 using System;
+using System.Runtime.InteropServices;
+
 namespace Magnesium.Vulkan.Functions.Device
 {
 	public class VkGetMemoryFdPropertiesKHRSection
 	{
-		public MgResult GetMemoryFdPropertiesKHR(MgExternalMemoryHandleTypeFlagBits handleType, Int32 fd, out MgMemoryFdPropertiesKHR pMemoryFdProperties)
+		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		internal extern static VkResult vkGetMemoryFdPropertiesKHR(IntPtr device, VkExternalMemoryHandleTypeFlagBits handleType, int fd, VkMemoryFdPropertiesKHR pMemoryFdProperties);
+
+		public static MgResult GetMemoryFdPropertiesKHR(VkDeviceInfo info, MgExternalMemoryHandleTypeFlagBits handleType, Int32 fd, out MgMemoryFdPropertiesKHR pMemoryFdProperties)
 		{
 			// TODO: add implementation
 		}

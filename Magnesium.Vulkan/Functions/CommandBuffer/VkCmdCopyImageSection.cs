@@ -1,9 +1,14 @@
 using System;
+using System.Runtime.InteropServices;
+
 namespace Magnesium.Vulkan.Functions.CommandBuffer
 {
 	public class VkCmdCopyImageSection
 	{
-		public void CmdCopyImage(IMgImage srcImage, MgImageLayout srcImageLayout, IMgImage dstImage, MgImageLayout dstImageLayout, MgImageCopy[] pRegions)
+		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		internal extern static void vkCmdCopyImage(IntPtr commandBuffer, UInt64 srcImage, VkImageLayout srcImageLayout, UInt64 dstImage, VkImageLayout dstImageLayout, UInt32 regionCount, [In, Out] VkImageCopy[] pRegions);
+
+		public static void CmdCopyImage(VkCommandBufferInfo info, IMgImage srcImage, MgImageLayout srcImageLayout, IMgImage dstImage, MgImageLayout dstImageLayout, MgImageCopy[] pRegions)
 		{
 			// TODO: add implementation
 		}

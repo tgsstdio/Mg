@@ -1,9 +1,14 @@
 using System;
+using System.Runtime.InteropServices;
+
 namespace Magnesium.Vulkan.Functions.Device
 {
 	public class VkGetRenderAreaGranularitySection
 	{
-		public void GetRenderAreaGranularity(IMgRenderPass renderPass, out MgExtent2D pGranularity)
+		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		internal extern static unsafe void vkGetRenderAreaGranularity(IntPtr device, UInt64 renderPass, VkExtent2D* pGranularity);
+
+		public static void GetRenderAreaGranularity(VkDeviceInfo info, IMgRenderPass renderPass, out MgExtent2D pGranularity)
 		{
 			// TODO: add implementation
 		}

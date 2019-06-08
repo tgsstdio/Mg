@@ -1,9 +1,14 @@
 using System;
+using System.Runtime.InteropServices;
+
 namespace Magnesium.Vulkan.Functions.CommandBuffer
 {
 	public class VkCmdSetStencilWriteMaskSection
 	{
-		public void CmdSetStencilWriteMask(MgStencilFaceFlagBits faceMask, UInt32 writeMask)
+		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		internal extern static void vkCmdSetStencilWriteMask(IntPtr commandBuffer, VkStencilFaceFlags faceMask, UInt32 writeMask);
+
+		public static void CmdSetStencilWriteMask(VkCommandBufferInfo info, MgStencilFaceFlagBits faceMask, UInt32 writeMask)
 		{
 			// TODO: add implementation
 		}
