@@ -11,6 +11,7 @@ namespace Magnesium.Vulkan.Functions.PhysicalDevice
 		public static MgResult GetPhysicalDevicePresentRectanglesKHR(VkPhysicalDeviceInfo info, IMgSurfaceKHR surface, MgRect2D[] pRects)
 		{
 			// TODO: add implementation
+			throw new NotImplementedException();
 		}
 	}
 }

@@ -11,6 +11,7 @@ namespace Magnesium.Vulkan.Functions.CommandBuffer
 		public static MgResult BeginCommandBuffer(VkCommandBufferInfo info, MgCommandBufferBeginInfo pBeginInfo)
 		{
 			// TODO: add implementation
+			throw new NotImplementedException();
 		}
 	}
 }

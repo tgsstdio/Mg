@@ -11,6 +11,7 @@ namespace Magnesium.Vulkan.Functions.PhysicalDevice
 		public static MgResult CreateDisplayModeKHR(VkPhysicalDeviceInfo info, IMgDisplayKHR display, MgDisplayModeCreateInfoKHR pCreateInfo, IMgAllocationCallbacks allocator, out IMgDisplayModeKHR pMode)
 		{
 			// TODO: add implementation
+			throw new NotImplementedException();
 		}
 	}
 }

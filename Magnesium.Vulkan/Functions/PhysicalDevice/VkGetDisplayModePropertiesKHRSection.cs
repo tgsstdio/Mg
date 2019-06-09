@@ -10,8 +10,8 @@ namespace Magnesium.Vulkan.Functions.PhysicalDevice
 
 		public static MgResult GetDisplayModePropertiesKHR(VkPhysicalDeviceInfo info, IMgDisplayKHR display, out MgDisplayModePropertiesKHR[] pProperties)
 		{
-            // TODO: add implementation
-            throw new NotImplementedException();
-        }
+			// TODO: add implementation
+			throw new NotImplementedException();
+		}
 	}
 }

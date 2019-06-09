@@ -11,6 +11,7 @@ namespace Magnesium.Vulkan.Functions.Queue
 		public static MgResult QueueSubmit(VkQueueInfo info, MgSubmitInfo[] pSubmits, IMgFence fence)
 		{
 			// TODO: add implementation
+			throw new NotImplementedException();
 		}
 	}
 }

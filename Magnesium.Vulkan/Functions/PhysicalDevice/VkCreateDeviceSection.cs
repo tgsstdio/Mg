@@ -11,6 +11,7 @@ namespace Magnesium.Vulkan.Functions.PhysicalDevice
 		public static MgResult CreateDevice(VkPhysicalDeviceInfo info, MgDeviceCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDevice pDevice)
 		{
 			// TODO: add implementation
+			throw new NotImplementedException();
 		}
 	}
 }

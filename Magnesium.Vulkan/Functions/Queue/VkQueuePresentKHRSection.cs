@@ -11,6 +11,7 @@ namespace Magnesium.Vulkan.Functions.Queue
 		public static MgResult QueuePresentKHR(VkQueueInfo info, MgPresentInfoKHR pPresentInfo)
 		{
 			// TODO: add implementation
+			throw new NotImplementedException();
 		}
 	}
 }

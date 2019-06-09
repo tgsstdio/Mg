@@ -11,6 +11,7 @@ namespace Magnesium.Vulkan.Functions.Queue
 		public static MgResult QueueWaitIdle(VkQueueInfo info)
 		{
 			// TODO: add implementation
+			throw new NotImplementedException();
 		}
 	}
 }

@@ -11,6 +11,7 @@ namespace Magnesium.Vulkan.Functions.PhysicalDevice
 		public static MgResult EnumerateDeviceExtensionProperties(VkPhysicalDeviceInfo info, string layerName, out MgExtensionProperties[] pProperties)
 		{
 			// TODO: add implementation
+			throw new NotImplementedException();
 		}
 	}
 }

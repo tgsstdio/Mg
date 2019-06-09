@@ -359,6 +359,12 @@ namespace CommandGen
                 fs.WriteLine(methodTabs + GetImplementationStubMethod(fn, libraryPrefix, subCategoryNs));
                 fs.WriteLine(methodTabs + "{");
                 fs.WriteLine(methodTabs + TAB_FIELD + "// TODO: add implementation");
+
+                if (fn.ReturnType != "void")
+                {
+                    fs.WriteLine(methodTabs + TAB_FIELD + "throw new NotImplementedException();");
+                }
+
                 fs.WriteLine(methodTabs + "}");
 
 
@@ -487,6 +493,12 @@ namespace CommandGen
 
             sr.AppendLine(methodTabs + "{");
             sr.AppendLine(methodTabs + TAB_FIELD + "// TODO: add validation");
+
+            if (fn.ReturnType != "void")
+            {
+                sr.AppendLine(methodTabs + TAB_FIELD + "throw new NotImplementedException();");
+            }
+
             sr.AppendLine(methodTabs + "}");
 
 

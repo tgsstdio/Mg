@@ -11,6 +11,7 @@ namespace Magnesium.Vulkan.Functions.PhysicalDevice
 		public static MgResult GetPhysicalDeviceImageFormatProperties2(VkPhysicalDeviceInfo info, MgPhysicalDeviceImageFormatInfo2 pImageFormatInfo, MgImageFormatProperties2 pImageFormatProperties)
 		{
 			// TODO: add implementation
+			throw new NotImplementedException();
 		}
 	}
 }

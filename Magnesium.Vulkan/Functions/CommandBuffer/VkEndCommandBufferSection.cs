@@ -10,8 +10,8 @@ namespace Magnesium.Vulkan.Functions.CommandBuffer
 
 		public static MgResult EndCommandBuffer(VkCommandBufferInfo info)
 		{
-            // TODO: add implementation
-            throw new NotImplementedException();
+			// TODO: add implementation
+			throw new NotImplementedException();
 		}
 	}
 }

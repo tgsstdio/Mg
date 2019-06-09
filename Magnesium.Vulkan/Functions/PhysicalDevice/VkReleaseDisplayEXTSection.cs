@@ -11,6 +11,7 @@ namespace Magnesium.Vulkan.Functions.PhysicalDevice
 		public static MgResult ReleaseDisplayEXT(VkPhysicalDeviceInfo info, IMgDisplayKHR display)
 		{
 			// TODO: add implementation
+			throw new NotImplementedException();
 		}
 	}
 }

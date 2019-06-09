@@ -11,6 +11,7 @@ namespace Magnesium.Vulkan.Functions.PhysicalDevice
 		public static MgResult GetPhysicalDeviceSurfaceCapabilities2KHR(VkPhysicalDeviceInfo info, MgPhysicalDeviceSurfaceInfo2KHR pSurfaceInfo, out MgSurfaceCapabilities2KHR pSurfaceCapabilities)
 		{
 			// TODO: add implementation
+			throw new NotImplementedException();
 		}
 	}
 }

@@ -10,8 +10,8 @@ namespace Magnesium.Vulkan.Functions.PhysicalDevice
 
 		public static MgResult GetPhysicalDeviceExternalImageFormatPropertiesNV(VkPhysicalDeviceInfo info, MgFormat format, MgImageType type, MgImageTiling tiling, MgImageUsageFlagBits usage, MgImageCreateFlagBits flags, UInt32 externalHandleType, out MgExternalImageFormatPropertiesNV pExternalImageFormatProperties)
 		{
-            // TODO: add implementation
-            throw new NotImplementedException();
-        }
+			// TODO: add implementation
+			throw new NotImplementedException();
+		}
 	}
 }

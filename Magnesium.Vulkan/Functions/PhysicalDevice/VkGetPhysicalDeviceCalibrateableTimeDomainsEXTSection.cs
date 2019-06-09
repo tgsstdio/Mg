@@ -10,8 +10,8 @@ namespace Magnesium.Vulkan.Functions.PhysicalDevice
 
 		public static MgResult GetPhysicalDeviceCalibrateableTimeDomainsEXT(VkPhysicalDeviceInfo info, out MgTimeDomainEXT[] pTimeDomains)
 		{
-            // TODO: add implementation
-            throw new NotImplementedException();
-        }
+			// TODO: add implementation
+			throw new NotImplementedException();
+		}
 	}
 }
