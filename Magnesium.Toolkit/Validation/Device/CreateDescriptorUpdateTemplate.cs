@@ -5,7 +5,11 @@ namespace Magnesium.Toolkit.Validation.Device
 	{
 		public static void Validate(MgDescriptorUpdateTemplateCreateInfo pCreateInfo, IMgAllocationCallbacks pAllocator)
 		{
-			// TODO: add validation
-		}
+            if (pCreateInfo == null)
+                throw new ArgumentNullException(nameof(pCreateInfo));
+
+            if (pCreateInfo.DescriptorUpdateEntries == null)
+                throw new ArgumentNullException(nameof(pCreateInfo.DescriptorUpdateEntries));
+        }
 	}
 }

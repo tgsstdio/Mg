@@ -5,7 +5,8 @@ namespace Magnesium.Toolkit.Validation.Device
 	{
 		public static void Validate(MgRenderPassCreateInfo2KHR pCreateInfo, IMgAllocationCallbacks pAllocator)
 		{
-			// TODO: add validation
-		}
+            if (pCreateInfo == null)
+                throw new ArgumentNullException(nameof(pCreateInfo));
+        }
 	}
 }
