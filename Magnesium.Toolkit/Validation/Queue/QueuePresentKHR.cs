@@ -5,7 +5,8 @@ namespace Magnesium.Toolkit.Validation.Queue
 	{
 		public static void Validate(MgPresentInfoKHR pPresentInfo)
 		{
-			// TODO: add validation
-		}
+            if (pPresentInfo == null)
+                throw new ArgumentNullException(nameof(pPresentInfo));
+        }
 	}
 }

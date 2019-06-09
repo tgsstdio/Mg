@@ -5,297 +5,296 @@ namespace Magnesium.Vulkan
 {
     public class VkDevice : IMgDevice
 	{
-		readonly VkDeviceInfo info;
-        public VkDeviceInfo Info { get => info; }
+        public VkDeviceInfo Info { get; }
 
         internal VkDevice(IntPtr handle)
 		{
-			info = new VkDeviceInfo(handle);
+			Info = new VkDeviceInfo(handle);
 		}
 
 		public PFN_vkVoidFunction GetDeviceProcAddr(string pName)
 		{
-			return VkGetDeviceProcAddrSection.GetDeviceProcAddr(info, pName);
+			return VkGetDeviceProcAddrSection.GetDeviceProcAddr(Info, pName);
 		}
 
 		public void DestroyDevice(IMgAllocationCallbacks allocator)
 		{
-            VkDestroyDeviceSection.DestroyDevice(info, allocator);
+            VkDestroyDeviceSection.DestroyDevice(Info, allocator);
 		}
 
 		public void GetDeviceQueue(uint queueFamilyIndex, uint queueIndex, out IMgQueue pQueue)
 		{
-            VkGetDeviceQueueSection.GetDeviceQueue(info, queueFamilyIndex, queueIndex, out pQueue);
+            VkGetDeviceQueueSection.GetDeviceQueue(Info, queueFamilyIndex, queueIndex, out pQueue);
 		}
 
 		public MgResult DeviceWaitIdle()
 		{
-			return VkDeviceWaitIdleSection.DeviceWaitIdle(info);
+			return VkDeviceWaitIdleSection.DeviceWaitIdle(Info);
 		}
 
 		public MgResult AllocateMemory(MgMemoryAllocateInfo pAllocateInfo, IMgAllocationCallbacks allocator, out IMgDeviceMemory pMemory)
 		{
-            return VkAllocateMemorySection.AllocateMemory(info, pAllocateInfo, allocator, out pMemory);
+            return VkAllocateMemorySection.AllocateMemory(Info, pAllocateInfo, allocator, out pMemory);
         }
 
 		public MgResult FlushMappedMemoryRanges(MgMappedMemoryRange[] pMemoryRanges)
 		{
-            return VkFlushMappedMemoryRangesSection.FlushMappedMemoryRanges(info, pMemoryRanges);
+            return VkFlushMappedMemoryRangesSection.FlushMappedMemoryRanges(Info, pMemoryRanges);
 		}
 
 		public MgResult InvalidateMappedMemoryRanges(MgMappedMemoryRange[] pMemoryRanges)
 		{
-            return VkInvalidateMappedMemoryRangesSection.InvalidateMappedMemoryRanges(info, pMemoryRanges);
+            return VkInvalidateMappedMemoryRangesSection.InvalidateMappedMemoryRanges(Info, pMemoryRanges);
         }
 
 		public void GetDeviceMemoryCommitment(IMgDeviceMemory memory, ref ulong pCommittedMemoryInBytes)
 		{
-            VkGetDeviceMemoryCommitmentSection.GetDeviceMemoryCommitment(info, memory, ref pCommittedMemoryInBytes);
+            VkGetDeviceMemoryCommitmentSection.GetDeviceMemoryCommitment(Info, memory, ref pCommittedMemoryInBytes);
         }
 
 		public void GetBufferMemoryRequirements(IMgBuffer buffer, out MgMemoryRequirements pMemoryRequirements)
 		{
-             VkGetBufferMemoryRequirementsSection.GetBufferMemoryRequirements(info, buffer, out pMemoryRequirements);
+             VkGetBufferMemoryRequirementsSection.GetBufferMemoryRequirements(Info, buffer, out pMemoryRequirements);
 		}
 
 		public void GetImageMemoryRequirements(IMgImage image, out MgMemoryRequirements memoryRequirements)
         {
-            VkGetImageMemoryRequirementsSection.GetImageMemoryRequirements(info, image, out memoryRequirements);
+            VkGetImageMemoryRequirementsSection.GetImageMemoryRequirements(Info, image, out memoryRequirements);
         }
 
         public void GetImageSparseMemoryRequirements(IMgImage image, out MgSparseImageMemoryRequirements[] sparseMemoryRequirements)
         {
-            VkGetImageSparseMemoryRequirementsSection.GetImageSparseMemoryRequirements(info, image, out sparseMemoryRequirements);
+            VkGetImageSparseMemoryRequirementsSection.GetImageSparseMemoryRequirements(Info, image, out sparseMemoryRequirements);
         }
 
         public MgResult CreateFence(MgFenceCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgFence fence)
         {
-            return VkCreateFenceSection.CreateFence(info, pCreateInfo, allocator, out fence);
+            return VkCreateFenceSection.CreateFence(Info, pCreateInfo, allocator, out fence);
         }
 
         public MgResult ResetFences(IMgFence[] pFences)
         {
-            return VkResetFencesSection.ResetFences(info, pFences);
+            return VkResetFencesSection.ResetFences(Info, pFences);
         }
 
         public MgResult GetFenceStatus(IMgFence fence)
         {
-            return VkGetFenceStatusSection.GetFenceStatus(info, fence);
+            return VkGetFenceStatusSection.GetFenceStatus(Info, fence);
         }
 
         public MgResult WaitForFences(IMgFence[] pFences, bool waitAll, ulong timeout)
         {
-            return VkWaitForFencesSection.WaitForFences(info, pFences, waitAll, timeout);
+            return VkWaitForFencesSection.WaitForFences(Info, pFences, waitAll, timeout);
         }
 
         public MgResult CreateSemaphore(MgSemaphoreCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgSemaphore pSemaphore)
         {
-            return VkCreateSemaphoreSection.CreateSemaphore(info, pCreateInfo, allocator, out pSemaphore);
+            return VkCreateSemaphoreSection.CreateSemaphore(Info, pCreateInfo, allocator, out pSemaphore);
         }
 
         public MgResult CreateEvent(MgEventCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgEvent @event)
         {
-            return VkCreateEventSection.CreateEvent(info, pCreateInfo, allocator, out @event);
+            return VkCreateEventSection.CreateEvent(Info, pCreateInfo, allocator, out @event);
         }
 
         public MgResult CreateQueryPool(MgQueryPoolCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgQueryPool queryPool)
         {
-            return VkCreateQueryPoolSection.CreateQueryPool(info, pCreateInfo, allocator, out queryPool);
+            return VkCreateQueryPoolSection.CreateQueryPool(Info, pCreateInfo, allocator, out queryPool);
         }
 
         public MgResult GetQueryPoolResults(IMgQueryPool queryPool, uint firstQuery, uint queryCount, IntPtr dataSize, IntPtr pData, ulong stride, MgQueryResultFlagBits flags)
         {
-            return VkGetQueryPoolResultsSection.GetQueryPoolResults(info, queryPool, firstQuery, queryCount, dataSize, pData, stride, flags);
+            return VkGetQueryPoolResultsSection.GetQueryPoolResults(Info, queryPool, firstQuery, queryCount, dataSize, pData, stride, flags);
         }
 
         public MgResult CreateBuffer(MgBufferCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgBuffer pBuffer)
         {
-            return VkCreateBufferSection.CreateBuffer(info, pCreateInfo, allocator, out pBuffer);
+            return VkCreateBufferSection.CreateBuffer(Info, pCreateInfo, allocator, out pBuffer);
         }
 
         public MgResult CreateBufferView(MgBufferViewCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgBufferView pView)
         {
-            return VkCreateBufferViewSection.CreateBufferView(info, pCreateInfo, allocator, out pView);
+            return VkCreateBufferViewSection.CreateBufferView(Info, pCreateInfo, allocator, out pView);
         }
 
         public MgResult CreateImage(MgImageCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgImage pImage)
         {
-            return VkCreateImageSection.CreateImage(info, pCreateInfo, allocator, out pImage);
+            return VkCreateImageSection.CreateImage(Info, pCreateInfo, allocator, out pImage);
         }
 
         public void GetImageSubresourceLayout(IMgImage image, MgImageSubresource pSubresource, out MgSubresourceLayout pLayout)
         {
-            VkGetImageSubresourceLayoutSection.GetImageSubresourceLayout(info, image, pSubresource, out pLayout);
+            VkGetImageSubresourceLayoutSection.GetImageSubresourceLayout(Info, image, pSubresource, out pLayout);
         }
 
         public MgResult CreateImageView(MgImageViewCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgImageView pView)
         {
-            return VkCreateImageViewSection.CreateImageView(info, pCreateInfo, allocator, out pView);
+            return VkCreateImageViewSection.CreateImageView(Info, pCreateInfo, allocator, out pView);
         }
 
         public MgResult CreateShaderModule(MgShaderModuleCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgShaderModule pShaderModule)
         {
-            return VkCreateShaderModuleSection.CreateShaderModule(info, pCreateInfo, allocator, out pShaderModule);
+            return VkCreateShaderModuleSection.CreateShaderModule(Info, pCreateInfo, allocator, out pShaderModule);
         }
 
         public MgResult CreatePipelineCache(MgPipelineCacheCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgPipelineCache pPipelineCache)
         {
-            return VkCreatePipelineCacheSection.CreatePipelineCache(info, pCreateInfo, allocator, out pPipelineCache);
+            return VkCreatePipelineCacheSection.CreatePipelineCache(Info, pCreateInfo, allocator, out pPipelineCache);
         }
 
         public MgResult GetPipelineCacheData(IMgPipelineCache pipelineCache, out byte[] pData)
         {
-            return VkGetPipelineCacheDataSection.GetPipelineCacheData(info, pipelineCache, out pData);
+            return VkGetPipelineCacheDataSection.GetPipelineCacheData(Info, pipelineCache, out pData);
         }
 
         public MgResult MergePipelineCaches(IMgPipelineCache dstCache, IMgPipelineCache[] pSrcCaches)
         {
-            return VkMergePipelineCachesSection.MergePipelineCaches(info, dstCache, pSrcCaches);
+            return VkMergePipelineCachesSection.MergePipelineCaches(Info, dstCache, pSrcCaches);
         }
 
         public MgResult CreateGraphicsPipelines(IMgPipelineCache pipelineCache, MgGraphicsPipelineCreateInfo[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgPipeline[] pPipelines)
         {
-            return VkCreateGraphicsPipelinesSection.CreateGraphicsPipelines(info, pipelineCache, pCreateInfos, allocator, out pPipelines);
+            return VkCreateGraphicsPipelinesSection.CreateGraphicsPipelines(Info, pipelineCache, pCreateInfos, allocator, out pPipelines);
         }
 
         public MgResult CreateComputePipelines(IMgPipelineCache pipelineCache, MgComputePipelineCreateInfo[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgPipeline[] pPipelines)
         {
-            return VkCreateComputePipelinesSection.CreateComputePipelines(info, pipelineCache, pCreateInfos, allocator, out pPipelines);
+            return VkCreateComputePipelinesSection.CreateComputePipelines(Info, pipelineCache, pCreateInfos, allocator, out pPipelines);
         }
 
         public MgResult CreatePipelineLayout(MgPipelineLayoutCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgPipelineLayout pPipelineLayout)
         {
-            return VkCreatePipelineLayoutSection.CreatePipelineLayout(info, pCreateInfo, allocator, out pPipelineLayout);
+            return VkCreatePipelineLayoutSection.CreatePipelineLayout(Info, pCreateInfo, allocator, out pPipelineLayout);
         }
 
         public MgResult CreateSampler(MgSamplerCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgSampler pSampler)
         {
-            return VkCreateSamplerSection.CreateSampler(info, pCreateInfo, allocator, out pSampler);
+            return VkCreateSamplerSection.CreateSampler(Info, pCreateInfo, allocator, out pSampler);
         }
 
         public MgResult CreateDescriptorSetLayout(MgDescriptorSetLayoutCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDescriptorSetLayout pSetLayout)
         {
-            return VkCreateDescriptorSetLayoutSection.CreateDescriptorSetLayout(info, pCreateInfo, allocator, out pSetLayout);
+            return VkCreateDescriptorSetLayoutSection.CreateDescriptorSetLayout(Info, pCreateInfo, allocator, out pSetLayout);
         }
 
         public MgResult CreateDescriptorPool(MgDescriptorPoolCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDescriptorPool pDescriptorPool)
         {
-            return VkCreateDescriptorPoolSection.CreateDescriptorPool(info, pCreateInfo, allocator, out pDescriptorPool);
+            return VkCreateDescriptorPoolSection.CreateDescriptorPool(Info, pCreateInfo, allocator, out pDescriptorPool);
         }
 
         public MgResult AllocateDescriptorSets(MgDescriptorSetAllocateInfo pAllocateInfo, out IMgDescriptorSet[] pDescriptorSets)
         {
-            return VkAllocateDescriptorSetsSection.AllocateDescriptorSets(info, pAllocateInfo, out pDescriptorSets);
+            return VkAllocateDescriptorSetsSection.AllocateDescriptorSets(Info, pAllocateInfo, out pDescriptorSets);
         }
 
         public MgResult FreeDescriptorSets(IMgDescriptorPool descriptorPool, IMgDescriptorSet[] pDescriptorSets)
         {
-            return VkFreeDescriptorSetsSection.FreeDescriptorSets(info, descriptorPool, pDescriptorSets);
+            return VkFreeDescriptorSetsSection.FreeDescriptorSets(Info, descriptorPool, pDescriptorSets);
         }
 
         public void UpdateDescriptorSets(MgWriteDescriptorSet[] pDescriptorWrites, MgCopyDescriptorSet[] pDescriptorCopies)
         {
-            VkUpdateDescriptorSetsSection.UpdateDescriptorSets(info, pDescriptorWrites, pDescriptorCopies);
+            VkUpdateDescriptorSetsSection.UpdateDescriptorSets(Info, pDescriptorWrites, pDescriptorCopies);
         }
 
         public MgResult CreateFramebuffer(MgFramebufferCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgFramebuffer pFramebuffer)
         {
-            return VkCreateFramebufferSection.CreateFramebuffer(info, pCreateInfo, allocator, out pFramebuffer);
+            return VkCreateFramebufferSection.CreateFramebuffer(Info, pCreateInfo, allocator, out pFramebuffer);
         }
 
         public MgResult CreateRenderPass(MgRenderPassCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgRenderPass pRenderPass)
         {
-            return VkCreateRenderPassSection.CreateRenderPass(info, pCreateInfo, allocator, out pRenderPass);
+            return VkCreateRenderPassSection.CreateRenderPass(Info, pCreateInfo, allocator, out pRenderPass);
         }
 
         public void GetRenderAreaGranularity(IMgRenderPass renderPass, out MgExtent2D pGranularity)
         {
-            VkGetRenderAreaGranularitySection.GetRenderAreaGranularity(info, renderPass, out pGranularity);
+            VkGetRenderAreaGranularitySection.GetRenderAreaGranularity(Info, renderPass, out pGranularity);
         }
 
         public MgResult CreateCommandPool(MgCommandPoolCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgCommandPool pCommandPool)
         {
-            return VkCreateCommandPoolSection.CreateCommandPool(info, pCreateInfo, allocator, out pCommandPool);
+            return VkCreateCommandPoolSection.CreateCommandPool(Info, pCreateInfo, allocator, out pCommandPool);
         }
 
         public MgResult AllocateCommandBuffers(MgCommandBufferAllocateInfo pAllocateInfo, IMgCommandBuffer[] pCommandBuffers)
         {
-            return VkAllocateCommandBuffersSection.AllocateCommandBuffers(info, pAllocateInfo, pCommandBuffers);
+            return VkAllocateCommandBuffersSection.AllocateCommandBuffers(Info, pAllocateInfo, pCommandBuffers);
         }
 
         public void FreeCommandBuffers(IMgCommandPool commandPool, IMgCommandBuffer[] pCommandBuffers)
         {
-            VkFreeCommandBuffersSection.FreeCommandBuffers(info, commandPool, pCommandBuffers);
+            VkFreeCommandBuffersSection.FreeCommandBuffers(Info, commandPool, pCommandBuffers);
         }
 
         public MgResult CreateSharedSwapchainsKHR(MgSwapchainCreateInfoKHR[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgSwapchainKHR[] pSwapchains)
         {
-            return VkCreateSharedSwapchainsKHRSection.CreateSharedSwapchainsKHR(info, pCreateInfos, allocator, out pSwapchains);
+            return VkCreateSharedSwapchainsKHRSection.CreateSharedSwapchainsKHR(Info, pCreateInfos, allocator, out pSwapchains);
         }
 
         public MgResult CreateSwapchainKHR(MgSwapchainCreateInfoKHR pCreateInfo, IMgAllocationCallbacks allocator, out IMgSwapchainKHR pSwapchain)
         {
-            return VkCreateSwapchainKHRSection.CreateSwapchainKHR(info, pCreateInfo, allocator, out pSwapchain);
+            return VkCreateSwapchainKHRSection.CreateSwapchainKHR(Info, pCreateInfo, allocator, out pSwapchain);
         }
 
         public MgResult GetSwapchainImagesKHR(IMgSwapchainKHR swapchain, out IMgImage[] pSwapchainImages)
         {
-            return VkGetSwapchainImagesKHRSection.GetSwapchainImagesKHR(info, swapchain, out pSwapchainImages);
+            return VkGetSwapchainImagesKHRSection.GetSwapchainImagesKHR(Info, swapchain, out pSwapchainImages);
         }
 
         public MgResult AcquireNextImageKHR(IMgSwapchainKHR swapchain, ulong timeout, IMgSemaphore semaphore, IMgFence fence, out uint pImageIndex)
         {
-            return VkAcquireNextImageKHRSection.AcquireNextImageKHR(info, swapchain, timeout, semaphore, fence, out pImageIndex);
+            return VkAcquireNextImageKHRSection.AcquireNextImageKHR(Info, swapchain, timeout, semaphore, fence, out pImageIndex);
         }
 
         public MgResult CreateObjectTableNVX(MgObjectTableCreateInfoNVX pCreateInfo, IMgAllocationCallbacks allocator, out IMgObjectTableNVX pObjectTable)
         {
-            return VkCreateObjectTableNVXSection.CreateObjectTableNVX(info, pCreateInfo, allocator, out pObjectTable);
+            return VkCreateObjectTableNVXSection.CreateObjectTableNVX(Info, pCreateInfo, allocator, out pObjectTable);
         }
 
         public MgResult CreateIndirectCommandsLayoutNVX(MgIndirectCommandsLayoutCreateInfoNVX pCreateInfo, IMgAllocationCallbacks allocator, out IMgIndirectCommandsLayoutNVX pIndirectCommandsLayout)
         {
-            return VkCreateIndirectCommandsLayoutNVXSection.CreateIndirectCommandsLayoutNVX(info, pCreateInfo, allocator, out pIndirectCommandsLayout);
+            return VkCreateIndirectCommandsLayoutNVXSection.CreateIndirectCommandsLayoutNVX(Info, pCreateInfo, allocator, out pIndirectCommandsLayout);
         }
 
         public MgResult AcquireNextImage2KHR(MgAcquireNextImageInfoKHR pAcquireInfo, ref uint pImageIndex)
         {
-            return VkAcquireNextImage2KHRSection.AcquireNextImage2KHR(info, pAcquireInfo, ref pImageIndex);
+            return VkAcquireNextImage2KHRSection.AcquireNextImage2KHR(Info, pAcquireInfo, ref pImageIndex);
         }
 
         public MgResult BindAccelerationStructureMemoryNV(MgBindAccelerationStructureMemoryInfoNV[] pBindInfos)
         {
-            return VkBindAccelerationStructureMemoryNVSection.BindAccelerationStructureMemoryNV(info, pBindInfos);
+            return VkBindAccelerationStructureMemoryNVSection.BindAccelerationStructureMemoryNV(Info, pBindInfos);
         }
 
         public MgResult BindBufferMemory2(MgBindBufferMemoryInfo[] pBindInfos)
         {
-            return VkBindBufferMemory2Section.BindBufferMemory2(info, pBindInfos);
+            return VkBindBufferMemory2Section.BindBufferMemory2(Info, pBindInfos);
         }
 
         public MgResult BindImageMemory2(MgBindImageMemoryInfo[] pBindInfos)
         {
-            return VkBindImageMemory2Section.BindImageMemory2(info, pBindInfos);
+            return VkBindImageMemory2Section.BindImageMemory2(Info, pBindInfos);
         }
 
         public MgResult CreateAccelerationStructureNV(MgAccelerationStructureCreateInfoNV pCreateInfo, IMgAllocationCallbacks pAllocator, out IMgAccelerationStructureNV pAccelerationStructure)
         {
-            return VkCreateAccelerationStructureNVSection.CreateAccelerationStructureNV(info, pCreateInfo, pAllocator, out pAccelerationStructure);
+            return VkCreateAccelerationStructureNVSection.CreateAccelerationStructureNV(Info, pCreateInfo, pAllocator, out pAccelerationStructure);
         }
 
         public MgResult CreateDescriptorUpdateTemplate(MgDescriptorUpdateTemplateCreateInfo pCreateInfo, IMgAllocationCallbacks pAllocator, out IMgDescriptorUpdateTemplate pDescriptorUpdateTemplate)
         {
-            return VkCreateDescriptorUpdateTemplateSection.CreateDescriptorUpdateTemplate(info, pCreateInfo, pAllocator, out pDescriptorUpdateTemplate);
+            return VkCreateDescriptorUpdateTemplateSection.CreateDescriptorUpdateTemplate(Info, pCreateInfo, pAllocator, out pDescriptorUpdateTemplate);
         }
 
         public MgResult CreateRayTracingPipelinesNV(IMgPipelineCache pipelineCache, MgRayTracingPipelineCreateInfoNV[] pCreateInfos, IMgAllocationCallbacks pAllocator, out IMgPipeline[] pPipelines)
         {
-            return VkCreateRayTracingPipelinesNVSection.CreateRayTracingPipelinesNV(info, pipelineCache, pCreateInfos, pAllocator, out pPipelines);
+            return VkCreateRayTracingPipelinesNVSection.CreateRayTracingPipelinesNV(Info, pipelineCache, pCreateInfos, pAllocator, out pPipelines);
         }
 
         public MgResult CreateRenderPass2KHR(MgRenderPassCreateInfo2KHR pCreateInfo, IMgAllocationCallbacks pAllocator, out IMgRenderPass pRenderPass)
         {
-            return VkCreateRenderPass2KHRSection.CreateRenderPass2KHR(info, pCreateInfo, pAllocator, out pRenderPass);
+            return VkCreateRenderPass2KHRSection.CreateRenderPass2KHR(Info, pCreateInfo, pAllocator, out pRenderPass);
         }
 
         public MgResult CreateSamplerYcbcrConversion(MgSamplerYcbcrConversionCreateInfo pCreateInfo, IMgAllocationCallbacks pAllocator, IMgSamplerYcbcrConversion pYcbcrConversion)

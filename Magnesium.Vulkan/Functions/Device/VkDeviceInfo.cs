@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Magnesium.Vulkan
+namespace Magnesium.Vulkan.Functions.Device
 {
     public class VkDeviceInfo
     {

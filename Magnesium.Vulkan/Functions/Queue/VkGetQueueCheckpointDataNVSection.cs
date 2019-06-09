@@ -6,12 +6,32 @@ namespace Magnesium.Vulkan.Functions.Queue
 	public class VkGetQueueCheckpointDataNVSection
 	{
 		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe void vkGetQueueCheckpointDataNV(IntPtr queue, UInt32* pCheckpointDataCount, VkCheckpointDataNV* pCheckpointData);
+        internal extern static void vkGetQueueCheckpointDataNV(IntPtr queue, ref UInt32 pCheckpointDataCount, [In, Out] VkCheckpointDataNV[] pCheckpointData);
 
-		public static void GetQueueCheckpointDataNV(VkQueueInfo info, out MgCheckpointDataNV[] pCheckpointData)
-		{
-            // TODO: add implementation
-            throw new NotImplementedException();
+        public static void GetQueueCheckpointDataNV(VkQueueInfo info, out MgCheckpointDataNV[] pCheckpointData)
+        {
+            var pCheckpointDataCount = 0U;
+
+            vkGetQueueCheckpointDataNV(info.Handle, ref pCheckpointDataCount, null);
+
+            pCheckpointData = new MgCheckpointDataNV[pCheckpointDataCount];
+            if (pCheckpointDataCount > 0)
+            {
+                var bCheckpointData = new VkCheckpointDataNV[pCheckpointDataCount];
+
+                vkGetQueueCheckpointDataNV(info.Handle, ref pCheckpointDataCount, bCheckpointData);
+
+                for (var i = 0U; i < pCheckpointDataCount; i += 1)
+                {
+                    var current = bCheckpointData[i];
+
+                    pCheckpointData[i] = new MgCheckpointDataNV
+                    {
+                        Stage = current.stage,
+                        CheckpointMarker = current.pCheckpointMarker,
+                    };
+                }
+            }
         }
-	}
+    }
 }

@@ -61,14 +61,14 @@ namespace Magnesium.Vulkan
 		//[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		//internal extern static void vkGetDeviceQueue(IntPtr device, UInt32 queueFamilyIndex, UInt32 queueIndex, ref IntPtr pQueue);
 
-		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe MgResult vkQueueSubmit(IntPtr queue, UInt32 submitCount, VkSubmitInfo* pSubmits, UInt64 fence);
+		//[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		//internal extern static unsafe MgResult vkQueueSubmit(IntPtr queue, UInt32 submitCount, VkSubmitInfo* pSubmits, UInt64 fence);
 
-		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static MgResult vkQueueWaitIdle(IntPtr queue);
+		//[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		//internal extern static MgResult vkQueueWaitIdle(IntPtr queue);
 
-		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static MgResult vkDeviceWaitIdle(IntPtr device);
+		//[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		//internal extern static MgResult vkDeviceWaitIdle(IntPtr device);
 
 		//[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		//internal extern static unsafe MgResult vkAllocateMemory(IntPtr device, VkMemoryAllocateInfo* pAllocateInfo, IntPtr pAllocator, UInt64* pMemory);
@@ -109,8 +109,8 @@ namespace Magnesium.Vulkan
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkGetPhysicalDeviceSparseImageFormatProperties(IntPtr physicalDevice, MgFormat format, VkImageType type, MgSampleCountFlagBits samples, MgImageUsageFlagBits usage, MgImageTiling tiling, ref UInt32 pPropertyCount, [In, Out] VkSparseImageFormatProperties[] pProperties);
 
-		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe MgResult vkQueueBindSparse(IntPtr queue, UInt32 bindInfoCount, VkBindSparseInfo* pBindInfo, UInt64 fence);
+		//[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		//internal extern static unsafe MgResult vkQueueBindSparse(IntPtr queue, UInt32 bindInfoCount, VkBindSparseInfo* pBindInfo, UInt64 fence);
 
 		//[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		//internal extern static MgResult vkCreateFence(IntPtr device, ref VkFenceCreateInfo pCreateInfo, IntPtr pAllocator, ref UInt64 pFence);
@@ -472,8 +472,8 @@ namespace Magnesium.Vulkan
 		//[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		//internal extern static MgResult vkAcquireNextImageKHR(IntPtr device, UInt64 swapchain, UInt64 timeout, UInt64 semaphore, UInt64 fence, ref UInt32 pImageIndex);
 
-		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static MgResult vkQueuePresentKHR(IntPtr queue, ref VkPresentInfoKHR pPresentInfo);
+		//[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		//internal extern static MgResult vkQueuePresentKHR(IntPtr queue, ref VkPresentInfoKHR pPresentInfo);
 
 		//[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		//internal extern static MgResult vkCreateViSurfaceNN(IntPtr instance, [In, Out] VkViSurfaceCreateInfoNN pCreateInfo, IntPtr pAllocator, ref UInt64 pSurface);
@@ -821,14 +821,14 @@ internal extern static MgResult vkGetDeviceGroupSurfacePresentModesKHR(IntPtr de
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static unsafe MgResult vkSetDebugUtilsObjectTagEXT(IntPtr device, VkDebugUtilsObjectTagInfoExt pTagInfo);
         **/
-        [DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static void vkQueueBeginDebugUtilsLabelEXT(IntPtr queue, ref VkDebugUtilsLabelEXT pLabelInfo);
+  //      [DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		//internal extern static void vkQueueBeginDebugUtilsLabelEXT(IntPtr queue, ref VkDebugUtilsLabelEXT pLabelInfo);
 
-		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static void vkQueueEndDebugUtilsLabelEXT(IntPtr queue);
+		//[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		//internal extern static void vkQueueEndDebugUtilsLabelEXT(IntPtr queue);
 
-		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static void vkQueueInsertDebugUtilsLabelEXT(IntPtr queue, ref VkDebugUtilsLabelEXT pLabelInfo);
+		//[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		//internal extern static void vkQueueInsertDebugUtilsLabelEXT(IntPtr queue, ref VkDebugUtilsLabelEXT pLabelInfo);
         /**
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkCmdBeginDebugUtilsLabelEXT(IntPtr commandBuffer, [In, Out] VkDebugUtilsLabelExt pLabelInfo);
@@ -881,8 +881,8 @@ internal extern static MgResult vkGetDeviceGroupSurfacePresentModesKHR(IntPtr de
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkCmdSetCheckpointNV(IntPtr commandBuffer, IntPtr pCheckpointMarker);
         **/
-		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static void vkGetQueueCheckpointDataNV(IntPtr queue, ref UInt32 pCheckpointDataCount, [In, Out] VkCheckpointDataNV[] pCheckpointData);
+		//[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		//internal extern static void vkGetQueueCheckpointDataNV(IntPtr queue, ref UInt32 pCheckpointDataCount, [In, Out] VkCheckpointDataNV[] pCheckpointData);
         /**
 		[DllImport(VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkCmdBindTransformFeedbackBuffersEXT(IntPtr commandBuffer, UInt32 firstBinding, UInt32 bindingCount, UInt64[] pBuffers, UInt64[] pOffsets, UInt64[] pSizes);

@@ -6,11 +6,30 @@ namespace Magnesium.Vulkan.Functions.Queue
 	public class VkQueueInsertDebugUtilsLabelEXTSection
 	{
 		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static void vkQueueInsertDebugUtilsLabelEXT(IntPtr queue, [In, Out] VkDebugUtilsLabelEXT pLabelInfo);
+        internal extern static void vkQueueInsertDebugUtilsLabelEXT(IntPtr queue, ref VkDebugUtilsLabelEXT pLabelInfo);
 
-		public static void QueueInsertDebugUtilsLabelEXT(VkQueueInfo info, MgDebugUtilsLabelEXT labelInfo)
-		{
-			// TODO: add implementation
-		}
-	}
+        public static void QueueInsertDebugUtilsLabelEXT(VkQueueInfo info, MgDebugUtilsLabelEXT labelInfo)
+        {
+            var pLabelName = IntPtr.Zero;
+
+            try
+            {
+                pLabelName = VkInteropsUtility.NativeUtf8FromString(labelInfo.LabelName);
+
+                var lbl = new VkDebugUtilsLabelEXT
+                {
+                    sType = VkStructureType.StructureTypeDebugUtilsLabelExt,
+                    pNext = IntPtr.Zero,
+                    pLabelName = pLabelName,
+                    color = labelInfo.Color,
+                };
+
+                vkQueueInsertDebugUtilsLabelEXT(info.Handle, ref lbl);
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(pLabelName);
+            }
+        }
+    }
 }
