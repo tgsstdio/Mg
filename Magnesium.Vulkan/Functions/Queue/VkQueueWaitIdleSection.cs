@@ -6,7 +6,7 @@ namespace Magnesium.Vulkan.Functions.Queue
 	public class VkQueueWaitIdleSection
 	{
 		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static VkResult vkQueueWaitIdle(IntPtr queue);
+		internal extern static MgResult vkQueueWaitIdle(IntPtr queue);
 
 		public static MgResult QueueWaitIdle(VkQueueInfo info)
 		{

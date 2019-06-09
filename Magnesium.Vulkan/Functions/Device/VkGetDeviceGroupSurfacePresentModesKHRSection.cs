@@ -6,7 +6,7 @@ namespace Magnesium.Vulkan.Functions.Device
 	public class VkGetDeviceGroupSurfacePresentModesKHRSection
 	{
 		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static VkResult vkGetDeviceGroupSurfacePresentModesKHR(IntPtr device, UInt64 surface, ref VkDeviceGroupPresentModeFlagsKHR pModes);
+		internal extern static MgResult vkGetDeviceGroupSurfacePresentModesKHR(IntPtr device, UInt64 surface, ref VkDeviceGroupPresentModeFlagsKHR pModes);
 
 		public static MgResult GetDeviceGroupSurfacePresentModesKHR(VkDeviceInfo info, IMgSurfaceKHR surface, out MgDeviceGroupPresentModeFlagBitsKHR pModes)
 		{

@@ -6,7 +6,7 @@ namespace Magnesium.Vulkan.Functions.PhysicalDevice
 	public class VkGetPhysicalDeviceDisplayPlanePropertiesKHRSection
 	{
 		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe VkResult vkGetPhysicalDeviceDisplayPlanePropertiesKHR(IntPtr physicalDevice, UInt32* pPropertyCount, VkDisplayPlanePropertiesKHR* pProperties);
+		internal extern static unsafe MgResult vkGetPhysicalDeviceDisplayPlanePropertiesKHR(IntPtr physicalDevice, UInt32* pPropertyCount, VkDisplayPlanePropertiesKHR* pProperties);
 
 		public static MgResult GetPhysicalDeviceDisplayPlanePropertiesKHR(VkPhysicalDeviceInfo info, out MgDisplayPlanePropertiesKHR[] pProperties)
 		{

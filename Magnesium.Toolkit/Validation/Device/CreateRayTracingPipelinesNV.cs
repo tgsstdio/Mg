@@ -5,7 +5,8 @@ namespace Magnesium.Toolkit.Validation.Device
 	{
 		public static void Validate(IMgPipelineCache pipelineCache, MgRayTracingPipelineCreateInfoNV[] pCreateInfos, IMgAllocationCallbacks pAllocator)
 		{
-			// TODO: add validation
-		}
+            if (pCreateInfos == null)
+                throw new ArgumentNullException(nameof(pCreateInfos));
+        }
 	}
 }

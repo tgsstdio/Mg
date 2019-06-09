@@ -6,11 +6,12 @@ namespace Magnesium.Vulkan.Functions.Device
 	public class VkGetSwapchainCounterEXTSection
 	{
 		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static VkResult vkGetSwapchainCounterEXT(IntPtr device, UInt64 swapchain, VkSurfaceCounterFlagBitsEXT counter, ref UInt64 pCounterValue);
+		internal extern static MgResult vkGetSwapchainCounterEXT(IntPtr device, UInt64 swapchain, VkSurfaceCounterFlagBitsEXT counter, ref UInt64 pCounterValue);
 
 		public static MgResult GetSwapchainCounterEXT(VkDeviceInfo info, IMgSwapchainKHR swapchain, MgSurfaceCounterFlagBitsEXT counter, ref UInt64 pCounterValue)
 		{
-			// TODO: add implementation
-		}
+            // TODO: add implementation
+            throw new NotImplementedException();
+        }
 	}
 }

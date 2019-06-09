@@ -6,7 +6,7 @@ namespace Magnesium.Vulkan.Functions.Device
 	public class VkGetMemoryHostPointerPropertiesEXTSection
 	{
 		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe VkResult vkGetMemoryHostPointerPropertiesEXT(IntPtr device, VkExternalMemoryHandleTypeFlagBits handleType, IntPtr pHostPointer, VkMemoryHostPointerPropertiesEXT* pMemoryHostPointerProperties);
+		internal extern static unsafe MgResult vkGetMemoryHostPointerPropertiesEXT(IntPtr device, VkExternalMemoryHandleTypeFlagBits handleType, IntPtr pHostPointer, VkMemoryHostPointerPropertiesEXT* pMemoryHostPointerProperties);
 
 		public static MgResult GetMemoryHostPointerPropertiesEXT(VkDeviceInfo info, MgExternalMemoryHandleTypeFlagBits handleType, IntPtr pHostPointer, out MgMemoryHostPointerPropertiesEXT pMemoryHostPointerProperties)
 		{
