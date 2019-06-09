@@ -5,7 +5,8 @@ namespace Magnesium.Toolkit.Validation.Device
 	{
 		public static void Validate(IMgPipelineCache pipelineCache, MgComputePipelineCreateInfo[] pCreateInfos, IMgAllocationCallbacks allocator)
 		{
-			// TODO: add validation
-		}
+            if (pCreateInfos == null)
+                throw new ArgumentNullException(nameof(pCreateInfos));
+        }
 	}
 }

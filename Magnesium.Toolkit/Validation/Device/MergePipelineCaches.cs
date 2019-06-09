@@ -5,7 +5,8 @@ namespace Magnesium.Toolkit.Validation.Device
 	{
 		public static void Validate(IMgPipelineCache dstCache, IMgPipelineCache[] pSrcCaches)
 		{
-			// TODO: add validation
-		}
+            if (pSrcCaches == null)
+                throw new ArgumentNullException(nameof(pSrcCaches));
+        }
 	}
 }

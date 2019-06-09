@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan.Functions.Device
@@ -6,11 +7,16 @@ namespace Magnesium.Vulkan.Functions.Device
 	public class VkGetFenceStatusSection
 	{
 		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static VkResult vkGetFenceStatus(IntPtr device, UInt64 fence);
+        internal extern static MgResult vkGetFenceStatus(IntPtr device, UInt64 fence);
 
-		public static MgResult GetFenceStatus(VkDeviceInfo info, IMgFence fence)
-		{
-			// TODO: add implementation
-		}
-	}
+        public static MgResult GetFenceStatus(VkDeviceInfo info, IMgFence fence)
+        {
+            Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
+
+            var bFence = (VkFence)fence;
+            Debug.Assert(bFence != null);
+
+            return vkGetFenceStatus(info.Handle, bFence.Handle);
+        }
+    }
 }

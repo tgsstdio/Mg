@@ -167,6 +167,7 @@
     <Compile Include="Functions\Device\VkInvalidateMappedMemoryRangesSection.cs" />
     <Compile Include="Functions\Device\VkMergePipelineCachesSection.cs" />
     <Compile Include="Functions\Device\VkMergeValidationCachesEXTSection.cs" />
+    <Compile Include="Functions\Device\VkPipelineCreationUtility.cs" />
     <Compile Include="Functions\Device\VkRegisterDeviceEventEXTSection.cs" />
     <Compile Include="Functions\Device\VkRegisterDisplayEventEXTSection.cs" />
     <Compile Include="Functions\Device\VkResetFencesSection.cs" />
@@ -220,6 +221,7 @@
     <Compile Include="Functions\PhysicalDevice\VkGetPhysicalDeviceSurfacePresentModesKHRSection.cs" />
     <Compile Include="Functions\PhysicalDevice\VkGetPhysicalDeviceSurfaceSupportKHRSection.cs" />
     <Compile Include="Functions\PhysicalDevice\VkGetPhysicalDeviceWin32PresentationSupportKHRSection.cs" />
+    <Compile Include="Functions\PhysicalDevice\VkPhysicalDeviceInfo.cs" />
     <Compile Include="Functions\PhysicalDevice\VkReleaseDisplayEXTSection.cs" />
     <Compile Include="Functions\Queue\VkGetQueueCheckpointDataNVSection.cs" />
     <Compile Include="Functions\Queue\VkQueueBeginDebugUtilsLabelEXTSection.cs" />
@@ -276,7 +278,6 @@
     <Compile Include="Enums\VkPrimitiveTopology.cs" />
     <Compile Include="Enums\VkQueryControlFlags.cs" />
     <Compile Include="Enums\VkQueryPipelineStatisticFlags.cs" />
-    <Compile Include="Enums\VkQueryResultFlags.cs" />
     <Compile Include="Enums\VkQueryType.cs" />
     <Compile Include="Enums\VkQueueFlags.cs" />
     <Compile Include="Enums\VkRasterizationOrderAMD.cs" />

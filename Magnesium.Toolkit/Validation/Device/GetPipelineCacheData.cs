@@ -5,7 +5,8 @@ namespace Magnesium.Toolkit.Validation.Device
 	{
 		public static void Validate(IMgPipelineCache pipelineCache)
 		{
-			// TODO: add validation
-		}
+            if (pipelineCache == null)
+                throw new ArgumentNullException(nameof(pipelineCache));
+        }
 	}
 }

@@ -5,7 +5,8 @@ namespace Magnesium.Toolkit.Validation.Device
 	{
 		public static void Validate(MgEventCreateInfo pCreateInfo, IMgAllocationCallbacks allocator)
 		{
-			// TODO: add validation
-		}
+            if (pCreateInfo == null)
+                throw new ArgumentNullException(nameof(pCreateInfo));
+        }
 	}
 }

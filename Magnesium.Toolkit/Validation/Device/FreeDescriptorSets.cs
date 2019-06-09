@@ -5,7 +5,15 @@ namespace Magnesium.Toolkit.Validation.Device
 	{
 		public static void Validate(IMgDescriptorPool descriptorPool, IMgDescriptorSet[] pDescriptorSets)
 		{
-			// TODO: add validation
-		}
+            if (descriptorPool == null)
+                throw new ArgumentNullException(nameof(descriptorPool));
+
+            if (pDescriptorSets == null)
+                throw new ArgumentNullException(nameof(pDescriptorSets));
+
+            var descriptorSetCount = (uint)pDescriptorSets.Length;
+            if (descriptorSetCount == 0)
+                throw new ArgumentOutOfRangeException(nameof(pDescriptorSets.Length) + " == 0");
+        }
 	}
 }

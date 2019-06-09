@@ -61,1512 +61,141 @@ namespace Magnesium.Vulkan
 		}
 
 		public void GetImageMemoryRequirements(IMgImage image, out MgMemoryRequirements memoryRequirements)
-		{
-			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
-
-			var bImage = (VkImage)image;
-			Debug.Assert(bImage != null);
-
-			unsafe
-			{
-				var memReqs = stackalloc MgMemoryRequirements[1];
-				Interops.vkGetImageMemoryRequirements(info, bImage.Handle, memReqs);
-				memoryRequirements = memReqs[0];
-			}
-		}
-
-		public void GetImageSparseMemoryRequirements(IMgImage image, out MgSparseImageMemoryRequirements[] sparseMemoryRequirements)
-		{
-			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
-
-			var bImage = (VkImage)image;
-			Debug.Assert(bImage != null);
-
-			var requirements = new uint[1];
-			unsafe
-			{
-				fixed (uint* count = &requirements[0])
-				{
-					Interops.vkGetImageSparseMemoryRequirements(info, bImage.Handle, count, null);
-				}
-			}
-
-			var arrayLength = (int)requirements[0];
-			sparseMemoryRequirements = new MgSparseImageMemoryRequirements[arrayLength];
-
-			GCHandle smrHandle = GCHandle.Alloc(sparseMemoryRequirements, GCHandleType.Pinned);
-
-			try
-			{
-				unsafe
-				{
-					IntPtr pinnedArray = smrHandle.AddrOfPinnedObject();
-					var sparseReqs = (MgSparseImageMemoryRequirements*)pinnedArray.ToPointer();
-
-					fixed (uint* count = &requirements[0])
-					{
-						Interops.vkGetImageSparseMemoryRequirements(info, bImage.Handle, count, sparseReqs);
-					}
-				}
-			}
-			finally
-			{
-				smrHandle.Free();
-			}
-		}
-
-		public MgResult CreateFence(MgFenceCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgFence fence)
-		{
-			if (pCreateInfo == null)
-				throw new ArgumentNullException(nameof(pCreateInfo));
-
-			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
-
-			var allocatorPtr = GetAllocatorHandle(allocator);
-
-			var createInfo = new VkFenceCreateInfo
-			{
-				sType = VkStructureType.StructureTypeFenceCreateInfo,
-				pNext = IntPtr.Zero,
-				flags = (VkFenceCreateFlags)pCreateInfo.Flags,
-			};
-
-			ulong pFence = 0UL;
-			var result = Interops.vkCreateFence(info, ref createInfo, allocatorPtr, ref pFence);
-			fence = new VkFence(pFence);
-			return result;
-		}
-
-		public MgResult ResetFences(IMgFence[] pFences)
-		{
-			if (pFences == null)
-				throw new ArgumentNullException(nameof(pFences));
-
-			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");		
-
-			var fenceCount = (uint)pFences.Length;
-
-			var fenceHandles = new ulong[pFences.Length];
-			for (var i = 0; i < fenceCount; ++i)
-			{
-				var bFence = (VkFence) pFences[i];
-				Debug.Assert(bFence != null);
-				fenceHandles[i] = bFence.Handle;
-			}
-
-			return Interops.vkResetFences(info, fenceCount, fenceHandles);
-		}
-
-		public MgResult GetFenceStatus(IMgFence fence)
-		{
-			if (fence == null)
-				throw new ArgumentNullException(nameof(fence));
-
-			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
-
-			var bFence = (VkFence) fence;
-			Debug.Assert(bFence != null);
-
-			return Interops.vkGetFenceStatus(info, bFence.Handle);
-		}
-
-		public MgResult WaitForFences(IMgFence[] pFences, bool waitAll, ulong timeout)
-		{
-			if (pFences == null)
-				throw new ArgumentNullException(nameof(pFences));
-
-			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
-
-			var fenceCount = (uint)pFences.Length;
-
-			var fenceHandles = new ulong[pFences.Length];
-			for (var i = 0; i < fenceCount; ++i)
-			{
-				var bFence = (VkFence)pFences[i];
-				Debug.Assert(bFence != null);
-				fenceHandles[i] = bFence.Handle;
-			}
-
-			return Interops.vkWaitForFences(info, fenceCount, fenceHandles, VkBool32.ConvertTo(waitAll), timeout);
-		}
-
-		public MgResult CreateSemaphore(MgSemaphoreCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgSemaphore pSemaphore)
-		{
-			if (pCreateInfo == null)
-				throw new ArgumentNullException(nameof(pCreateInfo));
-
-			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
-
-			var allocatorPtr = GetAllocatorHandle(allocator);
-
-			var createInfo = new VkSemaphoreCreateInfo
-			{
-				sType = VkStructureType.StructureTypeSemaphoreCreateInfo,
-				pNext = IntPtr.Zero,
-				flags = pCreateInfo.Flags,
-			};
-
-			var internalHandle = 0UL;
-			var result = Interops.vkCreateSemaphore(info, ref createInfo, allocatorPtr, ref internalHandle);
-			pSemaphore = new VkSemaphore(internalHandle);
-
-			return result;
-		}
-
-		public MgResult CreateEvent(MgEventCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgEvent @event)
-		{
-			if (pCreateInfo == null)
-				throw new ArgumentNullException(nameof(pCreateInfo));
-
-			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
-
-			var allocatorPtr = GetAllocatorHandle(allocator);
-
-			var createInfo = new VkEventCreateInfo
-			{
-				sType = VkStructureType.StructureTypeEventCreateInfo,
-				pNext = IntPtr.Zero,
-				flags = pCreateInfo.Flags,
-			};
-
-			var eventHandle = 0UL;
-			var result = Interops.vkCreateEvent(info, ref createInfo, allocatorPtr, ref eventHandle);
-			@event = new VkEvent(eventHandle);
-
-			return result;
-		}
-
-		public MgResult CreateQueryPool(MgQueryPoolCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgQueryPool queryPool)
-		{
-			if (pCreateInfo == null)
-				throw new ArgumentNullException(nameof(pCreateInfo));
-
-			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
-
-			var allocatorPtr = GetAllocatorHandle(allocator);
-
-			var createInfo = new VkQueryPoolCreateInfo
-			{
-				sType = VkStructureType.StructureTypeQueryPoolCreateInfo,
-				pNext = IntPtr.Zero,
-				flags = pCreateInfo.Flags,
-				queryType = (VkQueryType)pCreateInfo.QueryType,
-				queryCount = (uint)pCreateInfo.QueryCount,
-				pipelineStatistics = (VkQueryPipelineStatisticFlags)pCreateInfo.PipelineStatistics,
-			};
-
-			var internalHandle = 0UL;
-			var result = Interops.vkCreateQueryPool(info, ref createInfo, allocatorPtr, ref internalHandle);
-			queryPool = new VkQueryPool(internalHandle);
-
-			return result;
-		}
-
-		public MgResult GetQueryPoolResults(IMgQueryPool queryPool, uint firstQuery, uint queryCount, IntPtr dataSize, IntPtr pData, ulong stride, MgQueryResultFlagBits flags)
-		{
-			if (queryPool == null)
-				throw new ArgumentNullException(nameof(queryPool));
-
-			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
-
-			var bQueryPool = (VkQueryPool)queryPool;
-			Debug.Assert(bQueryPool != null);
-
-			return Interops.vkGetQueryPoolResults(info, bQueryPool.Handle, firstQuery, queryCount, dataSize, pData, stride, (VkQueryResultFlags)flags);
-		}
-
-		public MgResult CreateBuffer(MgBufferCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgBuffer pBuffer)
-		{
-			if (pCreateInfo == null)
-				throw new ArgumentNullException(nameof(pCreateInfo));
-
-			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
-
-			var allocatorPtr = GetAllocatorHandle(allocator);
-
-			var queueFamilyIndexCount = 0U;
-			var pQueueFamilyIndices = IntPtr.Zero;
-
-			try
-			{
-				if (pCreateInfo.QueueFamilyIndices != null)
-				{
-					queueFamilyIndexCount = (uint)pCreateInfo.QueueFamilyIndices.Length;
-					pQueueFamilyIndices = VkInteropsUtility.AllocateUInt32Array(pCreateInfo.QueueFamilyIndices);
-				}
-
-				var createInfo = new VkBufferCreateInfo
-				{
-					sType = VkStructureType.StructureTypeBufferCreateInfo,
-					pNext = IntPtr.Zero,
-					flags = (VkBufferCreateFlags)pCreateInfo.Flags,
-					sharingMode = (VkSharingMode)pCreateInfo.SharingMode,
-					usage = (VkBufferUsageFlags)pCreateInfo.Usage,
-					size = pCreateInfo.Size,
-					queueFamilyIndexCount = queueFamilyIndexCount,
-					pQueueFamilyIndices = pQueueFamilyIndices,
-
-				};
-
-				var internalHandle = 0UL;
-				var result = Interops.vkCreateBuffer(info, ref createInfo, allocatorPtr, ref internalHandle);
-				pBuffer = new VkBuffer(internalHandle);
-				return result;
-			}
-			finally
-			{
-				if (pQueueFamilyIndices != IntPtr.Zero)
-				{
-					Marshal.FreeHGlobal(pQueueFamilyIndices);
-				}
-			}
-		}
-
-		public MgResult CreateBufferView(MgBufferViewCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgBufferView pView)
-		{
-			if (pCreateInfo == null)
-				throw new ArgumentNullException(nameof(pCreateInfo));
-
-			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
-
-			var allocatorPtr = GetAllocatorHandle(allocator);
-
-			var bBuffer = (VkBuffer)pCreateInfo.Buffer;
-			Debug.Assert(bBuffer != null);
-
-			var createInfo = new VkBufferViewCreateInfo
-			{
-				sType = VkStructureType.StructureTypeBufferViewCreateInfo,
-				pNext = IntPtr.Zero,
-				flags = pCreateInfo.Flags,
-				buffer = bBuffer.Handle,
-				format = pCreateInfo.Format,
-				offset = pCreateInfo.Offset,
-				range = pCreateInfo.Range,
-			};
-			var internalHandle = 0UL;
-			var result = Interops.vkCreateBufferView(info, ref createInfo, allocatorPtr, ref internalHandle);
-			pView = new VkBufferView(internalHandle);
-			return result;
-		}
-
-		public MgResult CreateImage(MgImageCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgImage pImage)
-		{
-			if (pCreateInfo == null)
-				throw new ArgumentNullException(nameof(pCreateInfo));
-
-			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
-
-			var allocatorPtr = GetAllocatorHandle(allocator);
-
-			uint queueFamilyIndexCount = 0;
-			var pQueueFamilyIndices = IntPtr.Zero;
-
-			try
-			{
-				if (pCreateInfo.QueueFamilyIndices != null)
-				{
-					queueFamilyIndexCount = (uint)pCreateInfo.QueueFamilyIndices.Length;
-					pQueueFamilyIndices = VkInteropsUtility.AllocateUInt32Array(pCreateInfo.QueueFamilyIndices);
-				}
-
-				ulong internalHandle = 0;
-
-				var createInfo = new VkImageCreateInfo
-				{
-					sType = VkStructureType.StructureTypeImageCreateInfo,
-					pNext = IntPtr.Zero,
-					flags = pCreateInfo.Flags,
-					imageType = (VkImageType)pCreateInfo.ImageType,
-					format = pCreateInfo.Format,
-					extent = pCreateInfo.Extent,
-					mipLevels = pCreateInfo.MipLevels,
-					arrayLayers = pCreateInfo.ArrayLayers,
-					samples = pCreateInfo.Samples,
-					tiling = pCreateInfo.Tiling,
-					usage = pCreateInfo.Usage,
-					sharingMode = (VkSharingMode)pCreateInfo.SharingMode,
-					queueFamilyIndexCount = queueFamilyIndexCount,
-					pQueueFamilyIndices = pQueueFamilyIndices,
-					initialLayout = pCreateInfo.InitialLayout,
-				};
-				var result = Interops.vkCreateImage(info, ref createInfo, allocatorPtr, ref internalHandle);
-				pImage = new VkImage(internalHandle);
-				return result;
-			}
-			finally
-			{
-				if (pQueueFamilyIndices != IntPtr.Zero)
-				{
-					Marshal.FreeHGlobal(pQueueFamilyIndices);
-				}
-			}
-		}
-
-		public void GetImageSubresourceLayout(IMgImage image, MgImageSubresource pSubresource, out MgSubresourceLayout pLayout)
-		{
-			if (image == null)
-				throw new ArgumentNullException(nameof(image));
-
-			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
-
-			var bImage = (VkImage)image;
-			Debug.Assert(bImage != null);
-
-			var layout = default(MgSubresourceLayout);
-			Interops.vkGetImageSubresourceLayout(this.info, bImage.Handle, pSubresource, layout);
-			pLayout = layout;
-		}
-
-		public MgResult CreateImageView(MgImageViewCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgImageView pView)
-		{
-			if (pCreateInfo == null)
-				throw new ArgumentNullException(nameof(pCreateInfo));
-
-			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
-
-			var allocatorPtr = GetAllocatorHandle(allocator);
-
-			var bImage = (VkImage) pCreateInfo.Image;
-			Debug.Assert(bImage != null);
-
-
-			var createInfo = new VkImageViewCreateInfo
-			{
-				sType = VkStructureType.StructureTypeImageViewCreateInfo,
-				pNext = IntPtr.Zero,
-				flags = pCreateInfo.Flags,
-				image = bImage.Handle,
-				viewType = (VkImageViewType) pCreateInfo.ViewType,
-				format = pCreateInfo.Format,
-				components = new VkComponentMapping
-				{
-					r =	(VkComponentSwizzle) pCreateInfo.Components.R,
-					g = (VkComponentSwizzle) pCreateInfo.Components.G,
-					b = (VkComponentSwizzle) pCreateInfo.Components.B,
-					a = (VkComponentSwizzle) pCreateInfo.Components.A,
-				},	
-				subresourceRange = pCreateInfo.SubresourceRange,                
-			};
-			ulong internalHandle = 0;
-			var result = Interops.vkCreateImageView(info, ref createInfo, allocatorPtr, ref internalHandle);
-			pView = new VkImageView(internalHandle);
-			return result;
-		}
-
-		public MgResult CreateShaderModule(MgShaderModuleCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgShaderModule pShaderModule)
-		{
-			if (pCreateInfo == null)
-				throw new ArgumentNullException(nameof(pCreateInfo));
-
-			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
-
-			var allocatorPtr = GetAllocatorHandle(allocator);
-
-			var bufferSize = (int)pCreateInfo.CodeSize;
-			var dest = Marshal.AllocHGlobal(bufferSize);
-
-			try
-			{
-
-				Debug.Assert(pCreateInfo.Code != null);
-
-				using (var ms = new MemoryStream())
-				{
-					pCreateInfo.Code.CopyTo(ms, bufferSize);
-					Marshal.Copy(ms.ToArray(), 0, dest, bufferSize);
-				}
-
-				var createInfo = new VkShaderModuleCreateInfo
-				{
-					sType = VkStructureType.StructureTypeShaderModuleCreateInfo,
-					pNext = IntPtr.Zero,
-					flags = pCreateInfo.Flags,
-					codeSize = pCreateInfo.CodeSize,
-					pCode = dest
-				};
-				ulong internalHandle = 0;
-				var result = Interops.vkCreateShaderModule(info, ref createInfo, allocatorPtr, ref internalHandle);
-				pShaderModule = new VkShaderModule(internalHandle);
-				return result;
-			}
-			finally
-			{
-				Marshal.FreeHGlobal(dest);
-			}
-		}
-
-		public MgResult CreatePipelineCache(MgPipelineCacheCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgPipelineCache pPipelineCache)
-		{
-			if (pCreateInfo == null)
-				throw new ArgumentNullException(nameof(pCreateInfo));
-
-			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
-
-			var allocatorPtr = GetAllocatorHandle(allocator);
-
-			var createInfo = new VkPipelineCacheCreateInfo
-			{
-				sType = VkStructureType.StructureTypePipelineCacheCreateInfo,
-				pNext = IntPtr.Zero,
-				flags = pCreateInfo.Flags,
-				initialDataSize = pCreateInfo.InitialDataSize,
-				pInitialData = pCreateInfo.InitialData,
-			};
-
-			ulong internalHandle = 0;
-			var result = Interops.vkCreatePipelineCache(info, ref createInfo, allocatorPtr, ref internalHandle);
-			pPipelineCache = new VkPipelineCache(internalHandle);
-			return result;
-		}
-
-		public MgResult GetPipelineCacheData(IMgPipelineCache pipelineCache, out byte[] pData)
-		{
-			if (pipelineCache == null)
-				throw new ArgumentNullException(nameof(pipelineCache));
-
-			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
-
-			var bPipelineCache = (VkPipelineCache)pipelineCache;
-			Debug.Assert(bPipelineCache != null);
-
-			UIntPtr dataSize = UIntPtr.Zero;
-			var first = Interops.vkGetPipelineCacheData(info, bPipelineCache.Handle, ref dataSize, IntPtr.Zero);
-
-			if (first != MgResult.SUCCESS)
-			{
-				pData = null;
-				return first;
-			}
-
-			pData = new byte[dataSize.ToUInt64()];
-			GCHandle pinnedArray = GCHandle.Alloc(pData, GCHandleType.Pinned);
-			try
-			{
-				var dest = pinnedArray.AddrOfPinnedObject();
-				return Interops.vkGetPipelineCacheData(info, bPipelineCache.Handle, ref dataSize, dest);
-			}
-			finally
-			{
-				pinnedArray.Free();
-			}
-		}
-
-		public MgResult MergePipelineCaches(IMgPipelineCache dstCache, IMgPipelineCache[] pSrcCaches)
-		{
-			if (pSrcCaches == null)
-				throw new ArgumentNullException(nameof(pSrcCaches));			
-
-			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
-
-			var bDstCache = (VkPipelineCache)dstCache;
-			Debug.Assert(bDstCache != null);
-
-			var srcCacheCount = (UInt32) pSrcCaches.Length;
-
-			ulong[] cacheHandles = new ulong[srcCacheCount];
-			for (var i = 0; i < srcCacheCount; ++i)
-			{
-				var bCache = (VkPipelineCache) pSrcCaches[i];
-				Debug.Assert(bCache != null);
-				cacheHandles[i] = bCache.Handle;
-			}
-
-			return Interops.vkMergePipelineCaches(info, bDstCache.Handle, srcCacheCount, cacheHandles);
-		}
-
-		public MgResult CreateGraphicsPipelines(IMgPipelineCache pipelineCache, MgGraphicsPipelineCreateInfo[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgPipeline[] pPipelines)
-		{
-			if (pCreateInfos == null)
-				throw new ArgumentNullException(nameof(pCreateInfos));
-
-			if (pCreateInfos.Length == 0)
-			{
-				throw new ArgumentOutOfRangeException(nameof(pCreateInfos) + " == 0");
-			}
-
-			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
-
-			var allocatorPtr = GetAllocatorHandle(allocator);
-
-			var bPipelineCache = (VkPipelineCache)pipelineCache;
-			var bPipelineCachePtr = bPipelineCache != null ? bPipelineCache.Handle : 0UL;
-
-			var createInfoCount = (uint)pCreateInfos.Length;
-
-			VkGraphicsPipelineCreateInfo[] createInfos = new VkGraphicsPipelineCreateInfo[createInfoCount];
-
-			var attachedItems = new List<IntPtr>();
-			var maintainedHandles = new List<GCHandle>();
-
-			try
-			{
-				for (var i = 0; i < createInfoCount; ++i)
-				{
-					var current = pCreateInfos[i];
-
-					var bRenderPass = (VkRenderPass)current.RenderPass;
-					Debug.Assert(bRenderPass != null);
-
-					var bLayout = (VkPipelineLayout)current.Layout;
-					Debug.Assert(bLayout != null);
-
-					var bBasePipelineHandle = (VkPipeline)current.BasePipelineHandle;
-					var bBasePipelineHandlePtr = bBasePipelineHandle != null ? bBasePipelineHandle.Handle : 0UL;
-
-					// STAGES
-					Debug.Assert(current.Stages != null);
-
-					var stageCount = (uint)current.Stages.Length;
-					Debug.Assert(stageCount > 0);
-
-					var stageStructSize = Marshal.SizeOf(typeof(VkPipelineShaderStageCreateInfo));
-					var pStages = Marshal.AllocHGlobal((int)(stageCount * stageStructSize));
-					attachedItems.Add(pStages);
-
-					{
-						var offset = 0;
-						foreach (var stage in current.Stages)
-						{
-							var stageInfo = ExtractPipelineShaderStage(attachedItems, maintainedHandles, stage);
-							IntPtr dest = IntPtr.Add(pStages, offset);
-							Marshal.StructureToPtr(stageInfo, dest, false);
-							offset += stageStructSize;
-						}
-					}
-
-					// pVertexInputState must be a pointer to a valid VkPipelineVertexInputStateCreateInfo structure
-					Debug.Assert(current.VertexInputState != null);
-					var pVertexInputState = ExtractVertexInputState(attachedItems, current.VertexInputState);
-
-					// pInputAssemblyState must be a pointer to a valid VkPipelineInputAssemblyStateCreateInfo structure
-					Debug.Assert(current.InputAssemblyState != null);
-					var pInputAssemblyState = ExtractInputAssemblyState(attachedItems, current.InputAssemblyState);
-
-					// pRasterizationState must be a pointer to a valid VkPipelineRasterizationStateCreateInfo structure
-					Debug.Assert(current.RasterizationState != null);
-					var pRasterizationState = ExtractRasterizationState(attachedItems, current.RasterizationState);
-
-					var pTessellationState = ExtractTesselationState(attachedItems, current.TessellationState);
-
-					var pViewportState = ExtractViewportState(attachedItems, maintainedHandles, current.ViewportState);
-
-					var pMultisampleState = ExtractMultisampleState(attachedItems, current.MultisampleState);
-
-					var pDepthStencilState = ExtractDepthStencilState(attachedItems, current.DepthStencilState);
-
-					var pColorBlendState = ExtractColorBlendState(attachedItems, current.ColorBlendState);
-
-					var pDynamicState = ExtractDynamicState(attachedItems, current.DynamicState);
-
-					createInfos[i] = new VkGraphicsPipelineCreateInfo
-					{
-						sType = VkStructureType.StructureTypeGraphicsPipelineCreateInfo,
-						pNext = IntPtr.Zero,
-						flags = current.Flags,
-						stageCount = stageCount,
-						pStages = pStages,
-						pVertexInputState = pVertexInputState,
-						pInputAssemblyState = pInputAssemblyState,
-						pTessellationState = pTessellationState,
-						pViewportState = pViewportState,
-						pRasterizationState = pRasterizationState,
-						pMultisampleState = pMultisampleState,
-						pDepthStencilState = pDepthStencilState,
-						pColorBlendState = pColorBlendState,
-						pDynamicState = pDynamicState,
-						layout = bLayout.Handle,
-						renderPass = bRenderPass.Handle,
-						subpass = current.Subpass,
-						basePipelineHandle = bBasePipelineHandlePtr,
-						basePipelineIndex = current.BasePipelineIndex,
-					};
-				}
-
-				var handles = new ulong[createInfoCount];
-				var result = Interops.vkCreateGraphicsPipelines(info, bPipelineCachePtr, createInfoCount, createInfos, allocatorPtr, handles);
-
-				pPipelines = new VkPipeline[createInfoCount];
-				for (var i = 0; i < createInfoCount; ++i)
-				{
-					pPipelines[i] = new VkPipeline(handles[i]);
-				}
-				return result;
-			}
-			finally
-			{
-				foreach (var item in attachedItems)
-				{
-					Marshal.FreeHGlobal(item);
-				}
-
-				foreach (var handle in maintainedHandles)
-				{
-					handle.Free();
-				}
-			}
-		}
-
-		static IntPtr ExtractDynamicState(List<IntPtr> attachedItems, MgPipelineDynamicStateCreateInfo dynamicState)
-		{
-			if (dynamicState == null)
-				return IntPtr.Zero;
-
-			var dynamicStateCount = 0U;
-			var pDynamicStates = IntPtr.Zero;
-
-			if (dynamicState.DynamicStates != null)
-			{
-				dynamicStateCount = (uint) dynamicState.DynamicStates.Length;
-				if (dynamicStateCount > 0)
-				{
-                    var bufferSize = (int) (dynamicStateCount * sizeof(int));
-                    pDynamicStates = Marshal.AllocHGlobal(bufferSize);
-
-                    var tempData = new int[dynamicStateCount];
-                    for(var i = 0; i < dynamicStateCount; ++i) 
-                    {
-                        tempData[i] = (int) dynamicState.DynamicStates[i];
-                    }
-
-                    Marshal.Copy(tempData, 0, pDynamicStates, (int) dynamicStateCount);
-
-                    attachedItems.Add(pDynamicStates);
-				}
-			}
-
-			var dataItem = new VkPipelineDynamicStateCreateInfo
-			{
-				sType = VkStructureType.StructureTypePipelineDynamicStateCreateInfo,
-				pNext = IntPtr.Zero,
-				flags = dynamicState.Flags,
-				dynamicStateCount = dynamicStateCount,
-				pDynamicStates = pDynamicStates,
-			};
-			
-			{
-				var structSize = Marshal.SizeOf(dataItem);
-				var dest = Marshal.AllocHGlobal(structSize);
-				Marshal.StructureToPtr(dataItem, dest, false);
-				attachedItems.Add(dest);
-				return dest;
-			}
-		}
-
-		static IntPtr ExtractColorBlendState(List<IntPtr> attachedItems, MgPipelineColorBlendStateCreateInfo colorBlendState)
-		{
-			if (colorBlendState == null)
-				return IntPtr.Zero;
-
-			var pAttachments = IntPtr.Zero;
-			var attachmentCount = 0U;
-
-			if (colorBlendState.Attachments != null)
-			{
-				attachmentCount = (uint) colorBlendState.Attachments.Length;
-				if (attachmentCount > 0)
-				{
-					pAttachments = VkInteropsUtility.AllocateHGlobalArray(
-						colorBlendState.Attachments,
-						(item) =>
-						{
-							return new VkPipelineColorBlendAttachmentState
-							{
-								blendEnable = VkBool32.ConvertTo(item.BlendEnable),
-								srcColorBlendFactor = (VkBlendFactor) item.SrcColorBlendFactor,
-								dstColorBlendFactor = (VkBlendFactor) item.DstColorBlendFactor,
-								colorBlendOp = (VkBlendOp) item.ColorBlendOp,
-								srcAlphaBlendFactor = (VkBlendFactor) item.SrcAlphaBlendFactor,
-								dstAlphaBlendFactor = (VkBlendFactor) item.DstAlphaBlendFactor,
-								alphaBlendOp = (VkBlendOp) item.AlphaBlendOp,
-								colorWriteMask = (VkColorComponentFlags) item.ColorWriteMask,
-							};
-						});			
-					attachedItems.Add(pAttachments);
-				}
-			}
-
-			var dataItem = new VkPipelineColorBlendStateCreateInfo
-			{
-				sType = VkStructureType.StructureTypePipelineColorBlendStateCreateInfo,
-				pNext = IntPtr.Zero,
-				flags = colorBlendState.Flags,
-				logicOpEnable = VkBool32.ConvertTo(colorBlendState.LogicOpEnable),
-				logicOp = (VkLogicOp) colorBlendState.LogicOp,
-				attachmentCount = attachmentCount,
-				pAttachments = pAttachments,
-				blendConstants = colorBlendState.BlendConstants,
-			};
-
-			{
-				var structSize = Marshal.SizeOf(dataItem);
-				var dest = Marshal.AllocHGlobal(structSize);
-				Marshal.StructureToPtr(dataItem, dest, false);
-				attachedItems.Add(dest);
-				return dest;
-			}
-		}
-
-		static IntPtr ExtractDepthStencilState(List<IntPtr> attachedItems, MgPipelineDepthStencilStateCreateInfo depthStencilState)
-		{
-			if (depthStencilState == null)
-				return IntPtr.Zero;
-
-			var dataItem = new VkPipelineDepthStencilStateCreateInfo
-			{
-				sType = VkStructureType.StructureTypePipelineDepthStencilStateCreateInfo,
-				pNext = IntPtr.Zero,
-				flags = depthStencilState.Flags,
-				depthTestEnable = VkBool32.ConvertTo(depthStencilState.DepthTestEnable),
-				depthWriteEnable = VkBool32.ConvertTo(depthStencilState.DepthWriteEnable),
-				depthCompareOp = (VkCompareOp) depthStencilState.DepthCompareOp,
-				depthBoundsTestEnable = VkBool32.ConvertTo(depthStencilState.DepthBoundsTestEnable),
-				stencilTestEnable = VkBool32.ConvertTo(depthStencilState.StencilTestEnable),
-				front = new VkStencilOpState
-				{
-					failOp = (VkStencilOp) depthStencilState.Front.FailOp,
-					passOp = (VkStencilOp)depthStencilState.Front.PassOp,
-					depthFailOp = (VkStencilOp) depthStencilState.Front.DepthFailOp,
-					compareOp = (VkCompareOp) depthStencilState.Front.CompareOp,
-					compareMask = depthStencilState.Front.CompareMask,
-					writeMask = depthStencilState.Front.WriteMask,
-					reference = depthStencilState.Front.Reference,	
-				},					
-				back = new VkStencilOpState
-				{
-					failOp = (VkStencilOp) depthStencilState.Back.FailOp,
-					passOp = (VkStencilOp) depthStencilState.Back.PassOp,
-					depthFailOp = (VkStencilOp) depthStencilState.Back.DepthFailOp,
-					compareOp = (VkCompareOp) depthStencilState.Back.CompareOp,
-					compareMask = depthStencilState.Back.CompareMask,
-					writeMask = depthStencilState.Back.WriteMask,
-					reference = depthStencilState.Back.Reference,
-				},
-				minDepthBounds = depthStencilState.MinDepthBounds,
-				maxDepthBounds = depthStencilState.MaxDepthBounds,				
-			};
-
-			{
-				var structSize = Marshal.SizeOf(dataItem);
-				var dest = Marshal.AllocHGlobal(structSize);
-				Marshal.StructureToPtr(dataItem, dest, false);
-				attachedItems.Add(dest);
-				return dest;
-			}					
-		}
-
-		static IntPtr ExtractMultisampleState(List<IntPtr> attachedItems, MgPipelineMultisampleStateCreateInfo multisample)
-		{
-			if (multisample == null)
-				return IntPtr.Zero;
-
-			var pSampleMask = IntPtr.Zero;
-			if (multisample.SampleMask != null)
-			{
-				if (multisample.SampleMask.Length > 0)
-				{
-					pSampleMask = VkInteropsUtility.AllocateUInt32Array(multisample.SampleMask);
-					attachedItems.Add(pSampleMask);
-				}	
-			}
-
-			var dataItem = new VkPipelineMultisampleStateCreateInfo
-			{
-				sType = VkStructureType.StructureTypePipelineMultisampleStateCreateInfo,
-				pNext = IntPtr.Zero,
-				flags = multisample.Flags,
-				rasterizationSamples = multisample.RasterizationSamples,
-				sampleShadingEnable = VkBool32.ConvertTo(multisample.SampleShadingEnable),
-				minSampleShading = multisample.MinSampleShading,
-				pSampleMask = pSampleMask,
-				alphaToCoverageEnable = VkBool32.ConvertTo(multisample.AlphaToCoverageEnable),
-				alphaToOneEnable = VkBool32.ConvertTo(multisample.AlphaToOneEnable),
-			};
-
-			{
-				var structSize = Marshal.SizeOf(dataItem);
-				var dest = Marshal.AllocHGlobal(structSize);
-				Marshal.StructureToPtr(dataItem, dest, false);
-				attachedItems.Add(dest);
-				return dest;
-			}	
-		}
-
-		static IntPtr ExtractViewportState(List<IntPtr> attachedItems, List<GCHandle> maintainedHandles, MgPipelineViewportStateCreateInfo viewportState)
-		{
-			if (viewportState == null)
-				return IntPtr.Zero;
-
-			var viewportCount = 0U;
-			var pViewports = IntPtr.Zero;
-
-			if (viewportState.Viewports != null)
-			{
-				viewportCount = (uint) viewportState.Viewports.Length;
-				if (viewportCount > 0)
-				{
-					var pinnedArray = GCHandle.Alloc(viewportState.Viewports, GCHandleType.Pinned);
-					maintainedHandles.Add(pinnedArray);
-					pViewports = pinnedArray.AddrOfPinnedObject();
-				}
-			}
-
-			var scissorCount = 0U;
-			var pScissors = IntPtr.Zero;
-
-			if (viewportState.Scissors != null)
-			{
-				scissorCount = (uint) viewportState.Scissors.Length;
-				if (scissorCount > 0)
-				{
-					var pinnedArray = GCHandle.Alloc(viewportState.Scissors, GCHandleType.Pinned);
-					maintainedHandles.Add(pinnedArray);
-					pScissors = pinnedArray.AddrOfPinnedObject();					
-				}
-			}
-
-			var dataItem = new VkPipelineViewportStateCreateInfo
-			{
-				sType = VkStructureType.StructureTypePipelineViewportStateCreateInfo,
-				pNext = IntPtr.Zero,
-				flags = viewportState.Flags,
-				viewportCount = viewportCount,
-				pViewports = pViewports,
-				scissorCount = scissorCount,
-				pScissors = pScissors,
-			};
-
-			{
-				var structSize = Marshal.SizeOf(dataItem);
-				var dest = Marshal.AllocHGlobal(structSize);
-				Marshal.StructureToPtr(dataItem, dest, false);
-				attachedItems.Add(dest);
-				return dest;
-			}				
-		}
-
-		static IntPtr ExtractTesselationState(List<IntPtr> attachedItems, MgPipelineTessellationStateCreateInfo tessellationState)
-		{
-			if (tessellationState == null)
-				return IntPtr.Zero;
-
-			var dataItem = new VkPipelineTessellationStateCreateInfo
-			{
-				sType = VkStructureType.StructureTypePipelineTessellationStateCreateInfo,
-				pNext = IntPtr.Zero,
-				flags = tessellationState.Flags,
-				patchControlPoints = tessellationState.PatchControlPoints,
-			};
-
-			{
-				var structSize = Marshal.SizeOf(dataItem);
-				var dest = Marshal.AllocHGlobal(structSize);
-				Marshal.StructureToPtr(dataItem, dest, false);
-				attachedItems.Add(dest);
-				return dest;
-			}
-		}
-
-		static IntPtr ExtractRasterizationState(List<IntPtr> attachedItems, MgPipelineRasterizationStateCreateInfo rasterizationState)
-		{
-			var dataItem = new VkPipelineRasterizationStateCreateInfo
-			{
-				sType = VkStructureType.StructureTypePipelineRasterizationStateCreateInfo,
-				pNext = IntPtr.Zero,
-				flags = rasterizationState.Flags,
-				depthClampEnable = VkBool32.ConvertTo(rasterizationState.DepthClampEnable),
-				rasterizerDiscardEnable = VkBool32.ConvertTo(rasterizationState.RasterizerDiscardEnable),
-				polygonMode = (VkPolygonMode) rasterizationState.PolygonMode,
-				cullMode = (VkCullModeFlags)rasterizationState.CullMode,
-				frontFace = (VkFrontFace) rasterizationState.FrontFace,
-				depthBiasEnable = VkBool32.ConvertTo(rasterizationState.DepthBiasEnable),
-				depthBiasConstantFactor = rasterizationState.DepthBiasConstantFactor,
-				depthBiasClamp = rasterizationState.DepthBiasClamp,
-				depthBiasSlopeFactor = rasterizationState.DepthBiasSlopeFactor,
-				lineWidth = rasterizationState.LineWidth,
-			};
-
-			{
-				var structSize = Marshal.SizeOf(dataItem);
-				var dest = Marshal.AllocHGlobal(structSize);
-				Marshal.StructureToPtr(dataItem, dest, false);
-				attachedItems.Add(dest);
-				return dest;
-			}
-		}
-
-		static IntPtr ExtractInputAssemblyState(List<IntPtr> attachedItems, MgPipelineInputAssemblyStateCreateInfo inputAssemblyState)
-		{
-			var dataItem = new VkPipelineInputAssemblyStateCreateInfo
-			{
-				sType = VkStructureType.StructureTypePipelineInputAssemblyStateCreateInfo,
-				pNext = IntPtr.Zero,
-				flags = inputAssemblyState.Flags,
-				topology = (VkPrimitiveTopology) inputAssemblyState.Topology,
-				primitiveRestartEnable = VkBool32.ConvertTo(inputAssemblyState.PrimitiveRestartEnable),
-			};
-
-			{
-				var structSize = Marshal.SizeOf(dataItem);
-				var dest = Marshal.AllocHGlobal(structSize);
-				Marshal.StructureToPtr(dataItem, dest, false);
-				attachedItems.Add(dest);
-				return dest;
-			}
-		}
-
-		static IntPtr ExtractVertexInputState(List<IntPtr> attachedItems, MgPipelineVertexInputStateCreateInfo current)
-		{
-			var vertexBindingDescriptionCount = 0U;
-			var pVertexBindingDescriptions = IntPtr.Zero;
-			if (current.VertexBindingDescriptions != null)
-			{
-				vertexBindingDescriptionCount = (uint)current.VertexBindingDescriptions.Length;
-				if (vertexBindingDescriptionCount > 0)
-				{
-					pVertexBindingDescriptions =VkInteropsUtility.AllocateHGlobalArray(
-						current.VertexBindingDescriptions,
-						(currentBinding) =>
-						{
-							return new VkVertexInputBindingDescription
-							{
-								binding = currentBinding.Binding,
-								stride = currentBinding.Stride,
-								inputRate = (VkVertexInputRate)currentBinding.InputRate,
-							};
-						});
-					attachedItems.Add(pVertexBindingDescriptions);
-				}
-			}
-
-			var vertexAttributeDescriptionCount = 0U;
-			var pVertexAttributeDescriptions = IntPtr.Zero;
-
-			if (current.VertexAttributeDescriptions != null)
-			{
-				vertexAttributeDescriptionCount = (uint)current.VertexAttributeDescriptions.Length;
-
-				if (vertexAttributeDescriptionCount > 0)
-				{
-					pVertexAttributeDescriptions = VkInteropsUtility.AllocateHGlobalArray(
-						current.VertexAttributeDescriptions,
-						(attr) => 
-						{
-							return new VkVertexInputAttributeDescription
-							{
-								location = attr.Location,
-								binding = attr.Binding,
-								format = attr.Format,
-								offset = attr.Offset,
-							};
-						});
-					attachedItems.Add(pVertexAttributeDescriptions);
-				}
-			}
-
-			var dataItem = new VkPipelineVertexInputStateCreateInfo
-			{
-				sType = VkStructureType.StructureTypePipelineVertexInputStateCreateInfo,
-				pNext = IntPtr.Zero,
-				flags = current.Flags,
-				vertexBindingDescriptionCount = vertexBindingDescriptionCount,
-				pVertexBindingDescriptions = pVertexBindingDescriptions,
-				vertexAttributeDescriptionCount = vertexAttributeDescriptionCount,
-				pVertexAttributeDescriptions = pVertexAttributeDescriptions,
-			};
-
-			{
-				var structSize = Marshal.SizeOf(dataItem);
-				var dest = Marshal.AllocHGlobal(structSize);
-				Marshal.StructureToPtr(dataItem, dest, false);
-				attachedItems.Add(dest);
-				return dest;
-			}
-		}
-
-		public MgResult CreateComputePipelines(IMgPipelineCache pipelineCache, MgComputePipelineCreateInfo[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgPipeline[] pPipelines)
-		{
-			if (pCreateInfos == null)
-				throw new ArgumentNullException(nameof(pCreateInfos));
-
-			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
-
-			var allocatorPtr = GetAllocatorHandle(allocator);
-
-			var bPipelineCache = (VkPipelineCache) pipelineCache;
-			var bPipelineCachePtr =  bPipelineCache != null ? bPipelineCache.Handle : 0UL;
-
-			var createInfoCount = (uint) pCreateInfos.Length;
-
-			var attachedItems = new List<IntPtr>();
-			var maintainedHandles = new List<GCHandle>();
-			try
-			{				
-				var createInfos = new VkComputePipelineCreateInfo[createInfoCount];
-				for(var i = 0; i < createInfoCount; ++i)
-				{
-					var currentCreateInfo = pCreateInfos[i];
-					var pStage = ExtractPipelineShaderStage(attachedItems, maintainedHandles, currentCreateInfo.Stage);
-
-					var bBasePipeline = (VkPipeline)currentCreateInfo.BasePipelineHandle;
-					var basePipelineHandle = bBasePipeline != null ? bBasePipeline.Handle : 0UL;
-
-					var bPipelineLayout = (VkPipelineLayout)currentCreateInfo.Layout;
-					Debug.Assert(bPipelineLayout != null);
-
-					createInfos[i] = new VkComputePipelineCreateInfo
-					{
-						sType = VkStructureType.StructureTypeComputePipelineCreateInfo,
-						pNext = IntPtr.Zero,
-						flags = currentCreateInfo.Flags,
-						stage = pStage,
-						layout = bPipelineLayout.Handle,
-						basePipelineHandle = basePipelineHandle,
-						basePipelineIndex = currentCreateInfo.BasePipelineIndex,
-					};
-				}
-
-				var handles = new ulong[createInfoCount];
-				var result = Interops.vkCreateComputePipelines(info, bPipelineCachePtr, createInfoCount, createInfos, allocatorPtr, handles);
-
-				pPipelines = new VkPipeline[createInfoCount];
-				for(var i = 0; i < createInfoCount; ++i)
-				{
-					pPipelines[i] = new VkPipeline(handles[i]);
-				}
-				return result;
-			}
-			finally
-			{
-				foreach(var handle in attachedItems)
-				{
-					Marshal.FreeHGlobal(handle);
-				}
-
-				foreach (var pin in maintainedHandles)
-				{
-					pin.Free();
-				}
-			}			
-		}
-
-		static VkPipelineShaderStageCreateInfo ExtractPipelineShaderStage(List<IntPtr> attachedItems, List<GCHandle> handles, MgPipelineShaderStageCreateInfo currentStage)
-		{
-			Debug.Assert(currentStage != null);
-
-			var bModule = (VkShaderModule)currentStage.Module;
-			Debug.Assert(bModule != null);
-
-			// pointer to a null-terminated UTF-8 string specifying the entry point name of the shader for this stage
-			Debug.Assert(!string.IsNullOrWhiteSpace(currentStage.Name));
-			var pName = VkInteropsUtility.NativeUtf8FromString(currentStage.Name);
-			attachedItems.Add(pName);
-
-			var pSpecializationInfo = IntPtr.Zero;
-
-			if (currentStage.SpecializationInfo != null)
-			{
-				var mapEntryCount = 0U;
-				var pMapEntries = IntPtr.Zero;
-
-				if (currentStage.SpecializationInfo.MapEntries != null)
-				{
-					mapEntryCount = (uint)currentStage.SpecializationInfo.MapEntries.Length;
-					if (mapEntryCount > 0)
-					{
-						var pinnedArray = GCHandle.Alloc(currentStage.SpecializationInfo.MapEntries, GCHandleType.Pinned);
-						handles.Add(pinnedArray);
-
-						pMapEntries = pinnedArray.AddrOfPinnedObject();
-					}
-				}
-
-				pSpecializationInfo = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(VkSpecializationInfo)));
-				attachedItems.Add(pSpecializationInfo);
-
-				var spInfo = new VkSpecializationInfo
-				{
-					mapEntryCount = mapEntryCount,
-					pMapEntries = pMapEntries,
-					dataSize = currentStage.SpecializationInfo.DataSize,
-					pData = currentStage.SpecializationInfo.Data,
-				};
-
-				Marshal.StructureToPtr(spInfo, pSpecializationInfo, false);
-			}
-
-			var pStage = new VkPipelineShaderStageCreateInfo
-			{
-				sType = VkStructureType.StructureTypePipelineShaderStageCreateInfo,
-				pNext = IntPtr.Zero,
-				flags = currentStage.Flags,
-				stage = (VkShaderStageFlags)currentStage.Stage,
-				module = bModule.Handle,
-				pName = pName,
-				pSpecializationInfo = pSpecializationInfo,
-			};
-			return pStage;
-		}
-
-		public MgResult CreatePipelineLayout(MgPipelineLayoutCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgPipelineLayout pPipelineLayout)
-		{
-			if (pCreateInfo == null)
-				throw new ArgumentNullException(nameof(pCreateInfo));
-
-			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
-
-			var allocatorPtr = GetAllocatorHandle(allocator);
-
-			var pSetLayouts = IntPtr.Zero;
-
-			var pPushConstantRanges = IntPtr.Zero;
-
-			try
-			{
-
-				var setLayoutCount = 0U;
-				if (pCreateInfo.SetLayouts != null)
-				{
-					setLayoutCount = (UInt32) pCreateInfo.SetLayouts.Length;
-					if (setLayoutCount > 0)				
-					{
-						pSetLayouts = VkInteropsUtility.ExtractUInt64HandleArray(pCreateInfo.SetLayouts,
-							(dsl) =>
-							{
-								var bDescriptorSetLayout = (VkDescriptorSetLayout) dsl;
-								Debug.Assert(bDescriptorSetLayout != null);
-								return bDescriptorSetLayout.Handle;
-							});
-					}
-				}
-
-				var pushConstantRangeCount = 0U;
-				if (pCreateInfo.PushConstantRanges != null)
-				{
-					pushConstantRangeCount = (UInt32) pCreateInfo.PushConstantRanges.Length;
-
-					if (pushConstantRangeCount > 0)
-					{
-						pPushConstantRanges = VkInteropsUtility.AllocateHGlobalArray
-							(
-								pCreateInfo.PushConstantRanges,
-								(pcr) =>
-								{
-									return new VkPushConstantRange
-									{
-										stageFlags = (VkShaderStageFlags) pcr.StageFlags,
-										offset = pcr.Offset,
-										size = pcr.Size,
-									};
-								}
-							);		
-					}
-				}
-
-				ulong internalHandle = 0;
-				var createInfo = new VkPipelineLayoutCreateInfo
-				{
-					sType = VkStructureType.StructureTypePipelineLayoutCreateInfo,
-					pNext = IntPtr.Zero,
-					flags = pCreateInfo.Flags,
-					setLayoutCount = setLayoutCount,
-					pSetLayouts = pSetLayouts,
-					pushConstantRangeCount = pushConstantRangeCount,
-					pPushConstantRanges = pPushConstantRanges,
-
-				};
-				var result = Interops.vkCreatePipelineLayout(info, ref createInfo, allocatorPtr, ref internalHandle);
-				pPipelineLayout = new VkPipelineLayout(internalHandle);
-				return result;
-			}
-			finally
-			{
-				if (pSetLayouts != IntPtr.Zero)
-				{
-					Marshal.FreeHGlobal(pSetLayouts);
-				}
-
-				if (pPushConstantRanges != IntPtr.Zero)
-				{
-					Marshal.FreeHGlobal(pPushConstantRanges);
-				}				
-			}
-		}
-
-		public MgResult CreateSampler(MgSamplerCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgSampler pSampler)
-		{
-			if (pCreateInfo == null)
-				throw new ArgumentNullException(nameof(pCreateInfo));
-
-			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
-
-			var allocatorPtr = GetAllocatorHandle(allocator);
-
-			var internalHandle = 0UL;
-			var createInfo = new VkSamplerCreateInfo
-			{
-				sType = VkStructureType.StructureTypeSamplerCreateInfo,
-				pNext = IntPtr.Zero,
-				flags = pCreateInfo.Flags,
-				magFilter = (VkFilter) pCreateInfo.MagFilter,
-				minFilter = (VkFilter) pCreateInfo.MinFilter,
-				mipmapMode = (VkSamplerMipmapMode) pCreateInfo.MipmapMode,
-				addressModeU = (VkSamplerAddressMode) pCreateInfo.AddressModeU,
-				addressModeV = (VkSamplerAddressMode) pCreateInfo.AddressModeV,
-				addressModeW = (VkSamplerAddressMode) pCreateInfo.AddressModeW,
-				mipLodBias = pCreateInfo.MipLodBias,
-				anisotropyEnable = VkBool32.ConvertTo(pCreateInfo.AnisotropyEnable),
-				maxAnisotropy = pCreateInfo.MaxAnisotropy,
-				compareEnable = VkBool32.ConvertTo(pCreateInfo.CompareEnable),
-				compareOp = (VkCompareOp) pCreateInfo.CompareOp,
-				minLod = pCreateInfo.MinLod,
-				maxLod = pCreateInfo.MaxLod,
-				borderColor = (VkBorderColor) pCreateInfo.BorderColor,
-				unnormalizedCoordinates = VkBool32.ConvertTo(pCreateInfo.UnnormalizedCoordinates),
-			};
-
-			var result = Interops.vkCreateSampler(info, ref createInfo, allocatorPtr, ref internalHandle);
-			pSampler = new VkSampler(internalHandle);
-			return result;
-		}
-
-		public MgResult CreateDescriptorSetLayout(MgDescriptorSetLayoutCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDescriptorSetLayout pSetLayout)
-		{
-			if (pCreateInfo == null)
-				throw new ArgumentNullException(nameof(pCreateInfo));
-
-			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
-
-			var allocatorPtr = GetAllocatorHandle(allocator);
-
-			var attachedItems = new List<IntPtr>();
-
-			try
-			{
-				var bindingCount = 0U;
-				var pBindings = IntPtr.Zero;
-
-				if (pCreateInfo.Bindings != null)
-				{
-					bindingCount = (uint)pCreateInfo.Bindings.Length;
-					if (bindingCount > 0)
-					{
-						var stride = Marshal.SizeOf(typeof(VkDescriptorSetLayoutBinding));
-						pBindings = Marshal.AllocHGlobal((int)(bindingCount * stride));
-						attachedItems.Add(pBindings);
-
-						var offset = 0;
-						foreach (var currentBinding in pCreateInfo.Bindings)
-						{
-							/**
-							 * TODO:
-							 * If descriptorType is VK_DESCRIPTOR_TYPE_SAMPLER or VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-							 * and descriptorCount is not 0 and pImmutableSamplers is not NULL, pImmutableSamplers must be a 
-							 * pointer to an array of descriptorCount valid VkSampler handles
-							**/
-
-							var pImmutableSamplers = IntPtr.Zero;
-							if (currentBinding.ImmutableSamplers != null)
-							{
-								if (currentBinding.DescriptorCount > 0)
-								{
-									var arraySize = (int)(currentBinding.DescriptorCount * sizeof(UInt64));										
-									pImmutableSamplers = VkInteropsUtility.ExtractUInt64HandleArray(currentBinding.ImmutableSamplers,									
-											(sampler) =>
-											{
-												var bSampler = (VkSampler) sampler;
-												Debug.Assert(bSampler != null);
-												return bSampler.Handle;
-											}										
-										);			
-
-									attachedItems.Add(pImmutableSamplers);
-								}
-							}
-
-							var binding = new VkDescriptorSetLayoutBinding
-							{
-								binding = currentBinding.Binding,
-								descriptorType = currentBinding.DescriptorType,
-								descriptorCount = currentBinding.DescriptorCount,
-								stageFlags = (VkShaderStageFlags) currentBinding.StageFlags,
-								pImmutableSamplers = pImmutableSamplers,
-							};
-
-							var dest = IntPtr.Add(pBindings, offset);
-							Marshal.StructureToPtr(binding, dest, false);
-							offset += stride;							
-						}
-					}
-				}
-
-
-				var internalHandle = 0UL;
-				var createInfo = new VkDescriptorSetLayoutCreateInfo
-				{
-					sType = VkStructureType.StructureTypeDescriptorSetLayoutCreateInfo,
-					pNext = IntPtr.Zero,
-					flags = pCreateInfo.Flags,
-					bindingCount = bindingCount,
-					pBindings = pBindings,
-				};
-				var result = Interops.vkCreateDescriptorSetLayout(info, ref createInfo, allocatorPtr, ref internalHandle);
-				pSetLayout = new VkDescriptorSetLayout(internalHandle);
-				return result;
-			}
-			finally
-			{
-				foreach (var handle in attachedItems)
-				{
-					Marshal.FreeHGlobal(handle);
-				}
-			}
-		}
-
-		public MgResult CreateDescriptorPool(MgDescriptorPoolCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDescriptorPool pDescriptorPool)
-		{
-			if (pCreateInfo == null)
-				throw new ArgumentNullException(nameof(pCreateInfo));
-
-			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
-
-			var allocatorPtr = GetAllocatorHandle(allocator);
-
-			var pPoolSizes = IntPtr.Zero;
-			var poolSizeCount = 0U;
-
-			try
-			{
-				if (pCreateInfo.PoolSizes != null)
-				{
-					poolSizeCount = (UInt32) pCreateInfo.PoolSizes.Length;
-					if (poolSizeCount > 0)
-					{
-						pPoolSizes = VkInteropsUtility.AllocateHGlobalArray(
-							pCreateInfo.PoolSizes,
-							(current) => 
-							{
-								return new VkDescriptorPoolSize
-								{
-									type = current.Type,
-									descriptorCount = current.DescriptorCount,
-								};
-							});
-					}
-				}
-				var createInfo = new VkDescriptorPoolCreateInfo
-				{
-					sType = VkStructureType.StructureTypeDescriptorPoolCreateInfo,
-					pNext = IntPtr.Zero,
-					flags = (VkDescriptorPoolCreateFlags) pCreateInfo.Flags,
-					maxSets = pCreateInfo.MaxSets,
-					poolSizeCount = poolSizeCount,
-					pPoolSizes = pPoolSizes,
-				};
-
-				var internalHandle = 0UL;
-				var result = Interops.vkCreateDescriptorPool(info, ref createInfo, allocatorPtr, ref internalHandle);
-				pDescriptorPool = new VkDescriptorPool(internalHandle);
-				return result;
-			}
-			finally
-			{
-				if(pPoolSizes != IntPtr.Zero)
-				{
-					Marshal.FreeHGlobal(pPoolSizes);
-				}
-			}
-		}
-
-		public MgResult AllocateDescriptorSets(MgDescriptorSetAllocateInfo pAllocateInfo, out IMgDescriptorSet[] pDescriptorSets)
-		{
-			if (pAllocateInfo == null)
-				throw new ArgumentNullException(nameof(pAllocateInfo));
-
-			if (pAllocateInfo.SetLayouts == null)
-				throw new ArgumentNullException(nameof(pAllocateInfo.SetLayouts));
-			
-			var descriptorSetCount = pAllocateInfo.DescriptorSetCount;
-			if (descriptorSetCount != pAllocateInfo.SetLayouts.Length)
-				throw new ArgumentOutOfRangeException(nameof(pAllocateInfo.DescriptorSetCount) + " must equal to " + nameof(pAllocateInfo.SetLayouts.Length));
-
-			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
-
-			var bDescriptorPool = (VkDescriptorPool)pAllocateInfo.DescriptorPool;
-			Debug.Assert(bDescriptorPool != null);
-
-			var pSetLayouts = IntPtr.Zero;
-
-			try
-			{
-				if (descriptorSetCount > 0)
-				{
-					pSetLayouts = VkInteropsUtility.ExtractUInt64HandleArray(pAllocateInfo.SetLayouts,
-					 (dsl) =>
-					 {
-						var bSetLayout = (VkDescriptorSetLayout) dsl;
-						Debug.Assert(bSetLayout != null);
-						return bSetLayout.Handle;
-					 });
-				}
-
-				var allocateInfo = new VkDescriptorSetAllocateInfo
-				{
-					sType = VkStructureType.StructureTypeDescriptorSetAllocateInfo,
-					pNext = IntPtr.Zero,
-					descriptorPool = bDescriptorPool.Handle,
-					descriptorSetCount = pAllocateInfo.DescriptorSetCount,
-					pSetLayouts = pSetLayouts,
-				};
-
-				var internalHandles = new ulong[pAllocateInfo.DescriptorSetCount];
-				var result = Interops.vkAllocateDescriptorSets(this.info, ref allocateInfo, internalHandles);
-
-				pDescriptorSets = new VkDescriptorSet[pAllocateInfo.DescriptorSetCount];
-				for (var i = 0; i < pAllocateInfo.DescriptorSetCount; ++i)
-				{
-					pDescriptorSets[i] = new VkDescriptorSet(internalHandles[i]);
-				}
-				return result;
-			}
-			finally
-			{
-				if (pSetLayouts != IntPtr.Zero)
-				{
-					Marshal.FreeHGlobal(pSetLayouts);
-				}
-			}
-		}
-
-		public MgResult FreeDescriptorSets(IMgDescriptorPool descriptorPool, IMgDescriptorSet[] pDescriptorSets)
-		{
-			if (descriptorPool == null)
-				throw new ArgumentNullException(nameof(descriptorPool));
-
-			if (pDescriptorSets == null)
-				throw new ArgumentNullException(nameof(pDescriptorSets));
-
-			var descriptorSetCount = (uint) pDescriptorSets.Length;
-			if (descriptorSetCount == 0)
-				throw new ArgumentOutOfRangeException(nameof(pDescriptorSets.Length) + " == 0");
-
-			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
-
-			var bDescriptorPool = (VkDescriptorPool)descriptorPool;
-			Debug.Assert(bDescriptorPool != null); // MAYBE DUPLICATE TESTING 
-
-			var internalHandles = new ulong[descriptorSetCount];
-			for (var i = 0; i < descriptorSetCount; ++i)
-			{
-				var bDescriptorSet = (VkDescriptorSet)pDescriptorSets[i];
-				Debug.Assert(bDescriptorSet != null);
-				internalHandles[i] = bDescriptorSet.Handle;
-			}
-
-			return Interops.vkFreeDescriptorSets(info, bDescriptorPool.Handle, descriptorSetCount, internalHandles);
-		}
-
-		public void UpdateDescriptorSets(MgWriteDescriptorSet[] pDescriptorWrites, MgCopyDescriptorSet[] pDescriptorCopies)
+        {
+            VkGetImageMemoryRequirementsSection.GetImageMemoryRequirements(info, image, out memoryRequirements);
+        }
+
+        public void GetImageSparseMemoryRequirements(IMgImage image, out MgSparseImageMemoryRequirements[] sparseMemoryRequirements)
+        {
+            VkGetImageSparseMemoryRequirementsSection.GetImageSparseMemoryRequirements(info, image, out sparseMemoryRequirements);
+        }
+
+        public MgResult CreateFence(MgFenceCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgFence fence)
+        {
+            return VkCreateFenceSection.CreateFence(info, pCreateInfo, allocator, out fence);
+        }
+
+        public MgResult ResetFences(IMgFence[] pFences)
+        {
+            return VkResetFencesSection.ResetFences(info, pFences);
+        }
+
+        public MgResult GetFenceStatus(IMgFence fence)
+        {
+            return VkGetFenceStatusSection.GetFenceStatus(info, fence);
+        }
+
+        public MgResult WaitForFences(IMgFence[] pFences, bool waitAll, ulong timeout)
+        {
+            return VkWaitForFencesSection.WaitForFences(info, pFences, waitAll, timeout);
+        }
+
+        public MgResult CreateSemaphore(MgSemaphoreCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgSemaphore pSemaphore)
+        {
+            return VkCreateSemaphoreSection.CreateSemaphore(info, pCreateInfo, allocator, out pSemaphore);
+        }
+
+        public MgResult CreateEvent(MgEventCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgEvent @event)
+        {
+            return VkCreateEventSection.CreateEvent(info, pCreateInfo, allocator, out @event);
+        }
+
+        public MgResult CreateQueryPool(MgQueryPoolCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgQueryPool queryPool)
+        {
+            return VkCreateQueryPoolSection.CreateQueryPool(info, pCreateInfo, allocator, out queryPool);
+        }
+
+        public MgResult GetQueryPoolResults(IMgQueryPool queryPool, uint firstQuery, uint queryCount, IntPtr dataSize, IntPtr pData, ulong stride, MgQueryResultFlagBits flags)
+        {
+            return VkGetQueryPoolResultsSection.GetQueryPoolResults(info, queryPool, firstQuery, queryCount, dataSize, pData, stride, flags);
+        }
+
+        public MgResult CreateBuffer(MgBufferCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgBuffer pBuffer)
+        {
+            return VkCreateBufferSection.CreateBuffer(info, pCreateInfo, allocator, out pBuffer);
+        }
+
+        public MgResult CreateBufferView(MgBufferViewCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgBufferView pView)
+        {
+            return VkCreateBufferViewSection.CreateBufferView(info, pCreateInfo, allocator, out pView);
+        }
+
+        public MgResult CreateImage(MgImageCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgImage pImage)
+        {
+            return VkCreateImageSection.CreateImage(info, pCreateInfo, allocator, out pImage);
+        }
+
+        public void GetImageSubresourceLayout(IMgImage image, MgImageSubresource pSubresource, out MgSubresourceLayout pLayout)
+        {
+            VkGetImageSubresourceLayoutSection.GetImageSubresourceLayout(info, image, pSubresource, out pLayout);
+        }
+
+        public MgResult CreateImageView(MgImageViewCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgImageView pView)
+        {
+            return VkCreateImageViewSection.CreateImageView(info, pCreateInfo, allocator, out pView);
+        }
+
+        public MgResult CreateShaderModule(MgShaderModuleCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgShaderModule pShaderModule)
+        {
+            return VkCreateShaderModuleSection.CreateShaderModule(info, pCreateInfo, allocator, out pShaderModule);
+        }
+
+        public MgResult CreatePipelineCache(MgPipelineCacheCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgPipelineCache pPipelineCache)
+        {
+            return VkCreatePipelineCacheSection.CreatePipelineCache(info, pCreateInfo, allocator, out pPipelineCache);
+        }
+
+        public MgResult GetPipelineCacheData(IMgPipelineCache pipelineCache, out byte[] pData)
+        {
+            return VkGetPipelineCacheDataSection.GetPipelineCacheData(info, pipelineCache, out pData);
+        }
+
+        public MgResult MergePipelineCaches(IMgPipelineCache dstCache, IMgPipelineCache[] pSrcCaches)
+        {
+            return VkMergePipelineCachesSection.MergePipelineCaches(info, dstCache, pSrcCaches);
+        }
+
+        public MgResult CreateGraphicsPipelines(IMgPipelineCache pipelineCache, MgGraphicsPipelineCreateInfo[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgPipeline[] pPipelines)
+        {
+            return VkCreateGraphicsPipelinesSection.CreateGraphicsPipelines(info, pipelineCache, pCreateInfos, allocator, out pPipelines);
+        }
+
+        public MgResult CreateComputePipelines(IMgPipelineCache pipelineCache, MgComputePipelineCreateInfo[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgPipeline[] pPipelines)
+        {
+            return VkCreateComputePipelinesSection.CreateComputePipelines(info, pipelineCache, pCreateInfos, allocator, out pPipelines);
+        }
+
+        public MgResult CreatePipelineLayout(MgPipelineLayoutCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgPipelineLayout pPipelineLayout)
+        {
+            return VkCreatePipelineLayoutSection.CreatePipelineLayout(info, pCreateInfo, allocator, out pPipelineLayout);
+        }
+
+        public MgResult CreateSampler(MgSamplerCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgSampler pSampler)
+        {
+            return VkCreateSamplerSection.CreateSampler(info, pCreateInfo, allocator, out pSampler);
+        }
+
+        public MgResult CreateDescriptorSetLayout(MgDescriptorSetLayoutCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDescriptorSetLayout pSetLayout)
+        {
+            return VkCreateDescriptorSetLayoutSection.CreateDescriptorSetLayout(info, pCreateInfo, allocator, out pSetLayout);
+        }
+
+        public MgResult CreateDescriptorPool(MgDescriptorPoolCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDescriptorPool pDescriptorPool)
+        {
+            return VkCreateDescriptorPoolSection.CreateDescriptorPool(info, pCreateInfo, allocator, out pDescriptorPool);
+        }
+
+        public MgResult AllocateDescriptorSets(MgDescriptorSetAllocateInfo pAllocateInfo, out IMgDescriptorSet[] pDescriptorSets)
+        {
+            return VkAllocateDescriptorSetsSection.AllocateDescriptorSets(info, pAllocateInfo, out pDescriptorSets);
+        }
+
+        public MgResult FreeDescriptorSets(IMgDescriptorPool descriptorPool, IMgDescriptorSet[] pDescriptorSets)
+        {
+            return VkFreeDescriptorSetsSection.FreeDescriptorSets(info, descriptorPool, pDescriptorSets);
+        }
+
+        public void UpdateDescriptorSets(MgWriteDescriptorSet[] pDescriptorWrites, MgCopyDescriptorSet[] pDescriptorCopies)
 		{
 			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
@@ -1719,7 +348,7 @@ namespace Magnesium.Vulkan
 						copies = bCopySets;
 					}
 
-					Interops.vkUpdateDescriptorSets(info, writeCount, writes, copyCount, copies);
+					Interops.vkUpdateDescriptorSets(info.Handle, writeCount, writes, copyCount, copies);
 				}			
 			}
 			finally
@@ -1738,7 +367,7 @@ namespace Magnesium.Vulkan
 
 			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
-			var allocatorPtr = GetAllocatorHandle(allocator);
+			var allocatorPtr = VkDeviceInfo.GetAllocatorHandle(allocator);
 
 			var bRenderPass = (VkRenderPass) pCreateInfo.RenderPass;
 			Debug.Assert(bRenderPass != null);
@@ -1777,7 +406,7 @@ namespace Magnesium.Vulkan
 				};
 
 				var internalHandle = 0UL;
-				var result = Interops.vkCreateFramebuffer(info, ref createInfo, allocatorPtr, ref internalHandle);
+				var result = Interops.vkCreateFramebuffer(info.Handle, ref createInfo, allocatorPtr, ref internalHandle);
 				pFramebuffer = new VkFramebuffer(internalHandle);
 				return result;
 			}
@@ -1797,7 +426,7 @@ namespace Magnesium.Vulkan
 
 			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
-			var allocatorPtr = GetAllocatorHandle(allocator);
+			var allocatorPtr = VkDeviceInfo.GetAllocatorHandle(allocator);
 
 			var attachedItems = new List<IntPtr>();
 
@@ -1979,7 +608,7 @@ namespace Magnesium.Vulkan
 				};
 
 				ulong internalHandle = 0;
-				var result = Interops.vkCreateRenderPass(info, ref createInfo, allocatorPtr, ref internalHandle);
+				var result = Interops.vkCreateRenderPass(info.Handle, ref createInfo, allocatorPtr, ref internalHandle);
 				pRenderPass = new VkRenderPass(internalHandle);
 				return result;
 			}
@@ -2002,7 +631,7 @@ namespace Magnesium.Vulkan
 			unsafe
 			{
 				var grans = stackalloc MgExtent2D[1];
-				Interops.vkGetRenderAreaGranularity(info, bRenderPass.Handle, grans);
+				Interops.vkGetRenderAreaGranularity(info.Handle, bRenderPass.Handle, grans);
 				pGranularity = grans[0];
 			}
 		}
@@ -2014,7 +643,7 @@ namespace Magnesium.Vulkan
 
 			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
-			var allocatorPtr = GetAllocatorHandle(allocator);
+			var allocatorPtr = VkDeviceInfo.GetAllocatorHandle(allocator);
 
 			ulong internalHandle = 0UL;
 			var createInfo = new VkCommandPoolCreateInfo
@@ -2024,7 +653,7 @@ namespace Magnesium.Vulkan
 				flags = (VkCommandPoolCreateFlags)pCreateInfo.Flags,
 				queueFamilyIndex = pCreateInfo.QueueFamilyIndex,
 			};
-			var result = Interops.vkCreateCommandPool(info, ref createInfo, allocatorPtr, ref internalHandle);
+			var result = Interops.vkCreateCommandPool(info.Handle, ref createInfo, allocatorPtr, ref internalHandle);
 			pCommandPool = new VkCommandPool(internalHandle);
 			return result;
 		}
@@ -2062,7 +691,7 @@ namespace Magnesium.Vulkan
 					level = (VkCommandBufferLevel)pAllocateInfo.Level,
 				};
 
-				var result = Interops.vkAllocateCommandBuffers(info, allocateInfo, pBufferHandle);
+				var result = Interops.vkAllocateCommandBuffers(info.Handle, allocateInfo, pBufferHandle);
 
 				for (var i = 0; i < arraySize; ++i)
 				{
@@ -2090,7 +719,7 @@ namespace Magnesium.Vulkan
 					bufferHandles[i] = bCommandBuffer.Handle;
 				}
 
-				Interops.vkFreeCommandBuffers(info, bCommandPool.Handle, commandBufferCount, bufferHandles);
+				Interops.vkFreeCommandBuffers(info.Handle, bCommandPool.Handle, commandBufferCount, bufferHandles);
 			}
 		}
 
@@ -2101,7 +730,7 @@ namespace Magnesium.Vulkan
 
 			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
-			var allocatorPtr = GetAllocatorHandle(allocator);
+			var allocatorPtr = VkDeviceInfo.GetAllocatorHandle(allocator);
 
 			var attachedItems = new List<IntPtr>();
 
@@ -2123,7 +752,7 @@ namespace Magnesium.Vulkan
 				}
 
 				var sharedSwapchains = new ulong[swapChainCount];
-				var result = Interops.vkCreateSharedSwapchainsKHR(info, swapChainCount, swapChainCreateInfos, allocatorPtr, sharedSwapchains);
+				var result = Interops.vkCreateSharedSwapchainsKHR(info.Handle, swapChainCount, swapChainCreateInfos, allocatorPtr, sharedSwapchains);
 
 				pSwapchains = new VkSwapchainKHR[swapChainCount];
 				for (var i = 0; i < swapChainCount; ++i)
@@ -2148,7 +777,7 @@ namespace Magnesium.Vulkan
 
 			Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
-			var allocatorPtr = GetAllocatorHandle(allocator);
+			var allocatorPtr = VkDeviceInfo.GetAllocatorHandle(allocator);
 
 			var attachedItems = new List<IntPtr>();
 
@@ -2157,7 +786,7 @@ namespace Magnesium.Vulkan
 				var createInfo = GenerateSwapchainCreateInfoKHR(pCreateInfo, attachedItems);
 
 				ulong internalHandle = 0;
-				var result = Interops.vkCreateSwapchainKHR(info, ref createInfo, allocatorPtr, ref internalHandle);
+				var result = Interops.vkCreateSwapchainKHR(info.Handle, ref createInfo, allocatorPtr, ref internalHandle);
 				pSwapchain = new VkSwapchainKHR(internalHandle);
 				return result;
 			}
@@ -2222,7 +851,7 @@ namespace Magnesium.Vulkan
 			Debug.Assert(bSwapchain != null);
 
 			uint noOfImages = 0;
-			var first = Interops.vkGetSwapchainImagesKHR(info, bSwapchain.Handle, ref noOfImages, null);
+			var first = Interops.vkGetSwapchainImagesKHR(info.Handle, bSwapchain.Handle, ref noOfImages, null);
 
 			if (first != MgResult.SUCCESS)
 			{
@@ -2231,7 +860,7 @@ namespace Magnesium.Vulkan
 			}
 
 			var images = new ulong[noOfImages];
-			var final = Interops.vkGetSwapchainImagesKHR(info, bSwapchain.Handle, ref noOfImages, images);
+			var final = Interops.vkGetSwapchainImagesKHR(info.Handle, bSwapchain.Handle, ref noOfImages, images);
 
 			pSwapchainImages = new VkImage[noOfImages];
 			for (var i = 0; i < noOfImages; ++i)
@@ -2256,7 +885,7 @@ namespace Magnesium.Vulkan
 			var bFencePtr = bFence != null ? bFence.Handle : 0UL;
 
 			uint imageIndex = 0;
-			var result = Interops.vkAcquireNextImageKHR(info, bSwapchain.Handle, timeout, bSemaphorePtr, bFencePtr, ref imageIndex);
+			var result = Interops.vkAcquireNextImageKHR(info.Handle, bSwapchain.Handle, timeout, bSemaphorePtr, bFencePtr, ref imageIndex);
 			pImageIndex = imageIndex;
 			return result;
 		}
@@ -2271,7 +900,7 @@ namespace Magnesium.Vulkan
 
             Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
-            var allocatorPtr = GetAllocatorHandle(allocator);
+            var allocatorPtr = VkDeviceInfo.GetAllocatorHandle(allocator);
 
             var pObjectEntryTypes = IntPtr.Zero;
             var pObjectEntryCounts = IntPtr.Zero;
@@ -2317,7 +946,7 @@ namespace Magnesium.Vulkan
                 };
 
                 ulong handle = 0UL;
-                var result = Interops.vkCreateObjectTableNVX(this.info, ref bCreateInfo, allocatorPtr, ref handle);
+                var result = Interops.vkCreateObjectTableNVX(info.Handle, ref bCreateInfo, allocatorPtr, ref handle);
 
                 pObjectTable = new VkObjectTableNVX(handle);
                 return result;
@@ -2351,7 +980,7 @@ namespace Magnesium.Vulkan
 
             Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
-            var allocatorPtr = GetAllocatorHandle(allocator);
+            var allocatorPtr = VkDeviceInfo.GetAllocatorHandle(allocator);
 
             var pTokens = IntPtr.Zero;
 
@@ -2372,7 +1001,7 @@ namespace Magnesium.Vulkan
                 };
 
                 ulong bHandle = 0UL;
-                var result = Interops.vkCreateIndirectCommandsLayoutNVX(this.info, ref createInfo, allocatorPtr, ref bHandle);
+                var result = Interops.vkCreateIndirectCommandsLayoutNVX(info.Handle, ref createInfo, allocatorPtr, ref bHandle);
 
                 pIndirectCommandsLayout = new VkIndirectCommandsLayoutNVX(bHandle);
                 return result;
@@ -2415,7 +1044,7 @@ namespace Magnesium.Vulkan
             };
 
             uint imageIndex = 0;
-            var result = Interops.vkAcquireNextImage2KHR(info, bAcquireInfo, ref imageIndex);
+            var result = Interops.vkAcquireNextImage2KHR(info.Handle, bAcquireInfo, ref imageIndex);
             pImageIndex = imageIndex;
             return result;
         }
@@ -2462,7 +1091,7 @@ namespace Magnesium.Vulkan
                     };
                 }
 
-                return Interops.vkBindAccelerationStructureMemoryNV(this.info, bindInfoCount, bBindInfos);
+                return Interops.vkBindAccelerationStructureMemoryNV(info.Handle, bindInfoCount, bBindInfos);
             }
             finally
             {
@@ -2503,7 +1132,7 @@ namespace Magnesium.Vulkan
                 };
             }
 
-            return Interops.vkBindBufferMemory2(this.info, bindInfoCount, bBindInfos);
+            return Interops.vkBindBufferMemory2(info.Handle, bindInfoCount, bBindInfos);
         }
 
         public MgResult BindImageMemory2(MgBindImageMemoryInfo[] pBindInfos)
@@ -2536,7 +1165,7 @@ namespace Magnesium.Vulkan
                 }; 
             }
 
-            return Interops.vkBindImageMemory2(this.info, bindInfoCount, bBindInfos);
+            return Interops.vkBindImageMemory2(info.Handle, bindInfoCount, bBindInfos);
         }
 
         public MgResult CreateAccelerationStructureNV(MgAccelerationStructureCreateInfoNV pCreateInfo, IMgAllocationCallbacks pAllocator, out IMgAccelerationStructureNV pAccelerationStructure)
@@ -2547,7 +1176,7 @@ namespace Magnesium.Vulkan
             if (pCreateInfo.Info == null)
                 throw new ArgumentNullException(nameof(pCreateInfo.Info));
 
-            var allocatorPtr = GetAllocatorHandle(pAllocator);
+            var allocatorPtr = VkDeviceInfo.GetAllocatorHandle(pAllocator);
 
             var geometryCount = (pCreateInfo.Info.Geometries != null) 
                 ? (uint) pCreateInfo.Info.Geometries.Length
@@ -2597,7 +1226,7 @@ namespace Magnesium.Vulkan
                 };
 
                 var pHandle = 0UL;
-                var result = Interops.vkCreateAccelerationStructureNV(this.info, ref bCreateInfo, allocatorPtr, ref pHandle);
+                var result = Interops.vkCreateAccelerationStructureNV(info.Handle, ref bCreateInfo, allocatorPtr, ref pHandle);
                 pAccelerationStructure = new VkAccelerationStructureNV(pHandle);
                 return result;
             }
@@ -2661,7 +1290,7 @@ namespace Magnesium.Vulkan
                 throw new ArgumentNullException(nameof(pCreateInfo.DescriptorUpdateEntries));
 
 
-            var allocatorPtr = GetAllocatorHandle(pAllocator);
+            var allocatorPtr = VkDeviceInfo.GetAllocatorHandle(pAllocator);
 
             var descriptorUpdateEntryCount = (UInt32) pCreateInfo.DescriptorUpdateEntries.Length;
 
@@ -2706,7 +1335,7 @@ namespace Magnesium.Vulkan
                 };
 
                 var pHandle = 0UL;
-                var result = Interops.vkCreateDescriptorUpdateTemplate(this.info, bCreateInfo, allocatorPtr, ref pHandle);
+                var result = Interops.vkCreateDescriptorUpdateTemplate(info.Handle, bCreateInfo, allocatorPtr, ref pHandle);
 
                 pDescriptorUpdateTemplate = new VkDescriptorUpdateTemplate(pHandle);
                 return result;
@@ -2722,124 +1351,7 @@ namespace Magnesium.Vulkan
 
         public MgResult CreateRayTracingPipelinesNV(IMgPipelineCache pipelineCache, MgRayTracingPipelineCreateInfoNV[] pCreateInfos, IMgAllocationCallbacks pAllocator, out IMgPipeline[] pPipelines)
         {
-            if (pCreateInfos == null)
-                throw new ArgumentNullException(nameof(pCreateInfos));
-
-            var allocatedItems = new List<IntPtr>();
-            var gcHandles = new List<GCHandle>();
-
-            var bPipelineCache = (VkPipelineCache) pipelineCache;
-            var bPipelineCachePtr = bPipelineCache != null ? bPipelineCache.Handle : 0UL;
-
-            var createInfoCount = (uint)pCreateInfos.Length;            
-
-            var allocatorPtr = GetAllocatorHandle(pAllocator);
-
-            var bCreateInfos = new VkRayTracingPipelineCreateInfoNV[createInfoCount];
-
-            try
-            {
-                for (var i = 0; i < createInfoCount; i += 1)
-                {
-                    var current = pCreateInfos[i];
-
-                    var stageCount = (current.Stages != null) 
-                        ? (uint) current.Stages.Length 
-                        : 0U;
-                    var pStages = IntPtr.Zero;
-
-                    if (stageCount > 0)
-                    {
-                        var bStages = new VkPipelineShaderStageCreateInfo[stageCount];
-                        for (var j = 0; j < stageCount; j += 1)
-                        {
-                            bStages[j] = ExtractPipelineShaderStage(
-                                allocatedItems,
-                                gcHandles,
-                                current.Stages[j]);
-                        }
-
-                        pStages = VkInteropsUtility.AllocateHGlobalStructArray(bStages);
-                        allocatedItems.Add(pStages);
-                    }
-
-                    var groupCount = (current.Groups != null)
-                        ? (uint)current.Groups.Length
-                        : 0U;
-
-                    var pGroups = IntPtr.Zero;
-
-                    if (groupCount > 0)
-                    { 
-                        pGroups = VkInteropsUtility.AllocateHGlobalArray(
-                        current.Groups,
-                        (src) => {
-                            return new VkRayTracingShaderGroupCreateInfoNV
-                            {
-                                sType = VkStructureType.StructureTypeRayTracingShaderGroupCreateInfoNv,
-                                pNext = IntPtr.Zero,
-                                type = src.Type,
-                                generalShader = src.GeneralShader,
-                                closestHitShader = src.ClosestHitShader,
-                                anyHitShader = src.AnyHitShader,
-                                intersectionShader = src.IntersectionShader,
-                            };
-                        });
-                        allocatedItems.Add(pGroups);
-                    }
-
-                    var bLayout = (VkPipelineLayout)current.Layout;
-                    var bLayoutPtr = bLayout != null ? bLayout.Handle : 0UL;
-
-                    var bBasePipelineHandle = (VkPipeline)current.BasePipelineHandle;
-                    var bBasePipelineHandlePtr = bBasePipelineHandle != null 
-                        ? bBasePipelineHandle.Handle
-                        : 0UL;
-
-                    bCreateInfos[i] = new VkRayTracingPipelineCreateInfoNV
-                    {
-                        sType = VkStructureType.StructureTypeRayTracingPipelineCreateInfoNv,
-                        pNext = IntPtr.Zero,
-                        flags = current.Flags,
-                        stageCount = stageCount,
-                        pStages = pStages,
-                        groupCount = groupCount,
-                        pGroups = pGroups,
-                        maxRecursionDepth = current.MaxRecursionDepth,
-                        layout = bLayoutPtr,
-                        basePipelineHandle = bBasePipelineHandlePtr,
-                        basePipelineIndex = current.BasePipelineIndex,
-                    };
-                }
-
-                var handles = new ulong[createInfoCount];
-                var result = Interops.vkCreateRayTracingPipelinesNV(
-                    this.info,
-                    bPipelineCachePtr,
-                    createInfoCount,
-                    bCreateInfos,
-                    allocatorPtr,
-                    handles);
-
-                pPipelines = new VkPipeline[createInfoCount];
-                for (var i = 0; i < createInfoCount; ++i)
-                {
-                    pPipelines[i] = new VkPipeline(handles[i]);
-                }
-                return result;
-            }
-            finally
-            {
-                foreach (var item in allocatedItems)
-                {
-                    Marshal.FreeHGlobal(item);
-                }
-
-                foreach (var handle in gcHandles)
-                {
-                    handle.Free();
-                }
-            }
+            return VkCreateRayTracingPipelinesNVSection.CreateRayTracingPipelinesNV(info, pipelineCache, pCreateInfos, pAllocator, out pPipelines);
         }
 
         public MgResult CreateRenderPass2KHR(MgRenderPassCreateInfo2KHR pCreateInfo, IMgAllocationCallbacks pAllocator, out IMgRenderPass pRenderPass)
@@ -2849,7 +1361,7 @@ namespace Magnesium.Vulkan
 
             Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
-            var allocatorPtr = GetAllocatorHandle(pAllocator);
+            var allocatorPtr = VkDeviceInfo.GetAllocatorHandle(pAllocator);
 
             var allocatedItems = new List<IntPtr>();
 
@@ -3056,7 +1568,7 @@ namespace Magnesium.Vulkan
                 };
 
                 ulong internalHandle = 0;
-                var result = Interops.vkCreateRenderPass2KHR(info, ref createInfo, allocatorPtr, ref internalHandle);
+                var result = Interops.vkCreateRenderPass2KHR(info.Handle, ref createInfo, allocatorPtr, ref internalHandle);
                 pRenderPass = new VkRenderPass(internalHandle);
                 return result;
             }

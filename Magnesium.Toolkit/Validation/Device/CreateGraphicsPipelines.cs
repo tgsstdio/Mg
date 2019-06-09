@@ -5,7 +5,13 @@ namespace Magnesium.Toolkit.Validation.Device
 	{
 		public static void Validate(IMgPipelineCache pipelineCache, MgGraphicsPipelineCreateInfo[] pCreateInfos, IMgAllocationCallbacks allocator)
 		{
-			// TODO: add validation
-		}
+            if (pCreateInfos == null)
+                throw new ArgumentNullException(nameof(pCreateInfos));
+
+            if (pCreateInfos.Length == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(pCreateInfos) + " == 0");
+            }
+        }
 	}
 }

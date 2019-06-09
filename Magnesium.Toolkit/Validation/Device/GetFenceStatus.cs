@@ -5,7 +5,8 @@ namespace Magnesium.Toolkit.Validation.Device
 	{
 		public static void Validate(IMgFence fence)
 		{
-			// TODO: add validation
-		}
+            if (fence == null)
+                throw new ArgumentNullException(nameof(fence));
+        }
 	}
 }

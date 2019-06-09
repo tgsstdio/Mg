@@ -130,8 +130,158 @@ namespace CommandGen
 
                         CreateImplSectionFiles(platformNamespace, platformPrefix, FUNCTION_NAMESPACE, platformDirectoryPath, subCategoryNs, fn, methodTabs, lookup);
                     }
+
+                    string wiringName = platformPrefix + subCategoryNs;
+                    string wiringFile = System.IO.Path.Combine(platformFolder, wiringName + ".cs");
+                    GeneratePlatformWiring(group, wiringFile, platformNamespace, FUNCTION_NAMESPACE, wiringName, subCategoryNs, platformPrefix);
                 }
             }
+        }
+
+        private static void GeneratePlatformWiring(VkContainerClass group, string wiringFile, string libraryName, string category, string wiringName, string subCategoryNs, string platformPrefix)
+        {
+            var methodTabs = TAB_FIELD + "\t";
+
+            using (var fs = new StreamWriter(wiringFile, false))
+            {
+                fs.WriteLine("using System;");
+                fs.WriteLine("using System.Runtime.InteropServices;");
+                fs.WriteLine();
+
+                fs.WriteLine("namespace Magnesium." + libraryName + "." + category);
+                fs.WriteLine("{");
+                fs.WriteLine(TAB_FIELD + "public class {0} : {1}", wiringName, group.InterfaceName);
+                fs.WriteLine(TAB_FIELD + "{");
+
+                var infoClassName = platformPrefix + subCategoryNs + "Info";
+
+                if (group.Handle != null)
+                {
+                    // create internal field
+                    fs.WriteLine(string.Format("{0}internal readonly {1} Info;", methodTabs, infoClassName));
+
+                    // create constructor
+                    fs.WriteLine(string.Format("{0}internal {1}({2} handle)", methodTabs, group.Name, group.Handle.csType));
+                    fs.WriteLine(methodTabs + "{");
+                    fs.WriteLine(methodTabs + "\tInfo = new {0}(handle);", infoClassName);
+                    fs.WriteLine(methodTabs + "}");
+                    fs.WriteLine("");
+                }
+
+                foreach (var fn in group.Methods)
+                {
+                    fs.WriteLine(methodTabs + GetWiringInterface(fn, platformPrefix, subCategoryNs));
+                    fs.WriteLine(methodTabs + "{");
+                    fs.WriteLine(GetWiringMethod(fn, platformPrefix, subCategoryNs, methodTabs));
+                    fs.WriteLine(methodTabs + "}");
+                    fs.WriteLine();
+                }
+                fs.WriteLine(TAB_FIELD + "}");
+                fs.WriteLine("}");
+            }
+        }
+
+        public static string GetWiringInterface(VkMethodSignature fn, string libraryPrefix, string subCategoryNs)
+        {
+            var builder = new StringBuilder();
+            builder.Append("public");
+
+            builder.Append(" ");
+            builder.Append(fn.ReturnType);
+            builder.Append(" ");
+
+            builder.Append(fn.Name);
+            builder.Append("(");
+            // foreach arg in arguments
+
+            bool needComma = false;
+
+            foreach (var param in fn.Parameters)
+            {
+                if (needComma)
+                {
+                    builder.Append(", ");
+                }
+                else
+                {
+                    needComma = true;
+                }
+
+                if (param.UseOut)
+                {
+                    builder.Append("out ");
+                }
+                else if (param.UseRef)
+                {
+                    builder.Append("ref ");
+                }
+
+                builder.Append(param.BaseCsType);
+                builder.Append(" ");
+                builder.Append(param.Name);
+            }
+            builder.Append(")");
+
+            return builder.ToString();
+        }
+
+        public static string GetWiringMethod(VkMethodSignature fn, string libraryPrefix, string subCategoryNs, string methodTabs)
+        {
+            var returnType = fn.ReturnType == "void"
+                ? ""
+                : "return ";
+
+
+            var validateArgs = new StringBuilder();
+            validateArgs.Append(methodTabs);
+            validateArgs.Append(TAB_FIELD);
+            validateArgs.Append(returnType);
+
+            string className = libraryPrefix + fn.Name + "Section";
+
+            validateArgs.Append(className);
+            validateArgs.Append(".");
+
+            validateArgs.Append(fn.Name);
+            validateArgs.Append("(");
+
+            bool needComma = false;
+
+            var combos = new List<VkMethodParameter>();
+            combos.Add(
+                new VkMethodParameter
+                {
+                    BaseCsType = libraryPrefix + subCategoryNs + "Info",
+                    Name = "info",
+                }
+            );
+            combos.AddRange(fn.Parameters);
+
+            foreach (var param in combos)
+            {
+                if (needComma)
+                {
+                    validateArgs.Append(", ");
+                }
+                else
+                {
+                    needComma = true;
+                }
+
+                if (param.UseOut)
+                {
+                    validateArgs.Append("out ");
+                }
+                else if (param.UseRef)
+                {
+                    validateArgs.Append("ref ");
+                }
+
+                validateArgs.Append(param.Name);
+            }
+            validateArgs.Append(");");
+
+            return validateArgs.ToString();
         }
 
         private static void CreateFolderIfMissing(string destFolder)
@@ -206,7 +356,7 @@ namespace CommandGen
                 }
 
 
-                fs.WriteLine(methodTabs + GetImplementationMethod(fn, libraryPrefix, subCategoryNs));
+                fs.WriteLine(methodTabs + GetImplementationStubMethod(fn, libraryPrefix, subCategoryNs));
                 fs.WriteLine(methodTabs + "{");
                 fs.WriteLine(methodTabs + TAB_FIELD + "// TODO: add implementation");
                 fs.WriteLine(methodTabs + "}");
@@ -217,7 +367,7 @@ namespace CommandGen
             }
         }
 
-        public static string GetImplementationMethod(VkMethodSignature fn, string libraryPrefix, string subCategoryNs)
+        public static string GetImplementationStubMethod(VkMethodSignature fn, string libraryPrefix, string subCategoryNs)
         {
             var builder = new StringBuilder();
             builder.Append("public");
