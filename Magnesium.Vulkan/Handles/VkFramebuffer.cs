@@ -24,7 +24,7 @@ namespace Magnesium.Vulkan
 			var bAllocator = (MgVkAllocationCallbacks) allocator;
 			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;	
 
-			Interops.vkDestroyFramebuffer(bDevice.mHandle, this.Handle, allocatorPtr);
+			Interops.vkDestroyFramebuffer(bDevice.Info.Handle, this.Handle, allocatorPtr);
 
 			this.Handle = 0UL;
 			mIsDisposed = true;

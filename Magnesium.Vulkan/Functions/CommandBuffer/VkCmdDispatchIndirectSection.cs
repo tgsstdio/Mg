@@ -6,7 +6,7 @@ namespace Magnesium.Vulkan.Functions.CommandBuffer
 	public class VkCmdDispatchIndirectSection
 	{
 		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static void vkCmdDispatchIndirect(IntPtr commandBuffer, UInt64 buffer, VkDeviceSize offset);
+		internal extern static void vkCmdDispatchIndirect(IntPtr commandBuffer, UInt64 buffer, UInt64 offset);
 
 		public static void CmdDispatchIndirect(VkCommandBufferInfo info, IMgBuffer buffer, UInt64 offset)
 		{

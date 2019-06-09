@@ -10,7 +10,8 @@ namespace Magnesium.Vulkan.Functions.Device
 
 		public static MgResult BindImageMemory2(VkDeviceInfo info, MgBindImageMemoryInfo[] pBindInfos)
 		{
-			// TODO: add implementation
-		}
+            // TODO: add implementation
+            throw new NotImplementedException();
+        }
 	}
 }

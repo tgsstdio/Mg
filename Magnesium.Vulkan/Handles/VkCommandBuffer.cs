@@ -727,7 +727,7 @@ namespace Magnesium.Vulkan
 			var bDstBuffer = (VkBuffer) dstBuffer;
 			Debug.Assert(bDstBuffer != null);
 
-			Interops.vkCmdCopyQueryPoolResults(this.Handle, bQueryPool.Handle, firstQuery, queryCount, bDstBuffer.Handle, dstOffset, stride, (Magnesium.Vulkan.VkQueryResultFlags)flags);
+			Interops.vkCmdCopyQueryPoolResults(this.Handle, bQueryPool.Handle, firstQuery, queryCount, bDstBuffer.Handle, dstOffset, stride, flags);
 		}
 
 		public void CmdPushConstants(IMgPipelineLayout layout, MgShaderStageFlagBits stageFlags, UInt32 offset, UInt32 size, IntPtr pValues)

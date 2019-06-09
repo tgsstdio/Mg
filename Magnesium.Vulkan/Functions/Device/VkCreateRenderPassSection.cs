@@ -10,7 +10,8 @@ namespace Magnesium.Vulkan.Functions.Device
 
 		public static MgResult CreateRenderPass(VkDeviceInfo info, MgRenderPassCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgRenderPass pRenderPass)
 		{
-			// TODO: add implementation
+            // TODO: add implementation
+            throw new NotImplementedException();
 		}
 	}
 }

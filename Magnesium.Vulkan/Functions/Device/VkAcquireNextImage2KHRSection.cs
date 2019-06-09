@@ -10,7 +10,8 @@ namespace Magnesium.Vulkan.Functions.Device
 
 		public static MgResult AcquireNextImage2KHR(VkDeviceInfo info, MgAcquireNextImageInfoKHR pAcquireInfo, ref UInt32 pImageIndex)
 		{
-			// TODO: add implementation
+            // TODO: add implementation
+            throw new NotImplementedException();
 		}
 	}
 }

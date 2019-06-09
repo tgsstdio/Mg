@@ -10,7 +10,8 @@ namespace Magnesium.Vulkan.Functions.Device
 
 		public static MgResult SetDebugUtilsObjectNameEXT(VkDeviceInfo info, MgDebugUtilsObjectNameInfoEXT pNameInfo)
 		{
-			// TODO: add implementation
-		}
+            // TODO: add implementation
+            throw new NotImplementedException();
+        }
 	}
 }

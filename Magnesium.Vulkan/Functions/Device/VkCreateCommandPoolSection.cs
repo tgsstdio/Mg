@@ -10,7 +10,8 @@ namespace Magnesium.Vulkan.Functions.Device
 
 		public static MgResult CreateCommandPool(VkDeviceInfo info, MgCommandPoolCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgCommandPool pCommandPool)
 		{
-			// TODO: add implementation
-		}
+            // TODO: add implementation
+            throw new NotImplementedException();
+        }
 	}
 }

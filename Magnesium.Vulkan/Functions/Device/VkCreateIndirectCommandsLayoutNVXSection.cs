@@ -10,7 +10,8 @@ namespace Magnesium.Vulkan.Functions.Device
 
 		public static MgResult CreateIndirectCommandsLayoutNVX(VkDeviceInfo info, MgIndirectCommandsLayoutCreateInfoNVX pCreateInfo, IMgAllocationCallbacks pAllocator, out IMgIndirectCommandsLayoutNVX pIndirectCommandsLayout)
 		{
-			// TODO: add implementation
-		}
+            // TODO: add implementation
+            throw new NotImplementedException();
+        }
 	}
 }

@@ -6,11 +6,12 @@ namespace Magnesium.Vulkan.Functions.Device
 	public class VkGetMemoryFdKHRSection
 	{
 		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static MgResult vkGetMemoryFdKHR(IntPtr device, VkMemoryGetFdInfoKHR pGetFdInfo, ref int pFd);
+		internal extern static MgResult vkGetMemoryFdKHR(IntPtr device, MgMemoryGetFdInfoKHR pGetFdInfo, ref int pFd);
 
 		public static MgResult GetMemoryFdKHR(VkDeviceInfo info, MgMemoryGetFdInfoKHR pGetFdInfo, ref Int32 pFd)
 		{
-			// TODO: add implementation
+            // TODO: add implementation
+            throw new NotImplementedException();
 		}
 	}
 }

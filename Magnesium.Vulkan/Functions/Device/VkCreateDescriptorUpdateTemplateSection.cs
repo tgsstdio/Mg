@@ -10,7 +10,8 @@ namespace Magnesium.Vulkan.Functions.Device
 
 		public static MgResult CreateDescriptorUpdateTemplate(VkDeviceInfo info, MgDescriptorUpdateTemplateCreateInfo pCreateInfo, IMgAllocationCallbacks pAllocator, out IMgDescriptorUpdateTemplate pDescriptorUpdateTemplate)
 		{
-			// TODO: add implementation
-		}
+            // TODO: add implementation
+            throw new NotImplementedException();
+        }
 	}
 }

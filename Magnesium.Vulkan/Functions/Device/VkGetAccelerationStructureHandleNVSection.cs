@@ -10,7 +10,8 @@ namespace Magnesium.Vulkan.Functions.Device
 
 		public static MgResult GetAccelerationStructureHandleNV(VkDeviceInfo info, IMgAccelerationStructureNV accelerationStructure, UIntPtr dataSize, out IntPtr pData)
 		{
-			// TODO: add implementation
+            // TODO: add implementation
+            throw new NotImplementedException();
 		}
 	}
 }

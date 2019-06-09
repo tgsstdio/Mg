@@ -10,7 +10,8 @@ namespace Magnesium.Vulkan.Functions.PhysicalDevice
 
 		public static void GetPhysicalDeviceSparseImageFormatProperties2(VkPhysicalDeviceInfo info, MgPhysicalDeviceSparseImageFormatInfo2 pFormatInfo, out MgSparseImageFormatProperties2[] pProperties)
 		{
-			// TODO: add implementation
-		}
+            // TODO: add implementation
+            throw new NotImplementedException();
+        }
 	}
 }

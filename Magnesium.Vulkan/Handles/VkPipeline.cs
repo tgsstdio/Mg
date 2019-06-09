@@ -24,7 +24,7 @@ namespace Magnesium.Vulkan
 			var bAllocator = (MgVkAllocationCallbacks)allocator;
 			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
-			Interops.vkDestroyPipeline(bDevice.mHandle, this.Handle, allocatorPtr);
+			Interops.vkDestroyPipeline(bDevice.Info.Handle, this.Handle, allocatorPtr);
 
 			this.Handle = 0UL;
 			mIsDisposed = true;
@@ -35,7 +35,7 @@ namespace Magnesium.Vulkan
             var bDevice = (VkDevice)device;
             Debug.Assert(bDevice != null);
 
-            return Interops.vkCompileDeferredNV(bDevice.mHandle, this.Handle, shader);
+            return Interops.vkCompileDeferredNV(bDevice.Info.Handle, this.Handle, shader);
         }
     }
 }

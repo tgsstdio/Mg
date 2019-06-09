@@ -10,7 +10,8 @@ namespace Magnesium.Vulkan.Functions.Device
 
 		public static MgResult BindAccelerationStructureMemoryNV(VkDeviceInfo info, MgBindAccelerationStructureMemoryInfoNV[] pBindInfos)
 		{
-			// TODO: add implementation
-		}
+            // TODO: add implementation
+            throw new NotImplementedException();
+        }
 	}
 }

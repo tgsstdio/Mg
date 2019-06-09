@@ -10,7 +10,8 @@ namespace Magnesium.Vulkan.Functions.PhysicalDevice
 
 		public static void GetPhysicalDeviceMemoryProperties2(VkPhysicalDeviceInfo info, out MgPhysicalDeviceMemoryProperties2 pMemoryProperties)
 		{
-			// TODO: add implementation
-		}
+            // TODO: add implementation
+            throw new NotImplementedException();
+        }
 	}
 }

@@ -10,7 +10,8 @@ namespace Magnesium.Vulkan.Functions.Device
 
 		public static MgResult BindBufferMemory2(VkDeviceInfo info, MgBindBufferMemoryInfo[] pBindInfos)
 		{
-			// TODO: add implementation
+            // TODO: add implementation
+            throw new NotImplementedException();
 		}
 	}
 }

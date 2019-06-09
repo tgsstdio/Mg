@@ -5,12 +5,13 @@ namespace Magnesium.Vulkan.Functions.Device
 {
 	public class VkGetFenceFdKHRSection
 	{
-		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static MgResult vkGetFenceFdKHR(IntPtr device, VkFenceGetFdInfoKHR pGetFdInfo, ref int pFd);
+		//[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		//internal extern static MgResult vkGetFenceFdKHR(IntPtr device, VkFenceGetFdInfoKHR pGetFdInfo, ref int pFd);
 
 		public static MgResult GetFenceFdKHR(VkDeviceInfo info, MgFenceGetFdInfoKHR pGetFdInfo, out Int32 pFd)
 		{
-			// TODO: add implementation
-		}
+            // TODO: add implementation
+            throw new NotImplementedException();
+        }
 	}
 }

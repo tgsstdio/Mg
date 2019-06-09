@@ -6,7 +6,7 @@ namespace Magnesium.Vulkan.Functions.CommandBuffer
 	public class VkCmdClearAttachmentsSection
 	{
 		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static void vkCmdClearAttachments(IntPtr commandBuffer, UInt32 attachmentCount, [In, Out] VkClearAttachment[] pAttachments, UInt32 rectCount, VkClearRect[] pRects);
+		internal extern static void vkCmdClearAttachments(IntPtr commandBuffer, UInt32 attachmentCount, [In, Out] MgClearAttachment[] pAttachments, UInt32 rectCount, MgClearRect[] pRects);
 
 		public static void CmdClearAttachments(VkCommandBufferInfo info, MgClearAttachment[] pAttachments, MgClearRect[] pRects)
 		{

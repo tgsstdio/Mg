@@ -10,7 +10,8 @@ namespace Magnesium.Vulkan.Functions.Queue
 
 		public static void GetQueueCheckpointDataNV(VkQueueInfo info, out MgCheckpointDataNV[] pCheckpointData)
 		{
-			// TODO: add implementation
-		}
+            // TODO: add implementation
+            throw new NotImplementedException();
+        }
 	}
 }

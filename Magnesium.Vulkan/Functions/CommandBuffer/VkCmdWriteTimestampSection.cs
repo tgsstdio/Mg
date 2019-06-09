@@ -6,7 +6,7 @@ namespace Magnesium.Vulkan.Functions.CommandBuffer
 	public class VkCmdWriteTimestampSection
 	{
 		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static void vkCmdWriteTimestamp(IntPtr commandBuffer, VkPipelineStageFlagBits pipelineStage, UInt64 queryPool, UInt32 query);
+		internal extern static void vkCmdWriteTimestamp(IntPtr commandBuffer, MgPipelineStageFlagBits pipelineStage, UInt64 queryPool, UInt32 query);
 
 		public static void CmdWriteTimestamp(VkCommandBufferInfo info, MgPipelineStageFlagBits pipelineStage, IMgQueryPool queryPool, UInt32 query)
 		{

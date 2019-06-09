@@ -10,7 +10,8 @@ namespace Magnesium.Vulkan.Functions.PhysicalDevice
 
 		public static void GetPhysicalDeviceQueueFamilyProperties(VkPhysicalDeviceInfo info, out MgQueueFamilyProperties[] pQueueFamilyProperties)
 		{
-			// TODO: add implementation
-		}
+            // TODO: add implementation
+            throw new NotImplementedException();
+        }
 	}
 }

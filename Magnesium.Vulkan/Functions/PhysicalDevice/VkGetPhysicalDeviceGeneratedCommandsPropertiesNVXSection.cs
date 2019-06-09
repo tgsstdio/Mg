@@ -10,7 +10,8 @@ namespace Magnesium.Vulkan.Functions.PhysicalDevice
 
 		public static void GetPhysicalDeviceGeneratedCommandsPropertiesNVX(VkPhysicalDeviceInfo info, MgDeviceGeneratedCommandsFeaturesNVX pFeatures, out MgDeviceGeneratedCommandsLimitsNVX pLimits)
 		{
-			// TODO: add implementation
-		}
+            // TODO: add implementation
+            throw new NotImplementedException();
+        }
 	}
 }

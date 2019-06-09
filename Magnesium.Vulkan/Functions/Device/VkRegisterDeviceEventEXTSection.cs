@@ -5,12 +5,13 @@ namespace Magnesium.Vulkan.Functions.Device
 {
 	public class VkRegisterDeviceEventEXTSection
 	{
-		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe MgResult vkRegisterDeviceEventEXT(IntPtr device, VkDeviceEventInfoEXT pDeviceEventInfo, IntPtr pAllocator, UInt64* pFence);
+		//[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		//internal extern static unsafe MgResult vkRegisterDeviceEventEXT(IntPtr device, VkDeviceEventInfoEXT pDeviceEventInfo, IntPtr pAllocator, UInt64* pFence);
 
 		public static MgResult RegisterDeviceEventEXT(VkDeviceInfo info, MgDeviceEventInfoEXT pDeviceEventInfo, IntPtr pAllocator, IMgFence pFence)
 		{
-			// TODO: add implementation
+            // TODO: add implementation
+            throw new NotImplementedException();
 		}
 	}
 }

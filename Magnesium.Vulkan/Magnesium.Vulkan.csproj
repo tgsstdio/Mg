@@ -227,6 +227,7 @@
     <Compile Include="Functions\Queue\VkQueueBeginDebugUtilsLabelEXTSection.cs" />
     <Compile Include="Functions\Queue\VkQueueBindSparseSection.cs" />
     <Compile Include="Functions\Queue\VkQueueEndDebugUtilsLabelEXTSection.cs" />
+    <Compile Include="Functions\Queue\VkQueueInfo.cs" />
     <Compile Include="Functions\Queue\VkQueueInsertDebugUtilsLabelEXTSection.cs" />
     <Compile Include="Functions\Queue\VkQueuePresentKHRSection.cs" />
     <Compile Include="Functions\Queue\VkQueueSubmitSection.cs" />

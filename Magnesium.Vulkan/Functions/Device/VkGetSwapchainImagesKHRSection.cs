@@ -10,7 +10,8 @@ namespace Magnesium.Vulkan.Functions.Device
 
 		public static MgResult GetSwapchainImagesKHR(VkDeviceInfo info, IMgSwapchainKHR swapchain, out IMgImage[] pSwapchainImages)
 		{
-			// TODO: add implementation
-		}
+            // TODO: add implementation
+            throw new NotImplementedException();
+        }
 	}
 }

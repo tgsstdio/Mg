@@ -10,7 +10,8 @@ namespace Magnesium.Vulkan.Functions.Device
 
 		public static MgResult GetValidationCacheDataEXT(VkDeviceInfo info, IMgValidationCacheEXT validationCache, ref UIntPtr pDataSize, IntPtr[] pData)
 		{
-			// TODO: add implementation
-		}
+            // TODO: add implementation
+            throw new NotImplementedException();
+        }
 	}
 }

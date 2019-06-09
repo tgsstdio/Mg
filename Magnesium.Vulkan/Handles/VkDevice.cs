@@ -10,7 +10,9 @@ namespace Magnesium.Vulkan
     public class VkDevice : IMgDevice
 	{
 		readonly VkDeviceInfo info;
-		internal VkDevice(IntPtr handle)
+        public VkDeviceInfo Info { get => info; }
+
+        internal VkDevice(IntPtr handle)
 		{
 			info = new VkDeviceInfo(handle);
 		}

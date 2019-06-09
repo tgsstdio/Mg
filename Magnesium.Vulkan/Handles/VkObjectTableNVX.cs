@@ -19,7 +19,7 @@ namespace Magnesium.Vulkan
 
             var allocatorHandle = VkInteropsUtility.GetAllocatorHandle(allocator);
 
-            Interops.vkDestroyObjectTableNVX(bDevice.mHandle, this.Handle, allocatorHandle);
+            Interops.vkDestroyObjectTableNVX(bDevice.Info.Handle, this.Handle, allocatorHandle);
 		}
 
 		public MgResult RegisterObjectsNVX(IMgDevice device, MgObjectTableEntryIndexNYX[] registrationObjects)
@@ -44,7 +44,7 @@ namespace Magnesium.Vulkan
                 pObjectIndices[i] = current.Index;
             }
 
-            return Interops.vkRegisterObjectsNVX(bDevice.mHandle, this.Handle, objectCount, ref ppObjectTableEntries, pObjectIndices);
+            return Interops.vkRegisterObjectsNVX(bDevice.Info.Handle, this.Handle, objectCount, ref ppObjectTableEntries, pObjectIndices);
         }
 
 		public MgResult UnregisterObjectsNVX(IMgDevice device, MgObjectTableEntryIndexNYX[] registrationObjects)
@@ -69,7 +69,7 @@ namespace Magnesium.Vulkan
                 pObjectIndices[i] = current.Index;
             }
 
-            return Interops.vkUnregisterObjectsNVX(bDevice.mHandle, this.Handle, objectCount, ref ppObjectTableEntries, pObjectIndices);
+            return Interops.vkUnregisterObjectsNVX(bDevice.Info.Handle, this.Handle, objectCount, ref ppObjectTableEntries, pObjectIndices);
         }
 
 	}

@@ -35,7 +35,7 @@ namespace Magnesium.Vulkan.Functions.Device
                     };
                 }
 
-                return IntovkFlushMappedMemoryRanges(info.Handle, rangeCount, ranges);
+                return vkFlushMappedMemoryRanges(info.Handle, rangeCount, ranges);
             }
         }
 	}
