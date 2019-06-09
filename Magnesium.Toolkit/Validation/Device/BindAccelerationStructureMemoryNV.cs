@@ -5,7 +5,8 @@ namespace Magnesium.Toolkit.Validation.Device
 	{
 		public static void Validate(MgBindAccelerationStructureMemoryInfoNV[] pBindInfos)
 		{
-			// TODO: add validation
-		}
+            if (pBindInfos == null)
+                throw new ArgumentNullException(nameof(pBindInfos));
+        }
 	}
 }
