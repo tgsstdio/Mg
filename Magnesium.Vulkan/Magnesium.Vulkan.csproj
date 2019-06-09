@@ -232,12 +232,13 @@
     <Compile Include="Functions\Queue\VkQueueInsertDebugUtilsLabelEXTSection.cs" />
     <Compile Include="Functions\Queue\VkQueuePresentKHRSection.cs" />
     <Compile Include="Functions\Queue\VkQueueSubmitSection.cs" />
+    <Compile Include="Functions\Queue\VkQueueUtility.cs" />
     <Compile Include="Functions\Queue\VkQueueWaitIdleSection.cs" />
     <Compile Include="Handles\VkAcceleratedStructureNV.cs" />
     <Compile Include="Handles\VkDebugUtilsMessengerData.cs" />
     <Compile Include="Handles\VkDebugUtilsMessengerEXT.cs" />
     <Compile Include="Handles\VkDescriptorUpdateTemplate.cs" />
-    <Compile Include="Handles\VkDeviceInfo.cs" />
+    <Compile Include="Functions\Device\VkDeviceInfo.cs" />
     <Compile Include="Handles\VkIndirectCommandsLayoutNVX.cs" />
     <Compile Include="Handles\VkObjectTableNVX.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
