@@ -5,7 +5,8 @@ namespace Magnesium.Toolkit.Validation.PhysicalDevice
 	{
 		public static void Validate(MgDeviceCreateInfo pCreateInfo, IMgAllocationCallbacks allocator)
 		{
-			// TODO: add validation
-		}
+            if (pCreateInfo == null)
+                throw new ArgumentNullException(nameof(pCreateInfo));
+        }
 	}
 }

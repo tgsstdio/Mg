@@ -6,12 +6,33 @@ namespace Magnesium.Vulkan.Functions.PhysicalDevice
 	public class VkGetPhysicalDeviceDisplayPlanePropertiesKHRSection
 	{
 		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static unsafe MgResult vkGetPhysicalDeviceDisplayPlanePropertiesKHR(IntPtr physicalDevice, UInt32* pPropertyCount, VkDisplayPlanePropertiesKHR* pProperties);
+        internal extern static MgResult vkGetPhysicalDeviceDisplayPlanePropertiesKHR(IntPtr physicalDevice, ref UInt32 pPropertyCount, [In, Out] VkDisplayPlanePropertiesKHR[] pProperties);
 
-		public static MgResult GetPhysicalDeviceDisplayPlanePropertiesKHR(VkPhysicalDeviceInfo info, out MgDisplayPlanePropertiesKHR[] pProperties)
-		{
-			// TODO: add implementation
-			throw new NotImplementedException();
-		}
-	}
+        public static MgResult GetPhysicalDeviceDisplayPlanePropertiesKHR(VkPhysicalDeviceInfo info, out MgDisplayPlanePropertiesKHR[] pProperties)
+        {
+            uint count = 0;
+            var first = vkGetPhysicalDeviceDisplayPlanePropertiesKHR(info.Handle, ref count, null);
+
+            if (first != MgResult.SUCCESS)
+            {
+                pProperties = null;
+                return first;
+            }
+
+            var planeProperties = new VkDisplayPlanePropertiesKHR[count];
+            var final = vkGetPhysicalDeviceDisplayPlanePropertiesKHR(info.Handle, ref count, planeProperties);
+
+            pProperties = new MgDisplayPlanePropertiesKHR[count];
+            for (var i = 0; i < count; ++i)
+            {
+                pProperties[i] = new MgDisplayPlanePropertiesKHR
+                {
+                    CurrentDisplay = new VkDisplayKHR(planeProperties[i].currentDisplay),
+                    CurrentStackIndex = planeProperties[i].currentStackIndex,
+                };
+            }
+
+            return final;
+        }
+    }
 }
