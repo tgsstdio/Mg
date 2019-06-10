@@ -1,10 +1,10 @@
 using System;
 namespace Magnesium.Toolkit
 {
-	public class SafeCommandBuffer : IMgCommandBuffer
+    public class MgSafeCommandBuffer : IMgCommandBuffer
 	{
 		internal IMgCommandBuffer mImpl = null;
-		internal SafeCommandBuffer(IMgCommandBuffer impl)
+		internal MgSafeCommandBuffer(IMgCommandBuffer impl)
 		{
 			mImpl = impl;
 		}

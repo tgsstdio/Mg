@@ -1,10 +1,10 @@
 using System;
 namespace Magnesium.Toolkit
 {
-	public class SafePhysicalDevice : IMgPhysicalDevice
+	public class MgSafePhysicalDevice : IMgPhysicalDevice
 	{
 		internal IMgPhysicalDevice mImpl = null;
-		internal SafePhysicalDevice(IMgPhysicalDevice impl)
+		internal MgSafePhysicalDevice(IMgPhysicalDevice impl)
 		{
 			mImpl = impl;
 		}

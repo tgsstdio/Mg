@@ -1,10 +1,9 @@
-using System;
 namespace Magnesium.Toolkit
 {
-	public class SafeQueue : IMgQueue
+    public class MgSafeQueue : IMgQueue
 	{
 		internal IMgQueue mImpl = null;
-		internal SafeQueue(IMgQueue impl)
+		internal MgSafeQueue(IMgQueue impl)
 		{
 			mImpl = impl;
 		}
