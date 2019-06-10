@@ -6,7 +6,7 @@ namespace Magnesium.Vulkan.Functions.Device
 {
 	public class VkGetImageSubresourceLayoutSection
 	{
-		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static void vkGetImageSubresourceLayout(IntPtr device, UInt64 image, [In] Magnesium.MgImageSubresource pSubresource, [In, Out] Magnesium.MgSubresourceLayout pLayout);
 
         public static void GetImageSubresourceLayout(VkDeviceInfo info, IMgImage image, MgImageSubresource pSubresource, out MgSubresourceLayout pLayout)

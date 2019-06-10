@@ -6,7 +6,7 @@ namespace Magnesium.Vulkan.Functions.Device
 {
 	public class VkWaitForFencesSection
 	{
-		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static MgResult vkWaitForFences(IntPtr device, UInt32 fenceCount, [In] UInt64[] pFences, VkBool32 waitAll, UInt64 timeout);
 
         public static MgResult WaitForFences(VkDeviceInfo info, IMgFence[] pFences, Boolean waitAll, UInt64 timeout)

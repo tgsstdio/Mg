@@ -7,7 +7,7 @@ namespace Magnesium.Vulkan.Functions.PhysicalDevice
 {
 	public class VkCreateDeviceSection
 	{
-		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static MgResult vkCreateDevice(IntPtr physicalDevice, ref VkDeviceCreateInfo pCreateInfo, IntPtr pAllocator, ref IntPtr pDevice);
 
         public static MgResult CreateDevice(VkPhysicalDeviceInfo info, MgDeviceCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDevice pDevice)

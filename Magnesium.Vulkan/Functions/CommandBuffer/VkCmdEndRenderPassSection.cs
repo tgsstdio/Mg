@@ -5,12 +5,12 @@ namespace Magnesium.Vulkan.Functions.CommandBuffer
 {
 	public class VkCmdEndRenderPassSection
 	{
-		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static void vkCmdEndRenderPass(IntPtr commandBuffer);
+		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
+        internal extern static void vkCmdEndRenderPass(IntPtr commandBuffer);
 
-		public static void CmdEndRenderPass(VkCommandBufferInfo info)
-		{
-			// TODO: add implementation
-		}
-	}
+        public static void CmdEndRenderPass(VkCommandBufferInfo info)
+        {
+            vkCmdEndRenderPass(info.Handle);
+        }
+    }
 }

@@ -6,7 +6,7 @@ namespace Magnesium.Vulkan.Functions.Device
 {
 	public class VkCreateSamplerSection
 	{
-		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static MgResult vkCreateSampler(IntPtr device, ref VkSamplerCreateInfo pCreateInfo, IntPtr pAllocator, ref UInt64 pSampler);
 
         public static MgResult CreateSampler(VkDeviceInfo info, MgSamplerCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgSampler pSampler)

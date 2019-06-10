@@ -6,7 +6,7 @@ namespace Magnesium.Vulkan.Functions.Device
 {
 	public class VkCreateSemaphoreSection
 	{
-		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static MgResult vkCreateSemaphore(IntPtr device, ref VkSemaphoreCreateInfo pCreateInfo, IntPtr pAllocator, ref UInt64 pSemaphore);
 
         public static MgResult CreateSemaphore(VkDeviceInfo info, MgSemaphoreCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgSemaphore pSemaphore)

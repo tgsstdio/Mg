@@ -6,7 +6,7 @@ namespace Magnesium.Vulkan.Functions.Device
 {
 	public class VkAcquireNextImage2KHRSection
 	{
-		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static MgResult vkAcquireNextImage2KHR(IntPtr device, [In, Out] VkAcquireNextImageInfoKHR pAcquireInfo, ref UInt32 pImageIndex);
 
         public static MgResult AcquireNextImage2KHR(VkDeviceInfo info, MgAcquireNextImageInfoKHR pAcquireInfo, ref UInt32 pImageIndex)

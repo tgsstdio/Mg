@@ -7,7 +7,7 @@ namespace Magnesium.Vulkan.Functions.Queue
 {
 	public class VkQueuePresentKHRSection
 	{
-		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static MgResult vkQueuePresentKHR(IntPtr queue, ref VkPresentInfoKHR pPresentInfo);
 
         public static MgResult QueuePresentKHR(VkQueueInfo info, MgPresentInfoKHR pPresentInfo)

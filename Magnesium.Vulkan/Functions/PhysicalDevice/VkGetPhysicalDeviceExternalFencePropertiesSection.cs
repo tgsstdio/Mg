@@ -5,7 +5,7 @@ namespace Magnesium.Vulkan.Functions.PhysicalDevice
 {
 	public class VkGetPhysicalDeviceExternalFencePropertiesSection
 	{
-		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static void vkGetPhysicalDeviceExternalFenceProperties(IntPtr physicalDevice, ref VkPhysicalDeviceExternalFenceInfo pExternalFenceInfo, ref VkExternalFenceProperties pExternalFenceProperties);
 
         public static void GetPhysicalDeviceExternalFenceProperties(VkPhysicalDeviceInfo info, MgPhysicalDeviceExternalFenceInfo pExternalFenceInfo, out MgExternalFenceProperties pExternalFenceProperties)

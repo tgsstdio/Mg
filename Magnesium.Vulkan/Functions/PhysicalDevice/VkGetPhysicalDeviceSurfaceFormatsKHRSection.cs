@@ -6,7 +6,7 @@ namespace Magnesium.Vulkan.Functions.PhysicalDevice
 {
 	public class VkGetPhysicalDeviceSurfaceFormatsKHRSection
 	{
-		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static MgResult vkGetPhysicalDeviceSurfaceFormatsKHR(IntPtr physicalDevice, UInt64 surface, ref UInt32 pSurfaceFormatCount, [In, Out] VkSurfaceFormatKHR[] pSurfaceFormats);
 
         public static MgResult GetPhysicalDeviceSurfaceFormatsKHR(VkPhysicalDeviceInfo info, IMgSurfaceKHR surface, out MgSurfaceFormatKHR[] pSurfaceFormats)

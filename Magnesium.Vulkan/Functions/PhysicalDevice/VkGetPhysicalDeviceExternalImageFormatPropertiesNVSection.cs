@@ -5,7 +5,7 @@ namespace Magnesium.Vulkan.Functions.PhysicalDevice
 {
 	public class VkGetPhysicalDeviceExternalImageFormatPropertiesNVSection
 	{
-        [DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+        [DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static MgResult vkGetPhysicalDeviceExternalImageFormatPropertiesNV(IntPtr physicalDevice, MgFormat format, VkImageType type, MgImageTiling tiling, MgImageUsageFlagBits usage, MgImageCreateFlagBits flags, UInt32 externalHandleType, ref VkExternalImageFormatPropertiesNV pExternalImageFormatProperties);
 
         public static MgResult GetPhysicalDeviceExternalImageFormatPropertiesNV(VkPhysicalDeviceInfo info, MgFormat format, MgImageType type, MgImageTiling tiling, MgImageUsageFlagBits usage, MgImageCreateFlagBits flags, UInt32 externalHandleType, out MgExternalImageFormatPropertiesNV pExternalImageFormatProperties)

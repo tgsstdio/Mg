@@ -6,7 +6,7 @@ namespace Magnesium.Vulkan.Functions.Device
 {
 	public class VkFreeCommandBuffersSection
 	{
-		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static void vkFreeCommandBuffers(IntPtr device, UInt64 commandPool, UInt32 commandBufferCount, [In] IntPtr[] pCommandBuffers);
 
         public static void FreeCommandBuffers(VkDeviceInfo info, IMgCommandPool commandPool, IMgCommandBuffer[] pCommandBuffers)
@@ -24,7 +24,7 @@ namespace Magnesium.Vulkan.Functions.Device
                 for (var i = 0; i < commandBufferCount; ++i)
                 {
                     var bCommandBuffer = (VkCommandBuffer)pCommandBuffers[i];
-                    bufferHandles[i] = bCommandBuffer.Handle;
+                    bufferHandles[i] = bCommandBuffer.Info.Handle;
                 }
 
                 vkFreeCommandBuffers(info.Handle, bCommandPool.Handle, commandBufferCount, bufferHandles);

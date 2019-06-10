@@ -6,7 +6,7 @@ namespace Magnesium.Vulkan.Functions.Device
 {
 	public class VkGetFenceStatusSection
 	{
-		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static MgResult vkGetFenceStatus(IntPtr device, UInt64 fence);
 
         public static MgResult GetFenceStatus(VkDeviceInfo info, IMgFence fence)

@@ -5,7 +5,10 @@ namespace Magnesium.Toolkit.Validation.CommandBuffer
 	{
 		public static void Validate(MgCmdProcessCommandsInfoNVX pProcessCommandsInfo)
 		{
-			// TODO: add validation
-		}
+            if (pProcessCommandsInfo == null)
+            {
+                throw new ArgumentNullException(nameof(pProcessCommandsInfo));
+            }
+        }
 	}
 }

@@ -6,7 +6,7 @@ namespace Magnesium.Vulkan.Functions.Device
 {
 	public class VkFreeDescriptorSetsSection
 	{
-		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static MgResult vkFreeDescriptorSets(IntPtr device, UInt64 descriptorPool, UInt32 descriptorSetCount, [In, Out] UInt64[] pDescriptorSets);
 
         public static MgResult FreeDescriptorSets(VkDeviceInfo info, IMgDescriptorPool descriptorPool, IMgDescriptorSet[] pDescriptorSets)

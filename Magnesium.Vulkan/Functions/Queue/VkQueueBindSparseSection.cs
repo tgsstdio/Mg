@@ -7,7 +7,7 @@ namespace Magnesium.Vulkan.Functions.Queue
 {
 	public class VkQueueBindSparseSection
 	{
-		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static unsafe MgResult vkQueueBindSparse(IntPtr queue, UInt32 bindInfoCount, VkBindSparseInfo* pBindInfo, UInt64 fence);
 
         public static MgResult QueueBindSparse(VkQueueInfo info, MgBindSparseInfo[] pBindInfo, IMgFence fence)

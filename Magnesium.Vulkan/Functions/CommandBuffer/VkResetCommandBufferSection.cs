@@ -5,13 +5,12 @@ namespace Magnesium.Vulkan.Functions.CommandBuffer
 {
 	public class VkResetCommandBufferSection
 	{
-		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static MgResult vkResetCommandBuffer(IntPtr commandBuffer, VkCommandBufferResetFlags flags);
+		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
+        internal extern static MgResult vkResetCommandBuffer(IntPtr commandBuffer, VkCommandBufferResetFlags flags);
 
-		public static MgResult ResetCommandBuffer(VkCommandBufferInfo info, MgCommandBufferResetFlagBits flags)
-		{
-			// TODO: add implementation
-			throw new NotImplementedException();
-		}
-	}
+        public static MgResult ResetCommandBuffer(VkCommandBufferInfo info, MgCommandBufferResetFlagBits flags)
+        {
+            return vkResetCommandBuffer(info.Handle, (VkCommandBufferResetFlags)flags);
+        }
+    }
 }

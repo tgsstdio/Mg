@@ -5,7 +5,7 @@ namespace Magnesium.Vulkan.Functions.Device
 {
 	public class VkBindBufferMemory2Section
 	{
-		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static MgResult vkBindBufferMemory2(IntPtr device, UInt32 bindInfoCount, [In] VkBindBufferMemoryInfo[] pBindInfos);
 
         public static MgResult BindBufferMemory2(VkDeviceInfo info, MgBindBufferMemoryInfo[] pBindInfos)

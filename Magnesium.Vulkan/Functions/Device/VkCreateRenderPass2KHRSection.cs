@@ -7,7 +7,7 @@ namespace Magnesium.Vulkan.Functions.Device
 {
 	public class VkCreateRenderPass2KHRSection
 	{
-		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static MgResult vkCreateRenderPass2KHR(IntPtr device, ref VkRenderPassCreateInfo2KHR pCreateInfo, IntPtr pAllocator, ref UInt64 pRenderPass);
 
         public static MgResult CreateRenderPass2KHR(VkDeviceInfo info, MgRenderPassCreateInfo2KHR pCreateInfo, IMgAllocationCallbacks pAllocator, out IMgRenderPass pRenderPass)

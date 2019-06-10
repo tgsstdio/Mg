@@ -5,7 +5,7 @@ namespace Magnesium.Vulkan.Functions.Device
 {
 	public class VkDestroyDeviceSection
 	{
-        [DllImport(Interops.VULKAN_LIB, CallingConvention = CallingConvention.Winapi)]
+        [DllImport(Interops.VULKAN_LIB_1, CallingConvention = CallingConvention.Winapi)]
         internal extern static void vkDestroyDevice(IntPtr device, IntPtr pAllocator);
 
         public static void DestroyDevice(VkDeviceInfo info, IMgAllocationCallbacks allocator)

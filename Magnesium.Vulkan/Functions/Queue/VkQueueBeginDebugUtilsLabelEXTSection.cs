@@ -5,7 +5,7 @@ namespace Magnesium.Vulkan.Functions.Queue
 {
 	public class VkQueueBeginDebugUtilsLabelEXTSection
 	{
-		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static void vkQueueBeginDebugUtilsLabelEXT(IntPtr queue, ref VkDebugUtilsLabelEXT pLabelInfo);
 
         public static void QueueBeginDebugUtilsLabelEXT(VkQueueInfo info, MgDebugUtilsLabelEXT labelInfo)

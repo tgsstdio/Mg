@@ -5,7 +5,7 @@ namespace Magnesium.Vulkan.Functions.PhysicalDevice
 {
 	public class VkGetPhysicalDeviceCalibrateableTimeDomainsEXTSection
 	{
-		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static MgResult vkGetPhysicalDeviceCalibrateableTimeDomainsEXT(IntPtr physicalDevice, ref UInt32 pTimeDomainCount, [In, Out] MgTimeDomainEXT[] pTimeDomains);
 
         public static MgResult GetPhysicalDeviceCalibrateableTimeDomainsEXT(VkPhysicalDeviceInfo info, out MgTimeDomainEXT[] pTimeDomains)

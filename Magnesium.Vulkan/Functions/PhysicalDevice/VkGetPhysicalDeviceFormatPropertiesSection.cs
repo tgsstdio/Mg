@@ -5,7 +5,7 @@ namespace Magnesium.Vulkan.Functions.PhysicalDevice
 {
 	public class VkGetPhysicalDeviceFormatPropertiesSection
 	{
-		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static unsafe void vkGetPhysicalDeviceFormatProperties(IntPtr physicalDevice, MgFormat format, ref VkFormatProperties pFormatProperties);
 
         public static void GetPhysicalDeviceFormatProperties(VkPhysicalDeviceInfo info, MgFormat format, out MgFormatProperties pFormatProperties)

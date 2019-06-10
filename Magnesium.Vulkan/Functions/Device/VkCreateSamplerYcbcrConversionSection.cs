@@ -5,7 +5,7 @@ namespace Magnesium.Vulkan.Functions.Device
 {
 	public class VkCreateSamplerYcbcrConversionSection
 	{
-		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
 		internal extern static unsafe MgResult vkCreateSamplerYcbcrConversion(IntPtr device, MgSamplerYcbcrConversionCreateInfo pCreateInfo, IntPtr pAllocator, UInt64* pYcbcrConversion);
 
 		public static MgResult CreateSamplerYcbcrConversion(VkDeviceInfo info, MgSamplerYcbcrConversionCreateInfo pCreateInfo, IMgAllocationCallbacks pAllocator, IMgSamplerYcbcrConversion pYcbcrConversion)

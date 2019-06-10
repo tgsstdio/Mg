@@ -5,7 +5,7 @@ namespace Magnesium.Vulkan.Functions.Queue
 {
 	public class VkGetQueueCheckpointDataNVSection
 	{
-		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static void vkGetQueueCheckpointDataNV(IntPtr queue, ref UInt32 pCheckpointDataCount, [In, Out] VkCheckpointDataNV[] pCheckpointData);
 
         public static void GetQueueCheckpointDataNV(VkQueueInfo info, out MgCheckpointDataNV[] pCheckpointData)

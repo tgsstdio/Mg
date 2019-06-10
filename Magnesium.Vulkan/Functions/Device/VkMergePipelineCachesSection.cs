@@ -6,7 +6,7 @@ namespace Magnesium.Vulkan.Functions.Device
 {
 	public class VkMergePipelineCachesSection
 	{
-		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static MgResult vkMergePipelineCaches(IntPtr device, UInt64 dstCache, UInt32 srcCacheCount, [In] UInt64[] pSrcCaches);
 
         public static MgResult MergePipelineCaches(VkDeviceInfo info, IMgPipelineCache dstCache, IMgPipelineCache[] pSrcCaches)

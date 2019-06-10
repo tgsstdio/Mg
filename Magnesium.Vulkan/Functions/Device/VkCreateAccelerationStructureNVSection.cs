@@ -5,7 +5,7 @@ namespace Magnesium.Vulkan.Functions.Device
 {
 	public class VkCreateAccelerationStructureNVSection
 	{
-		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
+		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static MgResult vkCreateAccelerationStructureNV(IntPtr device, ref VkAccelerationStructureCreateInfoNV pCreateInfo, IntPtr pAllocator, ref UInt64 pAccelerationStructure);
 
         public static MgResult CreateAccelerationStructureNV(VkDeviceInfo info, MgAccelerationStructureCreateInfoNV pCreateInfo, IMgAllocationCallbacks pAllocator, out IMgAccelerationStructureNV pAccelerationStructure)
