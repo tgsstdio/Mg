@@ -5,7 +5,8 @@ namespace Magnesium.Toolkit.Validation.PhysicalDevice
 	{
 		public static void Validate(MgPhysicalDeviceExternalSemaphoreInfo pExternalSemaphoreInfo)
 		{
-			// TODO: add validation
-		}
+            if (pExternalSemaphoreInfo == null)
+                throw new ArgumentNullException(nameof(pExternalSemaphoreInfo));
+        }
 	}
 }

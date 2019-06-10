@@ -5,7 +5,8 @@ namespace Magnesium.Toolkit.Validation.PhysicalDevice
 	{
 		public static void Validate(MgPhysicalDeviceExternalFenceInfo pExternalFenceInfo)
 		{
-			// TODO: add validation
-		}
+            if (pExternalFenceInfo == null)
+                throw new ArgumentNullException(nameof(pExternalFenceInfo));
+        }
 	}
 }

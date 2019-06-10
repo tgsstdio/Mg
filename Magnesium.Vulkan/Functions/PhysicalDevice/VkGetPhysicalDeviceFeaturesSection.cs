@@ -17,7 +17,7 @@ namespace Magnesium.Vulkan.Functions.PhysicalDevice
             pFeatures = TranslateFeatures(ref features);
         }
 
-        private static MgPhysicalDeviceFeatures TranslateFeatures(ref VkPhysicalDeviceFeatures features)
+        internal static MgPhysicalDeviceFeatures TranslateFeatures(ref VkPhysicalDeviceFeatures features)
         {
             return new MgPhysicalDeviceFeatures
             {

@@ -53,7 +53,7 @@ namespace Magnesium.Vulkan.Functions.PhysicalDevice
             }
         }
 
-        private static MgSparseImageFormatProperties TranslateSparseImageFormatProperties(ref VkSparseImageFormatProperties src)
+        internal static MgSparseImageFormatProperties TranslateSparseImageFormatProperties(ref VkSparseImageFormatProperties src)
         {
             return new MgSparseImageFormatProperties
             {

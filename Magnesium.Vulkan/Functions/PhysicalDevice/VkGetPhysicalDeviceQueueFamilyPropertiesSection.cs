@@ -29,7 +29,7 @@ namespace Magnesium.Vulkan.Functions.PhysicalDevice
             }
         }
 
-        private static unsafe MgQueueFamilyProperties TranslateQueueFamilyProperties(
+        internal static unsafe MgQueueFamilyProperties TranslateQueueFamilyProperties(
             ref VkQueueFamilyProperties src)
         {
             return new MgQueueFamilyProperties

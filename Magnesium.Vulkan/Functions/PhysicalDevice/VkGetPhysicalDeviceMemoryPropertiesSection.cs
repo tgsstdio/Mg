@@ -16,7 +16,7 @@ namespace Magnesium.Vulkan.Functions.PhysicalDevice
             pMemoryProperties = TranslateMemoryProperties(ref memoryProperties);
         }
 
-        private static MgPhysicalDeviceMemoryProperties TranslateMemoryProperties(ref VkPhysicalDeviceMemoryProperties memoryProperties)
+        internal static MgPhysicalDeviceMemoryProperties TranslateMemoryProperties(ref VkPhysicalDeviceMemoryProperties memoryProperties)
         {
             MgPhysicalDeviceMemoryProperties pMemoryProperties;
             var memoryHeaps = new MgMemoryHeap[memoryProperties.memoryHeapCount];

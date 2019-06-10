@@ -21,7 +21,7 @@ namespace Magnesium.Vulkan.Functions.PhysicalDevice
             return result;
         }
 
-        private static MgSurfaceCapabilitiesKHR TranslateSurfaceCapabilities(ref VkSurfaceCapabilitiesKHR src)
+        internal static MgSurfaceCapabilitiesKHR TranslateSurfaceCapabilities(ref VkSurfaceCapabilitiesKHR src)
         {
             return new MgSurfaceCapabilitiesKHR
             {

@@ -16,7 +16,7 @@ namespace Magnesium.Vulkan.Functions.PhysicalDevice
             pFormatProperties = TranslateFormatProperties(format, ref formatProperties);
         }
 
-        private static MgFormatProperties TranslateFormatProperties(MgFormat format, ref VkFormatProperties formatProperties)
+        internal static MgFormatProperties TranslateFormatProperties(MgFormat format, ref VkFormatProperties formatProperties)
         {
             return new MgFormatProperties
             {

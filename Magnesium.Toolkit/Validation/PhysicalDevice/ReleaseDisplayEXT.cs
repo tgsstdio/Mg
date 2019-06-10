@@ -5,7 +5,8 @@ namespace Magnesium.Toolkit.Validation.PhysicalDevice
 	{
 		public static void Validate(IMgDisplayKHR display)
 		{
-			// TODO: add validation
-		}
-	}
+            if (display == null)
+                throw new ArgumentNullException(nameof(display));
+        }
+    }
 }

@@ -5,7 +5,8 @@ namespace Magnesium.Toolkit.Validation.PhysicalDevice
 	{
 		public static void Validate(MgDeviceGeneratedCommandsFeaturesNVX pFeatures)
 		{
-			// TODO: add validation
-		}
+            if (pFeatures == null)
+                throw new ArgumentNullException(nameof(pFeatures));
+        }
 	}
 }

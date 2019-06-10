@@ -5,7 +5,8 @@ namespace Magnesium.Toolkit.Validation.PhysicalDevice
 	{
 		public static void Validate(MgPhysicalDeviceExternalBufferInfo pExternalBufferInfo)
 		{
-			// TODO: add validation
-		}
+            if (pExternalBufferInfo == null)
+                throw new ArgumentNullException(nameof(pExternalBufferInfo));
+        }
 	}
 }

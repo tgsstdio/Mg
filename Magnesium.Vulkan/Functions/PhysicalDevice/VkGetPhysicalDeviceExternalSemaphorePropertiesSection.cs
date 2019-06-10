@@ -6,12 +6,33 @@ namespace Magnesium.Vulkan.Functions.PhysicalDevice
 	public class VkGetPhysicalDeviceExternalSemaphorePropertiesSection
 	{
 		[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
-		internal extern static void vkGetPhysicalDeviceExternalSemaphoreProperties(IntPtr physicalDevice, VkPhysicalDeviceExternalSemaphoreInfo pExternalSemaphoreInfo, [In, Out] VkExternalSemaphoreProperties pExternalSemaphoreProperties);
+        internal extern static void vkGetPhysicalDeviceExternalSemaphoreProperties(IntPtr physicalDevice, ref VkPhysicalDeviceExternalSemaphoreInfo pExternalSemaphoreInfo, ref VkExternalSemaphoreProperties pExternalSemaphoreProperties);
 
-		public static void GetPhysicalDeviceExternalSemaphoreProperties(VkPhysicalDeviceInfo info, MgPhysicalDeviceExternalSemaphoreInfo pExternalSemaphoreInfo, out MgExternalSemaphoreProperties pExternalSemaphoreProperties)
-		{
-            // TODO: add implementation
-            throw new NotImplementedException();
+        public static void GetPhysicalDeviceExternalSemaphoreProperties(VkPhysicalDeviceInfo info, MgPhysicalDeviceExternalSemaphoreInfo pExternalSemaphoreInfo, out MgExternalSemaphoreProperties pExternalSemaphoreProperties)
+        {
+            var bExternalSemaphoreInfo = new VkPhysicalDeviceExternalSemaphoreInfo
+            {
+                sType = VkStructureType.StructureTypePhysicalDeviceExternalSemaphoreInfo,
+                pNext = IntPtr.Zero, // TODO: extension
+                handleType = pExternalSemaphoreInfo.HandleType,
+            };
+
+            var output = new VkExternalSemaphoreProperties
+            {
+                sType = VkStructureType.StructureTypeExternalSemaphoreProperties,
+                pNext = IntPtr.Zero,
+            };
+
+            vkGetPhysicalDeviceExternalSemaphoreProperties(info.Handle,
+                ref bExternalSemaphoreInfo,
+                ref output);
+
+            pExternalSemaphoreProperties = new MgExternalSemaphoreProperties
+            {
+                CompatibleHandleTypes = output.compatibleHandleTypes,
+                ExportFromImportedHandleTypes = output.exportFromImportedHandleTypes,
+                ExternalSemaphoreFeatures = output.externalSemaphoreFeatures,
+            };
         }
-	}
+    }
 }

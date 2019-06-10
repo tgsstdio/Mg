@@ -5,7 +5,11 @@ namespace Magnesium.Toolkit.Validation.PhysicalDevice
 	{
 		public static void Validate(MgDisplayPlaneInfo2KHR pDisplayPlaneInfo)
 		{
-			// TODO: add validation
-		}
+            if (pDisplayPlaneInfo == null)
+                throw new ArgumentNullException(nameof(pDisplayPlaneInfo));
+
+            if (pDisplayPlaneInfo.Mode == null)
+                throw new ArgumentNullException(nameof(pDisplayPlaneInfo.Mode));
+        }
 	}
 }
