@@ -5,7 +5,8 @@ namespace Magnesium.Toolkit.Validation.PhysicalDevice
 	{
 		public static void Validate(UInt32 queueFamilyIndex, IMgSurfaceKHR surface, ref Boolean pSupported)
 		{
-			// TODO: add validation
-		}
+            if (surface == null)
+                throw new ArgumentNullException(nameof(surface));
+        }
 	}
 }

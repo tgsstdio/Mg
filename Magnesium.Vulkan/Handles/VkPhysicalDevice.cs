@@ -94,282 +94,56 @@ namespace Magnesium.Vulkan
         }
 
         public MgResult GetDisplayPlaneCapabilitiesKHR(IMgDisplayModeKHR mode, UInt32 planeIndex, out MgDisplayPlaneCapabilitiesKHR pCapabilities)
-		{
-			if (mode == null)
-				throw new ArgumentNullException(nameof(mode));
-
-			var bMode = (VkDisplayModeKHR)mode;
-			Debug.Assert(bMode != null);
-
-			var capabilities = default(VkDisplayPlaneCapabilitiesKHR);
-			var result = Interops.vkGetDisplayPlaneCapabilitiesKHR(Handle, bMode.Handle, planeIndex, ref capabilities);
-
-			pCapabilities = new MgDisplayPlaneCapabilitiesKHR
-			{
-				SupportedAlpha = (MgDisplayPlaneAlphaFlagBitsKHR) capabilities.supportedAlpha,
-				MinSrcPosition = capabilities.minSrcPosition,
-				MaxSrcPosition = capabilities.maxSrcPosition,
-				MinSrcExtent = capabilities.minSrcExtent,
-				MaxSrcExtent = capabilities.maxSrcExtent,
-				MinDstPosition = capabilities.minDstPosition,
-				MaxDstPosition = capabilities.maxDstPosition,
-				MinDstExtent = capabilities.minDstExtent,
-				MaxDstExtent = capabilities.maxDstExtent,
-			};
-			return result;
-		}
-
-		public MgResult GetPhysicalDeviceSurfaceSupportKHR(UInt32 queueFamilyIndex, IMgSurfaceKHR surface, ref bool pSupported)
-		{
-			if (surface == null)
-				throw new ArgumentNullException(nameof(surface));
-
-			var bSurface = (VkSurfaceKHR)surface;
-			Debug.Assert(bSurface != null);
-
-			VkBool32 isSupported = default(VkBool32);
-			var result = Interops.vkGetPhysicalDeviceSurfaceSupportKHR(Handle, queueFamilyIndex, bSurface.Handle, ref isSupported);
-			pSupported = VkBool32.ConvertFrom(isSupported);
-			return result;
-		}
-
-		public MgResult GetPhysicalDeviceSurfaceCapabilitiesKHR(IMgSurfaceKHR surface, out MgSurfaceCapabilitiesKHR pSurfaceCapabilities)
         {
-            if (surface == null)
-                throw new ArgumentNullException(nameof(surface));
-
-            var bSurface = (VkSurfaceKHR)surface;
-            Debug.Assert(bSurface != null);
-
-            var pCreateInfo = default(VkSurfaceCapabilitiesKHR);
-            var result = Interops.vkGetPhysicalDeviceSurfaceCapabilitiesKHR(Handle, bSurface.Handle, ref pCreateInfo);
-            pSurfaceCapabilities = TranslateSurfaceCapabilities(ref pCreateInfo);
-
-            return result;
+            return VkGetDisplayPlaneCapabilitiesKHRSection.GetDisplayPlaneCapabilitiesKHR(info, mode, planeIndex, out pCapabilities);
         }
 
-        private static MgSurfaceCapabilitiesKHR TranslateSurfaceCapabilities(ref VkSurfaceCapabilitiesKHR src)
+        public MgResult GetPhysicalDeviceSurfaceSupportKHR(UInt32 queueFamilyIndex, IMgSurfaceKHR surface, ref bool pSupported)
         {
-            return new MgSurfaceCapabilitiesKHR
-            {
-                MinImageCount = src.minImageCount,
-                MaxImageCount = src.maxImageCount,
-                CurrentExtent = src.currentExtent,
-                MinImageExtent = src.minImageExtent,
-                MaxImageExtent = src.maxImageExtent,
-                MaxImageArrayLayers = src.maxImageArrayLayers,
-                SupportedTransforms = (MgSurfaceTransformFlagBitsKHR)src.supportedTransforms,
-                CurrentTransform = (MgSurfaceTransformFlagBitsKHR)src.currentTransform,
-                SupportedCompositeAlpha = (MgCompositeAlphaFlagBitsKHR)src.supportedCompositeAlpha,
-                SupportedUsageFlags = (MgImageUsageFlagBits)src.supportedUsageFlags,
-            };
+            return VkGetPhysicalDeviceSurfaceSupportKHRSection.GetPhysicalDeviceSurfaceSupportKHR(info, queueFamilyIndex, surface, ref pSupported);
+        }
+
+        public MgResult GetPhysicalDeviceSurfaceCapabilitiesKHR(IMgSurfaceKHR surface, out MgSurfaceCapabilitiesKHR pSurfaceCapabilities)
+        {
+            return VkGetPhysicalDeviceSurfaceCapabilitiesKHRSection.GetPhysicalDeviceSurfaceCapabilitiesKHR(info, surface, out pSurfaceCapabilities);
         }
 
         public MgResult GetPhysicalDeviceSurfaceFormatsKHR(IMgSurfaceKHR surface, out MgSurfaceFormatKHR[] pSurfaceFormats)
-		{
-			if (surface == null)
-				throw new ArgumentNullException(nameof(surface));
+        {
+            return VkGetPhysicalDeviceSurfaceFormatsKHRSection.GetPhysicalDeviceSurfaceFormatsKHR(info, surface, out pSurfaceFormats);
+        }
 
-			var bSurface = (VkSurfaceKHR)surface;
-			Debug.Assert(bSurface != null);
+        public MgResult GetPhysicalDeviceSurfacePresentModesKHR(IMgSurfaceKHR surface, out MgPresentModeKHR[] pPresentModes)
+        {
+            return VkGetPhysicalDeviceSurfacePresentModesKHRSection.GetPhysicalDeviceSurfacePresentModesKHR(info, surface, out pPresentModes);
+        }
 
-			var count = 0U;
-			var first = Interops.vkGetPhysicalDeviceSurfaceFormatsKHR(Handle, bSurface.Handle, ref count, null);
+        public bool GetPhysicalDeviceWin32PresentationSupportKHR(UInt32 queueFamilyIndex)
+        {
+            // TODO: platform specific - maybe remove
+            return VkGetPhysicalDeviceWin32PresentationSupportKHRSection.GetPhysicalDeviceWin32PresentationSupportKHR(info, queueFamilyIndex);
+        }
 
-			if (first != MgResult.SUCCESS)
-			{
-				pSurfaceFormats = null;
-				return first;
-			}
-
-			var surfaceFormats = new VkSurfaceFormatKHR[count];
-			var final = Interops.vkGetPhysicalDeviceSurfaceFormatsKHR(Handle, bSurface.Handle, ref count, surfaceFormats);
-
-			pSurfaceFormats = new MgSurfaceFormatKHR[count];
-			for (var i = 0; i < count; ++i)
-			{
-				pSurfaceFormats[i] = new MgSurfaceFormatKHR
-				{
-					Format = (MgFormat)surfaceFormats[i].format,
-					ColorSpace = (MgColorSpaceKHR)surfaceFormats[i].colorSpace,
-				};
-			}
-
-			return final;
-		}
-
-		public MgResult GetPhysicalDeviceSurfacePresentModesKHR(IMgSurfaceKHR surface, out MgPresentModeKHR[] pPresentModes)
-		{
-			if (surface == null)
-				throw new ArgumentNullException(nameof(surface));
-
-			var bSurface = (VkSurfaceKHR)surface;
-			Debug.Assert(bSurface != null);
-
-			var count = 0U;
-			var first = Interops.vkGetPhysicalDeviceSurfacePresentModesKHR(Handle, bSurface.Handle, ref count, null);
-
-			if (first != MgResult.SUCCESS)
-			{
-				pPresentModes = null;
-				return first;
-			}
-
-			var modes = new VkPresentModeKhr[count];
-			var final = Interops.vkGetPhysicalDeviceSurfacePresentModesKHR(Handle, bSurface.Handle, ref count, modes);
-
-			pPresentModes = new MgPresentModeKHR[count];
-			for (var i = 0; i < count; ++i)
-			{
-				pPresentModes[i] = (MgPresentModeKHR)modes[i];
-			}
-
-			return final;
-		}
-
-		public bool GetPhysicalDeviceWin32PresentationSupportKHR(UInt32 queueFamilyIndex)
-		{
-			var final = Interops.vkGetPhysicalDeviceWin32PresentationSupportKHR(Handle, queueFamilyIndex);
-			return VkBool32.ConvertFrom(final);
-		}
-
-		public MgResult CreateDisplayModeKHR(IMgDisplayKHR display, MgDisplayModeCreateInfoKHR pCreateInfo, IMgAllocationCallbacks allocator, out IMgDisplayModeKHR pMode)
-		{
-			if (display == null)
-				throw new ArgumentNullException(nameof(display));
-
-			if (pCreateInfo == null)
-				throw new ArgumentNullException(nameof(pCreateInfo));
-			
-
-			var bDisplay = (VkDisplayModeKHR)display;
-			Debug.Assert(bDisplay != null);
-
-			var allocatorPtr = GetAllocatorHandle(allocator);
-
-			var createInfo = new VkDisplayModeCreateInfoKHR
-			{
-				sType = VkStructureType.StructureTypeDisplayModeCreateInfoKhr,
-				pNext = IntPtr.Zero,
-				flags = pCreateInfo.flags,
-				parameters = pCreateInfo.parameters,
-			};
-
-			var modeHandle = 0UL;
-			var result = Interops.vkCreateDisplayModeKHR(this.Handle, bDisplay.Handle, ref createInfo, allocatorPtr, ref modeHandle);
-			pMode = new VkDisplayModeKHR(modeHandle);
-
-			return result;
-		}
+        public MgResult CreateDisplayModeKHR(IMgDisplayKHR display, MgDisplayModeCreateInfoKHR pCreateInfo, IMgAllocationCallbacks allocator, out IMgDisplayModeKHR pMode)
+        {
+            return VkCreateDisplayModeKHRSection.CreateDisplayModeKHR(info, display, pCreateInfo, allocator, out pMode);
+        }
 
         public MgResult GetPhysicalDeviceExternalImageFormatPropertiesNV(MgFormat format, MgImageType type, MgImageTiling tiling, MgImageUsageFlagBits usage, MgImageCreateFlagBits flags, UInt32 externalHandleType, out MgExternalImageFormatPropertiesNV pExternalImageFormatProperties)
         {
-            var bType = (VkImageType)type;      
-
-            var properties = default(VkExternalImageFormatPropertiesNV);
-
-            var result = Interops.vkGetPhysicalDeviceExternalImageFormatPropertiesNV(
-                this.Handle,
-                format,
-                bType,
-                tiling,
-                usage,               
-                flags,
-                externalHandleType,
-                ref properties);
-
-            pExternalImageFormatProperties = new MgExternalImageFormatPropertiesNV
-            {
-                ImageFormatProperties = new MgImageFormatProperties
-                {
-                    MaxExtent = properties.imageFormatProperties.maxExtent,
-                    MaxArrayLayers = properties.imageFormatProperties.maxArrayLayers,
-                    MaxMipLevels = properties.imageFormatProperties.maxMipLevels,
-                    MaxResourceSize = properties.imageFormatProperties.maxResourceSize,
-                    SampleCounts = (MgSampleCountFlagBits) properties.imageFormatProperties.sampleCounts,
-                },
-                CompatibleHandleTypes = properties.compatibleHandleTypes,
-                ExportFromImportedHandleTypes = properties.exportFromImportedHandleTypes,
-                ExternalMemoryFeatures = properties.externalMemoryFeatures,
-            };
-
-            return result;
+            return VkGetPhysicalDeviceExternalImageFormatPropertiesNVSection.GetPhysicalDeviceExternalImageFormatPropertiesNV(info, format, type, tiling, usage, flags, externalHandleType, out pExternalImageFormatProperties);
         }
 
         public MgResult GetPhysicalDevicePresentRectanglesKHR(IMgSurfaceKHR surface, MgRect2D[] pRects)
         {
-            if (surface == null)
-                throw new ArgumentNullException(nameof(surface));
-
-            var hRects = GCHandle.Alloc(pRects, GCHandleType.Pinned);
-
-            try
-            {
-                var bSurface = (VkSurfaceKHR)surface;
-
-                unsafe
-                {
-                    var count = (UInt32)pRects.Length;
-                    var pinnedObject = hRects.AddrOfPinnedObject();
-
-                    var bRects = (MgRect2D*)pinnedObject.ToPointer();
-
-                    return Interops.vkGetPhysicalDevicePresentRectanglesKHR(this.Handle, bSurface.Handle, count, bRects);
-                }
-            }
-            finally
-            {
-                hRects.Free();
-            }
+            return VkGetPhysicalDevicePresentRectanglesKHRSection.GetPhysicalDevicePresentRectanglesKHR(info, surface, pRects);
         }
 
         // TODO: BELOW EXTENSION methods via pNext linked
 
         public MgResult GetDisplayModeProperties2KHR(IMgDisplayKHR display, out MgDisplayModeProperties2KHR[] pProperties)
         {
-            if (display == null)
-                throw new ArgumentNullException(nameof(display));
-
-            var bDisplay = (VkDisplayKHR)display;
-            Debug.Assert(bDisplay != null); // MAYBE DUPLICATE CHECK
-            uint count = 0;
-            var first = Interops.vkGetDisplayModeProperties2KHR(Handle, bDisplay.Handle, ref count, null);
-
-            if (first != MgResult.SUCCESS)
-            {
-                pProperties = null;
-                return first;
-            }
-
-            var modeProperties = new VkDisplayModeProperties2KHR[count];
-            for (var i = 0; i < count; ++i)
-            {
-                modeProperties[i] = new VkDisplayModeProperties2KHR
-                {
-                    sType = VkStructureType.StructureTypeDisplayModeProperties2Khr,
-                    // TODO: extension modeProperties[i].pNext ???
-                    pNext = IntPtr.Zero,
-                };
-            }
-
-            var final = Interops.vkGetDisplayModeProperties2KHR(
-                Handle, bDisplay.Handle, ref count, modeProperties);
-
-            pProperties = new MgDisplayModeProperties2KHR[count];
-            for (var i = 0; i < count; ++i)
-            {
-                var current = modeProperties[i].displayModeProperties;
-                pProperties[i] = new MgDisplayModeProperties2KHR
-                {
-                    DisplayModeProperties = new MgDisplayModePropertiesKHR
-                    {
-                        DisplayMode = new VkDisplayModeKHR(current.displayMode),
-                        Parameters = current.parameters,
-                    },
-                };
-            }
-
-            return final;
+            return VkGetDisplayModeProperties2KHRSection.GetDisplayModeProperties2KHR(info, display, out pProperties);
         }
 
         public MgResult GetDisplayPlaneCapabilities2KHR(MgDisplayPlaneInfo2KHR pDisplayPlaneInfo, out MgDisplayPlaneCapabilities2KHR pCapabilities)

@@ -5,7 +5,8 @@ namespace Magnesium.Toolkit.Validation.PhysicalDevice
 	{
 		public static void Validate(IMgSurfaceKHR surface, MgRect2D[] pRects)
 		{
-			// TODO: add validation
-		}
+            if (surface == null)
+                throw new ArgumentNullException(nameof(surface));
+        }
 	}
 }
