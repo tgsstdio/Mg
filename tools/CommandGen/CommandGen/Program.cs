@@ -117,7 +117,7 @@ namespace CommandGen
 
                     foreach (var flag in new bool[] { true, false })
                     {
-                        string decoratorName = ((flag) ? "Safe" : "Fast") + subCategoryNs;
+                        string decoratorName = "Mg" + ((flag) ? "Safe" : "Fast") + subCategoryNs;
 
                         string topLevelFile = System.IO.Path.Combine(toolkitFolder, decoratorName + ".cs");
                         GeneratorDecoratorFile(toolkitNamespace, argumentPrefix, group, subCategoryNs, flag, decoratorName, topLevelFile);
@@ -351,7 +351,7 @@ namespace CommandGen
 
                 if (lookup.TryGetValue("vk" + fn.Name, out VkCommandInfo found))
                 {
-                    fs.WriteLine(methodTabs + "[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]");
+                    fs.WriteLine(methodTabs + "[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]");
                     fs.WriteLine(methodTabs + found.NativeFunction.GetImplementation());
                     fs.WriteLine();
                 }
@@ -515,7 +515,7 @@ namespace CommandGen
 
         private static void GenerateDecoratorStub(bool enableValidation, string argumentPrefix, StreamWriter fs, string methodTabs, string validationPrefix, VkMethodSignature fn)
         {
-            fs.WriteLine(methodTabs + fn.GetImplementation() + " {");
+            fs.WriteLine(methodTabs + GetDecoratorImplementation(fn) + " {");
             if (enableValidation)
             {
                 GenerateValidateMethodCall(fs, validationPrefix, fn);
@@ -525,6 +525,51 @@ namespace CommandGen
 
             fs.WriteLine(methodTabs + "}");
             fs.WriteLine("");
+        }
+
+        public static string GetDecoratorImplementation(VkMethodSignature fn)
+        {
+            var builder = new StringBuilder();
+            builder.Append("public");
+
+            //if (IsStatic)
+            //    builder.Append(" static");
+
+            builder.Append(" ");
+            builder.Append(fn.ReturnType);
+            builder.Append(" ");
+
+            builder.Append(fn.Name);
+            builder.Append("(");
+            // foreach arg in arguments
+            bool needComma = false;
+            foreach (var param in fn.Parameters)
+            {
+                if (needComma)
+                {
+                    builder.Append(", ");
+                }
+                else
+                {
+                    needComma = true;
+                }
+
+                if (param.UseOut)
+                {
+                    builder.Append("out ");
+                }
+                else if (param.UseRef)
+                {
+                    builder.Append("ref ");
+                }
+
+                builder.Append(param.BaseCsType);
+                builder.Append(" ");
+                builder.Append(param.Name);
+            }
+            builder.Append(")");
+
+            return builder.ToString();
         }
 
         private static void GenerateImplMethodCall(string argumentPrefix, StreamWriter fs, string methodTabs, VkMethodSignature fn)
