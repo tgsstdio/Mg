@@ -13,7 +13,7 @@ namespace Magnesium.Vulkan.Functions.Device
         {
             Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
-            var allocatorPtr = VkDeviceInfo.GetAllocatorHandle(allocator);
+            var allocatorPtr = VkInteropsUtility.GetAllocatorHandle(allocator);
 
             ulong internalHandle = 0UL;
             var createInfo = new VkCommandPoolCreateInfo

@@ -24,7 +24,7 @@ namespace Magnesium.Vulkan
 			var bAllocator = (MgVkAllocationCallbacks) allocator;
 			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
-			Interops.vkDestroySurfaceKHR(bInstance.Handle, this.Handle, allocatorPtr);
+			Interops.vkDestroySurfaceKHR(bInstance.Info.Handle, this.Handle, allocatorPtr);
 
 			this.Handle = 0UL;
 			mIsDisposed = true;

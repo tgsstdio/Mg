@@ -13,7 +13,7 @@ namespace Magnesium.Vulkan.Functions.Device
             if (info.IsDisposed)
                 return;
 
-            var allocatorPtr = VkDeviceInfo.GetAllocatorHandle(allocator);
+            var allocatorPtr = VkInteropsUtility.GetAllocatorHandle(allocator);
 
             vkDestroyDevice(info.Handle, allocatorPtr);
 

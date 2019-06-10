@@ -10,7 +10,7 @@ namespace Magnesium.Vulkan.Functions.Device
 
         public static MgResult CreateDescriptorUpdateTemplate(VkDeviceInfo info, MgDescriptorUpdateTemplateCreateInfo pCreateInfo, IMgAllocationCallbacks pAllocator, out IMgDescriptorUpdateTemplate pDescriptorUpdateTemplate)
         {
-            var allocatorPtr = VkDeviceInfo.GetAllocatorHandle(pAllocator);
+            var allocatorPtr = VkInteropsUtility.GetAllocatorHandle(pAllocator);
 
             var descriptorUpdateEntryCount = (UInt32)pCreateInfo.DescriptorUpdateEntries.Length;
 

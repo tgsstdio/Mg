@@ -14,7 +14,7 @@ namespace Magnesium.Vulkan.Functions.Device
         {
             Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
-            var allocatorPtr = VkDeviceInfo.GetAllocatorHandle(pAllocator);
+            var allocatorPtr = VkInteropsUtility.GetAllocatorHandle(pAllocator);
 
             var allocatedItems = new List<IntPtr>();
 

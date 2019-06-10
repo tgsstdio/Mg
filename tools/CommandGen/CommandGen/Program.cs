@@ -99,6 +99,7 @@ namespace CommandGen
             groups.Add("VkDevice");
             groups.Add("VkPhysicalDevice");
             groups.Add("VkCommandBuffer");
+            groups.Add("VkInstance");
 
             foreach (var group in implementation.Interfaces)
             {

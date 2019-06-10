@@ -19,7 +19,7 @@ namespace Magnesium.Vulkan.Functions.Device
 
             var createInfoCount = (uint)pCreateInfos.Length;
 
-            var allocatorPtr = VkDeviceInfo.GetAllocatorHandle(pAllocator);
+            var allocatorPtr = VkInteropsUtility.GetAllocatorHandle(pAllocator);
 
             var bCreateInfos = new VkRayTracingPipelineCreateInfoNV[createInfoCount];
 

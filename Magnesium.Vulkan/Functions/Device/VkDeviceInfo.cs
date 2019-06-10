@@ -11,16 +11,5 @@ namespace Magnesium.Vulkan.Functions.Device
         }
 
         internal bool IsDisposed = false;
-
-        /// <summary>
-        /// Allocator is optional
-        /// </summary>
-        /// <param name="allocator"></param>
-        /// <returns></returns>
-        public static IntPtr GetAllocatorHandle(IMgAllocationCallbacks allocator)
-        {
-            var bAllocator = (MgVkAllocationCallbacks)allocator;
-            return bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
-        }
     }
 }

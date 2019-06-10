@@ -10,7 +10,7 @@ namespace Magnesium.Vulkan.Functions.Device
 
         public static MgResult CreateAccelerationStructureNV(VkDeviceInfo info, MgAccelerationStructureCreateInfoNV pCreateInfo, IMgAllocationCallbacks pAllocator, out IMgAccelerationStructureNV pAccelerationStructure)
         {
-            var allocatorPtr = VkDeviceInfo.GetAllocatorHandle(pAllocator);
+            var allocatorPtr = VkInteropsUtility.GetAllocatorHandle(pAllocator);
 
             var geometryCount = (pCreateInfo.Info.Geometries != null)
                 ? (uint)pCreateInfo.Info.Geometries.Length

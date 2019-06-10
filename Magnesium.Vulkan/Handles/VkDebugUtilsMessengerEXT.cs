@@ -21,7 +21,7 @@ namespace Magnesium.Vulkan
             var bInstance = (VkInstance)instance;
             var allocatorHandle = VkInteropsUtility.GetAllocatorHandle(allocator);
 
-            Interops.vkDestroyDebugUtilsMessengerEXT(bInstance.Handle, this.mHandle, allocatorHandle );
+            Interops.vkDestroyDebugUtilsMessengerEXT(bInstance.Info.Handle, this.mHandle, allocatorHandle );
 
             mData.FreeMemory();
         }
