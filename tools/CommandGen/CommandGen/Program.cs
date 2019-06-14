@@ -64,9 +64,7 @@ namespace CommandGen
                 GenerateVkStructs(inspector);
                 GenerateVkClasses(inspector);
                 GenerateVkStructureTypes(inspector);
-                const string libFolder = "Toolkit";
-                const string platformFolder = "Vulkan";
-                GenerateNeuHandles(libFolder, platformFolder, "Toolkit", "Vulkan", "Vk", null, implementation, inspector, lookup);
+                GenerateRefactoring("Toolkit", 3, new[] { "Vulkan", "OpenGL", "Metal" }, "Toolkit", "Vulkan", new[] { "Vk", "Gl", "Amt" }, null, implementation, inspector, lookup, new bool[] { true, false, false });
 
                 Console.WriteLine("totalNativeInterfaces :" + totalNativeInterfaces);
 				Console.WriteLine("noOfUnsafe :" + noOfUnsafe);
@@ -79,16 +77,12 @@ namespace CommandGen
 
         const string TAB_FIELD = "\t";
 
-        static void GenerateNeuHandles(string toolkitFolder, string platformFolder, string toolkitNamespace, string platformNamespace, string platformPrefix, string argumentPrefix, VkInterfaceCollection implementation, IVkEntityInspector inspector, Dictionary<string, VkCommandInfo> lookup)
+        static void GenerateRefactoring(string toolkitFolder, int noOfPlatforms, string[] platforms, string toolkitNamespace, string platformNamespace, string[] platformPrefixes, string argumentPrefix, VkInterfaceCollection implementation, IVkEntityInspector inspector, Dictionary<string, VkCommandInfo> lookup, bool[] includeInterfaces)
         {
             const string VALIDATION_NAMESPACE = "Validation";
             const string FUNCTION_NAMESPACE = "Functions";
 
             CreateFolderIfMissing(toolkitFolder);
-            CreateFolderIfMissing(platformFolder);
-
-            var platformDirectoryPath = System.IO.Path.Combine(platformFolder, FUNCTION_NAMESPACE);
-            CreateFolderIfMissing(platformDirectoryPath);
 
             var toolkitDirectoryPath = System.IO.Path.Combine(toolkitFolder, VALIDATION_NAMESPACE);
             CreateFolderIfMissing(toolkitDirectoryPath);
@@ -100,6 +94,14 @@ namespace CommandGen
             groups.Add("VkPhysicalDevice");
             groups.Add("VkCommandBuffer");
             groups.Add("VkInstance");
+
+            for (var i = 0; i < noOfPlatforms; i += 1)
+            {
+                CreateFolderIfMissing(platforms[i]);
+
+                var platformDirectoryPath = GetPlatformDirectoryPath(FUNCTION_NAMESPACE, platforms[i]);
+                CreateFolderIfMissing(platformDirectoryPath);
+            }
 
             foreach (var group in implementation.Interfaces)
             {
@@ -128,15 +130,28 @@ namespace CommandGen
                         var methodTabs = TAB_FIELD + "\t";
 
                         CreateValidateStubFiles(toolkitNamespace, VALIDATION_NAMESPACE, toolkitDirectoryPath, subCategoryNs, fn, methodTabs);
-
-                        CreateImplSectionFiles(platformNamespace, platformPrefix, FUNCTION_NAMESPACE, platformDirectoryPath, subCategoryNs, fn, methodTabs, lookup);
                     }
 
-                    string wiringName = platformPrefix + subCategoryNs;
-                    string wiringFile = System.IO.Path.Combine(platformFolder, wiringName + ".cs");
-                    GeneratePlatformWiring(group, wiringFile, platformNamespace, FUNCTION_NAMESPACE, wiringName, subCategoryNs, platformPrefix);
+                    for (var i = 0; i < noOfPlatforms; i += 1)
+                    {
+                        var platformDirectoryPath = GetPlatformDirectoryPath(FUNCTION_NAMESPACE, platforms[i]);
+                        foreach (var fn in group.Methods)
+                        {
+                            var methodTabs = TAB_FIELD + "\t";
+                            CreateImplSectionFiles(platformNamespace, platformPrefixes[i], FUNCTION_NAMESPACE, platformDirectoryPath, subCategoryNs, fn, methodTabs, lookup, includeInterfaces[i]);
+                        }
+
+                        string wiringName = platformPrefixes[i] + subCategoryNs;
+                        string wiringFile = System.IO.Path.Combine(platforms[i], wiringName + ".cs");
+                        GeneratePlatformWiring(group, wiringFile, platformNamespace, FUNCTION_NAMESPACE, wiringName, subCategoryNs, platformPrefixes[i]);
+                    }
                 }
             }
+        }
+
+        private static string GetPlatformDirectoryPath(string FUNCTION_NAMESPACE, string platformFolder)
+        {
+            return System.IO.Path.Combine(platformFolder, FUNCTION_NAMESPACE);
         }
 
         private static void GeneratePlatformWiring(VkContainerClass group, string wiringFile, string libraryName, string category, string wiringName, string subCategoryNs, string platformPrefix)
@@ -146,7 +161,6 @@ namespace CommandGen
             using (var fs = new StreamWriter(wiringFile, false))
             {
                 fs.WriteLine("using System;");
-                fs.WriteLine("using System.Runtime.InteropServices;");
                 fs.WriteLine();
 
                 fs.WriteLine("namespace Magnesium." + libraryName + "." + category);
@@ -159,7 +173,7 @@ namespace CommandGen
                 if (group.Handle != null)
                 {
                     // create internal field
-                    fs.WriteLine(string.Format("{0}internal readonly {1} Info;", methodTabs, infoClassName));
+                    fs.WriteLine(methodTabs + "internal "  + infoClassName + " Info { get; }");
 
                     // create constructor
                     fs.WriteLine(string.Format("{0}internal {1}({2} handle)", methodTabs, group.Name, group.Handle.csType));
@@ -253,7 +267,7 @@ namespace CommandGen
                 new VkMethodParameter
                 {
                     BaseCsType = libraryPrefix + subCategoryNs + "Info",
-                    Name = "info",
+                    Name = "Info",
                 }
             );
             combos.AddRange(fn.Parameters);
@@ -330,7 +344,7 @@ namespace CommandGen
             }
         }
 
-        private static void CreateImplSectionFiles(string libraryName, string libraryPrefix, string category, string methodDirectoryPath, string subCategoryNs, VkMethodSignature fn, string methodTabs, Dictionary<string, VkCommandInfo> lookup)
+        private static void CreateImplSectionFiles(string libraryName, string libraryPrefix, string category, string methodDirectoryPath, string subCategoryNs, VkMethodSignature fn, string methodTabs, Dictionary<string, VkCommandInfo> lookup, bool includeInterface)
         {
             var implDirectoryPath = CreateSubDirectory(methodDirectoryPath, subCategoryNs);
 
@@ -349,11 +363,14 @@ namespace CommandGen
                 fs.WriteLine(TAB_FIELD + "public class {0}", className);
                 fs.WriteLine(TAB_FIELD + "{");
 
-                if (lookup.TryGetValue("vk" + fn.Name, out VkCommandInfo found))
+                if (includeInterface)
                 {
-                    fs.WriteLine(methodTabs + "[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]");
-                    fs.WriteLine(methodTabs + found.NativeFunction.GetImplementation());
-                    fs.WriteLine();
+                    if (lookup.TryGetValue("vk" + fn.Name, out VkCommandInfo found))
+                    {
+                        fs.WriteLine(methodTabs + "[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]");
+                        fs.WriteLine(methodTabs + found.NativeFunction.GetImplementation());
+                        fs.WriteLine();
+                    }
                 }
 
 
