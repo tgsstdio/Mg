@@ -62,7 +62,7 @@ namespace TextureDemo
             var device = partition.Device;
 
             var result = device.CreateBuffer(bufferCreateInfo, null, out buffer);
-            Debug.Assert(result == Result.SUCCESS);
+            Debug.Assert(result == MgResult.SUCCESS);
 
             MgMemoryRequirements memReqs;
             device.GetBufferMemoryRequirements(buffer, out memReqs);
@@ -80,7 +80,7 @@ namespace TextureDemo
 
             IMgDeviceMemory deviceMemory;
             result = device.AllocateMemory(memAlloc, null, out deviceMemory);
-            Debug.Assert(result == Result.SUCCESS);
+            Debug.Assert(result == MgResult.SUCCESS);
 
             buffer.BindBufferMemory(device, deviceMemory, 0);
 
@@ -106,11 +106,11 @@ namespace TextureDemo
         /// <param name="startIndex">Start index.</param>
         /// <param name="elementCount">Element count.</param>
         /// <typeparam name="TData">The 1st type parameter.</typeparam>
-        public Result SetData<TData>(uint sizeInBytes, TData[] data, int startIndex, int elementCount)
+        public MgResult SetData<TData>(uint sizeInBytes, TData[] data, int startIndex, int elementCount)
             where TData : struct
         {
             if (data == null)
-                return Result.SUCCESS;
+                return MgResult.SUCCESS;
 
             int stride = Marshal.SizeOf(typeof(TData));
             if (sizeInBytes < (stride * elementCount))
@@ -120,7 +120,7 @@ namespace TextureDemo
 
             IntPtr dest;
             var result = mDeviceMemory.MapMemory(mDevice, 0, sizeInBytes, 0, out dest);
-            Debug.Assert(result == Result.SUCCESS);
+            Debug.Assert(result == MgResult.SUCCESS);
 
 
             // Copy the struct to unmanaged memory.	
@@ -134,7 +134,7 @@ namespace TextureDemo
 
             mDeviceMemory.UnmapMemory(mDevice);
 
-            return Result.SUCCESS;
+            return MgResult.SUCCESS;
         }
 
         /// <summary>
@@ -146,10 +146,10 @@ namespace TextureDemo
         /// <param name="data">Data.</param>
         /// <param name="startIndex">Start index.</param>
         /// <param name="elementCount">Element count.</param>
-        public Result SetData(uint sizeInBytes, uint[] data, int startIndex, int elementCount)
+        public MgResult SetData(uint sizeInBytes, uint[] data, int startIndex, int elementCount)
         {
             if (data == null)
-                return Result.SUCCESS;
+                return MgResult.SUCCESS;
 
             const int stride = sizeof(uint);
             if (sizeInBytes < (stride * elementCount))
@@ -159,7 +159,7 @@ namespace TextureDemo
 
             IntPtr dest;
             var result = mDeviceMemory.MapMemory(mDevice, 0, sizeInBytes, 0, out dest);
-            Debug.Assert(result == Result.SUCCESS);
+            Debug.Assert(result == MgResult.SUCCESS);
 
             var localData = new byte[sizeInBytes];
 
@@ -171,7 +171,7 @@ namespace TextureDemo
 
             mDeviceMemory.UnmapMemory(mDevice);
 
-            return Result.SUCCESS;
+            return MgResult.SUCCESS;
         }
 
         /** 
@@ -182,7 +182,7 @@ namespace TextureDemo
 		* 
 		* @return VkResult of the buffer mapping call
 		*/
-        Result map(ulong size = ulong.MaxValue, ulong offset = 0)
+        MgResult map(ulong size = ulong.MaxValue, ulong offset = 0)
         {
             return mDeviceMemory.MapMemory(mDevice, offset, size, 0, out mapped);
         }
@@ -208,7 +208,7 @@ namespace TextureDemo
 		* 
 		* @return VkResult of the bindBufferMemory call
 		*/
-        Result bind(ulong offset = 0)
+        MgResult bind(ulong offset = 0)
         {
             return mBuffer.BindBufferMemory(mDevice, mDeviceMemory, offset);
         }
@@ -250,7 +250,7 @@ namespace TextureDemo
 		*
 		* @return VkResult of the flush call
 		*/
-        Result flush(ulong size = ulong.MaxValue, ulong offset = 0)
+        MgResult flush(ulong size = ulong.MaxValue, ulong offset = 0)
         {
             var mappedRange = new MgMappedMemoryRange
             {
@@ -271,7 +271,7 @@ namespace TextureDemo
 		*
 		* @return VkResult of the invalidate call
 		*/
-        Result invalidate(ulong size = ulong.MaxValue, ulong offset = 0)
+        MgResult invalidate(ulong size = ulong.MaxValue, ulong offset = 0)
         {
             var mappedRange = new MgMappedMemoryRange
             {

@@ -227,7 +227,7 @@ namespace Magnesium.Ktx
 
                 // QUEUE WAIT ON 
                 var err = mGraphicsConfiguration.Queue.QueueWaitIdle();
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
                 mGraphicsConfiguration.Device.FreeCommandBuffers(
                     mGraphicsConfiguration.Partition.CommandPool,
                     new[] { output.TextureInfo.Command });
