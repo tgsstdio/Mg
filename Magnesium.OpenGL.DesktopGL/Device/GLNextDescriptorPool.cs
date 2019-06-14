@@ -122,7 +122,7 @@ namespace Magnesium.OpenGL.DesktopGL
 			}
 		}
 
-		public Result ResetDescriptorPool(IMgDevice device, uint flags)
+		public MgResult ResetDescriptorPool(IMgDevice device, uint flags)
 		{
 			foreach (var dSet in AllocatedSets.Values)
 			{
@@ -135,7 +135,7 @@ namespace Magnesium.OpenGL.DesktopGL
 					dSet.Invalidate();
 				}
 			}
-			return Result.SUCCESS;
+			return MgResult.SUCCESS;
 		}
 
 		public bool TryTake(out IGLDescriptorSet result)

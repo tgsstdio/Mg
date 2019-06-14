@@ -125,7 +125,7 @@ namespace Magnesium.OpenGL.DesktopGL
 		}
 
 		private bool mIsMapped = false;
-		public Result MapMemory (IMgDevice device, ulong offset, ulong size, uint flags, out IntPtr ppData)
+		public MgResult MapMemory (IMgDevice device, ulong offset, ulong size, uint flags, out IntPtr ppData)
 		{
 			if (mIsHostCached)
 			{	
@@ -137,7 +137,7 @@ namespace Magnesium.OpenGL.DesktopGL
 				var handleOffset = (Int32)offset;
 				ppData = IntPtr.Add (mHandle, handleOffset);
 				mIsMapped = true;
-				return Result.SUCCESS;
+				return MgResult.SUCCESS;
 			} 
 			else
 			{
@@ -164,7 +164,7 @@ namespace Magnesium.OpenGL.DesktopGL
 
 
                 mIsMapped = true;
-				return Result.SUCCESS;
+				return MgResult.SUCCESS;
 			}
 
 		}

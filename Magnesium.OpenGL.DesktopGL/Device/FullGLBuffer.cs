@@ -82,7 +82,7 @@ namespace Magnesium.OpenGL.DesktopGL
 
 
         #region IMgBuffer implementation
-        public Result BindBufferMemory (IMgDevice device, IMgDeviceMemory memory, ulong memoryOffset)
+        public MgResult BindBufferMemory (IMgDevice device, IMgDeviceMemory memory, ulong memoryOffset)
 		{
 			var internalMemory = memory as GLDeviceMemory;
 			if (internalMemory == null)
@@ -102,7 +102,7 @@ namespace Magnesium.OpenGL.DesktopGL
                 this.BufferId = internalMemory.BufferId;
 			}
 
-			return Result.SUCCESS;
+			return MgResult.SUCCESS;
 		}
 
 		private bool mIsDisposed = false;

@@ -57,7 +57,7 @@ namespace Magnesium.OpenGL
 		private Dictionary<uint, GLQueueSubmission> mSubmissions = new Dictionary<uint, GLQueueSubmission>();
 		private Dictionary<uint, GLQueueSubmitOrder> mOrders = new Dictionary<uint, GLQueueSubmitOrder>();
 
-		Result CompleteAllPreviousSubmissions (IMgFence fence)
+		MgResult CompleteAllPreviousSubmissions (IMgFence fence)
 		{
 			var internalFence = fence as IGLQueueFence;
 			if (internalFence != null)
@@ -68,7 +68,7 @@ namespace Magnesium.OpenGL
 			}
 			else
 			{
-				return Result.SUCCESS;
+				return MgResult.SUCCESS;
 			}
 		}
 
@@ -84,7 +84,7 @@ namespace Magnesium.OpenGL
 			return submit;
 		}
 
-		public Result QueueSubmit (MgSubmitInfo[] pSubmits, IMgFence fence)
+		public MgResult QueueSubmit (MgSubmitInfo[] pSubmits, IMgFence fence)
 		{
 			if (pSubmits == null)
 			{				
@@ -119,7 +119,7 @@ namespace Magnesium.OpenGL
 					mOrders.Add (order.Key, order);
 				}
 
-				return Result.SUCCESS;
+				return MgResult.SUCCESS;
 			}
 		}
 
@@ -164,7 +164,7 @@ namespace Magnesium.OpenGL
 			}
 		}
 
-		public Result QueueWaitIdle ()
+		public MgResult QueueWaitIdle ()
 		{
 			do
 			{
@@ -212,7 +212,7 @@ namespace Magnesium.OpenGL
 
 			} while (!IsEmpty());
 
-			return Result.SUCCESS;
+			return MgResult.SUCCESS;
 		}
 
 		public bool IsEmpty ()
@@ -220,17 +220,17 @@ namespace Magnesium.OpenGL
 			return (mSubmissions.Keys.Count == 0 && mOrders.Keys.Count == 0);
 		}
 
-		public Result QueueBindSparse (MgBindSparseInfo[] pBindInfo, IMgFence fence)
+		public MgResult QueueBindSparse (MgBindSparseInfo[] pBindInfo, IMgFence fence)
 		{
 			throw new NotImplementedException ();
 		}
 
-		public Result QueuePresentKHR (MgPresentInfoKHR pPresentInfo)
+		public MgResult QueuePresentKHR (MgPresentInfoKHR pPresentInfo)
 		{
 			// EARLY EXIT
 			if (pPresentInfo == null)
 			{
-				return Result.SUCCESS;
+				return MgResult.SUCCESS;
 			}
 
 			var signalInfos = new List<MgSubmitInfoWaitSemaphoreInfo> ();
@@ -262,7 +262,7 @@ namespace Magnesium.OpenGL
 				}
 			}
 
-			return Result.SUCCESS;
+			return MgResult.SUCCESS;
 		}
 
         #endregion
@@ -324,6 +324,26 @@ namespace Magnesium.OpenGL
                     Grid = buffer.Record.BlitGrid,
                 },
             };
+        }
+
+        public void GetQueueCheckpointDataNV(out MgCheckpointDataNV[] pCheckpointData)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void QueueBeginDebugUtilsLabelEXT(MgDebugUtilsLabelEXT labelInfo)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void QueueInsertDebugUtilsLabelEXT(MgDebugUtilsLabelEXT labelInfo)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void QueueEndDebugUtilsLabelEXT()
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

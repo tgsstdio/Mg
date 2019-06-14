@@ -30,22 +30,22 @@ namespace Magnesium.OpenGL.Internals
 			pQueue = mQueue;
 		}
 
-		public Result DeviceWaitIdle ()
+		public MgResult DeviceWaitIdle ()
 		{
-			return Result.SUCCESS;
+			return MgResult.SUCCESS;
 		}
 
-		public Result AllocateMemory (MgMemoryAllocateInfo pAllocateInfo, IMgAllocationCallbacks allocator, out IMgDeviceMemory pMemory)
+		public MgResult AllocateMemory (MgMemoryAllocateInfo pAllocateInfo, IMgAllocationCallbacks allocator, out IMgDeviceMemory pMemory)
 		{
 			pMemory = mEntrypoint.DeviceMemory.CreateDeviceMemory(pAllocateInfo);
-			return Result.SUCCESS;
+			return MgResult.SUCCESS;
 		}
 
-		public Result FlushMappedMemoryRanges (MgMappedMemoryRange[] pMemoryRanges)
+		public MgResult FlushMappedMemoryRanges (MgMappedMemoryRange[] pMemoryRanges)
 		{
 			throw new NotImplementedException ();
 		}
-		public Result InvalidateMappedMemoryRanges (MgMappedMemoryRange[] pMemoryRanges)
+		public MgResult InvalidateMappedMemoryRanges (MgMappedMemoryRange[] pMemoryRanges)
 		{
 			throw new NotImplementedException ();
 		}
@@ -184,7 +184,7 @@ namespace Magnesium.OpenGL.Internals
 				default:
 					imageSize += GetSize (format) * width * height;
 					break;
-					//return Result.ERROR_FEATURE_NOT_PRESENT;
+					//return MgResult.ERROR_FEATURE_NOT_PRESENT;
 				}
 
 				if (width > 1)
@@ -206,28 +206,28 @@ namespace Magnesium.OpenGL.Internals
 		{
 			throw new NotImplementedException ();
 		}
-		public Result CreateFence (MgFenceCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgFence fence)
+		public MgResult CreateFence (MgFenceCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgFence fence)
 		{
             fence = mEntrypoint.Fence.CreateFence();
-            return Result.SUCCESS;
+            return MgResult.SUCCESS;
 		}
 
-		public Result ResetFences (IMgFence[] pFences)
+		public MgResult ResetFences (IMgFence[] pFences)
 		{
 			foreach(var fence in pFences)
             {
                 IGLFence bFence = (IGLFence) fence;
                 bFence.Reset();
             }
-            return Result.SUCCESS;                
+            return MgResult.SUCCESS;                
 		}
-		public Result GetFenceStatus (IMgFence fence)
+		public MgResult GetFenceStatus (IMgFence fence)
 		{
             IGLFence bFence = (IGLFence)fence;
-            return (bFence.IsSignalled) ? Result.SUCCESS : Result.NOT_READY;
+            return (bFence.IsSignalled) ? MgResult.SUCCESS : MgResult.NOT_READY;
         }
 
-		public Result WaitForFences (IMgFence[] pFences, bool waitAll, ulong timeout)
+		public MgResult WaitForFences (IMgFence[] pFences, bool waitAll, ulong timeout)
 		{
             if (timeout == 0)
             {
@@ -240,10 +240,10 @@ namespace Magnesium.OpenGL.Internals
                     // TODO MAYBE NON BLOCKING ONLY
                     if (!bFence.IsSignalled)
                     {
-                        return Result.TIMEOUT;
+                        return MgResult.TIMEOUT;
                     }
                 }
-                return Result.SUCCESS;
+                return MgResult.SUCCESS;
             }
             else
             {
@@ -276,22 +276,22 @@ namespace Magnesium.OpenGL.Internals
                     // COMPLETED LAST FENCE
                     if (currentFence >= noOfFences)
                     {
-                        return Result.SUCCESS;
+                        return MgResult.SUCCESS;
                     }
                 }
                 while (elapsedInNanoSecs < timeout);
 
-                return Result.TIMEOUT;
+                return MgResult.TIMEOUT;
             }            
 
 		}
-		public Result CreateSemaphore (MgSemaphoreCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgSemaphore pSemaphore)
+		public MgResult CreateSemaphore (MgSemaphoreCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgSemaphore pSemaphore)
 		{
 			pSemaphore = mEntrypoint.Semaphore.CreateSemaphore();
-			return Result.SUCCESS;
+			return MgResult.SUCCESS;
 		}
 
-		public Result CreateEvent (MgEventCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgEvent @event)
+		public MgResult CreateEvent (MgEventCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgEvent @event)
 		{
 			throw new NotImplementedException ();
 		}
@@ -299,19 +299,19 @@ namespace Magnesium.OpenGL.Internals
 		{
 			throw new NotImplementedException ();
 		}
-		public Result GetEventStatus (IMgEvent @event)
+		public MgResult GetEventStatus (IMgEvent @event)
 		{
 			throw new NotImplementedException ();
 		}
-		public Result SetEvent (IMgEvent @event)
+		public MgResult SetEvent (IMgEvent @event)
 		{
 			throw new NotImplementedException ();
 		}
-		public Result ResetEvent (IMgEvent @event)
+		public MgResult ResetEvent (IMgEvent @event)
 		{
 			throw new NotImplementedException ();
 		}
-		public Result CreateQueryPool (MgQueryPoolCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgQueryPool queryPool)
+		public MgResult CreateQueryPool (MgQueryPoolCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgQueryPool queryPool)
 		{
 			throw new NotImplementedException ();
 		}
@@ -319,17 +319,17 @@ namespace Magnesium.OpenGL.Internals
 		{
 			throw new NotImplementedException ();
 		}
-		public Result GetQueryPoolResults (IMgQueryPool queryPool, uint firstQuery, uint queryCount, IntPtr dataSize, IntPtr pData, ulong stride, MgQueryResultFlagBits flags)
+		public MgResult GetQueryPoolResults (IMgQueryPool queryPool, uint firstQuery, uint queryCount, IntPtr dataSize, IntPtr pData, ulong stride, MgQueryResultFlagBits flags)
 		{
 			throw new NotImplementedException ();
 		}
-		public Result CreateBuffer (MgBufferCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgBuffer pBuffer)
+		public MgResult CreateBuffer (MgBufferCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgBuffer pBuffer)
 		{
 			pBuffer = mEntrypoint.Buffers.CreateBuffer(pCreateInfo);
-			return Result.SUCCESS;
+			return MgResult.SUCCESS;
 		}
 
-		public Result CreateBufferView (MgBufferViewCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgBufferView pView)
+		public MgResult CreateBufferView (MgBufferViewCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgBufferView pView)
 		{
 			throw new NotImplementedException ();
 		}
@@ -422,7 +422,7 @@ namespace Magnesium.OpenGL.Internals
 			}
 		}
 
-		public Result CreateImage (MgImageCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgImage pImage)
+		public MgResult CreateImage (MgImageCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgImage pImage)
 		{
 			if (pCreateInfo == null)
 			{
@@ -463,7 +463,7 @@ namespace Magnesium.OpenGL.Internals
 			}
 
 			pImage = new GLImage(mEntrypoint.Image, textureId[0], imageType, pCreateInfo.Format, width, height, depth, levels, arrayLayers);
-			return Result.SUCCESS;
+			return MgResult.SUCCESS;
 		}
 
 //		public void DestroyImage (MgImage image, IMgAllocationCallbacks allocator)
@@ -487,7 +487,7 @@ namespace Magnesium.OpenGL.Internals
 			}
 		}
 
-		public Result CreateImageView (MgImageViewCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgImageView pView)
+		public MgResult CreateImageView (MgImageViewCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgImageView pView)
 		{
 			if (pCreateInfo == null)
 			{
@@ -513,30 +513,30 @@ namespace Magnesium.OpenGL.Internals
 
 			int textureId =  mEntrypoint.ImageView.CreateImageView (originalImage, pCreateInfo);
 			pView = new GLImageView (textureId, mEntrypoint.ImageView);
-			return Result.SUCCESS;
+			return MgResult.SUCCESS;
 		}
 
-		public Result CreateShaderModule (MgShaderModuleCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgShaderModule pShaderModule)
+		public MgResult CreateShaderModule (MgShaderModuleCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgShaderModule pShaderModule)
 		{			
 			pShaderModule = new GLShaderModule (pCreateInfo, mEntrypoint.ShaderModule);
-			return Result.SUCCESS;
+			return MgResult.SUCCESS;
 		}
 
-		public Result CreatePipelineCache (MgPipelineCacheCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgPipelineCache pPipelineCache)
+		public MgResult CreatePipelineCache (MgPipelineCacheCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgPipelineCache pPipelineCache)
 		{
 			throw new NotImplementedException ();
 		}
 
-		public Result GetPipelineCacheData (IMgPipelineCache pipelineCache, out byte[] pData)
+		public MgResult GetPipelineCacheData (IMgPipelineCache pipelineCache, out byte[] pData)
 		{
 			throw new NotImplementedException ();
 		}
-		public Result MergePipelineCaches (IMgPipelineCache dstCache, IMgPipelineCache[] pSrcCaches)
+		public MgResult MergePipelineCaches (IMgPipelineCache dstCache, IMgPipelineCache[] pSrcCaches)
 		{
 			throw new NotImplementedException ();
 		}
 
-		public Result CreateGraphicsPipelines (IMgPipelineCache pipelineCache, MgGraphicsPipelineCreateInfo[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgPipeline[] pPipelines)
+		public MgResult CreateGraphicsPipelines (IMgPipelineCache pipelineCache, MgGraphicsPipelineCreateInfo[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgPipeline[] pPipelines)
 		{
 			var output = new List<IMgPipeline> ();
 
@@ -589,7 +589,7 @@ namespace Magnesium.OpenGL.Internals
                 output.Add(pipeline);
             }
             pPipelines = output.ToArray ();
-			return Result.SUCCESS;
+			return MgResult.SUCCESS;
 		}
 
         //private GLProgramUniformBinder ConstructBinder(IGLPipelineLayout bLayout, int programId)
@@ -641,12 +641,12 @@ namespace Magnesium.OpenGL.Internals
         //    return uniformBinder;
         //}
 
-        public Result CreateComputePipelines (IMgPipelineCache pipelineCache, MgComputePipelineCreateInfo[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgPipeline[] pPipelines)
+        public MgResult CreateComputePipelines (IMgPipelineCache pipelineCache, MgComputePipelineCreateInfo[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgPipeline[] pPipelines)
 		{
 			throw new NotImplementedException ();
 		}
 
-		public Result CreatePipelineLayout (MgPipelineLayoutCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgPipelineLayout pPipelineLayout)
+		public MgResult CreatePipelineLayout (MgPipelineLayoutCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgPipelineLayout pPipelineLayout)
 		{
 			if (pCreateInfo == null)
 			{
@@ -664,42 +664,42 @@ namespace Magnesium.OpenGL.Internals
 			}
 
 			pPipelineLayout = new GLNextPipelineLayout (pCreateInfo);
-			return Result.SUCCESS;
+			return MgResult.SUCCESS;
 		}
 
-		public Result CreateSampler (MgSamplerCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgSampler pSampler)
+		public MgResult CreateSampler (MgSamplerCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgSampler pSampler)
 		{
 			pSampler = new GLSampler (mEntrypoint.Sampler.CreateSampler (), pCreateInfo, mEntrypoint.Sampler);
-			return Result.SUCCESS;
+			return MgResult.SUCCESS;
 		}
 
-		public Result CreateDescriptorSetLayout (MgDescriptorSetLayoutCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDescriptorSetLayout pSetLayout)
+		public MgResult CreateDescriptorSetLayout (MgDescriptorSetLayoutCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDescriptorSetLayout pSetLayout)
 		{
 			if (pCreateInfo == null)
 			{
 				throw new ArgumentNullException ("pCreateInfo");
 			}
 			pSetLayout  = new GLDescriptorSetLayout (pCreateInfo); 
-			return Result.SUCCESS;
+			return MgResult.SUCCESS;
 		}
 
-		public Result CreateDescriptorPool (MgDescriptorPoolCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDescriptorPool pDescriptorPool)
+		public MgResult CreateDescriptorPool (MgDescriptorPoolCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDescriptorPool pDescriptorPool)
 		{
 			pDescriptorPool = mEntrypoint.DescriptorPool.CreatePool (pCreateInfo);
-			return Result.SUCCESS;
+			return MgResult.SUCCESS;
 		}
 
-		public Result ResetDescriptorPool (IMgDescriptorPool descriptorPool, uint flags)
+		public MgResult ResetDescriptorPool (IMgDescriptorPool descriptorPool, uint flags)
 		{
 			throw new NotImplementedException ();
 		}
 
-    	public Result AllocateDescriptorSets (MgDescriptorSetAllocateInfo pAllocateInfo, out IMgDescriptorSet[] pDescriptorSets)
+    	public MgResult AllocateDescriptorSets (MgDescriptorSetAllocateInfo pAllocateInfo, out IMgDescriptorSet[] pDescriptorSets)
 		{
             return mEntrypoint.DescriptorSet.Allocate(pAllocateInfo, out pDescriptorSets);
 		}
 
-		public Result FreeDescriptorSets (IMgDescriptorPool descriptorPool, IMgDescriptorSet[] pDescriptorSets)
+		public MgResult FreeDescriptorSets (IMgDescriptorPool descriptorPool, IMgDescriptorSet[] pDescriptorSets)
 		{
             return mEntrypoint.DescriptorSet.Free(descriptorPool, pDescriptorSets);
 		}
@@ -709,29 +709,29 @@ namespace Magnesium.OpenGL.Internals
             mEntrypoint.DescriptorSet.Update(pDescriptorWrites, pDescriptorCopies);
 		}
 
-		public Result CreateFramebuffer (MgFramebufferCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgFramebuffer pFramebuffer)
+		public MgResult CreateFramebuffer (MgFramebufferCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgFramebuffer pFramebuffer)
 		{
 			pFramebuffer = new GLFramebuffer ();
-			return Result.SUCCESS;
+			return MgResult.SUCCESS;
 		}
 
-		public Result CreateRenderPass (MgRenderPassCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgRenderPass pRenderPass)
+		public MgResult CreateRenderPass (MgRenderPassCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgRenderPass pRenderPass)
 		{
 			pRenderPass = new GLRenderPass (pCreateInfo.Attachments);
-			return Result.SUCCESS;
+			return MgResult.SUCCESS;
 		}
 
 		public void GetRenderAreaGranularity (IMgRenderPass renderPass, out MgExtent2D pGranularity)
 		{
 			throw new NotImplementedException ();
 		}
-		public Result CreateCommandPool (MgCommandPoolCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgCommandPool pCommandPool)
+		public MgResult CreateCommandPool (MgCommandPoolCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgCommandPool pCommandPool)
 		{
 			pCommandPool = new GLCommandPool (pCreateInfo.Flags);
-			return Result.SUCCESS;
+			return MgResult.SUCCESS;
 		}
 
-		public Result AllocateCommandBuffers (MgCommandBufferAllocateInfo pAllocateInfo, IMgCommandBuffer[] pCommandBuffers)
+		public MgResult AllocateCommandBuffers (MgCommandBufferAllocateInfo pAllocateInfo, IMgCommandBuffer[] pCommandBuffers)
 		{			
 			var cmdPool = pAllocateInfo.CommandPool as GLCommandPool;
 
@@ -756,7 +756,7 @@ namespace Magnesium.OpenGL.Internals
 				pCommandBuffers [i] = buffer;
 			}
 
-			return Result.SUCCESS;
+			return MgResult.SUCCESS;
 		}
 		public void FreeCommandBuffers (IMgCommandPool commandPool, IMgCommandBuffer[] pCommandBuffers)
 		{
@@ -766,20 +766,20 @@ namespace Magnesium.OpenGL.Internals
 				cmdBuf.ResetAllData ();
 			}
 		}
-		public Result CreateSharedSwapchainsKHR (MgSwapchainCreateInfoKHR[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgSwapchainKHR[] pSwapchains)
+		public MgResult CreateSharedSwapchainsKHR (MgSwapchainCreateInfoKHR[] pCreateInfos, IMgAllocationCallbacks allocator, out IMgSwapchainKHR[] pSwapchains)
 		{
 			throw new NotImplementedException ();
 		}
-		public Result CreateSwapchainKHR (MgSwapchainCreateInfoKHR pCreateInfo, IMgAllocationCallbacks allocator, out IMgSwapchainKHR pSwapchain)
+		public MgResult CreateSwapchainKHR (MgSwapchainCreateInfoKHR pCreateInfo, IMgAllocationCallbacks allocator, out IMgSwapchainKHR pSwapchain)
 		{
 			throw new NotImplementedException ();
 		}
 
-		public Result GetSwapchainImagesKHR (IMgSwapchainKHR swapchain, out IMgImage[] pSwapchainImages)
+		public MgResult GetSwapchainImagesKHR (IMgSwapchainKHR swapchain, out IMgImage[] pSwapchainImages)
 		{
 			throw new NotImplementedException ();
 		}
-		public Result AcquireNextImageKHR (IMgSwapchainKHR swapchain, ulong timeout, IMgSemaphore semaphore, IMgFence fence, out uint pImageIndex)
+		public MgResult AcquireNextImageKHR (IMgSwapchainKHR swapchain, ulong timeout, IMgSemaphore semaphore, IMgFence fence, out uint pImageIndex)
 		{
 			if (swapchain == null)
 			{
@@ -794,10 +794,235 @@ namespace Magnesium.OpenGL.Internals
 
 			pImageIndex = sc.GetNextImage ();
 			// TODO : fence stuff
-			return Result.SUCCESS;
+			return MgResult.SUCCESS;
 		}
-		#endregion
-		
-	}
+
+        public MgResult CreateObjectTableNVX(MgObjectTableCreateInfoNVX pCreateInfo, IMgAllocationCallbacks allocator, out IMgObjectTableNVX pObjectTable)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult CreateIndirectCommandsLayoutNVX(MgIndirectCommandsLayoutCreateInfoNVX pCreateInfo, IMgAllocationCallbacks pAllocator, out IMgIndirectCommandsLayoutNVX pIndirectCommandsLayout)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult AcquireNextImage2KHR(MgAcquireNextImageInfoKHR pAcquireInfo, ref uint pImageIndex)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult BindAccelerationStructureMemoryNV(MgBindAccelerationStructureMemoryInfoNV[] pBindInfos)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult BindBufferMemory2(MgBindBufferMemoryInfo[] pBindInfos)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult BindImageMemory2(MgBindImageMemoryInfo[] pBindInfos)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult CreateAccelerationStructureNV(MgAccelerationStructureCreateInfoNV pCreateInfo, IMgAllocationCallbacks pAllocator, out IMgAccelerationStructureNV pAccelerationStructure)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult CreateDescriptorUpdateTemplate(MgDescriptorUpdateTemplateCreateInfo pCreateInfo, IMgAllocationCallbacks pAllocator, out IMgDescriptorUpdateTemplate pDescriptorUpdateTemplate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult CreateRayTracingPipelinesNV(IMgPipelineCache pipelineCache, MgRayTracingPipelineCreateInfoNV[] pCreateInfos, IMgAllocationCallbacks pAllocator, out IMgPipeline[] pPipelines)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult CreateRenderPass2KHR(MgRenderPassCreateInfo2KHR pCreateInfo, IMgAllocationCallbacks pAllocator, out IMgRenderPass pRenderPass)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult CreateSamplerYcbcrConversion(MgSamplerYcbcrConversionCreateInfo pCreateInfo, IMgAllocationCallbacks pAllocator, IMgSamplerYcbcrConversion pYcbcrConversion)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult CreateValidationCacheEXT(MgValidationCacheCreateInfoEXT pCreateInfo, IMgAllocationCallbacks pAllocator, IMgValidationCacheEXT pValidationCache)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult DisplayPowerControlEXT(IMgDisplayKHR display, out MgDisplayPowerInfoEXT pDisplayPowerInfo)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetAccelerationStructureHandleNV(IMgAccelerationStructureNV accelerationStructure, UIntPtr dataSize, out IntPtr pData)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetCalibratedTimestampsEXT(MgCalibratedTimestampInfoEXT[] pTimestampInfos, out ulong[] pTimestamps, out ulong pMaxDeviation)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetDeviceGroupPresentCapabilitiesKHR(out MgDeviceGroupPresentCapabilitiesKHR pDeviceGroupPresentCapabilities)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetDeviceGroupSurfacePresentModesKHR(IMgSurfaceKHR surface, out MgDeviceGroupPresentModeFlagBitsKHR pModes)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetFenceFdKHR(MgFenceGetFdInfoKHR pGetFdInfo, out int pFd)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetImageDrmFormatModifierPropertiesEXT(IMgImage image, out MgImageDrmFormatModifierPropertiesEXT pProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetMemoryFdKHR(MgMemoryGetFdInfoKHR pGetFdInfo, ref int pFd)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetMemoryFdPropertiesKHR(MgExternalMemoryHandleTypeFlagBits handleType, int fd, out MgMemoryFdPropertiesKHR pMemoryFdProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetMemoryHostPointerPropertiesEXT(MgExternalMemoryHandleTypeFlagBits handleType, IntPtr pHostPointer, out MgMemoryHostPointerPropertiesEXT pMemoryHostPointerProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetRayTracingShaderGroupHandlesNV(IMgPipeline pipeline, uint firstGroup, uint groupCount, UIntPtr dataSize, IntPtr[] pData)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetSemaphoreFdKHR(MgSemaphoreGetFdInfoKHR pGetFdInfo, ref int pFd)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetShaderInfoAMD(IMgPipeline pipeline, MgShaderStageFlagBits shaderStage, MgShaderInfoTypeAMD infoType, out UIntPtr pInfoSize, out IntPtr pInfo)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetSwapchainCounterEXT(IMgSwapchainKHR swapchain, MgSurfaceCounterFlagBitsEXT counter, ref ulong pCounterValue)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetSwapchainStatusKHR(IMgSwapchainKHR swapchain)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetValidationCacheDataEXT(IMgValidationCacheEXT validationCache, ref UIntPtr pDataSize, IntPtr[] pData)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult ImportFenceFdKHR(MgImportFenceFdInfoKHR pImportFenceFdInfo)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult ImportSemaphoreFdKHR(MgImportSemaphoreFdInfoKHR pImportSemaphoreFdInfo)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult MergeValidationCachesEXT(IMgValidationCacheEXT dstCache, IMgValidationCacheEXT[] pSrcCaches)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult RegisterDeviceEventEXT(MgDeviceEventInfoEXT pDeviceEventInfo, IntPtr pAllocator, IMgFence pFence)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult RegisterDisplayEventEXT(IMgDisplayKHR display, MgDisplayEventInfoEXT pDisplayEventInfo, IMgAllocationCallbacks pAllocator, IMgFence pFence)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult SetDebugUtilsObjectNameEXT(MgDebugUtilsObjectNameInfoEXT pNameInfo)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult SetDebugUtilsObjectTagEXT(MgDebugUtilsObjectTagInfoEXT pTagInfo)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetAccelerationStructureMemoryRequirementsNV(MgAccelerationStructureMemoryRequirementsInfoNV pInfo, out MgMemoryRequirements2 pMemoryRequirements)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetBufferMemoryRequirements2(MgBufferMemoryRequirementsInfo2 pInfo, out MgMemoryRequirements2 pMemoryRequirements)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetDescriptorSetLayoutSupport(MgDescriptorSetLayoutCreateInfo pCreateInfo, out MgDescriptorSetLayoutSupport pSupport)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetDeviceGroupPeerMemoryFeatures(uint heapIndex, uint localDeviceIndex, uint remoteDeviceIndex, out MgPeerMemoryFeatureFlagBits pPeerMemoryFeatures)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetDeviceQueue2(MgDeviceQueueInfo2 pQueueInfo, IMgQueue pQueue)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetImageMemoryRequirements2(MgImageMemoryRequirementsInfo2 pInfo, out MgMemoryRequirements2 pMemoryRequirements)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetImageSparseMemoryRequirements2(MgImageSparseMemoryRequirementsInfo2 pInfo, out MgSparseImageMemoryRequirements2[] pSparseMemoryRequirements)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetHdrMetadataEXT(IMgSwapchainKHR[] pSwapchains, MgHdrMetadataEXT pMetadata)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void TrimCommandPool(IMgCommandPool commandPool, uint flags)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateDescriptorSetWithTemplate(IMgDescriptorSet descriptorSet, IMgDescriptorUpdateTemplate descriptorUpdateTemplate, IntPtr pData)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
+
+    }
 }
 
