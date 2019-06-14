@@ -81,9 +81,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Magnesium, Version=5.2.8.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Magnesium.5.2.8-beta\lib\portable45-net45+win8+wpa81\Magnesium.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\..\..\Magnesium\Magnesium.csproj">
+      <Project>{9f9ac448-9d17-43e5-8889-285426290891}</Project>
+      <Name>Magnesium</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

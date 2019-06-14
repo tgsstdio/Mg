@@ -34,7 +34,7 @@ namespace Magnesium.PresentationSurfaces.OpenTK
 				Hwnd = mWindow.WindowInfo.Handle,
 			};
 			var err = mDriverContext.Instance.CreateWin32SurfaceKHR (createInfo, null, out mSurface);
-			Debug.Assert (err == Result.SUCCESS);
+			Debug.Assert (err == MgResult.SUCCESS);
 		}
 
 		#endregion
