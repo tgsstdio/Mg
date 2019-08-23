@@ -230,12 +230,6 @@
     <Compile Include="Instance\MgDebugUtilsObjectNameInfoEXT.cs" />
     <Compile Include="Instance\MgPhysicalDeviceGroupProperties.cs" />
     <Compile Include="PhysicalDevice\MgExternalImageFormatPropertiesNV.cs" />
-    <Compile Include="Driver\IMgGraphicsConfiguration.cs" />
-    <Compile Include="Driver\IMgPresentationLayer.cs" />
-    <Compile Include="Driver\MgDefaultGraphicsConfiguration.cs" />
-    <Compile Include="Driver\MgFramebufferCollection.cs" />
-    <Compile Include="Driver\MgInstanceExtensionOptions.cs" />
-    <Compile Include="Driver\MgPresentationLayer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Enums\MgResult.cs" />
     <Compile Include="Device\MgShaderModuleCreateInfo.cs" />
@@ -436,17 +430,6 @@
     <Compile Include="Queue\MgPresentInfoKHR.cs" />
     <Compile Include="Queue\MgSubmitInfoWaitSemaphoreInfo.cs" />
     <Compile Include="Handles\IMgDescriptorSet.cs" />
-    <Compile Include="Driver\IMgImageTools.cs" />
-    <Compile Include="Driver\IMgLogicalDevice.cs" />
-    <Compile Include="Driver\IMgPresentationSurface.cs" />
-    <Compile Include="Driver\IMgQueueInfo.cs" />
-    <Compile Include="Driver\IMgThreadPartition.cs" />
-    <Compile Include="Driver\MgImageTools.cs" />
-    <Compile Include="Driver\MgQueueAllocation.cs" />
-    <Compile Include="Driver\MgQueueInfo.cs" />
-    <Compile Include="Driver\MgThreadPartition.cs" />
-    <Compile Include="Driver\MgLogicalDevice.cs" />
-    <Compile Include="Driver\MgDriverContext.cs" />
     <Compile Include="Handles\IMgDeviceMemory.cs" />
     <Compile Include="Handles\IMgBuffer.cs" />
     <Compile Include="Handles\IMgCommandPool.cs" />
@@ -462,19 +445,7 @@
     <Compile Include="Handles\IMgShaderModule.cs" />
     <Compile Include="Core\MgColor4f.cs" />
     <Compile Include="Enums\MgColorComponentFlagBits.cs" />
-    <Compile Include="Driver\IMgTextureGenerator.cs" />
-    <Compile Include="Driver\MgTextureInfo.cs" />
-    <Compile Include="Driver\MgImageMipmap.cs" />
-    <Compile Include="Driver\MgImageSource.cs" />
-    <Compile Include="Driver\MgLinearImageOptimizer.cs" />
-    <Compile Include="Driver\MgStagingBufferOptimizer.cs" />
-    <Compile Include="Driver\MgSwapchainBuffer.cs" />
     <Compile Include="Queue\MgPresentInfoKHRImage.cs" />
-    <Compile Include="Driver\MgGraphicsDeviceCreateInfo.cs" />
-    <Compile Include="Driver\IMgGraphicsDevice.cs" />
-    <Compile Include="Driver\MgSwapchainCollection.cs" />
-    <Compile Include="Driver\MgDefaultGraphicsDevice.cs" />
-    <Compile Include="Driver\IMgSwapchainCollection.cs" />
     <Compile Include="Instance\MgAndroidSurfaceCreateInfoKHR.cs" />
     <Compile Include="Handles\IMgAllocationCallbacks.cs" />
     <Compile Include="Handles\IMgRenderPass.cs" />
@@ -486,10 +457,6 @@
     <Compile Include="Handles\IMgSurfaceKHR.cs" />
     <Compile Include="Handles\IMgDisplayKHR.cs" />
     <Compile Include="PhysicalDevice\MgDisplayModeCreateInfoKHR.cs" />
-    <Compile Include="Driver\MgDeviceExtensionOptions.cs" />
-    <Compile Include="Driver\MgRenderPassProfile.cs" />
-    <Compile Include="Driver\IMgPresentationBarrierEntrypoint.cs" />
-    <Compile Include="Entrypoint\MgPresentationBarrierEntrypoint.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup />
