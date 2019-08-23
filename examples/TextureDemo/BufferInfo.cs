@@ -1,4 +1,5 @@
 ﻿using Magnesium;
+using Magnesium.Toolkit;
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;

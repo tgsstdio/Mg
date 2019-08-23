@@ -1,4 +1,6 @@
-﻿namespace Magnesium.Ktx
+﻿using Magnesium.Toolkit;
+
+namespace Magnesium.Ktx
 {
     public class KTXTextureOutput
     {

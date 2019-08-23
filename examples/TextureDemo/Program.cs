@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 using System;
 using DryIoc;
+using Magnesium.Toolkit;
 
 namespace TextureDemo
 {
@@ -21,29 +22,29 @@ namespace TextureDemo
                     container.RegisterInstance<INativeWindow>(window);
 
                     // Magnesium
-                    container.Register<Magnesium.MgDriverContext>(Reuse.Singleton);
-                    container.Register<Magnesium.IMgPresentationSurface, Magnesium.PresentationSurfaces.OpenTK.VulkanPresentationSurface>(Reuse.Singleton);
+                    container.Register<MgDriverContext>(Reuse.Singleton);
+                    container.Register<IMgPresentationSurface, Magnesium.PresentationSurfaces.OpenTK.VulkanPresentationSurface>(Reuse.Singleton);
 
-                    container.Register<Magnesium.IMgGraphicsConfiguration, Magnesium.MgDefaultGraphicsConfiguration>(Reuse.Singleton);
-                    container.Register<Magnesium.IMgImageTools, Magnesium.MgImageTools>(Reuse.Singleton);
+                    container.Register<IMgGraphicsConfiguration, MgDefaultGraphicsConfiguration>(Reuse.Singleton);
+                    container.Register<IMgImageTools, MgImageTools>(Reuse.Singleton);
 
                     // Magnesium.VUlkan
                     container.Register<Magnesium.IMgEntrypoint, Magnesium.Vulkan.VkEntrypoint>(Reuse.Singleton);
 
                     // SCOPE
 
-                    container.Register<Magnesium.IMgPresentationBarrierEntrypoint, Magnesium.MgPresentationBarrierEntrypoint>(Reuse.Singleton);
+                    container.Register<IMgPresentationBarrierEntrypoint, MgPresentationBarrierEntrypoint>(Reuse.Singleton);
 
                     using (var scope = container.OpenScope())
                     {
                         container.Register<TextureExample>(Reuse.InResolutionScope);
-                        container.Register<Magnesium.IMgGraphicsDevice, Magnesium.MgDefaultGraphicsDevice>(Reuse.InResolutionScope);
-                        container.Register<Magnesium.IMgPresentationLayer, Magnesium.MgPresentationLayer>(Reuse.InResolutionScope);
-                        container.Register<Magnesium.IMgSwapchainCollection, Magnesium.MgSwapchainCollection>(Reuse.InResolutionScope);
+                        container.Register<IMgGraphicsDevice, MgDefaultGraphicsDevice>(Reuse.InResolutionScope);
+                        container.Register<IMgPresentationLayer, MgPresentationLayer>(Reuse.InResolutionScope);
+                        container.Register<IMgSwapchainCollection, MgSwapchainCollection>(Reuse.InResolutionScope);
                         container.Register<MgGraphicsConfigurationManager>(Reuse.InResolutionScope);
 
 
-                        using (var driver = container.Resolve<Magnesium.MgDriverContext>())
+                        using (var driver = container.Resolve<MgDriverContext>())
                         {
                             driver.Initialize(
                                 new Magnesium.MgApplicationInfo
@@ -54,8 +55,8 @@ namespace TextureDemo
                                     EngineName = "Magnesium",
                                     EngineVersion = 1,
                                 },
-                                Magnesium.MgInstanceExtensionOptions.ALL);
-                            using (var graphicsConfiguration = container.Resolve<Magnesium.IMgGraphicsConfiguration>())
+                                MgInstanceExtensionOptions.ALL);
+                            using (var graphicsConfiguration = container.Resolve<IMgGraphicsConfiguration>())
                             {
                                 using (var secondLevel = container.OpenScope())
                                 {

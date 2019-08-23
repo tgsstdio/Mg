@@ -1,4 +1,5 @@
 ﻿using Magnesium;
+using Magnesium.Toolkit;
 using System.Diagnostics;
 
 namespace TextureDemo

@@ -1,5 +1,6 @@
 ﻿using Magnesium;
 using Magnesium.Ktx;
+using Magnesium.Toolkit;
 using OpenTK;
 using System;
 using System.Diagnostics;
@@ -271,8 +272,8 @@ namespace TextureDemo
 
         void loadTexture(string fileName, MgFormat format)
         {
-            IMgImageTools imageTools = new Magnesium.MgImageTools();
-            IMgTextureGenerator optimizer = new Magnesium.MgStagingBufferOptimizer(mManager.Configuration, imageTools);            
+            IMgImageTools imageTools = new MgImageTools();
+            IMgTextureGenerator optimizer = new MgStagingBufferOptimizer(mManager.Configuration, imageTools);            
             IKTXTextureLoader loader = new KTXTextureManager(optimizer, mManager.Configuration);
             using (var fs = System.IO.File.OpenRead(fileName))
             {

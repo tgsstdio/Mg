@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using Magnesium;
 using System.Diagnostics;
+using Magnesium.Toolkit;
 
 namespace Magnesium.Ktx
 {
-	public class KTXTextureManager : IKTXTextureLoader
+    public class KTXTextureManager : IKTXTextureLoader
 	{
 		private readonly IMgTextureGenerator mTextureOptimizer;
         private readonly IMgGraphicsConfiguration mGraphicsConfiguration;

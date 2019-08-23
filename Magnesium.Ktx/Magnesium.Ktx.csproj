@@ -1,53 +1,22 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <ProjectGuid>{6C74B420-5DE6-43ED-AB99-18AE19342284}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <RootNamespace>Magnesium.Ktx</RootNamespace>
-    <AssemblyName>Magnesium.Ktx</AssemblyName>
-    <TargetFrameworkProfile>Profile111</TargetFrameworkProfile>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>Loads Khronos .ktx image file format in Magnesium.</Description>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\bin\Release\</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Compile Include="IKTXTextureLoader.cs" />
-    <Compile Include="KTXTextureOutput.cs" />
-    <Compile Include="MipmapData.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="KeyValueArrayData.cs" />
-    <Compile Include="KTXError.cs" />
-    <Compile Include="KTXHeader.cs" />
-    <Compile Include="KTXLoadInstructions.cs" />
-    <Compile Include="KTXMipmapData.cs" />
-    <Compile Include="KTXTextureManager.cs" />
-    <Compile Include="TextureCatalog.cs" />
-    <Compile Include="TexturePageInfo.cs" />
+    <ProjectReference Include="..\Magnesium\Magnesium.csproj" />
   </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\Magnesium\Magnesium.csproj">
-      <Project>{9f9ac448-9d17-43e5-8889-285426290891}</Project>
-      <Name>Magnesium</Name>
-    </ProjectReference>
+    <Reference Include="Magnesium.Toolkit">
+      <HintPath>..\Magnesium.Toolkit\bin\Debug\netstandard2.0\Magnesium.Toolkit.dll</HintPath>
+    </Reference>
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
 </Project>
