@@ -9,9 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TriangleDemo.DesktopGL</RootNamespace>
     <AssemblyName>TriangleDemo.DesktopGL</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -77,8 +78,8 @@
       <HintPath>..\packages\LightInject.4.1.5\lib\net45\LightInject.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="OpenTK, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenTK.2.0.0\lib\net20\OpenTK.dll</HintPath>
+    <Reference Include="OpenTK, Version=3.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTK.3.1.0\lib\net20\OpenTK.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -114,23 +115,26 @@
       <Name>Magnesium.OpenGL.DesktopGL</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Magnesium.OpenGL\Magnesium.OpenGL.csproj">
-      <Project>{84924a0f-0d4c-4b0c-b16a-4f26dd838af2}</Project>
+      <Project>{6db2e760-2301-474d-92ab-9d30241c7e8d}</Project>
       <Name>Magnesium.OpenGL</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Magnesium.PresentationSurfaces.OpenTK\Magnesium.PresentationSurfaces.OpenTK.csproj">
-      <Project>{0d74bcd6-2669-451f-81ff-488eecc07686}</Project>
+      <Project>{8cb19b88-8904-49e8-9c0c-aedc01679864}</Project>
       <Name>Magnesium.PresentationSurfaces.OpenTK</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Magnesium.Toolkit\Magnesium.Toolkit.csproj">
+      <Project>{215b2375-99d0-4f04-8783-a7da1b2548ec}</Project>
+      <Name>Magnesium.Toolkit</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Magnesium\Magnesium.csproj">
-      <Project>{9f9ac448-9d17-43e5-8889-285426290891}</Project>
+      <Project>{fdd19a5c-b3fc-4716-9cfc-2d01a4640da7}</Project>
       <Name>Magnesium</Name>
     </ProjectReference>
     <ProjectReference Include="..\TriangleDemo.Shared\TriangleDemo.Shared.csproj">
-      <Project>{7506c510-74b1-4eaf-8281-9dceefdbdb5d}</Project>
+      <Project>{43bf23b1-b71e-42f7-93ba-c7133f2fce9b}</Project>
       <Name>TriangleDemo.Shared</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

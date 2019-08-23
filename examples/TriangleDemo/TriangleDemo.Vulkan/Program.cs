@@ -21,28 +21,28 @@ namespace TriangleDemo.Vulkan
                     container.RegisterInstance<INativeWindow>(window);
 
                     // Magnesium                    
-                    container.Register<Magnesium.MgDriverContext>(new PerContainerLifetime());
-                    container.Register<Magnesium.IMgPresentationSurface, Magnesium.PresentationSurfaces.OpenTK.VulkanPresentationSurface>(new PerContainerLifetime());
+                    container.Register<Magnesium.Toolkit.MgDriverContext>(new PerContainerLifetime());
+                    container.Register<Magnesium.Toolkit.IMgPresentationSurface, Magnesium.PresentationSurfaces.OpenTK.VulkanPresentationSurface>(new PerContainerLifetime());
 
-                    container.Register<Magnesium.IMgGraphicsConfiguration, Magnesium.MgDefaultGraphicsConfiguration>(new PerContainerLifetime());
-                    container.Register<Magnesium.IMgImageTools, Magnesium.MgImageTools>(new PerContainerLifetime());
+                    container.Register<Magnesium.Toolkit.IMgGraphicsConfiguration, Magnesium.Toolkit.MgDefaultGraphicsConfiguration>(new PerContainerLifetime());
+                    container.Register<Magnesium.Toolkit.IMgImageTools, Magnesium.Toolkit.MgImageTools>(new PerContainerLifetime());
 
                     // Magnesium.VUlkan
                     container.Register<TriangleDemo.ITriangleDemoShaderPath, SPIRVTriangleShaderPath>(new PerContainerLifetime());
                     container.Register<Magnesium.IMgEntrypoint, Magnesium.Vulkan.VkEntrypoint>(new PerContainerLifetime());
 
                     // SCOPE
-                    container.Register<Magnesium.IMgGraphicsDevice, Magnesium.MgDefaultGraphicsDevice>(new PerScopeLifetime());
+                    container.Register<Magnesium.Toolkit.IMgGraphicsDevice, Magnesium.Toolkit.MgDefaultGraphicsDevice>(new PerScopeLifetime());
                     container.Register<VulkanExample>(new PerScopeLifetime());
-                    container.Register<Magnesium.IMgPresentationBarrierEntrypoint, Magnesium.MgPresentationBarrierEntrypoint>(new PerScopeLifetime());
+                    container.Register<Magnesium.Toolkit.IMgPresentationBarrierEntrypoint, Magnesium.Toolkit.MgPresentationBarrierEntrypoint>(new PerScopeLifetime());
 
-                    container.Register<Magnesium.IMgPresentationLayer, Magnesium.MgPresentationLayer>(new PerScopeLifetime());
-                    container.Register<Magnesium.IMgSwapchainCollection, Magnesium.MgSwapchainCollection>(new PerScopeLifetime());
+                    container.Register<Magnesium.Toolkit.IMgPresentationLayer, Magnesium.Toolkit.MgPresentationLayer>(new PerScopeLifetime());
+                    container.Register<Magnesium.Toolkit.IMgSwapchainCollection, Magnesium.Toolkit.MgSwapchainCollection>(new PerScopeLifetime());
 
 
                     using (var scope = container.BeginScope())
                     {
-                        using (var driver = container.GetInstance<MgDriverContext>())
+                        using (var driver = container.GetInstance<Magnesium.Toolkit.MgDriverContext>())
                         {
                             driver.Initialize(
                                 new MgApplicationInfo
@@ -53,8 +53,8 @@ namespace TriangleDemo.Vulkan
                                     EngineName = "Magnesium",
                                     EngineVersion = 1,
                                 },
-                                MgInstanceExtensionOptions.ALL);
-                            using (var graphicsConfiguration = container.GetInstance<IMgGraphicsConfiguration>())
+                                Magnesium.Toolkit.MgInstanceExtensionOptions.ALL);
+                            using (var graphicsConfiguration = container.GetInstance<Magnesium.Toolkit.IMgGraphicsConfiguration>())
                             {
                                 using (var secondLevel = container.BeginScope())
                                 {

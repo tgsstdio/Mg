@@ -1,11 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Magnesium.Toolkit\Magnesium.Toolkit.csproj" />
+    <ProjectReference Include="..\..\..\Magnesium\Magnesium.csproj" />
   </ItemGroup>
 
 </Project>

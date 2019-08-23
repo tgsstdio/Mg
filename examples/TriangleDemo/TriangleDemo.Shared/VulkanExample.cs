@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using Magnesium.Toolkit;
 
 namespace TriangleDemo
 {

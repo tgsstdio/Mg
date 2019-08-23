@@ -44,7 +44,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
     <Compile Include="Device\FullGLBuffer.cs" />
     <Compile Include="Device\GLDeviceMemory.cs" />
     <Compile Include="Device\GLFullFence.cs" />
@@ -110,7 +109,7 @@
       <Name>Magnesium.OpenGL</Name>
     </ProjectReference>
     <ProjectReference Include="..\Magnesium.Toolkit\Magnesium.Toolkit.csproj">
-      <Project>{56317f11-a807-47f4-9557-84ef94477cba}</Project>
+      <Project>{215b2375-99d0-4f04-8783-a7da1b2548ec}</Project>
       <Name>Magnesium.Toolkit</Name>
     </ProjectReference>
     <ProjectReference Include="..\Magnesium\Magnesium.csproj">
