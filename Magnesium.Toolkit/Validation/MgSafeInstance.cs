@@ -14,8 +14,25 @@ namespace Magnesium.Toolkit
 			mImpl.DestroyInstance(allocator);
 		}
 
-		public MgResult EnumeratePhysicalDevices(out IMgPhysicalDevice[] physicalDevices) {
-			return mImpl.EnumeratePhysicalDevices(out physicalDevices);
+        public MgResult EnumeratePhysicalDevices(out IMgPhysicalDevice[] physicalDevices) {
+            var result = mImpl.EnumeratePhysicalDevices(out IMgPhysicalDevice[] tempDevices);
+
+            if (result != MgResult.SUCCESS)
+            {
+                physicalDevices = null;
+                return result;
+            }
+
+            var count = tempDevices != null ? tempDevices.Length : 0;
+
+            var devices = new IMgPhysicalDevice[tempDevices.Length];
+            for (var i = 0; i < count; i += 1)
+            {
+                devices[i] = new MgSafePhysicalDevice(tempDevices[i]);
+            }
+
+            physicalDevices = devices;
+            return result;
 		}
 
 		public PFN_vkVoidFunction GetInstanceProcAddr(string pName) {

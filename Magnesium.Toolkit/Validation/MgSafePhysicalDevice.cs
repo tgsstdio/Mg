@@ -37,7 +37,17 @@ namespace Magnesium.Toolkit
 
 		public MgResult CreateDevice(MgDeviceCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDevice pDevice) {
 			Validation.PhysicalDevice.CreateDevice.Validate(pCreateInfo, allocator);
-			return mImpl.CreateDevice(pCreateInfo, allocator, out pDevice);
+
+			var result = mImpl.CreateDevice(pCreateInfo, allocator, out IMgDevice tempDevice);
+
+            if (result != MgResult.SUCCESS)
+            {
+                pDevice = null;
+                return result;
+            }
+
+            pDevice = new MgSafeDevice(tempDevice);
+            return result;
 		}
 
 		public MgResult EnumerateDeviceLayerProperties(out MgLayerProperties[] pProperties) {

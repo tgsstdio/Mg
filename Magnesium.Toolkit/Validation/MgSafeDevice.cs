@@ -119,10 +119,12 @@ namespace Magnesium.Toolkit
 			mImpl.GetDeviceGroupPeerMemoryFeatures(heapIndex, localDeviceIndex, remoteDeviceIndex, out pPeerMemoryFeatures);
 		}
 
-		public void GetDeviceQueue2(MgDeviceQueueInfo2 pQueueInfo, IMgQueue pQueue) {
-			Validation.Device.GetDeviceQueue2.Validate(pQueueInfo, pQueue);
-			mImpl.GetDeviceQueue2(pQueueInfo, pQueue);
-		}
+		public void GetDeviceQueue2(MgDeviceQueueInfo2 pQueueInfo, out IMgQueue pQueue) {
+			Validation.Device.GetDeviceQueue2.Validate(pQueueInfo);
+			mImpl.GetDeviceQueue2(pQueueInfo, out IMgQueue tempQueue);
+
+            pQueue = new MgSafeQueue(tempQueue);
+        }
 
 		public void GetImageMemoryRequirements2(MgImageMemoryRequirementsInfo2 pInfo, out MgMemoryRequirements2 pMemoryRequirements) {
 			Validation.Device.GetImageMemoryRequirements2.Validate(pInfo);
@@ -161,7 +163,8 @@ namespace Magnesium.Toolkit
 
 		public void GetDeviceQueue(UInt32 queueFamilyIndex, UInt32 queueIndex, out IMgQueue pQueue) {
 			Validation.Device.GetDeviceQueue.Validate(queueFamilyIndex, queueIndex);
-			mImpl.GetDeviceQueue(queueFamilyIndex, queueIndex, out pQueue);
+			mImpl.GetDeviceQueue(queueFamilyIndex, queueIndex, out IMgQueue tempQueue);
+            pQueue = new MgSafeQueue(tempQueue);
 		}
 
 		public MgResult DeviceWaitIdle() {
@@ -355,7 +358,21 @@ namespace Magnesium.Toolkit
 
 		public MgResult AllocateCommandBuffers(MgCommandBufferAllocateInfo pAllocateInfo, IMgCommandBuffer[] pCommandBuffers) {
 			Validation.Device.AllocateCommandBuffers.Validate(pAllocateInfo, pCommandBuffers);
-			return mImpl.AllocateCommandBuffers(pAllocateInfo, pCommandBuffers);
+
+            var count = pCommandBuffers.Length;
+            var tempCommandBuffers = new IMgCommandBuffer[count];
+            var result = mImpl.AllocateCommandBuffers(pAllocateInfo, tempCommandBuffers);
+
+            if (result != MgResult.SUCCESS)
+            {
+                return result;
+            }
+
+            for (var i = 0; i < count; i += 1)
+            {
+                pCommandBuffers[i] = new MgSafeCommandBuffer(tempCommandBuffers[i]);
+            }
+            return result;
 		}
 
 		public void FreeCommandBuffers(IMgCommandPool commandPool, IMgCommandBuffer[] pCommandBuffers) {

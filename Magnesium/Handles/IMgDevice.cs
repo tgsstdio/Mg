@@ -130,7 +130,7 @@ namespace Magnesium
         void GetBufferMemoryRequirements2(MgBufferMemoryRequirementsInfo2 pInfo, out MgMemoryRequirements2 pMemoryRequirements);
         void GetDescriptorSetLayoutSupport(MgDescriptorSetLayoutCreateInfo pCreateInfo, out MgDescriptorSetLayoutSupport pSupport);
         void GetDeviceGroupPeerMemoryFeatures( UInt32 heapIndex, UInt32 localDeviceIndex, UInt32 remoteDeviceIndex, out MgPeerMemoryFeatureFlagBits pPeerMemoryFeatures);
-        void GetDeviceQueue2(MgDeviceQueueInfo2 pQueueInfo, IMgQueue pQueue);
+        void GetDeviceQueue2(MgDeviceQueueInfo2 pQueueInfo, out IMgQueue pQueue);
         void GetImageMemoryRequirements2(MgImageMemoryRequirementsInfo2 pInfo, out MgMemoryRequirements2 pMemoryRequirements);
         void GetImageSparseMemoryRequirements2(MgImageSparseMemoryRequirementsInfo2 pInfo, out MgSparseImageMemoryRequirements2[] pSparseMemoryRequirements);
         void SetHdrMetadataEXT(IMgSwapchainKHR[] pSwapchains, MgHdrMetadataEXT pMetadata);
