@@ -4,6 +4,7 @@ using OpenTK.Graphics;
 using OpenTK;
 using Magnesium.OpenGL;
 using System.Diagnostics;
+using Magnesium.Toolkit;
 
 namespace Magnesium.OpenGL.DesktopGL
 {

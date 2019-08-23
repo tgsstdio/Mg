@@ -1,6 +1,7 @@
 ﻿using System;
 using Magnesium;
 using Magnesium.OpenGL;
+using Magnesium.Toolkit;
 
 namespace Magnesium.OpenGL.DesktopGL
 {

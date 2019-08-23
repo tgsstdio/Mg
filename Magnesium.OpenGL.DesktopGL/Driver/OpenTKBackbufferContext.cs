@@ -1,4 +1,5 @@
-﻿using OpenTK.Graphics;
+﻿using Magnesium.Toolkit;
+using OpenTK.Graphics;
 using OpenTK.Platform;
 using System;
 
