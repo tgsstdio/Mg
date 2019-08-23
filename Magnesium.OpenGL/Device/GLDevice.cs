@@ -992,7 +992,7 @@ namespace Magnesium.OpenGL.Internals
             throw new NotImplementedException();
         }
 
-        public void GetDeviceQueue2(MgDeviceQueueInfo2 pQueueInfo, IMgQueue pQueue)
+        public void GetDeviceQueue2(MgDeviceQueueInfo2 pQueueInfo, out IMgQueue pQueue)
         {
             throw new NotImplementedException();
         }

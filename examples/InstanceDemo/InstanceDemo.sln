@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Magnesium.Vulkan", "..\..\M
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Magnesium", "..\..\Magnesium\Magnesium.csproj", "{9F9AC448-9D17-43E5-8889-285426290891}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Magnesium.Toolkit", "..\..\Magnesium.Toolkit\Magnesium.Toolkit.csproj", "{E8852C07-1294-4C1B-B003-E5E097DB6F64}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,18 @@ Global
 		{9F9AC448-9D17-43E5-8889-285426290891}.Release|x64.Build.0 = Release|x64
 		{9F9AC448-9D17-43E5-8889-285426290891}.Release|x86.ActiveCfg = Release|x86
 		{9F9AC448-9D17-43E5-8889-285426290891}.Release|x86.Build.0 = Release|x86
+		{E8852C07-1294-4C1B-B003-E5E097DB6F64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8852C07-1294-4C1B-B003-E5E097DB6F64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8852C07-1294-4C1B-B003-E5E097DB6F64}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E8852C07-1294-4C1B-B003-E5E097DB6F64}.Debug|x64.Build.0 = Debug|Any CPU
+		{E8852C07-1294-4C1B-B003-E5E097DB6F64}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E8852C07-1294-4C1B-B003-E5E097DB6F64}.Debug|x86.Build.0 = Debug|Any CPU
+		{E8852C07-1294-4C1B-B003-E5E097DB6F64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8852C07-1294-4C1B-B003-E5E097DB6F64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8852C07-1294-4C1B-B003-E5E097DB6F64}.Release|x64.ActiveCfg = Release|Any CPU
+		{E8852C07-1294-4C1B-B003-E5E097DB6F64}.Release|x64.Build.0 = Release|Any CPU
+		{E8852C07-1294-4C1B-B003-E5E097DB6F64}.Release|x86.ActiveCfg = Release|Any CPU
+		{E8852C07-1294-4C1B-B003-E5E097DB6F64}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

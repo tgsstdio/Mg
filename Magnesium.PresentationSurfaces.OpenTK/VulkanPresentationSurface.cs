@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Magnesium.Toolkit;
 using OpenTK;
 
 namespace Magnesium.PresentationSurfaces.OpenTK
