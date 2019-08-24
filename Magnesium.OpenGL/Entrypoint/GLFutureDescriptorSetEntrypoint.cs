@@ -6,7 +6,7 @@ namespace Magnesium.OpenGL
 {
     public class GLFutureDescriptorSetEntrypoint : IGLDescriptorSetEntrypoint
     {
-        public Result Allocate(MgDescriptorSetAllocateInfo pAllocateInfo, out IMgDescriptorSet[] pDescriptorSets)
+        public MgResult Allocate(MgDescriptorSetAllocateInfo pAllocateInfo, out IMgDescriptorSet[] pDescriptorSets)
         {
             if (pAllocateInfo == null)
                 throw new ArgumentNullException(nameof(pAllocateInfo));
@@ -39,7 +39,7 @@ namespace Magnesium.OpenGL
                     else if (status == GLDescriptorPoolAllocationStatus.FailedAllocation)
                     {
                         pDescriptorSets = null;
-                        return Result.ERROR_OUT_OF_HOST_MEMORY;
+                        return MgResult.ERROR_OUT_OF_HOST_MEMORY;
                     }
                 }
 
@@ -62,15 +62,15 @@ namespace Magnesium.OpenGL
                 {
                     // TOO MANY DESCRIPTOR SETS FOR POOL
                     pDescriptorSets = null;
-                    return Result.ERROR_OUT_OF_HOST_MEMORY;
+                    return MgResult.ERROR_OUT_OF_HOST_MEMORY;
                 }
             }
 
             pDescriptorSets = output.ToArray();
-            return Result.SUCCESS;
+            return MgResult.SUCCESS;
         }
 
-        public Result Free(IMgDescriptorPool descriptorPool, IMgDescriptorSet[] pDescriptorSets)
+        public MgResult Free(IMgDescriptorPool descriptorPool, IMgDescriptorSet[] pDescriptorSets)
         {
             if (descriptorPool == null)
             {
@@ -101,7 +101,7 @@ namespace Magnesium.OpenGL
                 }
             }
 
-            return Result.SUCCESS;
+            return MgResult.SUCCESS;
         }
 
         public void Update(MgWriteDescriptorSet[] pDescriptorWrites, MgCopyDescriptorSet[] pDescriptorCopies)

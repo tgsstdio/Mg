@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace Magnesium
+namespace Magnesium.Toolkit
 {
 
     public class MgOffscreenDeviceAttachment : IMgOffscreenDeviceAttachment
@@ -62,7 +62,7 @@ namespace Magnesium
             };
 
             var err = mConfiguration.Device.CreateImage(image, null, out IMgImage offscreenImage);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
             mOffscreenImage = offscreenImage;
 
             mDeviceLocal.Initialize(offscreenImage);
@@ -83,7 +83,7 @@ namespace Magnesium
                 Image = offscreenImage,
             };
             err = mConfiguration.Device.CreateImageView(colorImageView, null, out IMgImageView offscreenView);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
             mImageView = offscreenView;
         }
 

@@ -51,7 +51,7 @@
     <Compile Include="Driver\DesktopGLGraphicsContext.cs" />
     <Compile Include="Driver\FullGLOffscreenDepthStencilContext.cs" />
     <Compile Include="Driver\GLNullDepthStencilImageView.cs" />
-    <Compile Include="Driver\GLNullOffscreenDeviceLocalMemory.cs" />  
+    <Compile Include="Driver\GLNullOffscreenDeviceLocalMemory.cs" />
     <Compile Include="Device\FullGLBuffer.cs" />
     <Compile Include="Device\GLDeviceMemory.cs" />
     <Compile Include="Device\GLFullFence.cs" />
@@ -61,14 +61,12 @@
     <Compile Include="Driver\Es20GLFramebufferHelperSelector.cs" />
     <Compile Include="Driver\Es20GLSpecificExtensionLookup.cs" />
     <Compile Include="Driver\ES30GLErrorHandler.cs" />
-    <Compile Include="Driver\FullGLCmdClearEntrypoint.cs" />
     <Compile Include="Driver\FullGLErrorHandler.cs" />
     <Compile Include="Driver\FullGLExtensionLookup.cs" />
     <Compile Include="Driver\FullGLFramebufferHelper.cs" />
     <Compile Include="Driver\FullGLFramebufferHelperEXT.cs" />
     <Compile Include="Driver\FullGLFramebufferHelperSelector.cs" />
     <Compile Include="Driver\FullGLFramebufferSupport.cs" />
-    <Compile Include="Driver\GLNullImageView.cs" />
     <Compile Include="Driver\IGLBackbufferContext.cs" />
     <Compile Include="Driver\IMgGraphicsDeviceLogger.cs" />
     <Compile Include="Driver\MgOpenGLException.cs" />
@@ -137,7 +135,6 @@
     <Compile Include="Entrypoint\FullGLFullFenceEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLGraphicsPipelineEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLImageDescriptorEntrypoint.cs" />
-    <Compile Include="Entrypoint\FullGLPipelineCacheLayoutEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLSamplerEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLSemaphoreEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLShaderModuleEntrypoint.cs" />

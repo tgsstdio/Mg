@@ -57,7 +57,7 @@ namespace Magnesium.Vulkan.Functions.Device
                 sType = VkStructureType.StructureTypePipelineShaderStageCreateInfo,
                 pNext = IntPtr.Zero,
                 flags = currentStage.Flags,
-                stage = (VkShaderStageFlags)currentStage.Stage,
+                stage = currentStage.Stage,
                 module = bModule.Handle,
                 pName = pName,
                 pSpecializationInfo = pSpecializationInfo,

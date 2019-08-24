@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Magnesium
+namespace Magnesium.Toolkit
 {
     public class MgOffscreenDevice : IMgEffectFramework
     {
@@ -167,7 +167,7 @@ namespace Magnesium
                         DstStageMask = MgPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT,
                         SrcAccessMask = MgAccessFlagBits.MEMORY_READ_BIT,
                         DstAccessMask = MgAccessFlagBits.COLOR_ATTACHMENT_READ_BIT | MgAccessFlagBits.COLOR_ATTACHMENT_WRITE_BIT,
-                        DependencyFlags = MgDependencyFlagBits.VK_DEPENDENCY_BY_REGION_BIT,
+                        DependencyFlags = MgDependencyFlagBits.BY_REGION_BIT,
                     },
                     new MgSubpassDependency
                     {
@@ -177,12 +177,12 @@ namespace Magnesium
                         DstStageMask = MgPipelineStageFlagBits.BOTTOM_OF_PIPE_BIT,
                         SrcAccessMask = MgAccessFlagBits.COLOR_ATTACHMENT_READ_BIT | MgAccessFlagBits.COLOR_ATTACHMENT_WRITE_BIT,
                         DstAccessMask = MgAccessFlagBits.MEMORY_READ_BIT,
-                        DependencyFlags = MgDependencyFlagBits.VK_DEPENDENCY_BY_REGION_BIT,
+                        DependencyFlags = MgDependencyFlagBits.BY_REGION_BIT,
                     },
                 }
             };
             var err = mConfiguration.Device.CreateRenderPass(pCreateInfo, null, out IMgRenderPass pass);
-            Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
+            Debug.Assert(err == MgResult.SUCCESS, err + " != Result.SUCCESS");
             mRenderPass = pass;
             mRenderPassInfo = pCreateInfo;
 
@@ -196,7 +196,7 @@ namespace Magnesium
             };
 
             err = mConfiguration.Device.CreateFramebuffer(frameBufferCreateInfo, null, out IMgFramebuffer fBuf);
-            Debug.Assert(err == Result.SUCCESS, err + " != Result.SUCCESS");
+            Debug.Assert(err == MgResult.SUCCESS, err + " != Result.SUCCESS");
             mFramebuffer = fBuf;
 
             mScissor = new MgRect2D

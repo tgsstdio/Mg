@@ -29,5 +29,6 @@ namespace Magnesium.Vulkan.Functions.CommandBuffer
                 scissorHandle.Free();
             }
         }
+
     }
 }

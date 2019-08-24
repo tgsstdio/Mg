@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace Magnesium
+namespace Magnesium.Toolkit
 {
     public class MgOffscreenDeviceLocalMemory : IMgOffscreenDeviceLocalMemory
     {
@@ -20,7 +20,6 @@ namespace Magnesium
 
         public void Initialize(IMgImage offscreenImage)
         {
-            Result err;
             mConfiguration.Device.GetImageMemoryRequirements(offscreenImage, out MgMemoryRequirements memReqs);
 
             bool isValidMemoryType = mConfiguration.MemoryProperties.GetMemoryType(
@@ -34,11 +33,11 @@ namespace Magnesium
                 MemoryTypeIndex = typeIndex,
             };
 
-            err = mConfiguration.Device.AllocateMemory(memAlloc, null, out IMgDeviceMemory memory);
-            Debug.Assert(err == Result.SUCCESS);
+            MgResult err = mConfiguration.Device.AllocateMemory(memAlloc, null, out IMgDeviceMemory memory);
+            Debug.Assert(err == MgResult.SUCCESS);
             mOffscreenMemory = memory;
             err = offscreenImage.BindImageMemory(mConfiguration.Device, mOffscreenMemory, 0);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
         }
     }
 }

@@ -7,13 +7,25 @@ namespace Magnesium.Vulkan.Functions.Device
 	public class VkGetDeviceProcAddrSection
 	{
         [DllImport(Interops.VULKAN_LIB_1, CallingConvention = CallingConvention.Winapi)]
-        internal extern static PFN_vkVoidFunction vkGetDeviceProcAddr(IntPtr device, [MarshalAs(UnmanagedType.LPStr)] string pName);
+        internal extern static IntPtr vkGetDeviceProcAddr(IntPtr device, IntPtr pName);
 
-        public static PFN_vkVoidFunction GetDeviceProcAddr(VkDeviceInfo info, string pName)
+        public static IntPtr GetDeviceProcAddr(VkDeviceInfo info, string pName)
 		{
             Debug.Assert(!info.IsDisposed, "VkDevice has been disposed");
 
-            return vkGetDeviceProcAddr(info.Handle, pName);
+            IntPtr fnNamePtr = IntPtr.Zero;
+            try
+            {
+                fnNamePtr = VkInteropsUtility.NativeUtf8FromString(pName);
+                return vkGetDeviceProcAddr(info.Handle, fnNamePtr);
+            }
+            finally
+            {
+                if (fnNamePtr != IntPtr.Zero)
+                {
+                    Marshal.FreeHGlobal(fnNamePtr);
+                }
+            }
         }
 	}
 }

@@ -10,7 +10,7 @@ namespace Magnesium.Vulkan
 		public UInt32 binding { get; set; }
 		public MgDescriptorType descriptorType { get; set; }
 		public UInt32 descriptorCount { get; set; }
-		public VkShaderStageFlags stageFlags { get; set; }
+		public MgShaderStageFlagBits stageFlags { get; set; }
 		public IntPtr pImmutableSamplers { get; set; }
 	}
 }

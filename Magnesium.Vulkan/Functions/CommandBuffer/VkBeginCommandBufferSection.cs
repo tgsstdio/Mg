@@ -14,10 +14,12 @@ namespace Magnesium.Vulkan.Functions.CommandBuffer
             IntPtr inheritanceInfo = IntPtr.Zero;
             try
             {
-                var param_0 = new VkCommandBufferBeginInfo();
-                param_0.sType = VkStructureType.StructureTypeCommandBufferBeginInfo;
-                param_0.pNext = IntPtr.Zero;
-                param_0.flags = (VkCommandBufferUsageFlags)pBeginInfo.Flags;
+                var param_0 = new VkCommandBufferBeginInfo
+                {
+                    sType = VkStructureType.StructureTypeCommandBufferBeginInfo,
+                    pNext = IntPtr.Zero,
+                    flags = (VkCommandBufferUsageFlags)pBeginInfo.Flags
+                };
 
                 if (pBeginInfo.InheritanceInfo != null)
                 {
@@ -72,5 +74,6 @@ namespace Magnesium.Vulkan.Functions.CommandBuffer
                 }
             }
         }
+
     }
 }

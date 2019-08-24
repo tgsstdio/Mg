@@ -10,8 +10,8 @@ namespace Magnesium.Vulkan
 		public VkStructureType sType { get; set; }
 		public IntPtr pNext { get; set; }
 		public UInt32 flags { get; set; }
-		public VkFilter magFilter { get; set; }
-		public VkFilter minFilter { get; set; }
+		public MgFilter magFilter { get; set; }
+		public MgFilter minFilter { get; set; }
 		public VkSamplerMipmapMode mipmapMode { get; set; }
 		public VkSamplerAddressMode addressModeU { get; set; }
 		public VkSamplerAddressMode addressModeV { get; set; }

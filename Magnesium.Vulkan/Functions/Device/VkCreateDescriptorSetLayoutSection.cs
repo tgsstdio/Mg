@@ -66,7 +66,7 @@ namespace Magnesium.Vulkan.Functions.Device
                                 binding = currentBinding.Binding,
                                 descriptorType = currentBinding.DescriptorType,
                                 descriptorCount = currentBinding.DescriptorCount,
-                                stageFlags = (VkShaderStageFlags)currentBinding.StageFlags,
+                                stageFlags = currentBinding.StageFlags,
                                 pImmutableSamplers = pImmutableSamplers,
                             };
 

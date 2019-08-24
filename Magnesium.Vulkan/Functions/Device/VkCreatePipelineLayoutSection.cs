@@ -52,7 +52,7 @@ namespace Magnesium.Vulkan.Functions.Device
                                 {
                                     return new VkPushConstantRange
                                     {
-                                        stageFlags = (VkShaderStageFlags)pcr.StageFlags,
+                                        stageFlags = pcr.StageFlags,
                                         offset = pcr.Offset,
                                         size = pcr.Size,
                                     };

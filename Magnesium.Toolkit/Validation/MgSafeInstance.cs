@@ -35,7 +35,7 @@ namespace Magnesium.Toolkit
             return result;
 		}
 
-		public PFN_vkVoidFunction GetInstanceProcAddr(string pName) {
+		public IntPtr GetInstanceProcAddr(string pName) {
 			Validation.Instance.GetInstanceProcAddr.Validate(pName);
 			return mImpl.GetInstanceProcAddr(pName);
 		}

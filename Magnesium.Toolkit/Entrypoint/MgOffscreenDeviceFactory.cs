@@ -1,4 +1,4 @@
-﻿namespace Magnesium
+﻿namespace Magnesium.Toolkit
 {
     public class MgOffscreenDeviceFactory
     {
@@ -52,7 +52,7 @@
 
         public IMgEffectFramework CreateOffscreenDevice(MgOffscreenDeviceCreateInfo createInfo)
         {
-            var offscreen = new Magnesium.MgOffscreenDevice(mConfiguration);
+            var offscreen = new MgOffscreenDevice(mConfiguration);
             offscreen.Initialize(createInfo);
             return offscreen;
         }

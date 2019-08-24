@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Magnesium.Toolkit;
+using System;
 using System.Collections.Generic;
 
 namespace Magnesium.OpenGL.Internals

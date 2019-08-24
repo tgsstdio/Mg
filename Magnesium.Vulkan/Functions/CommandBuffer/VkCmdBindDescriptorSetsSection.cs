@@ -9,13 +9,13 @@ namespace Magnesium.Vulkan.Functions.CommandBuffer
 		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static void vkCmdBindDescriptorSets(IntPtr commandBuffer, MgPipelineBindPoint pipelineBindPoint, UInt64 layout, UInt32 firstSet, UInt32 descriptorSetCount, [In] UInt64[] pDescriptorSets, UInt32 dynamicOffsetCount, [In] UInt32[] pDynamicOffsets);
 
-        public static void CmdBindDescriptorSets(VkCommandBufferInfo info, MgPipelineBindPoint pipelineBindPoint, IMgPipelineLayout layout, UInt32 firstSet, UInt32 descriptorSetCount, IMgDescriptorSet[] pDescriptorSets, UInt32[] pDynamicOffsets)
+        public static void CmdBindDescriptorSets(VkCommandBufferInfo info, MgPipelineBindPoint pipelineBindPoint, IMgPipelineLayout layout, UInt32 firstSet, IMgDescriptorSet[] pDescriptorSets, UInt32[] pDynamicOffsets)
         {
-
             var bLayout = (VkPipelineLayout)layout;
             Debug.Assert(bLayout != null);
 
             var stride = Marshal.SizeOf(typeof(IntPtr));
+            var descriptorSetCount = pDescriptorSets != null ? (uint)pDescriptorSets.Length : 0U;
             IntPtr sets = Marshal.AllocHGlobal((int)(stride * descriptorSetCount));
 
             var src = new ulong[descriptorSetCount];

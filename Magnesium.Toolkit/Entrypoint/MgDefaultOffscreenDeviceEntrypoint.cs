@@ -1,4 +1,4 @@
-﻿namespace Magnesium
+﻿namespace Magnesium.Toolkit
 {
     public class MgDefaultOffscreenDeviceEntrypoint : IMgOffscreenDeviceEntrypoint
     {       

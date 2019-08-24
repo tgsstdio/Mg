@@ -73,9 +73,9 @@ namespace Magnesium.Toolkit
 			mImpl.CmdSetStencilReference(faceMask, reference);
 		}
 
-		public void CmdBindDescriptorSets(MgPipelineBindPoint pipelineBindPoint, IMgPipelineLayout layout, UInt32 firstSet, UInt32 descriptorSetCount, IMgDescriptorSet[] pDescriptorSets, UInt32[] pDynamicOffsets) {
-			Validation.CommandBuffer.CmdBindDescriptorSets.Validate(pipelineBindPoint, layout, firstSet, descriptorSetCount, pDescriptorSets, pDynamicOffsets);
-			mImpl.CmdBindDescriptorSets(pipelineBindPoint, layout, firstSet, descriptorSetCount, pDescriptorSets, pDynamicOffsets);
+		public void CmdBindDescriptorSets(MgPipelineBindPoint pipelineBindPoint, IMgPipelineLayout layout, UInt32 firstSet, IMgDescriptorSet[] pDescriptorSets, UInt32[] pDynamicOffsets) {
+			Validation.CommandBuffer.CmdBindDescriptorSets.Validate(pipelineBindPoint, layout, firstSet, pDescriptorSets, pDynamicOffsets);
+			mImpl.CmdBindDescriptorSets(pipelineBindPoint, layout, firstSet, pDescriptorSets, pDynamicOffsets);
 		}
 
 		public void CmdBindIndexBuffer(IMgBuffer buffer, UInt64 offset, MgIndexType indexType) {

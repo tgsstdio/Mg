@@ -1,4 +1,6 @@
-﻿namespace Magnesium.OpenGL
+﻿using Magnesium.Toolkit;
+
+namespace Magnesium.OpenGL
 {
     public class GLOffscreenDeviceEntrypoint : IMgOffscreenDeviceEntrypoint
     {

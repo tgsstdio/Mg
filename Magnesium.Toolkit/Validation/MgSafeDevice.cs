@@ -151,7 +151,7 @@ namespace Magnesium.Toolkit
 			mImpl.UpdateDescriptorSetWithTemplate(descriptorSet, descriptorUpdateTemplate, pData);
 		}
 
-		public PFN_vkVoidFunction GetDeviceProcAddr(string pName) {
+		public IntPtr GetDeviceProcAddr(string pName) {
 			Validation.Device.GetDeviceProcAddr.Validate(pName);
 			return mImpl.GetDeviceProcAddr(pName);
 		}

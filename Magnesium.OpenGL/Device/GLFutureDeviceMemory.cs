@@ -134,7 +134,7 @@ namespace Magnesium.OpenGL
             mIsDisposed = true;
         }
     
-        public Result MapMemory(IMgDevice device, ulong offset, ulong size, uint flags, out IntPtr ppData)
+        public MgResult MapMemory(IMgDevice device, ulong offset, ulong size, uint flags, out IntPtr ppData)
         {
             if (mIsHostCached)
             {
@@ -146,7 +146,7 @@ namespace Magnesium.OpenGL
                 var handleOffset = (Int32)offset;
                 ppData = IntPtr.Add(mHandle, handleOffset);
                 mIsMapped = true;
-                return Result.SUCCESS;
+                return MgResult.SUCCESS;
             }
             else
             {
@@ -165,7 +165,7 @@ namespace Magnesium.OpenGL
 
                 ppData = mEntrypoint.MapBufferStorage(mBufferId, handleOffset, handleSize, mBufferFlags);                
                 mIsMapped = true;
-                return Result.SUCCESS;
+                return MgResult.SUCCESS;
             }
         }
 
