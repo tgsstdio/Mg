@@ -1,12 +1,11 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using NUnit.Framework;
 using OpenTK.Graphics.OpenGL;
 
 namespace Magnesium.OpenGL.DesktopGL.UnitTests
 {
-    [TestClass]
     public class UnitTest1
     {
-        [TestMethod]
+        [Test]
         public void UnitTest()
         {
             var actual = FullGLCmdDrawEntrypoint.GetPrimitiveType(Magnesium.MgPrimitiveTopology.LINE_STRIP);

@@ -72,7 +72,47 @@ namespace CommandGen
 			return builder.ToString ();
 		}
 
-		public int Indent {
+        public string GetInterfaceLine()
+        {
+            var builder = new StringBuilder();
+
+            builder.Append(ReturnType);
+            builder.Append(" ");
+
+            builder.Append(Name);
+            builder.Append("(");
+            // foreach arg in arguments
+            bool needComma = false;
+            foreach (var param in this.Parameters)
+            {
+                if (needComma)
+                {
+                    builder.Append(", ");
+                }
+                else
+                {
+                    needComma = true;
+                }
+
+                if (param.UseOut)
+                {
+                    builder.Append("out ");
+                }
+                else if (param.UseRef)
+                {
+                    builder.Append("ref ");
+                }
+
+                builder.Append(param.BaseCsType);
+                builder.Append(" ");
+                builder.Append(param.Name);
+            }
+            builder.Append(");");
+
+            return builder.ToString();
+        }
+
+        public int Indent {
 			get;
 			set;
 		}

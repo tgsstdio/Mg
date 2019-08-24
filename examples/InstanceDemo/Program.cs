@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using Magnesium;
+using Magnesium.Toolkit;
 using Magnesium.Vulkan;
 
 namespace InstanceDemo
 {
-	class MainClass
+    class MainClass
 	{
 		public static void Main(string[] args)
 		{

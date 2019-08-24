@@ -1,216 +1,76 @@
+using Magnesium.Vulkan.Functions.Instance;
 using System;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan
 {
-	public class VkInstance : IMgInstance
+    public partial class VkInstance : IMgInstance
 	{
-		internal IntPtr Handle { get; private set; }
+		internal VkInstanceInfo Info { get; private set; }
 		internal VkInstance(IntPtr handle)
 		{
-			Handle = handle;
-		}
+			Info = new VkInstanceInfo(handle);
+		}        
 
-		/// <summary>
-		/// Allocator is optional
-		/// </summary>
-		/// <param name="allocator"></param>
-		/// <returns></returns>
-		static IntPtr GetAllocatorHandle(IMgAllocationCallbacks allocator)
-		{
-			var bAllocator = (MgVkAllocationCallbacks)allocator;
-			return bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
-		}
+        public void DestroyInstance(IMgAllocationCallbacks allocator)
+        {
+            VkDestroyInstanceSection.DestroyInstance(Info, allocator);
+        }
 
-		private bool mIsDisposed = false;
-		public void DestroyInstance(IMgAllocationCallbacks allocator)
-		{
-			if (!mIsDisposed)
-				return;
+        public MgResult EnumeratePhysicalDevices(out IMgPhysicalDevice[] physicalDevices)
+        {
+            return VkEnumeratePhysicalDevicesSection.EnumeratePhysicalDevices(Info, out physicalDevices);
+        }
 
-			var allocatorHandle = GetAllocatorHandle(allocator);	
+        public IntPtr GetInstanceProcAddr(string pName)
+        {
+            return VkGetInstanceProcAddrSection.GetInstanceProcAddr(Info, pName);
+        }
 
-			Interops.vkDestroyInstance(Handle, allocatorHandle);
+        public MgResult CreateDisplayPlaneSurfaceKHR(MgDisplaySurfaceCreateInfoKHR createInfo, IMgAllocationCallbacks allocator, out IMgSurfaceKHR pSurface)
+        {
+            return VkCreateDisplayPlaneSurfaceKHRSection.CreateDisplayPlaneSurfaceKHR(Info, createInfo, allocator, out pSurface);
+        }
 
-			Handle = IntPtr.Zero;
-			mIsDisposed = true;
-		}
+        public MgResult CreateAndroidSurfaceKHR(MgAndroidSurfaceCreateInfoKHR pCreateInfo, IMgAllocationCallbacks allocator, out IMgSurfaceKHR pSurface)
+        {
+            return VkCreateAndroidSurfaceKHRSection.CreateAndroidSurfaceKHR(Info, pCreateInfo, allocator, out pSurface);
+        }
 
-		public Result EnumeratePhysicalDevices(out IMgPhysicalDevice[] physicalDevices)
-		{
-			Debug.Assert(!mIsDisposed);
+        public MgResult CreateWin32SurfaceKHR(MgWin32SurfaceCreateInfoKHR pCreateInfo, IMgAllocationCallbacks allocator, out IMgSurfaceKHR pSurface)
+        {
+            return VkCreateWin32SurfaceKHRSection.CreateWin32SurfaceKHR(Info, pCreateInfo, allocator, out pSurface);
+        }
 
-			var pPropertyCount = 0U;
+        public MgResult CreateDebugReportCallbackEXT(MgDebugReportCallbackCreateInfoEXT pCreateInfo, IMgAllocationCallbacks allocator, out IMgDebugReportCallbackEXT pCallback)
+        {
+            return VkCreateDebugReportCallbackEXTSection.CreateDebugReportCallbackEXT(Info, pCreateInfo, allocator, out pCallback);
+        }
 
-			var first = Interops.vkEnumeratePhysicalDevices(Handle, ref pPropertyCount, null);
+        public MgResult CreateDebugUtilsMessengerEXT(
+            MgDebugUtilsMessengerCreateInfoEXT createInfo,
+            IMgAllocationCallbacks allocator,
+            out IMgDebugUtilsMessengerEXT pMessenger
+        )
+        {
+            return VkCreateDebugUtilsMessengerEXTSection.CreateDebugUtilsMessengerEXT(Info, createInfo, allocator, out pMessenger);
+        }
 
-			if (first != Result.SUCCESS)
-			{
-				physicalDevices = null;
-				return first;
-			}
+        public MgResult EnumeratePhysicalDeviceGroups(
+            out MgPhysicalDeviceGroupProperties[] pPhysicalDeviceGroupProperties
+        )
+        {
+            return VkEnumeratePhysicalDeviceGroupsSection.EnumeratePhysicalDeviceGroups(Info, out pPhysicalDeviceGroupProperties);
+        }
 
-			var devices = new IntPtr[pPropertyCount];
-			var last = Interops.vkEnumeratePhysicalDevices(Handle, ref pPropertyCount, devices);
+        public void SubmitDebugUtilsMessageEXT(MgDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, MgDebugUtilsMessageTypeFlagBitsEXT messageTypes, MgDebugUtilsMessengerCallbackDataEXT pCallbackData)
+        {
+            VkSubmitDebugUtilsMessageEXTSection.SubmitDebugUtilsMessageEXT(Info, messageSeverity, messageTypes, pCallbackData);
+        }
 
-			physicalDevices = new VkPhysicalDevice[pPropertyCount];
-			for (uint i = 0; i < pPropertyCount; ++i)
-			{
-				physicalDevices[i] = new VkPhysicalDevice(devices[i]);
-			}
-			return last;
-		}
-
-		public IntPtr GetInstanceProcAddr(string pName)
-		{
-			Debug.Assert(!mIsDisposed);
-
-            var fnNamePtr = IntPtr.Zero;
-            try
-            {
-                fnNamePtr = VkInteropsUtility.NativeUtf8FromString(pName);
-                return Interops.vkGetInstanceProcAddr(Handle, fnNamePtr);
-            }
-            finally
-            {
-                if (fnNamePtr != IntPtr.Zero)
-                {
-                    Marshal.FreeHGlobal(fnNamePtr);
-                }
-            }
-		}
-
-		public Result CreateDisplayPlaneSurfaceKHR(MgDisplaySurfaceCreateInfoKHR createInfo, IMgAllocationCallbacks allocator, out IMgSurfaceKHR pSurface)
-		{
-			if (createInfo == null)
-				throw new ArgumentNullException(nameof(createInfo));
-
-			Debug.Assert(!mIsDisposed);
-
-			var bDisplayMode = (VkDisplayModeKHR)createInfo.DisplayMode;
-			Debug.Assert(bDisplayMode != null);
-
-			var pCreateInfo = new VkDisplaySurfaceCreateInfoKHR
-			{
-				sType = VkStructureType.StructureTypeDisplaySurfaceCreateInfoKhr,
-				pNext = IntPtr.Zero,
-				flags = createInfo.Flags,
-				displayMode = bDisplayMode.Handle,
-				planeIndex = createInfo.PlaneIndex,
-				planeStackIndex = createInfo.PlaneStackIndex,
-				transform = (VkSurfaceTransformFlagsKhr)createInfo.Transform,
-				globalAlpha = createInfo.GlobalAlpha,
-				alphaMode = (VkDisplayPlaneAlphaFlagsKhr)createInfo.AlphaMode,
-				imageExtent = createInfo.ImageExtent,
-			};
-
-			// MIGHT NEED GetInstanceProcAddr INSTEAD
-
-			var allocatorHandle = GetAllocatorHandle(allocator);
-
-			UInt64 handle = 0UL;
-			var result = Interops.vkCreateDisplayPlaneSurfaceKHR(Handle, ref pCreateInfo, allocatorHandle, ref handle);
-			pSurface = new VkSurfaceKHR(handle);
-
-			return result;
-		}
-
-		public Result CreateAndroidSurfaceKHR(MgAndroidSurfaceCreateInfoKHR pCreateInfo, IMgAllocationCallbacks allocator, out IMgSurfaceKHR pSurface)
-		{
-			if (pCreateInfo == null)
-				throw new ArgumentNullException(nameof(pCreateInfo));
-
-			Debug.Assert(!mIsDisposed);
-
-			var allocatorHandle = GetAllocatorHandle(allocator);
-
-			// TODO : MIGHT NEED GetInstanceProcAddr INSTEAD
-			var createInfo = new VkAndroidSurfaceCreateInfoKHR
-			{
-				sType = VkStructureType.StructureTypeAndroidSurfaceCreateInfoKhr,
-				pNext = IntPtr.Zero,
-				flags = pCreateInfo.Flags,
-				window = pCreateInfo.Window,
-			};
-
-			var surfaceHandle = 0UL;
-			var result = Interops.vkCreateAndroidSurfaceKHR(Handle, ref createInfo, allocatorHandle, ref surfaceHandle);
-			pSurface = new VkSurfaceKHR(surfaceHandle);
-
-			return result;
-		}
-
-		public Result CreateWin32SurfaceKHR(MgWin32SurfaceCreateInfoKHR pCreateInfo, IMgAllocationCallbacks allocator, out IMgSurfaceKHR pSurface)
-		{
-			if (pCreateInfo == null)
-				throw new ArgumentNullException(nameof(pCreateInfo));
-
-			Debug.Assert(!mIsDisposed);
-
-			var allocatorHandle = GetAllocatorHandle(allocator);
-
-			var createInfo = new VkWin32SurfaceCreateInfoKHR
-			{
-				sType = VkStructureType.StructureTypeWin32SurfaceCreateInfoKhr,
-				pNext = IntPtr.Zero,
-				flags = pCreateInfo.Flags,
-				hinstance = pCreateInfo.Hinstance,
-				hwnd = pCreateInfo.Hwnd,
-			};
-
-			// TODO : MIGHT NEED GetInstanceProcAddr INSTEAD
-
-			var surfaceHandle = 0UL;
-			var result = Interops.vkCreateWin32SurfaceKHR(Handle, ref createInfo, allocatorHandle, ref surfaceHandle);
-			pSurface = new VkSurfaceKHR(surfaceHandle);
-
-			return result;
-		}
-
-        private delegate Result vkCreateDebugReportCallbackEXT(IntPtr instance, ref VkDebugReportCallbackCreateInfoEXT pCreateInfo, IntPtr pAllocator, ref UInt64 pCallback);
-
-        public Result CreateDebugReportCallbackEXT(MgDebugReportCallbackCreateInfoEXT pCreateInfo, IMgAllocationCallbacks allocator, out IMgDebugReportCallbackEXT pCallback)
-		{
-			Debug.Assert(!mIsDisposed);
-
-			var allocatorHandle = GetAllocatorHandle(allocator);
-            var funcPtr = GetInstanceProcAddr("vkCreateDebugReportCallbackEXT");
-
-            if (funcPtr == IntPtr.Zero)
-            {
-                pCallback = null;
-                return Result.ERROR_FEATURE_NOT_PRESENT;
-            }
-
-            var createFunc = Marshal.GetDelegateForFunctionPointer(funcPtr, typeof(vkCreateDebugReportCallbackEXT)) as vkCreateDebugReportCallbackEXT;
-
-            var bCallback = Marshal.GetFunctionPointerForDelegate(pCreateInfo.PfnCallback);
-
-            var createInfo = new VkDebugReportCallbackCreateInfoEXT
-            {
-                sType = VkStructureType.StructureTypeDebugReportCallbackCreateInfoExt,
-                pNext = IntPtr.Zero,
-                flags = (VkDebugReportFlagsExt)pCreateInfo.Flags,
-                pfnCallback = bCallback,
-                pUserData = pCreateInfo.UserData,
-            };
-
-            var debugHandle = 0UL;
-            var result = createFunc(Handle, ref createInfo, allocatorHandle, ref debugHandle);
-            // TODO : figure out translation
-            pCallback = new VkDebugReportCallbackEXT(debugHandle, pCreateInfo.PfnCallback);
-
-            return result;       
-        
-		}
-
-		public void DebugReportMessageEXT(MgDebugReportFlagBitsEXT flags, MgDebugReportObjectTypeEXT objectType, UInt64 @object, IntPtr location, Int32 messageCode, string pLayerPrefix, string pMessage)
-		{
-			Debug.Assert(!mIsDisposed);
-
-			throw new NotImplementedException();
-		}
-
-	}
+        public void DebugReportMessageEXT(MgDebugReportFlagBitsEXT flags, MgDebugReportObjectTypeEXT objectType, ulong @object, IntPtr location, int messageCode, string pLayerPrefix, string pMessage)
+        {
+            // TODO: need to recheck issue
+            throw new NotImplementedException();
+        }
+    }
 }

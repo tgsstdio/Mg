@@ -157,7 +157,7 @@ namespace Magnesium.OpenGL.GL001.UnitTests
             {
 
             };
-            mContainer.RegisterInstance<IGLPipelineLayout>(layout, Reuse.Singleton);
+            mContainer.UseInstance<IGLPipelineLayout>(layout);
 
             var blockEntries = new GLUniformBlockEntry[]
             {
@@ -165,7 +165,7 @@ namespace Magnesium.OpenGL.GL001.UnitTests
             };
             var arrayMapper = new Magnesium.OpenGL.Internals.GLInternalCacheArrayMapper(layout, blockEntries);
 
-            mContainer.RegisterInstance<GLInternalCacheArrayMapper>(arrayMapper, Reuse.Singleton);
+            mContainer.UseInstance<GLInternalCacheArrayMapper>(arrayMapper);
 
             var entrypoint = mContainer.Resolve<IGLGraphicsPipelineEntrypoint>();
             var internalCache = mContainer.Resolve<GLInternalCache>();
@@ -445,12 +445,17 @@ namespace Magnesium.OpenGL.GL001.UnitTests
                 set;
             }
 
-            public Result BindBufferMemory(IMgDevice device, IMgDeviceMemory memory, ulong memoryOffset)
+            public MgResult BindBufferMemory(IMgDevice device, IMgDeviceMemory memory, ulong memoryOffset)
             {
                 throw new NotImplementedException();
             }
 
             public void DestroyBuffer(IMgDevice device, IMgAllocationCallbacks allocator)
+            {
+                throw new NotImplementedException();
+            }
+
+            MgResult IMgBuffer.BindBufferMemory(IMgDevice device, IMgDeviceMemory memory, ulong memoryOffset)
             {
                 throw new NotImplementedException();
             }

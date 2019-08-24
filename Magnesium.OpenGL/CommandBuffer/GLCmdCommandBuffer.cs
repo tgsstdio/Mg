@@ -24,7 +24,7 @@ namespace Magnesium.OpenGL.Internals
 
 		public MgCommandBufferUsageFlagBits SubmissionRule { get; private set; }
 		public bool IsQueueReady { get; set; }
-		public Result BeginCommandBuffer(MgCommandBufferBeginInfo pBeginInfo)
+		public MgResult BeginCommandBuffer(MgCommandBufferBeginInfo pBeginInfo)
 		{
 			SubmissionRule = pBeginInfo.Flags;
 			IsQueueReady = true;
@@ -37,10 +37,10 @@ namespace Magnesium.OpenGL.Internals
 				ResetAllData();
 			}
 
-			return Result.SUCCESS;
+			return MgResult.SUCCESS;
 		}
 
-		public Result EndCommandBuffer()
+		public MgResult EndCommandBuffer()
 		{
 			mIsRecording = false;
 			mIsExecutable = true;
@@ -48,7 +48,7 @@ namespace Magnesium.OpenGL.Internals
 			// TODO : add encoder spacing for different encoder instructions                      
 			Record = mCommandEncoder.AsRecord();
 
-			return Result.SUCCESS;
+			return MgResult.SUCCESS;
 		}
 
 		public void ResetAllData()
@@ -64,14 +64,14 @@ namespace Magnesium.OpenGL.Internals
 			Record = mCommandEncoder.AsRecord();
 		}
 
-		public Result ResetCommandBuffer(MgCommandBufferResetFlagBits flags)
+		public MgResult ResetCommandBuffer(MgCommandBufferResetFlagBits flags)
 		{
 			if (mManuallyResettable)
 			{
 				ResetAllData();
 				// OTHERWISE WAIT FOR BULK RESET VIA COMMAND POOL
 			}
-			return Result.SUCCESS;
+			return MgResult.SUCCESS;
 		}
 
 		public void CmdBindPipeline(MgPipelineBindPoint pipelineBindPoint, IMgPipeline pipeline)
@@ -335,7 +335,27 @@ namespace Magnesium.OpenGL.Internals
 			throw new NotImplementedException ();
 		}
 
-		#endregion
-	}
+        public void CmdBeginConditionalRenderingEXT(MgConditionalRenderingBeginInfoEXT pConditionalRenderingBegin)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CmdProcessCommandsNVX(MgCmdProcessCommandsInfoNVX pProcessCommandsInfo)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CmdSetDiscardRectangleEXT(uint firstDiscardRectangle, MgRect2D[] discardRectangles)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CmdSetExclusiveScissorNV(uint firstExclusiveScissor, MgRect2D[] exclusiveScissors)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+    }
 }
 

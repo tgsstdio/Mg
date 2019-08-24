@@ -12,7 +12,7 @@ namespace Magnesium.OpenGL
 
 		#region AllocateDescriptorSets methods
 
-		public Result Allocate(MgDescriptorSetAllocateInfo pAllocateInfo, out IMgDescriptorSet[] pDescriptorSets)
+		public MgResult Allocate(MgDescriptorSetAllocateInfo pAllocateInfo, out IMgDescriptorSet[] pDescriptorSets)
 		{
 			if (pAllocateInfo == null)
 				throw new ArgumentNullException(nameof(pAllocateInfo));
@@ -51,7 +51,7 @@ namespace Magnesium.OpenGL
 							{
                                 // VK_ERROR_FRAGMENTED_POOL = -12
                                 pDescriptorSets = null;
-                                return Result.ERROR_OUT_OF_HOST_MEMORY;
+                                return MgResult.ERROR_OUT_OF_HOST_MEMORY;
 							}
 							break;
 						case MgDescriptorType.STORAGE_BUFFER:
@@ -71,7 +71,7 @@ namespace Magnesium.OpenGL
 							{
                                 // VK_ERROR_FRAGMENTED_POOL = -12
                                 pDescriptorSets = null;
-                                return Result.ERROR_OUT_OF_HOST_MEMORY;
+                                return MgResult.ERROR_OUT_OF_HOST_MEMORY;
 							}
 							break;
 						case MgDescriptorType.UNIFORM_BUFFER:
@@ -91,7 +91,7 @@ namespace Magnesium.OpenGL
 							{
                                 // VK_ERROR_FRAGMENTED_POOL = -12
                                 pDescriptorSets = null;
-                                return Result.ERROR_OUT_OF_HOST_MEMORY;
+                                return MgResult.ERROR_OUT_OF_HOST_MEMORY;
 							}
 							break;
 					}
@@ -117,19 +117,19 @@ namespace Magnesium.OpenGL
                 {
                     // TOO MANY DESCRIPTOR SETS FOR POOL
                     pDescriptorSets = null;
-                    return Result.ERROR_OUT_OF_HOST_MEMORY;
+                    return MgResult.ERROR_OUT_OF_HOST_MEMORY;
                 }
 			}
 
             pDescriptorSets = output.ToArray();                       
-            return Result.SUCCESS;
+            return MgResult.SUCCESS;
 		}
 
 		#endregion
 
 		#region FreeDescriptorSets methods
 
-		public Result Free(IMgDescriptorPool descriptorPool, IMgDescriptorSet[] pDescriptorSets)
+		public MgResult Free(IMgDescriptorPool descriptorPool, IMgDescriptorSet[] pDescriptorSets)
 		{
 			if (descriptorPool == null)
 			{
@@ -160,7 +160,7 @@ namespace Magnesium.OpenGL
 				}
 			}
 
-			return Result.SUCCESS;
+			return MgResult.SUCCESS;
 		}
 
         #endregion

@@ -9,6 +9,6 @@ namespace Magnesium.Vulkan
 	{
 		public UInt64 sampler { get; set; }
 		public UInt64 imageView { get; set; }
-		public VkImageLayout imageLayout { get; set; }
+		public MgImageLayout imageLayout { get; set; }
 	}
 }

@@ -18,10 +18,10 @@ namespace Magnesium.OpenGL.Internals
 	
 		}
 
-		public Result EnumeratePhysicalDevices (out IMgPhysicalDevice[] physicalDevices)
+		public MgResult EnumeratePhysicalDevices (out IMgPhysicalDevice[] physicalDevices)
 		{
 			physicalDevices = mPhysicalDevices;
-			return Result.SUCCESS;
+			return MgResult.SUCCESS;
 		}
 
 		public IntPtr GetInstanceProcAddr (string pName)
@@ -29,7 +29,7 @@ namespace Magnesium.OpenGL.Internals
 			throw new NotImplementedException ();
 		}
 
-		public Result CreateDisplayPlaneSurfaceKHR (MgDisplaySurfaceCreateInfoKHR createInfo, IMgAllocationCallbacks allocator, out IMgSurfaceKHR pSurface)
+		public MgResult CreateDisplayPlaneSurfaceKHR (MgDisplaySurfaceCreateInfoKHR createInfo, IMgAllocationCallbacks allocator, out IMgSurfaceKHR pSurface)
 		{
 			throw new NotImplementedException ();
 		}
@@ -39,12 +39,12 @@ namespace Magnesium.OpenGL.Internals
 			throw new NotImplementedException ();
 		}
 
-		public Result CreateWin32SurfaceKHR (MgWin32SurfaceCreateInfoKHR pCreateInfo, IMgAllocationCallbacks allocator, out IMgSurfaceKHR pSurface)
+		public MgResult CreateWin32SurfaceKHR (MgWin32SurfaceCreateInfoKHR pCreateInfo, IMgAllocationCallbacks allocator, out IMgSurfaceKHR pSurface)
 		{
 			throw new NotImplementedException ();
 		}
 
-		public Result CreateDebugReportCallbackEXT (MgDebugReportCallbackCreateInfoEXT pCreateInfo, IMgAllocationCallbacks allocator, out IMgDebugReportCallbackEXT pCallback)
+		public MgResult CreateDebugReportCallbackEXT (MgDebugReportCallbackCreateInfoEXT pCreateInfo, IMgAllocationCallbacks allocator, out IMgDebugReportCallbackEXT pCallback)
 		{
 			throw new NotImplementedException ();
 		}
@@ -59,12 +59,27 @@ namespace Magnesium.OpenGL.Internals
 			throw new NotImplementedException ();
 		}
 
-		public Result CreateAndroidSurfaceKHR(MgAndroidSurfaceCreateInfoKHR pCreateInfo, IMgAllocationCallbacks allocator, out IMgSurfaceKHR pSurface)
+		public MgResult CreateAndroidSurfaceKHR(MgAndroidSurfaceCreateInfoKHR pCreateInfo, IMgAllocationCallbacks allocator, out IMgSurfaceKHR pSurface)
 		{
 			throw new NotImplementedException();
 		}
-		#endregion
-	}
+
+        public MgResult CreateDebugUtilsMessengerEXT(MgDebugUtilsMessengerCreateInfoEXT createInfo, IMgAllocationCallbacks allocator, out IMgDebugUtilsMessengerEXT pSurface)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult EnumeratePhysicalDeviceGroups(out MgPhysicalDeviceGroupProperties[] physicalDeviceGroupProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SubmitDebugUtilsMessageEXT(MgDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, MgDebugUtilsMessageTypeFlagBitsEXT messageTypes, MgDebugUtilsMessengerCallbackDataEXT pCallbackData)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
+    }
 
 }
 

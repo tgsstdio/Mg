@@ -73,6 +73,7 @@ namespace CommandGen
 
 		public int Index { get; set; }
 		public string Attribute { get; set; }
-	}
+        public bool IsHandleArgument { get; internal set; }
+    }
 }
 

@@ -11,7 +11,7 @@ namespace Magnesium.Vulkan
 		public UInt32 flags { get; set; }
 		public UInt64 image { get; set; }
 		public VkImageViewType viewType { get; set; }
-		public VkFormat format { get; set; }
+		public MgFormat format { get; set; }
 		public VkComponentMapping components { get; set; }
 		public MgImageSubresourceRange subresourceRange { get; set; }
 	}

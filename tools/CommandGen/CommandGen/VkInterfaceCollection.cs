@@ -16,42 +16,40 @@ namespace CommandGen
 		static List<VkContainerClass> RefactorMgInterfaces()
 		{
 			var interfaces = new Type[] {
-
-				typeof(IMgEntrypoint),
-				typeof(IMgInstance),
-				typeof(IMgPhysicalDevice),
-				typeof(IMgDevice),
-				typeof(IMgQueue),
-				typeof(IMgCommandBuffer),
-
-				typeof(IMgDeviceMemory),
-				typeof(IMgCommandPool),
+                typeof(IMgAllocationCallbacks),
 				typeof(IMgBuffer),
 				typeof(IMgBufferView),
-				typeof(IMgImage),
-
-				typeof(IMgImageView),
-				typeof(IMgShaderModule),
-				typeof(IMgPipeline),
-				typeof(IMgPipelineLayout),
-				typeof(IMgSampler),
-
+				typeof(IMgCommandBuffer),
+				typeof(IMgCommandPool),
+				typeof(IMgDescriptorPool),
 				typeof(IMgDescriptorSet),
 				typeof(IMgDescriptorSetLayout),
-				typeof(IMgDescriptorPool),
-				typeof(IMgFence),
-				typeof(IMgSemaphore),
-
+				typeof(IMgDevice),
+				typeof(IMgDeviceMemory),
+                typeof(IMgDisplayModeKHR),
 				typeof(IMgEvent),
-				typeof(IMgQueryPool),
+				typeof(IMgFence),
 				typeof(IMgFramebuffer),
-				typeof(IMgRenderPass),
+				typeof(IMgImage),
+				typeof(IMgImageView),
+                typeof(IMgIndirectCommandsLayoutNVX),
+				typeof(IMgInstance),
+                typeof(IMgObjectTableNVX),
+				typeof(IMgPipeline),
 				typeof(IMgPipelineCache),
-
+				typeof(IMgPipelineLayout),
+				typeof(IMgQueryPool),
+				typeof(IMgQueue),
+				typeof(IMgRenderPass),
+				typeof(IMgSampler),
+				typeof(IMgSemaphore),
+				typeof(IMgShaderModule),
 				typeof(IMgSurfaceKHR),
 				typeof(IMgSwapchainKHR),
+                typeof(IMgEntrypoint),
+				typeof(IMgPhysicalDevice),
+
 				typeof(IMgDebugReportCallbackEXT),
-				typeof(IMgAllocationCallbacks),
 			 };
 
 			var uniques = new StringCollection();
@@ -71,7 +69,7 @@ namespace CommandGen
 
 			var reservedNames = new StringCollection() { "event", "object" };
 
-			var implementation = new List<VkContainerClass>();
+    		var implementation = new List<VkContainerClass>();
 			foreach (var i in interfaces)
 			{
 				var container = new VkContainerClass { Name = i.Name.Replace("IMg", "Vk") };
@@ -81,7 +79,7 @@ namespace CommandGen
 					var method = new VkMethodSignature
 					{
 						Name = info.Name,
-						IsStatic = false,
+						IsStatic = true,
 						ReturnType = info.ReturnType.Name,
 					};
 
@@ -97,6 +95,7 @@ namespace CommandGen
 							Name = param.Name,
 							BaseCsType = param.ParameterType.Name,
 							UseOut = param.IsOut,
+                            UseRef = param.ParameterType.IsByRef,
 						};
 
 						// Name
@@ -106,12 +105,7 @@ namespace CommandGen
 						}
 
 
-						// BaseCsType
-						if (p.UseOut)
-						{
-							p.BaseCsType = p.BaseCsType.Replace("&", "");
-						}
-						else if (p.BaseCsType == "Void")
+                        if (p.BaseCsType == "Void")
 						{
 							p.BaseCsType = "void";
 						}
@@ -119,8 +113,20 @@ namespace CommandGen
 						{
 							p.BaseCsType = "string";
 						}
-						     
-						method.Parameters.Add(p);
+                        else if (p.BaseCsType == "Single")
+                        {
+                            p.BaseCsType = "float";
+                        }
+
+                        // BaseCsType
+                        if (p.BaseCsType.EndsWith("&"))
+                        {
+                            //Remove & suffix
+                            var len = p.BaseCsType.Length;
+                            p.BaseCsType = p.BaseCsType.Substring(0, len - 1);
+                        }
+
+                        method.Parameters.Add(p);
 					}
 
 					container.Methods.Add(method);

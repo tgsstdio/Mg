@@ -47,6 +47,8 @@ namespace CommandGen
 		}
 
 		public VkFunctionArgument Source { get; set; }
-	}
+        public bool IsHandleArgument { get; set; }
+        public bool IsNullableIntPtr { get; internal set; }
+    }
 }
 

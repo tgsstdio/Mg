@@ -9,9 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TriangleDemo.Vulkan</RootNamespace>
     <AssemblyName>TriangleDemo.Vulkan</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -77,9 +78,8 @@
       <HintPath>..\packages\LightInject.4.1.5\lib\net45\LightInject.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="OpenTK, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenTK.2.0.0\lib\net20\OpenTK.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="OpenTK, Version=3.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTK.3.1.0\lib\net20\OpenTK.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -114,19 +114,23 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Magnesium.PresentationSurfaces.OpenTK\Magnesium.PresentationSurfaces.OpenTK.csproj">
-      <Project>{0d74bcd6-2669-451f-81ff-488eecc07686}</Project>
+      <Project>{8cb19b88-8904-49e8-9c0c-aedc01679864}</Project>
       <Name>Magnesium.PresentationSurfaces.OpenTK</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Magnesium.Toolkit\Magnesium.Toolkit.csproj">
+      <Project>{215b2375-99d0-4f04-8783-a7da1b2548ec}</Project>
+      <Name>Magnesium.Toolkit</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Magnesium.Vulkan\Magnesium.Vulkan.csproj">
-      <Project>{8ef770d0-2dbc-4a8c-bf5d-dc3d429190f8}</Project>
+      <Project>{03a756eb-454f-4c53-ae87-78b9f0103cdc}</Project>
       <Name>Magnesium.Vulkan</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Magnesium\Magnesium.csproj">
-      <Project>{9f9ac448-9d17-43e5-8889-285426290891}</Project>
+      <Project>{fdd19a5c-b3fc-4716-9cfc-2d01a4640da7}</Project>
       <Name>Magnesium</Name>
     </ProjectReference>
     <ProjectReference Include="..\TriangleDemo.Shared\TriangleDemo.Shared.csproj">
-      <Project>{7506c510-74b1-4eaf-8281-9dceefdbdb5d}</Project>
+      <Project>{43bf23b1-b71e-42f7-93ba-c7133f2fce9b}</Project>
       <Name>TriangleDemo.Shared</Name>
     </ProjectReference>
   </ItemGroup>

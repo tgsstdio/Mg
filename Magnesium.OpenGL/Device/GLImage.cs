@@ -231,7 +231,7 @@ namespace Magnesium.OpenGL.Internals
 					default:
 						imageSize = pixelSize * width * height * depth;
 						break;
-					//return Result.ERROR_FEATURE_NOT_PRESENT;
+					//return MgResult.ERROR_FEATURE_NOT_PRESENT;
 					}
 
 					var current = new MgSubresourceLayout {
@@ -296,7 +296,7 @@ namespace Magnesium.OpenGL.Internals
 				return mMemory;
 			}
 		}
-		public Result BindImageMemory (IMgDevice device, IMgDeviceMemory memory, ulong memoryOffset)
+		public MgResult BindImageMemory (IMgDevice device, IMgDeviceMemory memory, ulong memoryOffset)
 		{
 			var deviceMemory = memory as IGLDeviceMemory;
 
@@ -304,7 +304,7 @@ namespace Magnesium.OpenGL.Internals
 			{
 				mMemory = IntPtr.Add (deviceMemory.Handle, (int)memoryOffset);
 			}
-			return Result.SUCCESS;
+			return MgResult.SUCCESS;
 		}
 
 		private bool mIsDisposed = false;

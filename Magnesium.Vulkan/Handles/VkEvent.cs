@@ -11,34 +11,34 @@ namespace Magnesium.Vulkan
 			Handle = handle;
 		}
 
-		public Result GetEventStatus(IMgDevice device)
+		public MgResult GetEventStatus(IMgDevice device)
 		{
 			Debug.Assert(!mIsDisposed);
 
 			var bDevice = (VkDevice) device;
 			Debug.Assert(bDevice != null);		
 
-			return Interops.vkGetEventStatus(bDevice.Handle, this.Handle);
+			return Interops.vkGetEventStatus(bDevice.Info.Handle, this.Handle);
 		}
 
-		public Result SetEvent(IMgDevice device)
+		public MgResult SetEvent(IMgDevice device)
 		{
 			Debug.Assert(!mIsDisposed);
 
 			var bDevice = (VkDevice) device;
 			Debug.Assert(bDevice != null);		
 
-			return Interops.vkSetEvent(bDevice.Handle, this.Handle);
+			return Interops.vkSetEvent(bDevice.Info.Handle, this.Handle);
 		}
 
-		public Result ResetEvent(IMgDevice device)
+		public MgResult ResetEvent(IMgDevice device)
 		{
 			Debug.Assert(!mIsDisposed);
 
 			var bDevice = (VkDevice) device;
 			Debug.Assert(bDevice != null);		
 
-			return (Result)Interops.vkResetEvent(bDevice.Handle, this.Handle);
+			return (MgResult)Interops.vkResetEvent(bDevice.Info.Handle, this.Handle);
 		}
 
 		private bool mIsDisposed = false;
@@ -53,7 +53,7 @@ namespace Magnesium.Vulkan
 			var bAllocator = (MgVkAllocationCallbacks) allocator;
 			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;	
 
-			Interops.vkDestroyEvent(bDevice.Handle, this.Handle, allocatorPtr);
+			Interops.vkDestroyEvent(bDevice.Info.Handle, this.Handle, allocatorPtr);
 
 			this.Handle = 0UL;
 			mIsDisposed = true;

@@ -1,68 +1,49 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{156D7F9D-1243-4EDB-9E45-24FAF2F40A4C}</ProjectGuid>
     <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Magnesium.OpenGL.DesktopGL</RootNamespace>
     <AssemblyName>Magnesium.OpenGL.DesktopGL</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>full</DebugType>
+    <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\bin\Release\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  <PropertyGroup>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>bin\x86\Release\</OutputPath>
-    <Optimize>true</Optimize>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>bin\x64\Release\</OutputPath>
-    <Optimize>true</Optimize>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="Device\FullGLDeviceMemoryTypeMap.cs" />
     <Compile Include="Device\GLFullFence.cs" />
@@ -70,8 +51,27 @@
     <Compile Include="Driver\DesktopGLGraphicsContext.cs" />
     <Compile Include="Driver\FullGLOffscreenDepthStencilContext.cs" />
     <Compile Include="Driver\GLNullDepthStencilImageView.cs" />
-    <Compile Include="Driver\GLNullOffscreenDeviceLocalMemory.cs" />
+    <Compile Include="Driver\GLNullOffscreenDeviceLocalMemory.cs" />  
+    <Compile Include="Device\FullGLBuffer.cs" />
+    <Compile Include="Device\GLDeviceMemory.cs" />
+    <Compile Include="Device\GLFullFence.cs" />
+    <Compile Include="Device\GLNextDescriptorPool.cs" />
+    <Compile Include="Driver\Es20FramebufferSupport.cs" />
+    <Compile Include="Driver\Es20GLFramebufferHelper.cs" />
+    <Compile Include="Driver\Es20GLFramebufferHelperSelector.cs" />
+    <Compile Include="Driver\Es20GLSpecificExtensionLookup.cs" />
+    <Compile Include="Driver\ES30GLErrorHandler.cs" />
+    <Compile Include="Driver\FullGLCmdClearEntrypoint.cs" />
+    <Compile Include="Driver\FullGLErrorHandler.cs" />
+    <Compile Include="Driver\FullGLExtensionLookup.cs" />
+    <Compile Include="Driver\FullGLFramebufferHelper.cs" />
+    <Compile Include="Driver\FullGLFramebufferHelperEXT.cs" />
+    <Compile Include="Driver\FullGLFramebufferHelperSelector.cs" />
+    <Compile Include="Driver\FullGLFramebufferSupport.cs" />
+    <Compile Include="Driver\GLNullImageView.cs" />
     <Compile Include="Driver\IGLBackbufferContext.cs" />
+    <Compile Include="Driver\IMgGraphicsDeviceLogger.cs" />
+    <Compile Include="Driver\MgOpenGLException.cs" />
     <Compile Include="Driver\OpenTKBackbufferContext.cs" />
     <Compile Include="Entrypoint\FullGLFutureDeviceMemoryEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLBlitOperationEntrypoint.cs" />
@@ -88,15 +88,20 @@
     <Compile Include="Queue\IConstantBufferCollection.cs" />
     <Compile Include="Queue\IConstantBuffer.cs" />
     <Compile Include="Queue\GLQueueDrawItem.cs" />
+    <Compile Include="Driver\OpenTKGraphicsDevice.cs" />
+    <Compile Include="Driver\OpenTKSwapchainCollection.cs" />
+    <Compile Include="Entrypoint\DesktopGLImageFormatEntrypoint.cs" />
+    <Compile Include="Entrypoint\FullGLBlitOperationEntrypoint.cs" />
+    <Compile Include="Entrypoint\FullGLBufferEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLCmdBlendEntrypoint.cs" />
-    <Compile Include="Entrypoint\FullGLCmdRasterizationEntrypoint.cs" />
-    <Compile Include="Entrypoint\FullGLCmdStencilEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLCmdDepthEntrypoint.cs" />
-    <Compile Include="Queue\GLQueueSemaphore.cs" />
-    <Compile Include="Queue\GLQueueFence.cs" />
-    <Compile Include="Entrypoint\FullGLCmdScissorsEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLCmdDrawEntrypoint.cs" />
+    <Compile Include="Entrypoint\FullGLCmdImageEntrypoint.cs" />
+    <Compile Include="Entrypoint\FullGLCmdRasterizationEntrypoint.cs" />
+    <Compile Include="Entrypoint\FullGLCmdScissorsEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLCmdShaderProgramCache.cs" />
+    <Compile Include="Entrypoint\FullGLCmdShaderProgramEntrypoint.cs" />
+    <Compile Include="Entrypoint\FullGLCmdStencilEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLCmdVBOEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLCmdImageEntrypoint.cs" />
     <Compile Include="GLSwapchainKHR.cs" />
@@ -125,45 +130,50 @@
     <Compile Include="Entrypoint\FullGLCmdClearEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLSemaphoreEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLDeviceImageViewEntrypoint.cs" />
+    <Compile Include="Entrypoint\FullGLDescriptorPoolEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLDeviceImageEntrypoint.cs" />
-    <Compile Include="Entrypoint\FullGLBufferEntrypoint.cs" />
+    <Compile Include="Entrypoint\FullGLDeviceImageViewEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLDeviceMemoryEntrypoint.cs" />
+    <Compile Include="Entrypoint\FullGLFullFenceEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLGraphicsPipelineEntrypoint.cs" />
+    <Compile Include="Entrypoint\FullGLImageDescriptorEntrypoint.cs" />
+    <Compile Include="Entrypoint\FullGLPipelineCacheLayoutEntrypoint.cs" />
+    <Compile Include="Entrypoint\FullGLSamplerEntrypoint.cs" />
+    <Compile Include="Entrypoint\FullGLSemaphoreEntrypoint.cs" />
+    <Compile Include="Entrypoint\FullGLShaderModuleEntrypoint.cs" />
+    <Compile Include="Entrypoint\FullGLUniformBlockEntrypoint.cs" />
+    <Compile Include="Entrypoint\NullMgGraphicsDeviceLogger.cs" />
+    <Compile Include="GLSLTextShader.cs" />
+    <Compile Include="GLSwapchainKHR.cs" />
+    <Compile Include="IOpenTKSwapchainKHR.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Queue\GLQueueDrawItem.cs" />
+    <Compile Include="Queue\GLQueueFence.cs" />
+    <Compile Include="Queue\GLQueueSemaphore.cs" />
+    <Compile Include="Queue\IConstantBuffer.cs" />
+    <Compile Include="Queue\IConstantBufferCollection.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\Magnesium.OpenGL\Magnesium.OpenGL.csproj">
+      <Project>{84924a0f-0d4c-4b0c-b16a-4f26dd838af2}</Project>
+      <Name>Magnesium.OpenGL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Magnesium.Toolkit\Magnesium.Toolkit.csproj">
+      <Project>{215b2375-99d0-4f04-8783-a7da1b2548ec}</Project>
+      <Name>Magnesium.Toolkit</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Magnesium\Magnesium.csproj">
+      <Project>{9f9ac448-9d17-43e5-8889-285426290891}</Project>
+      <Name>Magnesium</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="OpenTK">
+      <Version>3.1.0</Version>
+    </PackageReference>
+  </ItemGroup>
   <ItemGroup>
     <Folder Include="CommandBuffer\" />
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="OpenTK, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <HintPath>packages\OpenTK.2.0.0\lib\net20\OpenTK.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Magnesium.OpenGL\Magnesium.OpenGL.csproj">
-      <Project>{84924a0f-0d4c-4b0c-b16a-4f26dd838af2}</Project>
-      <Name>Magnesium.OpenGL</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Magnesium\Magnesium.csproj">
-      <Project>{9f9ac448-9d17-43e5-8889-285426290891}</Project>
-      <Name>Magnesium</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="OpenTK.dll.config" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Magnesium.OpenGL\Magnesium.OpenGL.csproj">
-      <Project>{84924a0f-0d4c-4b0c-b16a-4f26dd838af2}</Project>
-      <Name>Magnesium.OpenGL</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Magnesium\Magnesium.csproj">
-      <Project>{9f9ac448-9d17-43e5-8889-285426290891}</Project>
-      <Name>Magnesium</Name>
-    </ProjectReference>
-  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

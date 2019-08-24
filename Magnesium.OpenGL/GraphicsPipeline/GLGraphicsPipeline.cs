@@ -894,7 +894,12 @@ namespace Magnesium.OpenGL.Internals
 			mIsDisposed = true;
 		}
 
-		#endregion
-	}
+        public MgResult CompileDeferredNV(IMgDevice device, uint shader)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+    }
 }
 

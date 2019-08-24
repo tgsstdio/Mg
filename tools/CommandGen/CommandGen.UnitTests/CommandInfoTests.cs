@@ -845,9 +845,9 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(index, arg_1.Index);
 				Assert.AreEqual("pPresentInfo", arg_1.Name);
 				Assert.AreEqual("VkPresentInfoKHR", arg_1.BaseCppType);
-				Assert.AreEqual("VkPresentInfoKhr", arg_1.BaseCsType);
+				Assert.AreEqual("VkPresentInfoKHR", arg_1.BaseCsType);
 				Assert.AreEqual("VkPresentInfoKHR*", arg_1.ArgumentCppType);
-				Assert.AreEqual("VkPresentInfoKhr", arg_1.ArgumentCsType);
+				Assert.AreEqual("VkPresentInfoKHR", arg_1.ArgumentCsType);
 				Assert.IsTrue(arg_1.IsConst);
 				Assert.IsFalse(arg_1.IsOptional);
 				Assert.IsFalse(arg_1.IsFixedArray);
@@ -855,7 +855,7 @@ namespace CommandGen.UnitTests
 				Assert.IsNull(arg_1.ArrayConstant);
 				Assert.IsFalse(arg_1.UseOut);
 				Assert.IsFalse(arg_1.ByReference);
-				Assert.AreEqual("[In, Out]", arg_1.Attribute);
+				Assert.IsNull(arg_1.Attribute);
 			}
 
 			// METHOD SIGNATURE
@@ -871,7 +871,7 @@ namespace CommandGen.UnitTests
 				Assert.AreEqual(1, param_0.Source.Index);
 				Assert.AreEqual("pPresentInfo", param_0.Name);
 				Assert.IsFalse(param_0.IsNullableType);
-				Assert.AreEqual("VkPresentInfoKhr", param_0.BaseCsType);
+				Assert.AreEqual("VkPresentInfoKHR", param_0.BaseCsType);
 				Assert.IsFalse(param_0.UseRef);
 				Assert.IsFalse(param_0.IsFixedArray);
 				Assert.IsFalse(param_0.IsArrayParameter);

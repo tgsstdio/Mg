@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using Magnesium;
 using System.Diagnostics;
+using Magnesium.Toolkit;
 
 namespace Magnesium.Ktx
 {
-	public class KTXTextureManager : IKTXTextureLoader
+    public class KTXTextureManager : IKTXTextureLoader
 	{
 		private readonly IMgTextureGenerator mTextureOptimizer;
         private readonly IMgGraphicsConfiguration mGraphicsConfiguration;
@@ -227,7 +227,7 @@ namespace Magnesium.Ktx
 
                 // QUEUE WAIT ON 
                 var err = mGraphicsConfiguration.Queue.QueueWaitIdle();
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
                 mGraphicsConfiguration.Device.FreeCommandBuffers(
                     mGraphicsConfiguration.Partition.CommandPool,
                     new[] { output.TextureInfo.Command });

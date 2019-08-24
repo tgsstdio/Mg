@@ -1,5 +1,6 @@
 ﻿using Magnesium;
 using Magnesium.Ktx;
+using Magnesium.Toolkit;
 using OpenTK;
 using System;
 using System.Diagnostics;
@@ -278,8 +279,8 @@ namespace TextureDemo
 
         void loadTexture(string fileName, MgFormat format)
         {
-            IMgImageTools imageTools = new Magnesium.MgImageTools();
-            IMgTextureGenerator optimizer = new Magnesium.MgStagingBufferOptimizer(mManager.Configuration, imageTools);            
+            IMgImageTools imageTools = new MgImageTools();
+            IMgTextureGenerator optimizer = new MgStagingBufferOptimizer(mManager.Configuration, imageTools);            
             IKTXTextureLoader loader = new KTXTextureManager(optimizer, mManager.Configuration);
             using (var fs = System.IO.File.OpenRead(fileName))
             {
@@ -329,7 +330,7 @@ namespace TextureDemo
 
                 IMgSampler sampler;
                 var err = mManager.Configuration.Device.CreateSampler(samplerCreateInfo, null, out sampler);
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
 
                 // Create image view
                 // Textures are not directly accessed by the shaders and
@@ -362,7 +363,7 @@ namespace TextureDemo
 
                 IMgImageView view;
                 err = mManager.Configuration.Device.CreateImageView(viewCreateInfo, null, out view);
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
 
                 texture = new Texture
                 {
@@ -445,7 +446,7 @@ namespace TextureDemo
             Debug.Assert(device != null);
 
             var err = device.AllocateCommandBuffers(cmdBufAllocateInfo, drawCmdBuffers);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             for (var i = 0; i < cmdBufferCount; ++i)
             {
@@ -455,7 +456,7 @@ namespace TextureDemo
                 var cmdBuf = drawCmdBuffers[i];
 
                 err = cmdBuf.BeginCommandBuffer(cmdBufInfo);
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
 
                 cmdBuf.CmdBeginRenderPass(renderPassBeginInfo,  MgSubpassContents.INLINE);
 
@@ -494,7 +495,7 @@ namespace TextureDemo
                 cmdBuf.CmdEndRenderPass();
 
                 err = cmdBuf.EndCommandBuffer();
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
             }
         }
 
@@ -517,7 +518,7 @@ namespace TextureDemo
             Debug.Assert(device != null);
 
             var err = device.AllocateCommandBuffers(cmdBufAllocateInfo, mPresentBuffers);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             // Pre present
             mPrePresentCmdBuffer = mPresentBuffers[0];
@@ -548,7 +549,7 @@ namespace TextureDemo
             
             // Submit to queue
             var err = mManager.Configuration.Queue.QueueSubmit(submitInfos, null);  
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             //VulkanExampleBase::submitFrame();
             mManager.Layer.EndDraw(new[] { currentBuffer }, mPrePresentCmdBuffer, null);
@@ -702,7 +703,7 @@ namespace TextureDemo
             var device = mManager.Configuration.Device;
             Debug.Assert(device != null);
             var err = device.CreateDescriptorPool(descriptorPoolInfo, null, out mDescriptorPool);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
         }
 
         void setupDescriptorSetLayout()
@@ -734,7 +735,7 @@ namespace TextureDemo
             Debug.Assert(device != null);
 
             var err = device.CreateDescriptorSetLayout(descriptorLayout, null, out mDescriptorSetLayout);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             MgPipelineLayoutCreateInfo pPipelineLayoutCreateInfo = new MgPipelineLayoutCreateInfo
             {
@@ -742,7 +743,7 @@ namespace TextureDemo
             };  
         
             err = device.CreatePipelineLayout(pPipelineLayoutCreateInfo, null, out mPipelineLayout);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
         }
 
         void setupDescriptorSet()
@@ -758,7 +759,7 @@ namespace TextureDemo
             Debug.Assert(device != null);
 
             var err = device.AllocateDescriptorSets(allocInfo, out mDescriptorSets);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             var writeDescriptorSets = new []
             {
@@ -809,7 +810,7 @@ namespace TextureDemo
                     };
                     // shaderStages[0] = loadShader(getAssetPath() + "shaders/texture/texture.vert.spv", IMg_SHADER_STAGE_VERTEX_BIT);
                     var localErr = device.CreateShaderModule(vsCreateInfo, null, out vertSM);
-                    Debug.Assert(localErr == Result.SUCCESS);
+                    Debug.Assert(localErr == MgResult.SUCCESS);
                 }
 
                 IMgShaderModule fragSM;
@@ -821,7 +822,7 @@ namespace TextureDemo
                     };
                     //shaderStages[1] = loadShader(getAssetPath() + "shaders/texture/texture.frag.spv", IMg_SHADER_STAGE_FRAGMENT_BIT);
                     var localErr = device.CreateShaderModule(fsCreateInfo, null, out fragSM);
-                    Debug.Assert(localErr == Result.SUCCESS);
+                    Debug.Assert(localErr == MgResult.SUCCESS);
                 }
 
                 var pipelineCreateInfo = new MgGraphicsPipelineCreateInfo
@@ -924,7 +925,7 @@ namespace TextureDemo
 
                 IMgPipeline[] pipelines;
                 var err = device.CreateGraphicsPipelines(null, new[] { pipelineCreateInfo }, null, out pipelines);
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
                 mSolidPipeline = pipelines[0];
             }
         }

@@ -16,7 +16,6 @@ Quick Links
 - [IMPLEMENTATIONS TODOs](#implementations-todos)
 
 ----------
-
 ## NUGET PACKAGES
 
 | Interface / Implementation | Latest Version  | Description |

@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Xml.Linq;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 
 namespace CommandGen
 {
@@ -13,11 +14,21 @@ namespace CommandGen
 			mInspector = inspector;
 		}
 
+        static string GetMagnesiumType(string type)
+        {
+            if (type.StartsWith("Vk"))
+            {
+                return "Mg" + type.Substring(2);
+            }
+            else
+                return type;
+        }
+
 		void ParseNativeInterface (XElement top, VkCommandInfo result)
 		{
 			var function = new VkNativeInterface ();
 			function.Name = result.Name;
-			function.ReturnType = result.CsReturnType;
+			function.ReturnType = GetMagnesiumType(result.CsReturnType);
 
 			int index = 0;
 			foreach (var param in top.Elements ("param"))
@@ -56,7 +67,14 @@ namespace CommandGen
 
 				arg.Name = param.Element ("name").Value;
 
-				arg.BaseCppType = param.Element ("type").Value;
+                var reservedNames = new StringCollection() { "event", "object" };
+
+                if (reservedNames.Contains(arg.Name))
+                {
+                    arg.Name = "@" + arg.Name;
+                }
+
+                arg.BaseCppType = param.Element ("type").Value;
 				arg.BaseCsType = mInspector.GetTypeCsName (arg.BaseCppType, "type");
 
 				XAttribute optionalAttr = param.Attribute ("optional");
@@ -84,8 +102,10 @@ namespace CommandGen
 
 				arg.IsNullableIntPtr = arg.IsOptional && arg.IsPointer && !arg.IsFixedArray && arg.LengthVariable == null;
 
-				// DETERMINE CSHARP TYPE 
-				if (arg.ArgumentCppType == "char*")
+                arg.ArgumentCppType = GetMagnesiumType(arg.ArgumentCppType);
+
+                // DETERMINE CSHARP TYPE 
+                if (arg.ArgumentCppType == "char*")
 				{
 					arg.ArgumentCsType = "string";
 				}
@@ -97,11 +117,16 @@ namespace CommandGen
 				{
 					arg.ArgumentCsType = "IntPtr";
 				}
-				else 
+                else if (arg.ArgumentCppType == "VkResult")
+                {
+                    arg.ArgumentCsType = "MgResult";
+                }
+                else 
 				{
 					VkHandleInfo found;
 					if (mInspector.Handles.TryGetValue(arg.BaseCsType, out found))
 					{
+                        arg.IsHandleArgument = true;
 						arg.ArgumentCsType = found.csType;
 					}
 					else if (arg.IsNullableIntPtr)
@@ -225,6 +250,8 @@ namespace CommandGen
 				param.IsArrayParameter = !param.Source.IsConst && param.Source.LengthVariable != null;
 				param.IsNullableType = param.Source.IsPointer && param.Source.IsOptional;
 				param.UseRef = param.Source.UseOut && param.Source.IsBlittable && !param.IsArrayParameter;
+                param.IsHandleArgument = param.Source.IsHandleArgument;
+                param.IsNullableIntPtr = param.Source.IsNullableIntPtr;
 			}
 
 			result.MethodSignature = signature;
@@ -302,8 +329,8 @@ namespace CommandGen
 			{
 				var result = new VkCommandInfo();
 				result.Name = protoElem.Element("name").Value;
-				result.CppReturnType = protoElem.Element("type").Value;
-				result.CsReturnType = mInspector.GetTypeCsName(result.CppReturnType, "type");
+				result.CppReturnType = GetMagnesiumType(protoElem.Element("type").Value);
+				result.CsReturnType = GetMagnesiumType(mInspector.GetTypeCsName(result.CppReturnType, "type"));
 
 				ParseNativeInterface(top, result);
 

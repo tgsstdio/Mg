@@ -87,16 +87,16 @@ namespace Magnesium.Vulkan
 		public UInt32 maxFramebufferWidth { get; set; }
 		public UInt32 maxFramebufferHeight { get; set; }
 		public UInt32 maxFramebufferLayers { get; set; }
-		public VkSampleCountFlags framebufferColorSampleCounts { get; set; }
-		public VkSampleCountFlags framebufferDepthSampleCounts { get; set; }
-		public VkSampleCountFlags framebufferStencilSampleCounts { get; set; }
-		public VkSampleCountFlags framebufferNoAttachmentsSampleCounts { get; set; }
+		public MgSampleCountFlagBits framebufferColorSampleCounts { get; set; }
+		public MgSampleCountFlagBits framebufferDepthSampleCounts { get; set; }
+		public MgSampleCountFlagBits framebufferStencilSampleCounts { get; set; }
+		public MgSampleCountFlagBits framebufferNoAttachmentsSampleCounts { get; set; }
 		public UInt32 maxColorAttachments { get; set; }
-		public VkSampleCountFlags sampledImageColorSampleCounts { get; set; }
-		public VkSampleCountFlags sampledImageIntegerSampleCounts { get; set; }
-		public VkSampleCountFlags sampledImageDepthSampleCounts { get; set; }
-		public VkSampleCountFlags sampledImageStencilSampleCounts { get; set; }
-		public VkSampleCountFlags storageImageSampleCounts { get; set; }
+		public MgSampleCountFlagBits sampledImageColorSampleCounts { get; set; }
+		public MgSampleCountFlagBits sampledImageIntegerSampleCounts { get; set; }
+		public MgSampleCountFlagBits sampledImageDepthSampleCounts { get; set; }
+		public MgSampleCountFlagBits sampledImageStencilSampleCounts { get; set; }
+		public MgSampleCountFlagBits storageImageSampleCounts { get; set; }
 		public UInt32 maxSampleMaskWords { get; set; }
 		public VkBool32 timestampComputeAndGraphics { get; set; }
 		public float timestampPeriod { get; set; }

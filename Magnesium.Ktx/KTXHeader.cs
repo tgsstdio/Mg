@@ -272,7 +272,7 @@ namespace Magnesium.Ktx
 			{
 				if (Instructions.TextureDimensions == 2)
 				{
-					Instructions.ViewType = MgImageViewType.TYPE_CUBE; // TextureTarget.TextureCubeMap;
+					Instructions.ViewType = MgImageViewType.CUBE; // TextureTarget.TextureCubeMap;
 				}
 				else
 				{

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Magnesium.Toolkit;
 using OpenTK;
 
 namespace Magnesium.PresentationSurfaces.OpenTK
@@ -34,7 +35,7 @@ namespace Magnesium.PresentationSurfaces.OpenTK
 				Hwnd = mWindow.WindowInfo.Handle,
 			};
 			var err = mDriverContext.Instance.CreateWin32SurfaceKHR (createInfo, null, out mSurface);
-			Debug.Assert (err == Result.SUCCESS);
+			Debug.Assert (err == MgResult.SUCCESS);
 		}
 
 		#endregion

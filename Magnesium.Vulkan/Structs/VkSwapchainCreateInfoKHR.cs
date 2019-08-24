@@ -12,11 +12,11 @@ namespace Magnesium.Vulkan
 		public UInt32 flags { get; set; }
 		public UInt64 surface { get; set; }
 		public UInt32 minImageCount { get; set; }
-		public VkFormat imageFormat { get; set; }
-		public VkColorSpaceKhr imageColorSpace { get; set; }
+		public MgFormat imageFormat { get; set; }
+		public MgColorSpaceKHR imageColorSpace { get; set; }
 		public MgExtent2D imageExtent { get; set; }
 		public UInt32 imageArrayLayers { get; set; }
-		public VkImageUsageFlags imageUsage { get; set; }
+		public MgImageUsageFlagBits imageUsage { get; set; }
 		public VkSharingMode imageSharingMode { get; set; }
 		public UInt32 queueFamilyIndexCount { get; set; }
 		public IntPtr pQueueFamilyIndices { get; set; }

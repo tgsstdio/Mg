@@ -73,63 +73,64 @@ namespace Magnesium.OpenGL.Internals
                 };
             }
         }
-		public Result GetPhysicalDeviceImageFormatProperties (MgFormat format, MgImageType type, MgImageTiling tiling, MgImageUsageFlagBits usage, MgImageCreateFlagBits flags, out MgImageFormatProperties pImageFormatProperties)
+
+		public MgResult GetPhysicalDeviceImageFormatProperties (MgFormat format, MgImageType type, MgImageTiling tiling, MgImageUsageFlagBits usage, MgImageCreateFlagBits flags, out MgImageFormatProperties pImageFormatProperties)
 		{
 			throw new NotImplementedException ();
 		}
-		public Result CreateDevice (MgDeviceCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDevice pDevice)
+		public MgResult CreateDevice (MgDeviceCreateInfo pCreateInfo, IMgAllocationCallbacks allocator, out IMgDevice pDevice)
 		{
 			// USING SINGLE DEVICE & SINGLE QUEUE 
 				// SHOULD BE 
 			pDevice = mDevice;
-			return Result.SUCCESS;
+			return MgResult.SUCCESS;
 		}
-		public Result EnumerateDeviceLayerProperties (out MgLayerProperties[] pProperties)
+		public MgResult EnumerateDeviceLayerProperties (out MgLayerProperties[] pProperties)
 		{
 			throw new NotImplementedException ();
 		}
-		public Result EnumerateDeviceExtensionProperties (string layerName, out MgExtensionProperties[] pProperties)
+		public MgResult EnumerateDeviceExtensionProperties (string layerName, out MgExtensionProperties[] pProperties)
 		{
             pProperties = new MgExtensionProperties[] { };
-            return Result.SUCCESS;
+            return MgResult.SUCCESS;
 		}
 		public void GetPhysicalDeviceSparseImageFormatProperties (MgFormat format, MgImageType type, MgSampleCountFlagBits samples, MgImageUsageFlagBits usage, MgImageTiling tiling, out MgSparseImageFormatProperties[] pProperties)
 		{
 			throw new NotImplementedException ();
 		}
-		public Result GetPhysicalDeviceDisplayPropertiesKHR (out MgDisplayPropertiesKHR[] pProperties)
+		public MgResult GetPhysicalDeviceDisplayPropertiesKHR (out MgDisplayPropertiesKHR[] pProperties)
 		{
 			throw new NotImplementedException ();
 		}
-		public Result GetPhysicalDeviceDisplayPlanePropertiesKHR (out MgDisplayPlanePropertiesKHR[] pProperties)
+		public MgResult GetPhysicalDeviceDisplayPlanePropertiesKHR (out MgDisplayPlanePropertiesKHR[] pProperties)
 		{
 			throw new NotImplementedException ();
 		}
-		public Result GetDisplayPlaneSupportedDisplaysKHR (uint planeIndex, out IMgDisplayKHR[] pDisplays)
+		public MgResult GetDisplayPlaneSupportedDisplaysKHR (uint planeIndex, out IMgDisplayKHR[] pDisplays)
 		{
 			throw new NotImplementedException ();
 		}
-		public Result GetDisplayModePropertiesKHR (IMgDisplayKHR display, out MgDisplayModePropertiesKHR[] pProperties)
+		public MgResult GetDisplayModePropertiesKHR (IMgDisplayKHR display, out MgDisplayModePropertiesKHR[] pProperties)
 		{
 			throw new NotImplementedException ();
 		}
-		public Result GetDisplayPlaneCapabilitiesKHR (IMgDisplayModeKHR mode, uint planeIndex, out MgDisplayPlaneCapabilitiesKHR pCapabilities)
+		public MgResult GetDisplayPlaneCapabilitiesKHR (IMgDisplayModeKHR mode, uint planeIndex, out MgDisplayPlaneCapabilitiesKHR pCapabilities)
 		{
 			throw new NotImplementedException ();
 		}
-		public Result GetPhysicalDeviceSurfaceSupportKHR (uint queueFamilyIndex, IMgSurfaceKHR surface, ref bool pSupported)
+		public MgResult GetPhysicalDeviceSurfaceSupportKHR (uint queueFamilyIndex, IMgSurfaceKHR surface, ref bool pSupported)
 		{
 			throw new NotImplementedException ();
 		}
-		public Result GetPhysicalDeviceSurfaceCapabilitiesKHR (IMgSurfaceKHR surface, out MgSurfaceCapabilitiesKHR pSurfaceCapabilities)
+		public MgResult GetPhysicalDeviceSurfaceCapabilitiesKHR (IMgSurfaceKHR surface, out MgSurfaceCapabilitiesKHR pSurfaceCapabilities)
 		{
 			throw new NotImplementedException ();
 		}
-		public Result GetPhysicalDeviceSurfaceFormatsKHR (IMgSurfaceKHR surface, out MgSurfaceFormatKHR[] pSurfaceFormats)
+		public MgResult GetPhysicalDeviceSurfaceFormatsKHR (IMgSurfaceKHR surface, out MgSurfaceFormatKHR[] pSurfaceFormats)
 		{
 			throw new NotImplementedException ();
 		}
-		public Result GetPhysicalDeviceSurfacePresentModesKHR (IMgSurfaceKHR surface, out MgPresentModeKHR[] pPresentModes)
+		public MgResult GetPhysicalDeviceSurfacePresentModesKHR (IMgSurfaceKHR surface, out MgPresentModeKHR[] pPresentModes)
 		{
 			throw new NotImplementedException ();
 		}
@@ -138,12 +139,127 @@ namespace Magnesium.OpenGL.Internals
 			throw new NotImplementedException ();
 		}
 
-		public Result CreateDisplayModeKHR(IMgDisplayKHR display, MgDisplayModeCreateInfoKHR pCreateInfo, IMgAllocationCallbacks allocator, out IMgDisplayModeKHR pMode)
+		public MgResult CreateDisplayModeKHR(IMgDisplayKHR display, MgDisplayModeCreateInfoKHR pCreateInfo, IMgAllocationCallbacks allocator, out IMgDisplayModeKHR pMode)
 		{
 			throw new NotImplementedException();
 		}
-		#endregion
 
-	}
+        public MgResult GetPhysicalDeviceExternalImageFormatPropertiesNV(MgFormat format, MgImageType type, MgImageTiling tiling, MgImageUsageFlagBits usage, MgImageCreateFlagBits flags, uint externalHandleType, out MgExternalImageFormatPropertiesNV pExternalImageFormatProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetPhysicalDevicePresentRectanglesKHR(IMgSurfaceKHR surface, MgRect2D[] pRects)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetDisplayModeProperties2KHR(IMgDisplayKHR display, out MgDisplayModeProperties2KHR[] pProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetDisplayPlaneCapabilities2KHR(MgDisplayPlaneInfo2KHR pDisplayPlaneInfo, out MgDisplayPlaneCapabilities2KHR pCapabilities)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetPhysicalDeviceCalibrateableTimeDomainsEXT(out MgTimeDomainEXT[] pTimeDomains)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetPhysicalDeviceDisplayPlaneProperties2KHR(out MgDisplayPlaneProperties2KHR[] pProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetPhysicalDeviceDisplayProperties2KHR(out MgDisplayProperties2KHR[] pProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetPhysicalDeviceImageFormatProperties2(MgPhysicalDeviceImageFormatInfo2 pImageFormatInfo, MgImageFormatProperties2 pImageFormatProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetPhysicalDeviceSurfaceCapabilities2EXT(IMgSurfaceKHR surface, out MgSurfaceCapabilities2EXT pSurfaceCapabilities)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetPhysicalDeviceSurfaceCapabilities2KHR(MgPhysicalDeviceSurfaceInfo2KHR pSurfaceInfo, out MgSurfaceCapabilities2KHR pSurfaceCapabilities)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult GetPhysicalDeviceSurfaceFormats2KHR(MgPhysicalDeviceSurfaceInfo2KHR pSurfaceInfo, out MgSurfaceFormat2KHR[] pSurfaceFormats)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MgResult ReleaseDisplayEXT(IMgDisplayKHR display)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetPhysicalDeviceExternalBufferProperties(MgPhysicalDeviceExternalBufferInfo pExternalBufferInfo, out MgExternalBufferProperties pExternalBufferProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetPhysicalDeviceExternalFenceProperties(MgPhysicalDeviceExternalFenceInfo pExternalFenceInfo, out MgExternalFenceProperties pExternalFenceProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetPhysicalDeviceExternalSemaphoreProperties(MgPhysicalDeviceExternalSemaphoreInfo pExternalSemaphoreInfo, out MgExternalSemaphoreProperties pExternalSemaphoreProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetPhysicalDeviceFeatures2(out MgPhysicalDeviceFeatures2 pFeatures)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetPhysicalDeviceFormatProperties2(MgFormat format, out MgFormatProperties2 pFormatProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetPhysicalDeviceGeneratedCommandsPropertiesNVX(MgDeviceGeneratedCommandsFeaturesNVX pFeatures, out MgDeviceGeneratedCommandsLimitsNVX pLimits)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetPhysicalDeviceMemoryProperties2(out MgPhysicalDeviceMemoryProperties2 pMemoryProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetPhysicalDeviceMultisamplePropertiesEXT(MgSampleCountFlagBits samples, MgMultisamplePropertiesEXT pMultisampleProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetPhysicalDeviceProperties2(out MgPhysicalDeviceProperties2 pProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetPhysicalDeviceQueueFamilyProperties2(out MgQueueFamilyProperties2[] pQueueFamilyProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetPhysicalDeviceSparseImageFormatProperties2(MgPhysicalDeviceSparseImageFormatInfo2 pFormatInfo, out MgSparseImageFormatProperties2[] pProperties)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
+
+    }
 }
 

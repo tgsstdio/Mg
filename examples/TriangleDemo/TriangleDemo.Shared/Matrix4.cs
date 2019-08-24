@@ -1616,7 +1616,7 @@ namespace TriangleDemo
         /// </summary>
         /// <param name="matrix1">Source <see cref="Matrix4"/>.</param>
         /// <param name="matrix2">Source <see cref="Matrix4"/>.</param>
-        /// <returns>Result of the matrix multiplication.</returns>
+        /// <returns>MgResult of the matrix multiplication.</returns>
         public static Matrix4 Multiply(Matrix4 matrix1, Matrix4 matrix2)
         {
             var m11 = (((matrix1.M11 * matrix2.M11) + (matrix1.M12 * matrix2.M21)) + (matrix1.M13 * matrix2.M31)) + (matrix1.M14 * matrix2.M41);
@@ -1659,7 +1659,7 @@ namespace TriangleDemo
         /// </summary>
         /// <param name="matrix1">Source <see cref="Matrix4"/>.</param>
         /// <param name="matrix2">Source <see cref="Matrix4"/>.</param>
-        /// <param name="result">Result of the matrix multiplication as an output parameter.</param>
+        /// <param name="result">MgResult of the matrix multiplication as an output parameter.</param>
         public static void Multiply(ref Matrix4 matrix1, ref Matrix4 matrix2, out Matrix4 result)
         {
             var m11 = (((matrix1.M11 * matrix2.M11) + (matrix1.M12 * matrix2.M21)) + (matrix1.M13 * matrix2.M31)) + (matrix1.M14 * matrix2.M41);
@@ -1701,7 +1701,7 @@ namespace TriangleDemo
         /// </summary>
         /// <param name="matrix1">Source <see cref="Matrix4"/>.</param>
         /// <param name="scaleFactor">Scalar value.</param>
-        /// <returns>Result of the matrix multiplication with a scalar.</returns>
+        /// <returns>MgResult of the matrix multiplication with a scalar.</returns>
         public static Matrix4 Multiply(Matrix4 matrix1, float scaleFactor)
         {
             matrix1.M11 *= scaleFactor;
@@ -1728,7 +1728,7 @@ namespace TriangleDemo
         /// </summary>
         /// <param name="matrix1">Source <see cref="Matrix4"/>.</param>
         /// <param name="scaleFactor">Scalar value.</param>
-        /// <param name="result">Result of the matrix multiplication with a scalar as an output parameter.</param>
+        /// <param name="result">MgResult of the matrix multiplication with a scalar as an output parameter.</param>
         public static void Multiply(ref Matrix4 matrix1, float scaleFactor, out Matrix4 result)
         {
             result.M11 = matrix1.M11 * scaleFactor;
@@ -1773,7 +1773,7 @@ namespace TriangleDemo
         /// Returns a matrix with the all values negated.
         /// </summary>
         /// <param name="matrix">Source <see cref="Matrix4"/>.</param>
-        /// <returns>Result of the matrix negation.</returns>
+        /// <returns>MgResult of the matrix negation.</returns>
         public static Matrix4 Negate(Matrix4 matrix)
         {
 		    matrix.M11 = -matrix.M11;
@@ -1799,7 +1799,7 @@ namespace TriangleDemo
         /// Returns a matrix with the all values negated.
         /// </summary>
         /// <param name="matrix">Source <see cref="Matrix4"/>.</param>
-        /// <param name="result">Result of the matrix negation as an output parameter.</param>
+        /// <param name="result">MgResult of the matrix negation as an output parameter.</param>
         public static void Negate(ref Matrix4 matrix, out Matrix4 result)
         {
             result.M11 = -matrix.M11;
@@ -1963,7 +1963,7 @@ namespace TriangleDemo
         /// </summary>
         /// <param name="matrix1">Source <see cref="Matrix4"/> on the left of the mul sign.</param>
         /// <param name="matrix2">Source <see cref="Matrix4"/> on the right of the mul sign.</param>
-        /// <returns>Result of the matrix multiplication.</returns>
+        /// <returns>MgResult of the matrix multiplication.</returns>
         /// <remarks>
         /// Using matrix multiplication algorithm - see http://en.wikipedia.org/wiki/Matrix_multiplication.
         /// </remarks>
@@ -2009,7 +2009,7 @@ namespace TriangleDemo
         /// </summary>
         /// <param name="matrix">Source <see cref="Matrix4"/> on the left of the mul sign.</param>
         /// <param name="scaleFactor">Scalar value on the right of the mul sign.</param>
-        /// <returns>Result of the matrix multiplication with a scalar.</returns>
+        /// <returns>MgResult of the matrix multiplication with a scalar.</returns>
         public static Matrix4 operator *(Matrix4 matrix, float scaleFactor)
         {
 		    matrix.M11 = matrix.M11 * scaleFactor;
@@ -2036,7 +2036,7 @@ namespace TriangleDemo
         /// </summary>
         /// <param name="matrix1">Source <see cref="Matrix4"/> on the left of the sub sign.</param>
         /// <param name="matrix2">Source <see cref="Matrix4"/> on the right of the sub sign.</param>
-        /// <returns>Result of the matrix subtraction.</returns>
+        /// <returns>MgResult of the matrix subtraction.</returns>
         public static Matrix4 operator -(Matrix4 matrix1, Matrix4 matrix2)
         {
 		    matrix1.M11 = matrix1.M11 - matrix2.M11;
@@ -2062,7 +2062,7 @@ namespace TriangleDemo
         /// Inverts values in the specified <see cref="Matrix4"/>.
         /// </summary>
         /// <param name="matrix">Source <see cref="Matrix4"/> on the right of the sub sign.</param>
-        /// <returns>Result of the inversion.</returns>
+        /// <returns>MgResult of the inversion.</returns>
         public static Matrix4 operator -(Matrix4 matrix)
         {
 		    matrix.M11 = -matrix.M11;

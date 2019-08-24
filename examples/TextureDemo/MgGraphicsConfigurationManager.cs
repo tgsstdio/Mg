@@ -1,4 +1,5 @@
 ﻿using Magnesium;
+using Magnesium.Toolkit;
 using System.Diagnostics;
 
 namespace TextureDemo
@@ -106,12 +107,12 @@ namespace TextureDemo
 
 
             var err = setupCmdBuffer.BeginCommandBuffer(cmdBufInfo);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             mGraphicsDevice.Create(setupCmdBuffer, mSwapchains, createInfo);
 
             err = setupCmdBuffer.EndCommandBuffer();
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
 
             var submission = new[] {
@@ -125,7 +126,7 @@ namespace TextureDemo
             };
 
             err = mConfiguration.Queue.QueueSubmit(submission, null);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             mConfiguration.Queue.QueueWaitIdle();
 

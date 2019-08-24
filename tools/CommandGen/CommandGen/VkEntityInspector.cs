@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Xml.Linq;
 
 namespace CommandGen
@@ -53,25 +54,95 @@ namespace CommandGen
 			}
 		}
 
-		public void Inspect(XElement root)
-		{
-			LearnExtensions(root);
-			ExtractEnumConstants(root, "API Constants", StoreAPIConstants);
-			ExtractEnumConstants(root, "VkStructureType", ParseVkStructureType);
-			GenerateType(root, "handle", InspectHandle);
-			InspectEnums(root);
-			GenerateType(root, "struct", InspectStructure);
-			GenerateType(root, "union", InspectStructure);
-		}
+        public IDictionary<string, List<VkEnumExtensionInfo>> EnumExtensions
+        {
+            get
+            {
+                return mEnumExtensions;
+            }
+        }
 
-		private Dictionary<string, string> mVkStructureKeys = new Dictionary<string, string>();
+        public void Inspect(XElement root)
+        {
+            LearnExtensions(root);
+            ExtractEnumConstants(root, "API Constants", StoreAPIConstants);
+            InspectStructureTypes(root);
+            GenerateType(root, "handle", InspectHandle);
+            InspectEnums(root);            
+            GenerateType(root, "struct", InspectStructure);
+            GenerateType(root, "union", InspectStructure);
+        }
+
+        private void InspectStructureTypes(XElement root)
+        {
+            // ExtractEnumConstants(root, "VkStructureType", ParseVkStructureType);
+
+            //foreach (var alias in mEnumAliases)
+            //{
+            //    ParseVkStructureType(alias.Name, alias.Alias);
+            //}
+        }
+        /*
+        public static List<VkTypeAliasInfo> ExtractTypeAliases(XElement top)
+        {
+            var typeAliases = new List<VkTypeAliasInfo>();
+            // map VkStructureType enum to existing values;
+            foreach (var member in top.Element("require").Elements())
+            {
+                var elementName = member.Name.ToString();
+
+                var nameAttribute = member.Attribute("name");
+                var extendsAttribute = member.Attribute("extends");
+                var aliasAttribute = member.Attribute("alias");
+
+                if (aliasAttribute != null)
+                {
+                    // 
+                    if (elementName == "enum")
+                    {
+                        // find existing 
+
+                        var info = new VkTypeAliasInfo
+                        {
+                            GroupCategory = elementName,
+                            GroupName = extendsAttribute.Value,
+                            UniqueKey = VkEntityInspector.ParseVkStructureTypeKey(nameAttribute.Value),
+                            Alias = VkEntityInspector.ParseVkStructureTypeKey(aliasAttribute.Value),
+                        };
+
+                        typeAliases.Add(info);
+                    }
+                }
+            }
+            return typeAliases;
+        }    
+        */
+
+    private Dictionary<string, string> mVkStructureKeys = new Dictionary<string, string>();
 		public void ParseVkStructureType(string attr, string value)
 		{
 			var structKey = ParseVkStructureTypeKey(attr);
 			mVkStructureKeys.Add(structKey, value);
-		}
+        }
 
-		public static string ParseVkStructureTypeKey(string name)
+        public static string ParseVkStructureTypeEnum(string name)
+        {
+            //throw new NotImplementedException();
+            var tokens = name.Replace("VK_", "").Split('_');
+
+            var collection = new List<string>();
+            foreach (var token in tokens)
+            {
+                if (token.Length > 1)
+                    collection.Add(token[0] + token.Substring(1).ToLowerInvariant());
+                else
+                    collection.Add(token[0].ToString());
+            }
+
+            return string.Join("", collection.ToArray());
+        }
+
+        public static string ParseVkStructureTypeKey(string name)
 		{
 			//throw new NotImplementedException();
 			var tokens = name.Replace("_STRUCTURE_TYPE_", "_").Split('_');
@@ -115,7 +186,9 @@ namespace CommandGen
 		readonly Dictionary<string, string> mExtensions = new Dictionary<string, string> {
 			{ "EXT", "Ext" },
 			{ "IMG", "Img" },
-			{ "KHR", "Khr" }
+			{ "KHR", "Khr" },
+            { "AMD", "Amd" },
+            { "NVX", "Nvx" }
 		};
 
 		readonly Dictionary<string, VkHandleInfo> mHandles = new Dictionary<string, VkHandleInfo>();
@@ -146,7 +219,9 @@ namespace CommandGen
 			{ "xcb_connection_t", "IntPtr" },
 			{ "xcb_window_t", "IntPtr" },
 			{ "xcb_visualid_t", "IntPtr" },
-		};
+            { "zx_handle_t", "UInt32" },
+            { "uint16_t", "UInt16" },
+        };
 
 		public string GetTypeCsName(string name, string typeName = "type")
 		{
@@ -170,9 +245,9 @@ namespace CommandGen
 				csName = name;
 			}
 
-			foreach (var ext in mExtensions)
-				if (csName.EndsWith(ext.Key, StringComparison.InvariantCulture))
-					csName = csName.Substring(0, csName.Length - ext.Value.Length) + ext.Value;
+			//foreach (var ext in mExtensions)
+			//	if (csName.EndsWith(ext.Key, StringComparison.InvariantCulture))
+			//		csName = csName.Substring(0, csName.Length - ext.Value.Length) + ext.Value;
 
 			return csName;
 		}
@@ -189,15 +264,68 @@ namespace CommandGen
 			}
 		}
 
-		void InspectHandle(XElement handleElement)
-		{
-			string name = handleElement.Element("name").Value;
-			string csName = GetTypeCsName(name, "struct");
-			string type = handleElement.Element("type").Value;
+        void InspectHandle(XElement handleElement)
+        {
+            var nameElement = handleElement.Element("name");
 
-			mHandles.Add(csName, new VkHandleInfo { name = csName,
-				//type = type, 
-				csType = (type == "VK_DEFINE_HANDLE") ? "IntPtr" : "UInt64" });
+            // STANDARD HANDLE DEFINITION
+            if (nameElement != null)
+            {
+                string csName = GetTypeCsName(nameElement.Value, "struct");
+                var typeElement = handleElement.Element("type");
+
+                if (typeElement == null)
+                {
+                    // look up missing handle
+                    throw new Exception("handle elem type is missing : " + handleElement.Value);
+                }
+                else
+                {
+                    mHandles.Add(csName, new VkHandleInfo
+                    {
+                        name = csName,
+                        //type = type, 
+                        csType = (typeElement.Value == "VK_DEFINE_HANDLE") ? "IntPtr" : "UInt64"
+                    });
+                }
+            }
+            else
+            {
+                // ALIAS HANDLE
+
+                var aliasAttr = handleElement.Attribute("alias");
+
+                if (aliasAttr != null)
+                {
+                    // look up any pre-existing handles
+
+                    string aliasKey = GetTypeCsName(aliasAttr.Value, "struct");
+
+                    if (!mHandles.TryGetValue(aliasKey, out VkHandleInfo destStruct))
+                    {
+                        throw new Exception("existing handle alias not found : " + aliasKey);
+                    }
+
+                    var otherNameAttr = handleElement.Attribute("name");
+                    if (otherNameAttr == null)
+                    {
+                        throw new Exception("handle alias name not found : " + aliasKey);
+                    }
+
+                    string otherName = GetTypeCsName(otherNameAttr.Value, "struct");
+
+                    mHandles.Add(otherName, new VkHandleInfo
+                    {
+                        name = otherName,
+                        //type = type, 
+                        csType = destStruct.csType,
+                    });
+                }
+                else
+                {
+                    throw new Exception("handle elem name is missing : " + handleElement.Value);
+                }            
+            }
 		}
 
 		Dictionary<string, VkStructInfo> mStructures = new Dictionary<string, VkStructInfo>();
@@ -235,13 +363,14 @@ namespace CommandGen
 				//}
 
 				var memberInfo = new VkStructMember();
+                memberInfo.Comment = member.Element("comment")?.Value;
 				memberInfo.MemberType = member.Element("type").Value;
 
 				var tokens = member.Value.Split(new[] {
 					' ',
 					'[',
 					']'
-				}, StringSplitOptions.RemoveEmptyEntries);
+				}, StringSplitOptions.RemoveEmptyEntries); 
 				if (tokens.Length == 2)
 				{
 					// usually instance
@@ -360,20 +489,20 @@ namespace CommandGen
 
 				var typeAttribute = parent.Attribute("type");
 				var useFlags = typeAttribute != null && typeAttribute.Value == "bitmask";
-				if (useFlags)
-				{
-					string suffix = null;
-					foreach (var ext in mExtensions)
-						if (csName.EndsWith(ext.Value, StringComparison.InvariantCulture))
-						{
-							suffix = ext.Value + suffix;
-							csName = csName.Substring(0, csName.Length - ext.Value.Length);
-						}
-					if (csName.EndsWith("FlagBits", StringComparison.InvariantCulture))
-						csName = csName.Substring(0, csName.Length - 4) + "s";
-					if (suffix != null)
-						csName += suffix;
-				}
+				//if (useFlags)
+				//{
+				//	string suffix = null;
+				//	foreach (var ext in mExtensions)
+				//		if (csName.EndsWith(ext.Value, StringComparison.InvariantCulture))
+				//		{
+				//			suffix = ext.Value + suffix;
+				//			csName = csName.Substring(0, csName.Length - ext.Value.Length);
+				//		}
+				//	if (csName.EndsWith("FlagBits", StringComparison.InvariantCulture))
+				//		csName = csName.Substring(0, csName.Length - 4) + "s";
+				//	if (suffix != null)
+				//		csName += suffix;
+				//}
 
 				mTypesTranslation[name] = csName;
 				// enums are blittable too
@@ -390,11 +519,11 @@ namespace CommandGen
 					container.Members.Add(WriteEnumField(e, csName));
 				}
 
-				if (enumExtensions.ContainsKey(csName))
+				if (mEnumExtensions.ContainsKey(csName))
 				{
-					foreach (var info in enumExtensions[csName])
+					foreach (var info in mEnumExtensions[csName])
 					{
-						container.Members.Add(WriteEnumField(info.Name, info.Value, csName));
+						container.Members.Add(WriteExtendedEnumField(info.Key, info.Value, csName, info.Comment, info.UnmodifiedKey, info.UnmodifiedValue));
 					}
 				}
 
@@ -405,61 +534,186 @@ namespace CommandGen
 
 		void LearnExtensions(XElement root)
 		{
-			var elements = from e in root.Elements("extensions").Elements("extension") where e.Attribute("supported").Value != "disabled" select e;
+            var updates = from f in root.Elements("feature") select f;
+            foreach (var feature in updates)
+            {
+                LearnExtension(0, feature);
+            }
 
-			foreach (var element in elements)
-				LearnExtension(element);
-		}
+            var elements = from e in root.Elements("extensions").Elements("extension") where e.Attribute("supported").Value != "disabled" select e;
 
-		void LearnExtension(XElement extensionElement)
+            foreach (var element in elements) {
+                int number = Int32.Parse(element.Attribute("number").Value);
+                LearnExtension(number, element);
+            }
+
+
+        }
+
+		void LearnExtension(int parentExtension, XElement extensionElement)
 		{
-			var extensions = from e in extensionElement.Element("require").Elements("enum") where e.Attribute("extends") != null select e;
-			int number = Int32.Parse(extensionElement.Attribute("number").Value);
+			var extensions = from e in extensionElement.Elements("require").Elements("enum") where e.Attribute("extends") != null select e;
+
 			foreach (var element in extensions)
-			{
-				string enumName = GetTypeCsName(element.Attribute("extends").Value, "enum");
-				var info = new VkEnumExtensionInfo 
-				{ 
-					Name = element.Attribute("name").Value,
-					Value = EnumExtensionValue(element, number, ref enumName)
-				};
-				if (!enumExtensions.ContainsKey(enumName))
-					enumExtensions[enumName] = new List<VkEnumExtensionInfo>();
+            {
+                XAttribute extNoAttr = element.Attribute("extnumber");
+                int extNumber = extNoAttr != null
+                    ? int.Parse(extNoAttr.Value)
+                    : parentExtension;
+                ExtractEnumExtension(extNumber, element);
+            }
+        }
 
-				enumExtensions[enumName].Add(info);
-			}
-		}
+        private void ExtractEnumExtension(int number, XElement element)
+        {
+            string enumName = GetTypeCsName(element.Attribute("extends").Value, "enum");
 
-		string EnumExtensionValue(XElement element, int number, ref string csEnumName)
+            var nameAttr = element.Attribute("name");
+
+            string comment = element.Attribute("comment")?.Value;
+
+ 
+            var aliasAttr = element.Attribute("alias");
+            if (aliasAttr == null)
+            {
+                AppendEnumMember(number, element, enumName, nameAttr, comment);
+            }
+            else
+            {
+                string memberName = nameAttr?.Value;
+                string memberAlias = aliasAttr?.Value;
+                AppendEnumMemberAlias(enumName, memberName, memberAlias, comment);
+            }
+            
+        }
+
+        private void AppendEnumMember(int number, XElement element, string enumName, XAttribute nameAttr, string comment)
+        {
+            SetupEnumExtensionEntry(enumName);
+
+            string enumExtensionKey = enumName;
+            string localValue = EnumExtensionValue(element, number, enumName);
+            mEnumExtensions[enumExtensionKey].Add(
+                new VkEnumExtensionInfo
+                {
+                    Key = nameAttr.Value,
+                    UnmodifiedKey = nameAttr.Value,
+                    Value = localValue,
+                    UnmodifiedValue = localValue,                    
+                    Comment = comment,
+                }
+            );
+        }
+
+        private void SetupEnumExtensionEntry(string enumName)
+        {
+            if (!mEnumExtensions.ContainsKey(enumName))
+                mEnumExtensions[enumName] = new List<VkEnumExtensionInfo>();
+        }
+
+        public void AppendEnumMemberAlias(string enumName, string key, string value, string comment)
+        {
+            if (enumName == null)
+            {
+                throw new ArgumentNullException(nameof(enumName));
+            }
+
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
+            SetupEnumExtensionEntry(enumName);
+
+            if (!string.IsNullOrEmpty(value))
+            {
+                // add secondary alias
+                mEnumExtensions[enumName].Add(
+                    new VkEnumExtensionInfo
+                    {
+                        Key  = ExtractStandardizedEnum(key, enumName),
+                        UnmodifiedKey = key,
+                        Value = ExtractStandardizedEnum(value, enumName),
+                        UnmodifiedValue = value,
+                        Comment = comment,
+                    }
+                );
+            }
+        }
+
+		string EnumExtensionValue(XElement element, int extensionNo, string csEnumName)
 		{
-			var offsetAttribute = element.Attribute("offset");
-			if (offsetAttribute != null)
-			{
-				int direction = 1;
-				var dirAttr = element.Attribute("dir");
-				if (dirAttr != null && dirAttr.Value == "-")
-					direction = -1;
-				int offset = Int32.Parse(offsetAttribute.Value);
+            var bitposAttribute = element.Attribute("bitpos");
+            if (bitposAttribute != null)
+            {
+                //if (csEnumName.EndsWith("FlagBits", StringComparison.InvariantCulture))
+                //	csEnumName = csEnumName.Substring(0, csEnumName.Length - 4) + "s";
 
-				return (direction * (1000000000 + (number - 1) * 1000 + offset)).ToString();
-			}
-			var valueAttribute = element.Attribute("value");
+                return FormatFlagValue(Int32.Parse(bitposAttribute.Value));
+            }
+
+            var offsetAttribute = element.Attribute("offset");
+			if (offsetAttribute != null)
+            {
+                int direction = 1;
+                var dirAttr = element.Attribute("dir");
+                if (dirAttr != null && dirAttr.Value == "-")
+                    direction = -1;
+                int offset = Int32.Parse(offsetAttribute.Value);
+
+                return GenerateOffsetCode(extensionNo, direction, offset).ToString();
+            }
+            var valueAttribute = element.Attribute("value");
 			if (valueAttribute != null)
 				return valueAttribute.Value;
+            
+            var extendsAttribute = element.Attribute("extends");
+            
+            if (extendsAttribute != null)
+            {
+                if (extendsAttribute.Value == "VkStructureType")
+                {
+                    return GetTypeCsName(extendsAttribute.Value);
+                }
 
-			var bitposAttribute = element.Attribute("bitpos");
-			if (bitposAttribute != null)
-			{
-				if (csEnumName.EndsWith("FlagBits", StringComparison.InvariantCulture))
-					csEnumName = csEnumName.Substring(0, csEnumName.Length - 4) + "s";
+                int direction = 1;
+                var dirAttr = element.Attribute("dir");
+                if (dirAttr != null && dirAttr.Value == "-")
+                    direction = -1;
 
-				return FormatFlagValue(Int32.Parse(bitposAttribute.Value));
-			}
+                int offset = offsetAttribute != null
+                    ? Int32.Parse(offsetAttribute.Value)
+                    : 0;
 
-			throw new Exception(string.Format("unexpected extension enum value in: {0}", element));
+                var offsetCode = GenerateOffsetCode(extensionNo, direction, offset).ToString();
+                return offsetCode;
+                /*
+ 
+                // new enum value alias
+                else
+                {
+                    //    if (mEnums.TryGetValue(extendsAttribute.Value, out VkEnumInfo output))
+                    //  {
+                    //        return output.name;
+                    //     }
+                    //     else
+                    //    {
+                    //       throw new Exception(string.Format("unexpected extension alias enum value in: {0}", element));
+                    Console.WriteLine(string.Format("unexpected extension alias enum value in: {0}", element));
+                    //   }
+                }
+                */
+            }
+            throw new Exception(string.Format("unexpected extension enum value in: {0}", element));
+            
 		}
 
-		Dictionary<string, List<VkEnumExtensionInfo>> enumExtensions = new Dictionary<string, List<VkEnumExtensionInfo>>();
+        private static int GenerateOffsetCode(int number, int direction, int offset)
+        {
+            return (direction * (1000000000 + (number - 1) * 1000 + offset));
+        }
+
+        Dictionary<string, List<VkEnumExtensionInfo>> mEnumExtensions = new Dictionary<string, List<VkEnumExtensionInfo>>();
 
 		string FormatFlagValue(int pos)
 		{
@@ -469,13 +723,36 @@ namespace CommandGen
 		VkEnumMemberInfo WriteEnumField(XElement e, string csEnumName)
 		{
 			var valueAttr = e.Attribute("value");
-			string value;
-			if (valueAttr == null)
-				value = FormatFlagValue(Convert.ToInt32(e.Attribute("bitpos").Value));
-			else
-				value = valueAttr.Value;
+			string value = "<DEADBEEF>";
+            string comment = e.Attribute("comment")?.Value;
+            if (valueAttr == null)
+            {
+                var bitPosAttr = e.Attribute("bitpos");
+                var aliasAttr = e.Attribute("alias");
+                if (bitPosAttr != null)
+                {
+                    value = FormatFlagValue(Convert.ToInt32(bitPosAttr.Value));
+                }
 
-			return WriteEnumField(e.Attribute("name").Value, value, csEnumName);
+                else if (aliasAttr != null)
+                {
+                    value = ExtractStandardizedEnum(aliasAttr.Value, csEnumName);
+                }
+                else
+                {
+                    throw new Exception("valueAttr enum value : " + csEnumName);
+                }
+            }
+            else
+                value = valueAttr.Value;
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new Exception("value not found" + csEnumName);
+            }
+
+            string enumKey = e.Attribute("name").Value;
+            return WriteExtendedEnumField(enumKey, value, csEnumName, comment, enumKey, valueAttr?.Value);
 		}
 
 		static Dictionary<string, string> mSpecialParts = new Dictionary<string, string> {
@@ -489,7 +766,7 @@ namespace CommandGen
 			{ "NV", "Nv" }
 		};
 
-		string TranslateCName(string name)
+		public static string TranslateCName(string name)
 		{
 			using (StringWriter sw = new StringWriter())
 			{
@@ -521,72 +798,118 @@ namespace CommandGen
 			}
 		}
 
-		VkEnumMemberInfo WriteEnumField(string name, string value, string csEnumName)
-		{
-			string fName = TranslateCName(name);
-			string prefix = csEnumName, suffix = null;
-			bool isExtensionField = false;
-			string extension = null;
+        VkEnumMemberInfo WriteExtendedEnumField(string name, string value, string csEnumName, string comment, string unmodifiedKey, string unmodifiedValue)
+        {
+            string fName = ExtractStandardizedEnum(name, csEnumName);
 
-			foreach (var ext in mExtensions)
-			{
-				if (prefix.EndsWith(ext.Value, StringComparison.InvariantCulture))
-				{
-					prefix = prefix.Substring(0, prefix.Length - ext.Value.Length);
-					suffix = ext.Value;
-				}
-				else if (fName.EndsWith(ext.Value, StringComparison.InvariantCulture))
-				{
-					isExtensionField = true;
-					extension = ext.Value;
-				}
-			}
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new Exception("value not found" + csEnumName);
+            }
 
-			if (prefix.EndsWith("Flags", StringComparison.InvariantCulture))
-			{
-				prefix = prefix.Substring(0, prefix.Length - 5);
-				suffix = "Bit" + suffix;
-			}
+            return new VkEnumMemberInfo
+            {
+                Id = fName,                
+                UnmodifiedKey = unmodifiedKey,
+                Value = value,
+                UnmodifiedValue = unmodifiedValue,
+                Comment = comment,
+            };
 
-			if (fName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-				fName = fName.Substring(prefix.Length);
+            //IndentWriteLine("{0} = {1},", fName, value);
+        }
 
-			if (!char.IsLetter(fName[0]))
-			{
-				switch (csEnumName)
-				{
-					case "ImageType":
-						fName = "Image" + fName;
-						break;
-					case "ImageViewType":
-						fName = "View" + fName;
-						break;
-					case "QueryResultFlags":
-						fName = "Result" + fName;
-						break;
-					case "SampleCountFlags":
-						fName = "Count" + fName;
-						break;
-				}
-			}
-			if (suffix != null)
-			{
-				if (fName.EndsWith(suffix, StringComparison.InvariantCulture))
-					fName = fName.Substring(0, fName.Length - suffix.Length);
-				else if (isExtensionField && fName.EndsWith(suffix + extension, StringComparison.InvariantCulture))
-					fName = fName.Substring(0, fName.Length - suffix.Length - extension.Length) + extension;
-			}
+        public static string SetUppercase(string className)
+        {
+            var sb = new StringBuilder();
+            for (var i = 0; i < className.Length; i += 1)
+            {
+                char letter = className[i];
+                if (char.IsUpper(letter))
+                {
+                    if (i > 0)
+                    {
+                        sb.Append('_');
+                    }
+                }
 
-			return new VkEnumMemberInfo
-			{
-				Id = fName,
-				Value = value,
-			};
+                sb.Append(char.ToUpperInvariant(letter));
+            }
+            return sb.ToString();
+        }
 
-			//IndentWriteLine("{0} = {1},", fName, value);
-		}
+        public string ExtractStandardizedEnum(string name, string csEnumName)
+        {
+            string fName = name;
+            string prefix = SetUppercase(csEnumName);
+            string suffix = null;
 
-		#endregion
-	}
+            foreach (var ext in mExtensions)
+            {
+                string key = ext.Key;
+                if (prefix.EndsWith(key, StringComparison.InvariantCulture))
+                {
+                    prefix = prefix.Substring(0, prefix.Length - key.Length);
+                    suffix = key;
+                }
+            }
+
+            string[] suffixes = { "_FLAG_BITS", "_FLAGS" };
+
+            foreach (var end in suffixes)
+            {
+                if (prefix.EndsWith(end, StringComparison.InvariantCulture))
+                {
+                    prefix = prefix.Substring(0, prefix.Length - end.Length);
+                    // suffix = "Bit" + suffix;
+                }
+            }
+
+            prefix += "_";
+
+            string[] finalNameTweaks = { prefix, "VK_" };
+
+            foreach (var start in finalNameTweaks)
+            {
+                if (fName.StartsWith(start, StringComparison.OrdinalIgnoreCase))
+                    fName = fName.Substring(start.Length);
+            }
+
+            if (!char.IsLetter(fName[0]))
+            {
+                switch (csEnumName)
+                {
+                    case "VkImageCreateFlags":
+                    case "VkImageCreateFlagBits":
+                        fName = "CREATE_" + fName;
+                        break;
+                    case "VkImageType":
+                        fName = "TYPE_" + fName;
+                        break;
+                    case "VkImageViewType":
+                        fName = "TYPE_" + fName;
+                        break;
+                    case "VkQueryResultFlags":
+                        fName = "RESULT_" + fName;
+                        break;
+                    case "VkSampleCountFlags":
+                    case "VkSampleCountFlagBits":
+                        fName = "COUNT_" + fName;
+                        break;
+                }
+            }
+            //if (suffix != null)
+            //{
+            //    if (fName.EndsWith(suffix, StringComparison.InvariantCulture))
+            //        fName = fName.Substring(0, fName.Length - suffix.Length);
+            //    else if (isExtensionField && fName.EndsWith(suffix + extension, StringComparison.InvariantCulture))
+            //        fName = fName.Substring(0, fName.Length - suffix.Length - extension.Length) + extension;
+            //}
+
+            return fName;
+        }
+
+        #endregion
+    }
 }
 

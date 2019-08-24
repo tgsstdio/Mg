@@ -138,13 +138,13 @@ namespace Magnesium.OpenGL.DesktopGL
 			if (samples > 0 && this.GLFramebufferTexture2DMultisample != null)
 				this.GLFramebufferTexture2DMultisample(All.Framebuffer, (All)attachement, (All)target, texture, level, samples);
 			else
-				GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, (All) attachement, (TextureTarget2d) target, texture, level);
+				GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, (FramebufferAttachment) attachement, (TextureTarget2d) target, texture, level);
 			mErrHandler.CheckGLError();
 		}
 
 		public void FramebufferRenderbuffer(int attachement, int renderbuffer, int level = 0)
 		{
-			GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, (All)attachement, RenderbufferTarget.Renderbuffer, renderbuffer);
+			GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, (FramebufferAttachment)attachement, RenderbufferTarget.Renderbuffer, renderbuffer);
 			mErrHandler.CheckGLError();
 		}
 

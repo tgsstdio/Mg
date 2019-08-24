@@ -16,6 +16,6 @@ namespace Magnesium.Vulkan
 		public VkSurfaceTransformFlagsKhr supportedTransforms { get; set; }
 		public VkSurfaceTransformFlagsKhr currentTransform { get; set; }
 		public VkCompositeAlphaFlagsKhr supportedCompositeAlpha { get; set; }
-		public VkImageUsageFlags supportedUsageFlags { get; set; }
+		public MgImageUsageFlagBits supportedUsageFlags { get; set; }
 	}
 }

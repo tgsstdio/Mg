@@ -866,7 +866,7 @@ namespace TriangleDemo
         /// Inverts values in the specified <see cref="Vector3"/>.
         /// </summary>
         /// <param name="value">Source <see cref="Vector3"/> on the right of the sub sign.</param>
-        /// <returns>Result of the inversion.</returns>
+        /// <returns>MgResult of the inversion.</returns>
         public static Vector3 operator -(Vector3 value)
         {
             value = new Vector3(-value.X, -value.Y, -value.Z);
@@ -878,7 +878,7 @@ namespace TriangleDemo
         /// </summary>
         /// <param name="value1">Source <see cref="Vector3"/> on the left of the sub sign.</param>
         /// <param name="value2">Source <see cref="Vector3"/> on the right of the sub sign.</param>
-        /// <returns>Result of the vector subtraction.</returns>
+        /// <returns>MgResult of the vector subtraction.</returns>
         public static Vector3 operator -(Vector3 value1, Vector3 value2)
         {
             value1.X -= value2.X;
@@ -892,7 +892,7 @@ namespace TriangleDemo
         /// </summary>
         /// <param name="value1">Source <see cref="Vector3"/> on the left of the mul sign.</param>
         /// <param name="value2">Source <see cref="Vector3"/> on the right of the mul sign.</param>
-        /// <returns>Result of the vector multiplication.</returns>
+        /// <returns>MgResult of the vector multiplication.</returns>
         public static Vector3 operator *(Vector3 value1, Vector3 value2)
         {
             value1.X *= value2.X;
@@ -906,7 +906,7 @@ namespace TriangleDemo
         /// </summary>
         /// <param name="value">Source <see cref="Vector3"/> on the left of the mul sign.</param>
         /// <param name="scaleFactor">Scalar value on the right of the mul sign.</param>
-        /// <returns>Result of the vector multiplication with a scalar.</returns>
+        /// <returns>MgResult of the vector multiplication with a scalar.</returns>
         public static Vector3 operator *(Vector3 value, float scaleFactor)
         {
             value.X *= scaleFactor;
@@ -920,7 +920,7 @@ namespace TriangleDemo
         /// </summary>
         /// <param name="scaleFactor">Scalar value on the left of the mul sign.</param>
         /// <param name="value">Source <see cref="Vector3"/> on the right of the mul sign.</param>
-        /// <returns>Result of the vector multiplication with a scalar.</returns>
+        /// <returns>MgResult of the vector multiplication with a scalar.</returns>
         public static Vector3 operator *(float scaleFactor, Vector3 value)
         {
             value.X *= scaleFactor;

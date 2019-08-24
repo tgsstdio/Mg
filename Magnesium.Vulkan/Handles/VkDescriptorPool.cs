@@ -23,20 +23,20 @@ namespace Magnesium.Vulkan
 			var bAllocator = (MgVkAllocationCallbacks) allocator;
 			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
-			Interops.vkDestroyDescriptorPool(bDevice.Handle, this.Handle, allocatorPtr);
+			Interops.vkDestroyDescriptorPool(bDevice.Info.Handle, this.Handle, allocatorPtr);
 
 			this.Handle = 0UL;
 			mIsDisposed = true;
 		}
 
-		public Result ResetDescriptorPool(IMgDevice device, UInt32 flags)
+		public MgResult ResetDescriptorPool(IMgDevice device, UInt32 flags)
 		{
 			Debug.Assert(!mIsDisposed);
 
 			var bDevice = device as VkDevice;
 			Debug.Assert(bDevice != null);
 
-			return Interops.vkResetDescriptorPool(bDevice.Handle, this.Handle, flags);
+			return Interops.vkResetDescriptorPool(bDevice.Info.Handle, this.Handle, flags);
 		}
 
 	}

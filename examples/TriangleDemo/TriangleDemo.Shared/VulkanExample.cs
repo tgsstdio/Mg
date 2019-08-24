@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using Magnesium.Toolkit;
 
 namespace TriangleDemo
 {
@@ -169,12 +170,12 @@ namespace TriangleDemo
 
 
             var err = setupCmdBuffer.BeginCommandBuffer(cmdBufInfo);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             mGraphicsDevice.Create(setupCmdBuffer, mSwapchains, createInfo);
 
             err = setupCmdBuffer.EndCommandBuffer();
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
 
             var submission = new[] {
@@ -188,7 +189,7 @@ namespace TriangleDemo
             };
 
             err = mConfiguration.Queue.QueueSubmit(submission, null);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             mConfiguration.Queue.QueueWaitIdle();
 
@@ -228,11 +229,11 @@ namespace TriangleDemo
 
             // Semaphore used to ensures that image presentation is complete before starting to submit again
             var err = mConfiguration.Device.CreateSemaphore(semaphoreCreateInfo, null, out mPresentCompleteSemaphore);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             // Semaphore used to ensures that all commands submitted have been finished before submitting the image to the queue
             err = mConfiguration.Device.CreateSemaphore(semaphoreCreateInfo, null, out mRenderCompleteSemaphore);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             // Fences (Used to check draw command buffer completion)
             var fenceCreateInfo = new MgFenceCreateInfo {
@@ -245,7 +246,7 @@ namespace TriangleDemo
             {
                 IMgFence fence;
                 err = mConfiguration.Device.CreateFence(fenceCreateInfo, null, out fence);
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
                 mWaitFences.Add(fence);
             }
         }
@@ -328,7 +329,7 @@ namespace TriangleDemo
 
                 // Create a host-visible buffer to copy the vertex data to (staging buffer)
                 var err = mConfiguration.Device.CreateBuffer(vertexBufferInfo, null, out stagingBuffers.vertices.buffer);
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
 
                 MgMemoryRequirements memReqs;
                 mConfiguration.Device.GetBufferMemoryRequirements(stagingBuffers.vertices.buffer, out memReqs);
@@ -349,12 +350,12 @@ namespace TriangleDemo
                 };
 
                 err = mConfiguration.Device.AllocateMemory(memAlloc, null, out stagingBuffers.vertices.memory);
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
 
                 // Map and copy
                 IntPtr data;
                 err = stagingBuffers.vertices.memory.MapMemory(mConfiguration.Device, 0, memAlloc.AllocationSize, 0, out data);
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
 
                 var offset = 0;
                 foreach (var vertex in vertexBuffer)
@@ -367,7 +368,7 @@ namespace TriangleDemo
                 stagingBuffers.vertices.memory.UnmapMemory(mConfiguration.Device);
 
                 stagingBuffers.vertices.buffer.BindBufferMemory(mConfiguration.Device, stagingBuffers.vertices.memory, 0);
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
             }
 
             // DEVICE_LOCAL Vertex buffer
@@ -380,7 +381,7 @@ namespace TriangleDemo
                 };
 
                 var err = mConfiguration.Device.CreateBuffer(vertexBufferInfo, null, out vertices.buffer);
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
 
                 MgMemoryRequirements memReqs;
                 mConfiguration.Device.GetBufferMemoryRequirements(vertices.buffer, out memReqs);
@@ -397,10 +398,10 @@ namespace TriangleDemo
                 };
 
                 err = mConfiguration.Device.AllocateMemory(memAlloc, null, out vertices.memory);
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
 
                 err = vertices.buffer.BindBufferMemory(mConfiguration.Device, vertices.memory, 0);
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
             }
 
             // HOST_VISIBLE Index buffer
@@ -413,7 +414,7 @@ namespace TriangleDemo
 
                 // Copy index data to a buffer visible to the host (staging buffer)
                 var err = mConfiguration.Device.CreateBuffer(indexbufferInfo, null, out stagingBuffers.indices.buffer);
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
 
                 MgMemoryRequirements memReqs;
                 mConfiguration.Device.GetBufferMemoryRequirements(stagingBuffers.indices.buffer, out memReqs);
@@ -431,11 +432,11 @@ namespace TriangleDemo
                 };
 
                 err = mConfiguration.Device.AllocateMemory(memAlloc, null, out stagingBuffers.indices.memory);
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
 
                 IntPtr data;
                 err = stagingBuffers.indices.memory.MapMemory(mConfiguration.Device, 0, indexBufferSize, 0, out data);
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
 
                 var uintBuffer = new byte[indexBufferSize];
 
@@ -446,7 +447,7 @@ namespace TriangleDemo
                 stagingBuffers.indices.memory.UnmapMemory(mConfiguration.Device);
 
                 err = stagingBuffers.indices.buffer.BindBufferMemory(mConfiguration.Device, stagingBuffers.indices.memory, 0);
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
             }
 
             // DEVICE_LOCAL index buffer
@@ -459,7 +460,7 @@ namespace TriangleDemo
                 };
 
                 var err = mConfiguration.Device.CreateBuffer(indexbufferInfo, null, out indices.buffer);
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
 
                 MgMemoryRequirements memReqs;
                 mConfiguration.Device.GetBufferMemoryRequirements(indices.buffer, out memReqs);
@@ -475,10 +476,10 @@ namespace TriangleDemo
                 };
 
                 err = mConfiguration.Device.AllocateMemory(memAlloc, null, out indices.memory);
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
 
                 err = indices.buffer.BindBufferMemory(mConfiguration.Device, indices.memory, 0);
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
             }
 
             {
@@ -589,7 +590,7 @@ namespace TriangleDemo
             };
 
             var err = mConfiguration.Device.AllocateCommandBuffers(cmdBufAllocateInfo, buffers);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             var cmdBuf = buffers[0];
 
@@ -602,7 +603,7 @@ namespace TriangleDemo
                 };
 
                 err = cmdBuf.BeginCommandBuffer(cmdBufInfo);
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
             }
 
             return cmdBuf;
@@ -616,7 +617,7 @@ namespace TriangleDemo
             Debug.Assert(commandBuffer != null);
 
             var err = commandBuffer.EndCommandBuffer();
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             var submitInfos = new MgSubmitInfo[] 
             {
@@ -637,19 +638,19 @@ namespace TriangleDemo
 
             IMgFence fence;
             err = mConfiguration.Device.CreateFence(fenceCreateInfo, null, out fence);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             // Submit to the queue
             err = mConfiguration.Queue.QueueSubmit(submitInfos, fence);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             // Mg.OpenGL
             err = mConfiguration.Queue.QueueWaitIdle();
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             // Wait for the fence to signal that command buffer has finished executing
             err = mConfiguration.Device.WaitForFences(new[] { fence }, true, ulong.MaxValue);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             fence.DestroyFence(mConfiguration.Device, null);
             mConfiguration.Device.FreeCommandBuffers(mConfiguration.Partition.CommandPool, new[] { commandBuffer } );
@@ -670,7 +671,7 @@ namespace TriangleDemo
 
             // Create a new buffer
             var err = mConfiguration.Device.CreateBuffer(bufferInfo, null, out uniformDataVS.buffer);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             // Prepare and initialize a uniform buffer block containing shader uniforms
             // Single uniforms like in OpenGL are no longer present in Vulkan. All Shader uniforms are passed via uniform buffer blocks
@@ -696,11 +697,11 @@ namespace TriangleDemo
 
             // Allocate memory for the uniform buffer
             err = mConfiguration.Device.AllocateMemory(allocInfo, null, out uniformDataVS.memory);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             // Bind memory to buffer
             err = uniformDataVS.buffer.BindBufferMemory(mConfiguration.Device, uniformDataVS.memory, 0);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             // Store information in the uniform's descriptor that is used by the descriptor set
             uniformDataVS.descriptor = new MgDescriptorBufferInfo
@@ -736,7 +737,7 @@ namespace TriangleDemo
             };
 
             var err = mConfiguration.Device.CreateDescriptorSetLayout(descriptorLayout, null, out mDescriptorSetLayout);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             // Create the pipeline layout that is used to generate the rendering pipelines that are based on this descriptor set layout
             // In a more complex scenario you would have different pipeline layouts for different descriptor set layouts that could be reused
@@ -749,7 +750,7 @@ namespace TriangleDemo
             };
 
             err = mConfiguration.Device.CreatePipelineLayout(pPipelineLayoutCreateInfo, null, out mPipelineLayout);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
         }
 
         void preparePipelines()
@@ -906,7 +907,7 @@ namespace TriangleDemo
                 IMgPipeline[] pipelines;
                 // Create rendering pipeline using the specified states
                 var err = mConfiguration.Device.CreateGraphicsPipelines(null, new[] { pipelineCreateInfo }, null, out pipelines);
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
 
                 vsModule.DestroyShaderModule(mConfiguration.Device, null);
                 fsModule.DestroyShaderModule(mConfiguration.Device, null);
@@ -940,7 +941,7 @@ namespace TriangleDemo
                 MaxSets = 1,
             };
             var err = mConfiguration.Device.CreateDescriptorPool(descriptorPoolInfo, null, out mDescriptorPool);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
         }
 
         void setupDescriptorSet()
@@ -957,7 +958,7 @@ namespace TriangleDemo
             var err = mConfiguration.Device.AllocateDescriptorSets(allocInfo, out dSets);
             mDescriptorSet = dSets[0];
 
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             // Update the descriptor set determining the shader binding points
             // For every binding point used in a shader there needs to be one
@@ -1002,7 +1003,7 @@ namespace TriangleDemo
                 };
 
                 var err = mConfiguration.Device.AllocateCommandBuffers(cmdBufAllocateInfo, drawCmdBuffers);
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
             }
 
             // Command buffers for submitting present barriers
@@ -1016,7 +1017,7 @@ namespace TriangleDemo
   
                 var presentBuffers = new IMgCommandBuffer[2];
                 var err = mConfiguration.Device.AllocateCommandBuffers(cmdBufAllocateInfo, presentBuffers);
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
 
                 // Pre present
                 mPrePresentCmdBuffer = presentBuffers[0];
@@ -1058,7 +1059,7 @@ namespace TriangleDemo
 
                 var cmdBufInfo = new MgCommandBufferBeginInfo { };
                 var err = cmdBuf.BeginCommandBuffer(cmdBufInfo);
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
 
                 // Start the first sub pass specified in our default render pass setup by the base class
                 // This will clear the color and depth attachment
@@ -1109,7 +1110,7 @@ namespace TriangleDemo
                 // VK_IMAGE_LAYOUT_PRESENT_SRC_KHR for presenting it to the windowing system
 
                 err = cmdBuf.EndCommandBuffer();
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
             }
         }
 
@@ -1179,7 +1180,7 @@ namespace TriangleDemo
             // Use a fence to wait until the command buffer has finished execution before using it again
             var fence = mWaitFences[(int) currentBufferIndex];
             var err = mConfiguration.Device.WaitForFences(new[] { fence } , true, ulong.MaxValue);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             err = mConfiguration.Device.ResetFences(new[] { fence });
 
@@ -1217,7 +1218,7 @@ namespace TriangleDemo
 
             // Submit to the graphics queue passing a wait fence
             err = mConfiguration.Queue.QueueSubmit(submitInfos, fence);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             // Present the current buffer to the swap chain
             // Pass the semaphore signaled by the command buffer submission from the submit info as the wait semaphore for swap chain presentation

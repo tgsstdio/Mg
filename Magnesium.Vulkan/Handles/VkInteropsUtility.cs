@@ -130,6 +130,23 @@ namespace Magnesium.Vulkan
 			return dstArray;
 		}
 
+        internal static IntPtr AllocateHGlobalStructArray<TVkData>(TVkData[] references) where TVkData : struct
+        {
+            var stride = Marshal.SizeOf(typeof(TVkData));
+            var dependencyCount = references.Length;
+            var dstArray = Marshal.AllocHGlobal(stride * dependencyCount);
+
+            var offset = 0;
+            for (var i = 0; i < dependencyCount; ++i)
+            {
+                var localDest = IntPtr.Add(dstArray, offset);
+                Marshal.StructureToPtr(references[i], localDest, false);
+                offset += stride;
+            }
+
+            return dstArray;
+        }
+
         internal static IntPtr CopyStringArrays(List<IntPtr> allocatedItems, string[] array, out uint count)
         {
 
@@ -163,6 +180,42 @@ namespace Magnesium.Vulkan
             count = (uint)noOfElements;
             return dest;
         }
+
+        /// <summary>
+        /// Allocator is optional
+        /// </summary>
+        /// <param name="allocator"></param>
+        /// <returns></returns>
+        internal static IntPtr GetAllocatorHandle(IMgAllocationCallbacks allocator)
+        {
+            var bAllocator = (MgVkAllocationCallbacks)allocator;
+            return bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
+        }
+
+        internal delegate TReference TransformData<TData, TReference>(ref TData src);
+
+        internal static TReference[] TransformIntoStructArray<TData, TReference>(
+            IntPtr srcLocation,
+            UInt32 count,
+            TransformData<TData, TReference> f) where TData : struct
+        {
+            var output = new TReference[count];
+
+            var srcType = typeof(TData);
+
+            var stride = Marshal.SizeOf(srcType);
+            var offset = 0;
+            for (var i = 0; i < count; i += 1)
+            {
+                var data = (TData)Marshal.PtrToStructure(IntPtr.Add(srcLocation, offset), srcType);
+                output[i] = f(ref data);
+                offset += stride;
+            }
+
+            return output;
+        }
+
+
     }
 }
 

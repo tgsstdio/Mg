@@ -24,7 +24,8 @@ namespace Magnesium.OpenGL.DesktopGL
 		{
 			GL.Ext.EnableVertexArrayAttrib (vbo, location);
 			GL.VertexArrayAttribLFormat (vbo, location, size, (All)GetVertexAttribType(pointerType), offset);
-            mErrHandler.LogGLError("BindDoubleVertexAttribute");
+            mErrHandler.LogGLError(nameof(BindDoubleVertexAttribute));
+
         }
 
 		public void BindIntVertexAttribute (uint vbo, uint location, int size, GLVertexAttributeType pointerType, uint offset)

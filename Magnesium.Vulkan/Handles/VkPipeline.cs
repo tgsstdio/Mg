@@ -24,11 +24,18 @@ namespace Magnesium.Vulkan
 			var bAllocator = (MgVkAllocationCallbacks)allocator;
 			IntPtr allocatorPtr = bAllocator != null ? bAllocator.Handle : IntPtr.Zero;
 
-			Interops.vkDestroyPipeline(bDevice.Handle, this.Handle, allocatorPtr);
+			Interops.vkDestroyPipeline(bDevice.Info.Handle, this.Handle, allocatorPtr);
 
 			this.Handle = 0UL;
 			mIsDisposed = true;
 		}
 
-	}
+        public MgResult CompileDeferredNV(IMgDevice device, uint shader)
+        {
+            var bDevice = (VkDevice)device;
+            Debug.Assert(bDevice != null);
+
+            return Interops.vkCompileDeferredNV(bDevice.Info.Handle, this.Handle, shader);
+        }
+    }
 }

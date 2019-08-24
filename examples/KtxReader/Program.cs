@@ -1,5 +1,6 @@
 ﻿using Magnesium;
 using Magnesium.Ktx;
+using Magnesium.Toolkit;
 using SimpleInjector;
 using System;
 
@@ -16,18 +17,18 @@ namespace KtxReader
                 using (var container = new SimpleInjector.Container())
                 {
                     // Magnesium
-                    container.Register<Magnesium.MgDriverContext>(Lifestyle.Singleton);
+                    container.Register<MgDriverContext>(Lifestyle.Singleton);
 
                     // Magnesium.VUlkan
                     container.Register<Magnesium.IMgEntrypoint, Magnesium.Vulkan.VkEntrypoint>(Lifestyle.Singleton);
-                    container.Register<Magnesium.IMgImageTools, Magnesium.MgImageTools>(Lifestyle.Singleton);
+                    container.Register<IMgImageTools, MgImageTools>(Lifestyle.Singleton);
 
                     container.Register<IKTXTextureLoader, KTXTextureManager>(Lifestyle.Singleton);
                     container.Register<IMgTextureGenerator, MgStagingBufferOptimizer>(Lifestyle.Singleton);
                     container.Register<IMgGraphicsConfiguration, MgDefaultGraphicsConfiguration>(Lifestyle.Singleton);
                     container.Register<IMgPresentationSurface, MgNullSurface>(Lifestyle.Singleton);
 
-                    using (var driver = container.GetInstance<Magnesium.MgDriverContext>())
+                    using (var driver = container.GetInstance<MgDriverContext>())
                     {
                         driver.Initialize(
                             new MgApplicationInfo

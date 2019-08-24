@@ -24,17 +24,17 @@ namespace Magnesium.OpenGL.Internals
 			mIsDisposed = true;
 		}
 
-		public Result ResetCommandPool (IMgDevice device, MgCommandPoolResetFlagBits flags)
+		public MgResult ResetCommandPool (IMgDevice device, MgCommandPoolResetFlagBits flags)
 		{
 			if (mIsDisposed)
-				return Result.SUCCESS;
+				return MgResult.SUCCESS;
 
 			foreach (var buffer in Buffers)
 			{
 				buffer.ResetAllData ();
 			}
 
-			return Result.SUCCESS;
+			return MgResult.SUCCESS;
 		}
 
 		#endregion
