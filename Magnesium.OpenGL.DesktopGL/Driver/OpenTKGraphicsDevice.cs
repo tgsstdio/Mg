@@ -5,6 +5,7 @@ using OpenTK;
 using Magnesium.OpenGL;
 using System.Diagnostics;
 using Magnesium.Toolkit;
+using Magnesium.OpenGL.Internals;
 
 namespace Magnesium.OpenGL.DesktopGL
 {
@@ -150,7 +151,12 @@ namespace Magnesium.OpenGL.DesktopGL
 				},
 			};
 
-			mRenderpass = new GLRenderPass (attachmentDescriptions);
+            var renderPassInfo = new MgRenderPassCreateInfo
+            {
+                Attachments = attachmentDescriptions,
+            };
+
+			mRenderpass = new GLNextRenderPass (renderPassInfo);
 		}
 
         public void Create(IMgCommandBuffer setupCmdBuffer, IMgSwapchainCollection swapchainCollection, MgGraphicsDeviceCreateInfo createInfo)
