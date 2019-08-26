@@ -38,7 +38,9 @@ namespace TextureDemo
                     using (var scope = container.OpenScope())
                     {
                         container.Register<TextureExample>(Reuse.InResolutionScope);
+
                         container.Register<IMgGraphicsDevice, MgDefaultGraphicsDevice>(Reuse.InResolutionScope);
+                        container.Register<IMgGraphicsDeviceContext, MgDefaultGraphicsDeviceContext>(Reuse.InResolutionScope);
                         container.Register<IMgPresentationLayer, MgPresentationLayer>(Reuse.InResolutionScope);
                         container.Register<IMgSwapchainCollection, MgSwapchainCollection>(Reuse.InResolutionScope);
                         container.Register<MgGraphicsConfigurationManager>(Reuse.InResolutionScope);

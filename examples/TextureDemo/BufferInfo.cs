@@ -59,7 +59,7 @@ namespace TextureDemo
             IMgBuffer buffer;
 
             var result = mDevice.CreateBuffer(bufferCreateInfo, null, out buffer);
-            Debug.Assert(result == Result.SUCCESS);
+            Debug.Assert(result == MgResult.SUCCESS);
 
             MgMemoryRequirements memReqs;
             device.GetBufferMemoryRequirements(buffer, out memReqs);
