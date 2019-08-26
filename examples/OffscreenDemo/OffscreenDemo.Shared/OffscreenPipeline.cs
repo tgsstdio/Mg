@@ -1,4 +1,5 @@
 ﻿using Magnesium;
+using Magnesium.Toolkit;
 using Magnesium.Utilities;
 using System;
 using System.Diagnostics;
@@ -33,7 +34,7 @@ namespace OffscreenDemo
             };
 
             var err = device.CreateDescriptorSetLayout(descriptorLayout, null, out IMgDescriptorSetLayout setLayout);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
             return setLayout;
         }
 
@@ -48,7 +49,7 @@ namespace OffscreenDemo
             };
 
             var err = device.CreatePipelineLayout(pPipelineLayoutCreateInfo, null, out IMgPipelineLayout pipelineLayout);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
             return pipelineLayout;
         }
 
@@ -67,7 +68,7 @@ namespace OffscreenDemo
                 MaxSets = 1,
             };
             var err = configuration.Device.CreateDescriptorPool(descriptorPoolInfo, null, out IMgDescriptorPool descriptorPool);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
             return descriptorPool;
         }
 
@@ -82,7 +83,7 @@ namespace OffscreenDemo
             };
 
             var err = configuration.Device.AllocateDescriptorSets(allocInfo, out IMgDescriptorSet[] dSets);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             var result = dSets[0];
             return result;
@@ -297,7 +298,7 @@ namespace OffscreenDemo
             var uniformInstance = container.Storage.Blocks[allocationInfo.BlockIndex];
 
             var err = uniformInstance.DeviceMemory.MapMemory(configuration.Device, allocationInfo.Offset, allocationInfo.Size, 0, out IntPtr pData);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
             Marshal.StructureToPtr(mUBOVS, pData, false);
             uniformInstance.DeviceMemory.UnmapMemory(configuration.Device);
         }
@@ -361,7 +362,7 @@ namespace OffscreenDemo
             var cmdBufInfo = new MgCommandBufferBeginInfo { };
 
             var err = copyCmd.BeginCommandBuffer(cmdBufInfo);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             foreach (var stage in stagingBuffers)
             {
@@ -369,11 +370,11 @@ namespace OffscreenDemo
             }
 
             err = copyCmd.EndCommandBuffer();
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             var fenceCreateInfo = new MgFenceCreateInfo { };
             err = configuration.Device.CreateFence(fenceCreateInfo, null, out IMgFence fence);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
             var submitInfo = new MgSubmitInfo
             {
                 CommandBuffers = new[] { copyCmd }
@@ -381,15 +382,15 @@ namespace OffscreenDemo
 
             // Submit to the queue
             err = configuration.Queue.QueueSubmit(new[] { submitInfo }, fence);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             // Mg.OpenGL
             err = configuration.Queue.QueueWaitIdle();
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             // Wait for the fence to signal that command buffer has finished executing
             err = configuration.Device.WaitForFences(new[] { fence }, true, ulong.MaxValue);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             foreach (var stage in stagingBuffers)
             {
@@ -423,7 +424,7 @@ namespace OffscreenDemo
 
                 var cmdBufInfo = new MgCommandBufferBeginInfo { };
                 var err = cmdBuf.BeginCommandBuffer(cmdBufInfo);
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
 
                 cmdBuf.CmdBeginRenderPass(renderPassBeginInfo, MgSubpassContents.INLINE);
 
@@ -466,7 +467,7 @@ namespace OffscreenDemo
                 cmdBuf.CmdEndRenderPass();
 
                 err = cmdBuf.EndCommandBuffer();
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
             }
         }
 
@@ -626,7 +627,7 @@ namespace OffscreenDemo
                     null,
                     out IMgPipeline[] pipelines);
 
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
 
                 vsModule.DestroyShaderModule(device, null);
                 fsModule.DestroyShaderModule(device, null);

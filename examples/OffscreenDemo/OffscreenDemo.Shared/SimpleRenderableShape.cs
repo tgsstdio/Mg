@@ -85,7 +85,7 @@ namespace OffscreenDemo
         {
             var poolCreateInfo = new MgCommandPoolCreateInfo {  };
             var err = device.CreateCommandPool(poolCreateInfo, null, out IMgCommandPool pool);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
             return pool;
         }
 
@@ -106,7 +106,7 @@ namespace OffscreenDemo
                     Level = MgCommandBufferLevel.PRIMARY,
                 };
                 var err = mDevice.AllocateCommandBuffers(pAllocateInfo, copyCmds);
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
 
                 IMgCommandBuffer copyCmd = copyCmds[0];
                 mRender.Populate(mDevice, container, copyCmd);
@@ -138,7 +138,7 @@ namespace OffscreenDemo
                 Level = MgCommandBufferLevel.PRIMARY,
             };
             var err = mDevice.AllocateCommandBuffers(pAllocateInfo, mCommandBuffers);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             mDescriptorPool = mPipeline.InitializePool();
             mDescriptorSets = mPipeline.Allocate(mDescriptorPool, noOfCommandBuffers);

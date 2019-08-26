@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using Magnesium.Utilities;
 using System.Runtime.InteropServices;
+using Magnesium.Toolkit;
 
 namespace OffscreenDemo
 {
@@ -44,7 +45,7 @@ namespace OffscreenDemo
             };
 
             var err = device.CreateDescriptorSetLayout(descriptorLayout, null, out IMgDescriptorSetLayout dSetLayout);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
             return dSetLayout;
         }
 
@@ -56,7 +57,7 @@ namespace OffscreenDemo
             };
 
             var err = device.CreatePipelineLayout(pPipelineLayoutCreateInfo, null, out IMgPipelineLayout pLayout);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
             return pLayout;
         }
 
@@ -82,7 +83,7 @@ namespace OffscreenDemo
             };
 
             var err = device.CreateDescriptorPool(descriptorPoolInfo, null, out IMgDescriptorPool descriptorPool);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
             return descriptorPool;
         }
 
@@ -96,7 +97,7 @@ namespace OffscreenDemo
             };
 
             var err = device.AllocateDescriptorSets(allocInfo, out IMgDescriptorSet[] descriptorSets);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
             return descriptorSets[0];
         }
 
@@ -317,7 +318,7 @@ namespace OffscreenDemo
             SetIndicesU32(container, configuration.Device, mIndexDataPosition, indices, 0, indices.Length);
         }
 
-        public Result SetData<TData>(
+        public MgResult SetData<TData>(
             MgOptimizedStorageContainer containter,
             IMgDevice device,
             int location,
@@ -341,7 +342,7 @@ namespace OffscreenDemo
                 allocationInfo.Offset,
                 allocationInfo.Size,
                 0, out IntPtr dest);
-            if (err != Result.SUCCESS)
+            if (err != MgResult.SUCCESS)
             {
                 return err;
             }
@@ -357,7 +358,7 @@ namespace OffscreenDemo
 
             block.DeviceMemory.UnmapMemory(device);
 
-            return Result.SUCCESS;
+            return MgResult.SUCCESS;
         }
 
         public static float DegreesToRadians(float degrees)
@@ -407,7 +408,7 @@ namespace OffscreenDemo
             var uniformInstance = storageContainer.Storage.Blocks[allocationInfo.BlockIndex];
 
             var err = uniformInstance.DeviceMemory.MapMemory(configuration.Device, allocationInfo.Offset, allocationInfo.Size, 0, out IntPtr pData);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
             Marshal.StructureToPtr(mUBOVS, pData, false);
             uniformInstance.DeviceMemory.UnmapMemory(configuration.Device);
         }
@@ -421,7 +422,7 @@ namespace OffscreenDemo
                 throw new ArgumentNullException("srcData");
         }
 
-        private Result SetIndicesU32(
+        private MgResult SetIndicesU32(
             MgOptimizedStorageContainer container,
             IMgDevice device, 
             int location,
@@ -445,7 +446,7 @@ namespace OffscreenDemo
                 allocationInfo.Size,
                 0, out IntPtr dest);
 
-            if (err != Result.SUCCESS)
+            if (err != MgResult.SUCCESS)
             {
                 return err;
             }
@@ -460,7 +461,7 @@ namespace OffscreenDemo
 
             block.DeviceMemory.UnmapMemory(device);
 
-            return Result.SUCCESS;
+            return MgResult.SUCCESS;
         }
 
         private static void ValidateRange(MgOptimizedStorageAllocation allocationInfo, ulong sizeInBytes)
@@ -571,7 +572,7 @@ namespace OffscreenDemo
                 var cmdBuf = order.CommandBuffers[index];
 
                 var err = cmdBuf.BeginCommandBuffer(cmdBufInfo);
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
 
                 cmdBuf.CmdBeginRenderPass(renderPassBeginInfo, MgSubpassContents.INLINE);
 
@@ -590,7 +591,7 @@ namespace OffscreenDemo
                 cmdBuf.CmdEndRenderPass();
 
                 err = cmdBuf.EndCommandBuffer();
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
             }
         }
 
@@ -736,7 +737,7 @@ namespace OffscreenDemo
                     };
 
                     var err = device.CreateGraphicsPipelines(null, new[] { pipelineCreateInfo }, null, out IMgPipeline[] pipelines);
-                    Debug.Assert(err == Result.SUCCESS);
+                    Debug.Assert(err == MgResult.SUCCESS);
 
                     return pipelines[0];
                 }
@@ -761,7 +762,7 @@ namespace OffscreenDemo
                     CodeSize = new UIntPtr((ulong)vertFs.Length),
                 };
                 var localErr = device.CreateShaderModule(vsCreateInfo, null, out vertSM);
-                Debug.Assert(localErr == Result.SUCCESS);
+                Debug.Assert(localErr == MgResult.SUCCESS);
             }
 
             return vertSM;

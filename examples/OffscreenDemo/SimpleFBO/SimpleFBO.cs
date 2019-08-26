@@ -13,6 +13,7 @@ using OpenTK.Graphics.OpenGL;
 using Magnesium;
 using Examples.Shapes;
 using System.Runtime.InteropServices;
+using Magnesium.Toolkit;
 
 namespace Examples.Tutorial
 {
@@ -340,7 +341,7 @@ void main(void)
 
             var srcOffset = startIndex * stride;
             var totalBytesToCopy = (int)sizeInBytes;
-            Buffer.BlockCopy(data, srcOffset, localData, 0, totalBytesToCopy);
+            System.Buffer.BlockCopy(data, srcOffset, localData, 0, totalBytesToCopy);
 
             IntPtr itemDest = IntPtr.Add(dest, destOffset);
             Marshal.Copy(localData, 0, itemDest, totalBytesToCopy);
@@ -617,7 +618,7 @@ void main(void)
                 SetLayouts = new[] { pSetLayout, pSetLayout, pSetLayout },
             };
             var err = device.AllocateDescriptorSets(pAllocateInfo, out IMgDescriptorSet[] dSets);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
             mTextureSets = dSets;
 
             MgWriteDescriptorSet[] pDescriptorWrites = new MgWriteDescriptorSet[]

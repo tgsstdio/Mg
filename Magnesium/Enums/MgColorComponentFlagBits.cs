@@ -9,7 +9,7 @@ namespace Magnesium
 		G_BIT = 0x2,
 		B_BIT = 0x4,
 		A_BIT = 0x8,
-        RGBA_BIT = R_BIT | G_BIT | B_BIT | A_BIT,
+        ALL_BITS = R_BIT | G_BIT | B_BIT | A_BIT,
 	}
 }
 

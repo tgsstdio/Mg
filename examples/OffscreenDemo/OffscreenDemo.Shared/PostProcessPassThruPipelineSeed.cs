@@ -175,7 +175,7 @@ namespace OffscreenDemo
                     null,
                     out IMgPipeline[] pipelines);
 
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
 
                 vsModule.DestroyShaderModule(device, null);
                 fsModule.DestroyShaderModule(device, null);
@@ -204,7 +204,7 @@ namespace OffscreenDemo
                 MaxSets = 1,
             };
             var err = device.CreateDescriptorPool(descriptorPoolInfo, null, out IMgDescriptorPool descriptorPool);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
             return descriptorPool;
         }
 
@@ -236,7 +236,7 @@ namespace OffscreenDemo
             };
 
             var err = device.CreateDescriptorSetLayout(descriptorLayout, null, out IMgDescriptorSetLayout setLayout);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
             return setLayout;
         }
     }

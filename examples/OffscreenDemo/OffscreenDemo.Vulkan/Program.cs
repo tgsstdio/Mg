@@ -1,4 +1,5 @@
 ﻿using LightInject;
+using Magnesium.Toolkit;
 using Magnesium.Utilities;
 using OpenTK;
 using System;
@@ -22,18 +23,18 @@ namespace OffscreenDemo
                     container.RegisterInstance<INativeWindow>(window);
 
                     // Magnesium
-                    container.Register<Magnesium.MgDriverContext>(new PerContainerLifetime());
-                    container.Register<Magnesium.IMgPresentationSurface, Magnesium.PresentationSurfaces.OpenTK.VulkanPresentationSurface>(new PerContainerLifetime());
+                    container.Register<MgDriverContext>(new PerContainerLifetime());
+                    container.Register<IMgPresentationSurface, Magnesium.PresentationSurfaces.OpenTK.VulkanPresentationSurface>(new PerContainerLifetime());
 
-                    container.Register<Magnesium.IMgGraphicsConfiguration, Magnesium.MgDefaultGraphicsConfiguration>(new PerContainerLifetime());
-                    container.Register<Magnesium.IMgImageTools, Magnesium.MgImageTools>(new PerContainerLifetime());
+                    container.Register<IMgGraphicsConfiguration, MgDefaultGraphicsConfiguration>(new PerContainerLifetime());
+                    container.Register<IMgImageTools, MgImageTools>(new PerContainerLifetime());
 
                     // Magnesium.VUlkan
                     container.Register<Magnesium.IMgEntrypoint, Magnesium.Vulkan.VkEntrypoint>(new PerContainerLifetime());
 
                     // SCOPE
 
-                    container.Register<Magnesium.IMgPresentationBarrierEntrypoint, Magnesium.MgPresentationBarrierEntrypoint>(new PerContainerLifetime());
+                    container.Register<IMgPresentationBarrierEntrypoint, MgPresentationBarrierEntrypoint>(new PerContainerLifetime());
 
                     using (var scope = container.BeginScope())
                     {
@@ -45,8 +46,8 @@ namespace OffscreenDemo
 
                         container.Register<IMgPlatformMemoryLayout, VkPlatformMemoryLayout>(new PerScopeLifetime());
                         //container.Register<IMgPlatformMemoryLayout, VkDebugVertexPlatformMemoryLayout>(new PerScopeLifetime());
-                        container.Register<Magnesium.MgOffscreenDeviceFactory>(new PerScopeLifetime());
-                        container.Register<Magnesium.IMgOffscreenDeviceEntrypoint, Magnesium.MgDefaultOffscreenDeviceEntrypoint>(new PerScopeLifetime());
+                        container.Register<MgOffscreenDeviceFactory>(new PerScopeLifetime());
+                        container.Register<IMgOffscreenDeviceEntrypoint, MgDefaultOffscreenDeviceEntrypoint>(new PerScopeLifetime());
 
                         container.Register<IMgOptimizedStoragePartitioner, MgOptimizedStoragePartitioner>(new PerScopeLifetime());
                         container.Register<IMgOptimizedStoragePartitionVerifier, MgOptimizedStoragePartitionVerifier>(new PerScopeLifetime());
@@ -60,14 +61,14 @@ namespace OffscreenDemo
 
                         // GAME END
 
-                        container.Register<Magnesium.IMgGraphicsDevice, Magnesium.MgDefaultGraphicsDevice>(new PerScopeLifetime());
-                        container.Register<Magnesium.IMgGraphicsDeviceContext, Magnesium.MgDefaultGraphicsDeviceContext>(new PerScopeLifetime());
-                        container.Register<Magnesium.IMgPresentationLayer, Magnesium.MgPresentationLayer>(new PerScopeLifetime());
-                        container.Register<Magnesium.IMgSwapchainCollection, Magnesium.MgSwapchainCollection>(new PerScopeLifetime());
+                        container.Register<IMgGraphicsDevice, MgDefaultGraphicsDevice>(new PerScopeLifetime());
+                        container.Register<IMgGraphicsDeviceContext, MgDefaultGraphicsDeviceContext>(new PerScopeLifetime());
+                        container.Register<IMgPresentationLayer, MgPresentationLayer>(new PerScopeLifetime());
+                        container.Register<IMgSwapchainCollection, MgSwapchainCollection>(new PerScopeLifetime());
                         container.Register<MgGraphicsConfigurationManager>(new PerScopeLifetime());
 
 
-                        using (var driver = container.GetInstance<Magnesium.MgDriverContext>())
+                        using (var driver = container.GetInstance<MgDriverContext>())
                         {
                             driver.Initialize(
                                 new Magnesium.MgApplicationInfo
@@ -78,8 +79,8 @@ namespace OffscreenDemo
                                     EngineName = "Magnesium",
                                     EngineVersion = 1,
                                 },
-                                Magnesium.MgInstanceExtensionOptions.ALL);
-                            using (var graphicsConfiguration = container.GetInstance<Magnesium.IMgGraphicsConfiguration>())
+                                MgInstanceExtensionOptions.ALL);
+                            using (var graphicsConfiguration = container.GetInstance<IMgGraphicsConfiguration>())
                             using (var secondLevel = scope.BeginScope())
                             using (var gameWindow = new GameWindow(window))
                             using (var example = container.GetInstance<Example>())

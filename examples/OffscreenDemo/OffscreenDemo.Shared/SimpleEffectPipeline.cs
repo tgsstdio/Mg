@@ -1,4 +1,5 @@
 ﻿using Magnesium;
+using Magnesium.Toolkit;
 using System;
 using System.Diagnostics;
 
@@ -41,7 +42,7 @@ namespace OffscreenDemo
             };
 
             var err = device.CreatePipelineLayout(pPipelineLayoutCreateInfo, null, out IMgPipelineLayout pipelineLayout);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
             return pipelineLayout;
         }
 
@@ -73,7 +74,7 @@ namespace OffscreenDemo
             };
 
             var err = device.AllocateDescriptorSets(allocInfo, out IMgDescriptorSet[] dSets);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
             return dSets;
         }
 

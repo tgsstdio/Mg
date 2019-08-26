@@ -1,7 +1,7 @@
-﻿using System;
-using Magnesium;
+﻿using Magnesium;
 using Magnesium.Utilities;
 using System.Diagnostics;
+using Magnesium.Toolkit;
 
 namespace OffscreenDemo
 {
@@ -193,7 +193,7 @@ namespace OffscreenDemo
                 
             };
             var err = configuration.Device.CreateSemaphore(createInfo, null, out IMgSemaphore temp);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
             return temp;
         }
 
@@ -217,7 +217,7 @@ namespace OffscreenDemo
                 Level = MgCommandBufferLevel.PRIMARY,
             };
             var err = configuration.Device.AllocateCommandBuffers(pAllocateInfo, commandBuffers);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             var firstOrder = mRenderToTexture.GenerateBuildOrder(container);
             var index = 0;
@@ -278,7 +278,7 @@ namespace OffscreenDemo
                 Image = image,
             };
             var err = configuration.Device.CreateImageView(pViewCreateInfo, null, out IMgImageView pView);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
             return pView;
         }
 
@@ -302,7 +302,7 @@ namespace OffscreenDemo
                 Tiling = MgImageTiling.OPTIMAL,
             };
             var err = configuration.Device.CreateImage(pImageCreateInfo, null, out IMgImage pImage);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
             return pImage;
         }
 
@@ -313,7 +313,7 @@ namespace OffscreenDemo
 
             };
             var err = configuration.Device.CreateCommandPool(poolCreateInfo, null, out IMgCommandPool pool);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
             return pool;
         }
 
@@ -344,7 +344,7 @@ namespace OffscreenDemo
                 Level = MgCommandBufferLevel.PRIMARY,
             };
             var err = configuration.Device.AllocateCommandBuffers(pAllocateInfo, copyCmds);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             IMgCommandBuffer copyCmd = copyCmds[0];
             mRenderToTexture.Populate(container, configuration, copyCmd);
@@ -378,7 +378,7 @@ namespace OffscreenDemo
             };
 
             var err = queue.QueueSubmit(firstInfo, null);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             IMgSemaphore isDone = mUnmanagedResources.SecondStage[layerNo];
 
@@ -403,10 +403,10 @@ namespace OffscreenDemo
 
             //// Submit to queue
             err = queue.QueueSubmit(secondInfo, null);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             err = queue.QueueWaitIdle();
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             return new IMgSemaphore[] { isDone };
            // return new IMgSemaphore[] { };

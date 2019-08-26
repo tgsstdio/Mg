@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Magnesium.Utilities;
 using System.Runtime.InteropServices;
 using System;
+using Magnesium.Toolkit;
 
 namespace OffscreenDemo
 {
@@ -273,7 +274,7 @@ namespace OffscreenDemo
 
             };
             var err = configuration.Device.CreateSemaphore(createInfo, null, out IMgSemaphore temp);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
             return temp;
         }
 
@@ -342,7 +343,7 @@ namespace OffscreenDemo
             };
 
             var err = queue.QueueSubmit(firstInfo, null);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             IMgSemaphore isDone = mUnmanagedResources.SecondStage[layerNo];
 
@@ -367,10 +368,10 @@ namespace OffscreenDemo
 
             //// Submit to queue
             err = queue.QueueSubmit(secondInfo, null);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             err = queue.QueueWaitIdle();
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             return new IMgSemaphore[] { isDone };
         }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Magnesium.Toolkit;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -165,7 +166,7 @@ namespace Magnesium.Utilities
             // for the usage and flags members in the VkBufferCreateInfo structure passed to vkCreateBuffer.     
 
             var err = mConfiguration.Device.CreateBuffer(pCreateInfo, null, out IMgBuffer pZeroBuffer);
-            if (err != Result.SUCCESS)
+            if (err != MgResult.SUCCESS)
             {
                 instance = null;
                 return false;
@@ -197,7 +198,7 @@ namespace Magnesium.Utilities
             pCreateInfo.Size = overallSize;               
 
             err = mConfiguration.Device.CreateBuffer(pCreateInfo, null, out IMgBuffer pBuffer);
-            if (err != Result.SUCCESS)
+            if (err != MgResult.SUCCESS)
             {
                 instance = null;
                 return false;

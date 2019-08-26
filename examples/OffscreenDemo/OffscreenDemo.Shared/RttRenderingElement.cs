@@ -109,7 +109,7 @@ namespace OffscreenDemo
                 var bufferInstance = container.Storage.Blocks[slot.BlockIndex];
 
                 var err = bufferInstance.DeviceMemory.MapMemory(device, slot.Offset, sizeInBytes, FLAGS, out IntPtr dest);
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
                 Marshal.Copy(tempBuffer, 0, dest, transferSize);
                 bufferInstance.DeviceMemory.UnmapMemory(device);
             }
@@ -130,7 +130,7 @@ namespace OffscreenDemo
                 const uint FLAGS = 0U;
 
                 var err = bufferInstance.DeviceMemory.MapMemory(device, slot.Offset, allocationSize, FLAGS, out IntPtr data);
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
 
                 var offset = 0;
                 for (var i = 0; i < arrayCount; i += 1)
@@ -242,7 +242,7 @@ namespace OffscreenDemo
 
                 var cmdBufInfo = new MgCommandBufferBeginInfo { };
                 var err = cmdBuf.BeginCommandBuffer(cmdBufInfo);
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
 
                 cmdBuf.CmdBeginRenderPass(renderPassBeginInfo, MgSubpassContents.INLINE);
 
@@ -267,7 +267,7 @@ namespace OffscreenDemo
                 cmdBuf.CmdEndRenderPass();
 
                 err = cmdBuf.EndCommandBuffer();
-                Debug.Assert(err == Result.SUCCESS);
+                Debug.Assert(err == MgResult.SUCCESS);
             }
         }
 
@@ -293,7 +293,7 @@ namespace OffscreenDemo
             var bufferInstance = container.Storage.Blocks[slot.BlockIndex];
 
             var err = bufferInstance.DeviceMemory.MapMemory(device, slot.Offset, slot.Size, 0, out IntPtr pData);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
             Marshal.StructureToPtr(uniformData, pData, false);
             bufferInstance.DeviceMemory.UnmapMemory(device);
         }

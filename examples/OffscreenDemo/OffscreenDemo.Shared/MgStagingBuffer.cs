@@ -1,4 +1,5 @@
 ﻿using Magnesium;
+using Magnesium.Toolkit;
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -30,7 +31,7 @@ namespace OffscreenDemo
             };
 
             var err = configuration.Device.CreateBuffer(indexbufferInfo, null, out IMgBuffer outBuffer);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             configuration.Device.GetBufferMemoryRequirements(outBuffer, out MgMemoryRequirements outMemReqs);
 
@@ -48,13 +49,13 @@ namespace OffscreenDemo
             };
 
             err = configuration.Device.AllocateMemory(memAlloc, null, out IMgDeviceMemory outMemory);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             err = outBuffer.BindBufferMemory(
               configuration.Device
             , outMemory
             , 0);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
 
             SrcBuffer = outBuffer;
@@ -98,7 +99,7 @@ namespace OffscreenDemo
             const uint FLAGS = 0U;
 
             var err = SrcDeviceMemory.MapMemory(device, 0, AllocationSize, FLAGS, out IntPtr dest);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             Marshal.Copy(arrayData, 0, dest, arrayData.Length);           
 
@@ -112,7 +113,7 @@ namespace OffscreenDemo
             const uint FLAGS = 0U;
 
             var err = SrcDeviceMemory.MapMemory(device, 0, AllocationSize, FLAGS, out IntPtr dest);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             Marshal.Copy(arrayData, 0, dest, arrayData.Length);
 
@@ -142,7 +143,7 @@ namespace OffscreenDemo
             const uint FLAGS = 0U;
 
             var err = SrcDeviceMemory.MapMemory(device, 0, AllocationSize, FLAGS, out IntPtr data);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             var offset = 0;
             for (var i = 0; i < arrayCount; i += 1)

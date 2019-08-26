@@ -1,4 +1,5 @@
 ﻿using Magnesium;
+using Magnesium.Toolkit;
 using System.Diagnostics;
 
 namespace OffscreenDemo
@@ -88,7 +89,7 @@ namespace OffscreenDemo
             var semaphoreCreateInfo = new MgSemaphoreCreateInfo { };
             // Semaphore used to ensures that image presentation is complete before starting to submit again
             var err = mConfiguration.Device.CreateSemaphore(semaphoreCreateInfo, null, out IMgSemaphore pSemaphore);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
             PresentComplete = pSemaphore;
         }
 
@@ -117,12 +118,12 @@ namespace OffscreenDemo
 
 
             var err = setupCmdBuffer.BeginCommandBuffer(cmdBufInfo);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             mGraphicsDevice.Create(setupCmdBuffer, mSwapchains, createInfo);
 
             err = setupCmdBuffer.EndCommandBuffer();
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
 
             var submission = new[] {
@@ -136,7 +137,7 @@ namespace OffscreenDemo
             };
 
             err = mConfiguration.Queue.QueueSubmit(submission, null);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             mConfiguration.Queue.QueueWaitIdle();
 
@@ -181,7 +182,7 @@ namespace OffscreenDemo
             Debug.Assert(device != null);
 
             var err = device.AllocateCommandBuffers(cmdBufAllocateInfo, mPresentBuffers);
-            Debug.Assert(err == Result.SUCCESS);
+            Debug.Assert(err == MgResult.SUCCESS);
 
             // Pre present
             //PrePresentCommand = mPresentBuffers[0];

@@ -1,5 +1,6 @@
 ﻿using LightInject;
 using Magnesium;
+using Magnesium.Toolkit;
 using Magnesium.Utilities;
 using OpenTK;
 using System;
@@ -47,8 +48,8 @@ namespace OffscreenDemo.DesktopGL
                         MgOptimizedStoragePartitionVerifier>(new PerScopeLifetime());
                     container.Register<MgOptimizedStorageBuilder>(new PerScopeLifetime());
 
-                    container.Register<Magnesium.MgOffscreenDeviceFactory>(new PerScopeLifetime());
-                    container.Register<Magnesium.IMgOffscreenDeviceEntrypoint, 
+                    container.Register<MgOffscreenDeviceFactory>(new PerScopeLifetime());
+                    container.Register<IMgOffscreenDeviceEntrypoint, 
                         Magnesium.OpenGL.GLOffscreenDeviceEntrypoint>(new PerScopeLifetime());
 
                     // APP PLATFORM IMPLEMENTATION 
@@ -97,25 +98,25 @@ namespace OffscreenDemo.DesktopGL
 
         private static void ApplyMagnesiumRegistrations(ServiceContainer container)
         {
-            container.Register<Magnesium.MgDriverContext>(new PerContainerLifetime());
-            container.Register<Magnesium.IMgGraphicsConfiguration,
-                Magnesium.MgDefaultGraphicsConfiguration>(new PerContainerLifetime());
-            container.Register<Magnesium.IMgImageTools,
-                Magnesium.MgImageTools>(new PerContainerLifetime());
+            container.Register<MgDriverContext>(new PerContainerLifetime());
+            container.Register<IMgGraphicsConfiguration,
+                MgDefaultGraphicsConfiguration>(new PerContainerLifetime());
+            container.Register<IMgImageTools,
+                MgImageTools>(new PerContainerLifetime());
 
-            container.Register<Magnesium.IMgGraphicsDevice,
-                Magnesium.MgDefaultGraphicsDevice>(new PerScopeLifetime());
-            container.Register<Magnesium.IMgPresentationLayer,
-                Magnesium.MgPresentationLayer>(new PerScopeLifetime());
+            container.Register<IMgGraphicsDevice,
+                MgDefaultGraphicsDevice>(new PerScopeLifetime());
+            container.Register<IMgPresentationLayer,
+                MgPresentationLayer>(new PerScopeLifetime());
 
-            container.Register<Magnesium.IMgPresentationBarrierEntrypoint,
-                Magnesium.MgPresentationBarrierEntrypoint>(new PerScopeLifetime());
+            container.Register<IMgPresentationBarrierEntrypoint,
+                MgPresentationBarrierEntrypoint>(new PerScopeLifetime());
         }
 
         static void ApplyDesktopGLRegistrations(ServiceContainer container)
         {
-            container.Register<Magnesium.IMgTextureGenerator,
-                Magnesium.MgLinearImageOptimizer>(new PerContainerLifetime());
+            container.Register<IMgTextureGenerator,
+                MgLinearImageOptimizer>(new PerContainerLifetime());
 
             // Magnesium.OpenGL
             container.Register<Magnesium.IMgEntrypoint,
@@ -230,12 +231,12 @@ namespace OffscreenDemo.DesktopGL
                 Magnesium.OpenGL.DesktopGL.NullMgGraphicsDeviceLogger>(new PerContainerLifetime());
 
             // PER SCOPE 
-            container.Register<Magnesium.IMgGraphicsDeviceContext,
+            container.Register<IMgGraphicsDeviceContext,
                 Magnesium.OpenGL.DesktopGL.DesktopGLGraphicsContext>(new PerScopeLifetime());
-            container.Register<Magnesium.IMgSwapchainCollection,
+            container.Register<IMgSwapchainCollection,
                 Magnesium.OpenGL.DesktopGL.OpenTKSwapchainCollection>(new PerScopeLifetime());
 
-            container.Register<Magnesium.IMgPresentationSurface,
+            container.Register<IMgPresentationSurface,
                 Magnesium.PresentationSurfaces.OpenTK.DesktopGLPresentationSurface>(new PerContainerLifetime());
         }
     }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Magnesium.Toolkit;
+using System;
 using System.Collections.Generic;
 
 namespace Magnesium.Utilities
@@ -94,7 +95,7 @@ namespace Magnesium.Utilities
                     null,
                     out IMgDeviceMemory pMemory);
 
-                if (err != Result.SUCCESS)
+                if (err != MgResult.SUCCESS)
                 {
                     // START OVER 
                     throw new InvalidOperationException(err.ToString()); ;

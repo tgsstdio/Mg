@@ -58,7 +58,7 @@ namespace OffscreenDemo
             IMgBuffer buffer;
 
             var result = mDevice.CreateBuffer(bufferCreateInfo, null, out buffer);
-            Debug.Assert(result == Result.SUCCESS);
+            Debug.Assert(result == MgResult.SUCCESS);
 
             MgMemoryRequirements memReqs;
             device.GetBufferMemoryRequirements(buffer, out memReqs);
@@ -76,7 +76,7 @@ namespace OffscreenDemo
 
             IMgDeviceMemory deviceMemory;
             result = device.AllocateMemory(memAlloc, null, out deviceMemory);
-            Debug.Assert(result == Result.SUCCESS);
+            Debug.Assert(result == MgResult.SUCCESS);
 
             buffer.BindBufferMemory(device, deviceMemory, 0);
 
@@ -102,11 +102,11 @@ namespace OffscreenDemo
         /// <param name="startIndex">Start index.</param>
         /// <param name="elementCount">Element count.</param>
         /// <typeparam name="TData">The 1st type parameter.</typeparam>
-        public Result SetData<TData>(uint sizeInBytes, TData[] data, int startIndex, int elementCount)
+        public MgResult SetData<TData>(uint sizeInBytes, TData[] data, int startIndex, int elementCount)
             where TData : struct
         {
             if (data == null)
-                return Result.SUCCESS;
+                return MgResult.SUCCESS;
 
             int stride = Marshal.SizeOf(typeof(TData));
             if (sizeInBytes < (stride * elementCount))
@@ -116,7 +116,7 @@ namespace OffscreenDemo
 
             IntPtr dest;
             var result = mDeviceMemory.MapMemory(mDevice, 0, sizeInBytes, 0, out dest);
-            Debug.Assert(result == Result.SUCCESS);
+            Debug.Assert(result == MgResult.SUCCESS);
 
 
             // Copy the struct to unmanaged memory.	
@@ -130,7 +130,7 @@ namespace OffscreenDemo
 
             mDeviceMemory.UnmapMemory(mDevice);
 
-            return Result.SUCCESS;
+            return MgResult.SUCCESS;
         }
 
         /// <summary>
@@ -142,10 +142,10 @@ namespace OffscreenDemo
         /// <param name="data">Data.</param>
         /// <param name="startIndex">Start index.</param>
         /// <param name="elementCount">Element count.</param>
-        public Result SetData(uint sizeInBytes, uint[] data, int startIndex, int elementCount)
+        public MgResult SetData(uint sizeInBytes, uint[] data, int startIndex, int elementCount)
         {
             if (data == null)
-                return Result.SUCCESS;
+                return MgResult.SUCCESS;
 
             const int stride = sizeof(uint);
             if (sizeInBytes < (stride * elementCount))
@@ -155,7 +155,7 @@ namespace OffscreenDemo
 
             IntPtr dest;
             var result = mDeviceMemory.MapMemory(mDevice, 0, sizeInBytes, 0, out dest);
-            Debug.Assert(result == Result.SUCCESS);
+            Debug.Assert(result == MgResult.SUCCESS);
 
             var localData = new byte[sizeInBytes];
 
@@ -167,7 +167,7 @@ namespace OffscreenDemo
 
             mDeviceMemory.UnmapMemory(mDevice);
 
-            return Result.SUCCESS;
+            return MgResult.SUCCESS;
         }
 
         /** 
@@ -178,7 +178,7 @@ namespace OffscreenDemo
 		* 
 		* @return VkResult of the buffer mapping call
 		*/
-        Result Map(ulong size = ulong.MaxValue, ulong offset = 0)
+        MgResult Map(ulong size = ulong.MaxValue, ulong offset = 0)
         {
             return mDeviceMemory.MapMemory(mDevice, offset, size, 0, out mapped);
         }
@@ -204,7 +204,7 @@ namespace OffscreenDemo
 		* 
 		* @return VkResult of the bindBufferMemory call
 		*/
-        Result Bind(ulong offset = 0)
+        MgResult Bind(ulong offset = 0)
         {
             return mBuffer.BindBufferMemory(mDevice, mDeviceMemory, offset);
         }
@@ -246,7 +246,7 @@ namespace OffscreenDemo
 		*
 		* @return VkResult of the flush call
 		*/
-        Result Flush(ulong size = ulong.MaxValue, ulong offset = 0)
+        MgResult Flush(ulong size = ulong.MaxValue, ulong offset = 0)
         {
             var mappedRange = new MgMappedMemoryRange
             {
@@ -267,7 +267,7 @@ namespace OffscreenDemo
 		*
 		* @return VkResult of the invalidate call
 		*/
-        Result Invalidate(ulong size = ulong.MaxValue, ulong offset = 0)
+        MgResult Invalidate(ulong size = ulong.MaxValue, ulong offset = 0)
         {
             var mappedRange = new MgMappedMemoryRange
             {

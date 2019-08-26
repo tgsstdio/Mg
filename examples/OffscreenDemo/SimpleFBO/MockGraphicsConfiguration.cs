@@ -5,6 +5,7 @@
 using Magnesium;
 using Magnesium.OpenGL;
 using Magnesium.OpenGL.Internals;
+using Magnesium.Toolkit;
 
 namespace Examples.Tutorial
 {
