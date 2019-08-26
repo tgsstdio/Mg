@@ -81,7 +81,6 @@
     <Compile Include="Queue\IConstantBufferCollection.cs" />
     <Compile Include="Queue\IConstantBuffer.cs" />
     <Compile Include="Queue\GLQueueDrawItem.cs" />
-    <Compile Include="Driver\OpenTKGraphicsDevice.cs" />
     <Compile Include="Driver\OpenTKSwapchainCollection.cs" />
     <Compile Include="Entrypoint\DesktopGLImageFormatEntrypoint.cs" />
     <Compile Include="Entrypoint\FullGLBufferEntrypoint.cs" />

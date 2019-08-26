@@ -153,8 +153,14 @@ namespace TriangleDemo.DesktopGL
             container.Register<Magnesium.OpenGL.IGLUniformBlockEntrypoint, Magnesium.OpenGL.DesktopGL.FullGLUniformBlockEntrypoint>(new PerContainerLifetime());
             container.Register<Magnesium.OpenGL.IGLUniformBlockNameParser, Magnesium.OpenGL.DefaultGLUniformBlockNameParser>(new PerContainerLifetime());
             container.Register<Magnesium.OpenGL.IGLCmdShaderProgramEntrypoint, Magnesium.OpenGL.DesktopGL.FullGLCmdShaderProgramEntrypoint>(new PerContainerLifetime());
-            container.Register<Magnesium.OpenGL.IGLDescriptorSetEntrypoint, Magnesium.OpenGL.DefaultGLDescriptorSetEntrypoint>(new PerContainerLifetime());
 
+            // VERSION 7.0 features
+            container.Register<Magnesium.OpenGL.IGLDescriptorSetEntrypoint, Magnesium.OpenGL.GLFutureDescriptorSetEntrypoint>(new PerContainerLifetime());
+            container.Register<Magnesium.OpenGL.IGLFutureDeviceMemoryEntrypoint, Magnesium.OpenGL.DesktopGL.FullGLFutureDeviceMemoryEntrypoint>(new PerContainerLifetime());
+            container.Register<Magnesium.OpenGL.IGLDeviceMemoryTypeMap, Magnesium.OpenGL.DesktopGL.FullGLDeviceMemoryTypeMap>(new PerContainerLifetime());
+            container.Register<Magnesium.OpenGL.IGLTextureGalleryEntrypoint, Magnesium.OpenGL.DesktopGL.FullGLTextureGalleryEntrypoint>(new PerContainerLifetime());
+            container.Register<Magnesium.OpenGL.IGLShaderTextureDescriptorCache, Magnesium.OpenGL.GLSolarShaderTextureDescriptorCache>(new PerContainerLifetime());
+            container.Register<Magnesium.OpenGL.IGLFutureDescriptorPoolEntrypoint, Magnesium.OpenGL.GLSolarDescriptorPoolEntrypoint>(new PerContainerLifetime());
 
             // Magnesium.OpenGL.DesktopGL INTERNALS
             container.Register<Magnesium.OpenGL.DesktopGL.IOpenTKSwapchainKHR, Magnesium.OpenGL.DesktopGL.GLSwapchainKHR>(new PerContainerLifetime());

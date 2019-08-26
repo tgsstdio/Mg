@@ -6,9 +6,6 @@ namespace Magnesium.Vulkan.Functions.Instance
 {
 	public class VkCreateDebugReportCallbackEXTSection
 	{
-		[DllImport(Interops.VULKAN_LIB_1, CallingConvention = CallingConvention.Winapi)]
-        internal extern static MgResult vkCreateDebugReportCallbackEXT(IntPtr instance, ref VkDebugReportCallbackCreateInfoEXT pCreateInfo, IntPtr pAllocator, ref UInt64 pCallback);
-
         void Wrap(MgDebugUtilsMessengerCallbackDataEXT callbackData)
         {
             var msgIdName = (callbackData.MessageIdName != null)
@@ -22,28 +19,40 @@ namespace Magnesium.Vulkan.Functions.Instance
             var lbl = new VkDebugUtilsLabelEXT { };
         }
 
+        private delegate MgResult vkCreateDebugReportCallbackEXT(IntPtr instance, ref VkDebugReportCallbackCreateInfoEXT pCreateInfo, IntPtr pAllocator, ref UInt64 pCallback);
         public static MgResult CreateDebugReportCallbackEXT(VkInstanceInfo info, MgDebugReportCallbackCreateInfoEXT pCreateInfo, IMgAllocationCallbacks allocator, out IMgDebugReportCallbackEXT pCallback)
         {
+            Debug.Assert(!info.IsDisposed);
+
             var allocatorHandle = VkInteropsUtility.GetAllocatorHandle(allocator);
+            var funcPtr = VkGetInstanceProcAddrSection.GetInstanceProcAddr(info, "vkCreateDebugReportCallbackEXT");
+
+            if (funcPtr == IntPtr.Zero)
+            {
+                pCallback = null;
+                return MgResult.ERROR_FEATURE_NOT_PRESENT;
+            }
+
+            var createFunc = Marshal.GetDelegateForFunctionPointer(funcPtr, typeof(vkCreateDebugReportCallbackEXT)) as vkCreateDebugReportCallbackEXT;
+
+            var bCallback = Marshal.GetFunctionPointerForDelegate(pCreateInfo.PfnCallback);
 
             var createInfo = new VkDebugReportCallbackCreateInfoEXT
             {
                 sType = VkStructureType.StructureTypeDebugReportCallbackCreateInfoExt,
                 pNext = IntPtr.Zero,
                 flags = (VkDebugReportFlagsExt)pCreateInfo.Flags,
-                // TODO : figure out translation
-                pfnCallback = IntPtr.Zero,
+                pfnCallback = bCallback,
                 pUserData = pCreateInfo.UserData,
             };
 
-            var handle = 0UL;
-            var result = vkCreateDebugReportCallbackEXT(info.Handle, ref createInfo, allocatorHandle, ref handle);
+            var debugHandle = 0UL;
+            var result = createFunc(info.Handle, ref createInfo, allocatorHandle, ref debugHandle);
             // TODO : figure out translation
-
-            throw new NotImplementedException();
-            //pCallback = new VkDebugReportCallbackEXT(handle, );
+            pCallback = new VkDebugReportCallbackEXT(debugHandle, pCreateInfo.PfnCallback);
 
             return result;
+
         }
     }
 }

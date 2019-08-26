@@ -43,9 +43,9 @@ namespace Magnesium.OpenGL.DesktopGL
                     return TextureTarget.Texture2DArray;
                 case MgImageViewType.TYPE_3D:
                     return TextureTarget.Texture3D;
-                case MgImageViewType.TYPE_CUBE:
+                case MgImageViewType.CUBE:
                     return TextureTarget.TextureCubeMap;
-                case MgImageViewType.TYPE_CUBE_ARRAY:
+                case MgImageViewType.CUBE_ARRAY:
                     return TextureTarget.TextureCubeMapArray;
                 default:
                     throw new NotSupportedException();
