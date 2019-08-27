@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan.Functions.Device
 {
-	public class VkGetBufferMemoryRequirements2Section
+	public static class VkGetBufferMemoryRequirements2Section
 	{
 		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkGetBufferMemoryRequirements2(IntPtr device, MgBufferMemoryRequirementsInfo2 pInfo, [In, Out] MgMemoryRequirements2 pMemoryRequirements);

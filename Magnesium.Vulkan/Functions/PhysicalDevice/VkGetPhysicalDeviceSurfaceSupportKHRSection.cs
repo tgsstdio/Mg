@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan.Functions.PhysicalDevice
 {
-	public class VkGetPhysicalDeviceSurfaceSupportKHRSection
+	public static class VkGetPhysicalDeviceSurfaceSupportKHRSection
 	{
 		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static MgResult vkGetPhysicalDeviceSurfaceSupportKHR(IntPtr physicalDevice, UInt32 queueFamilyIndex, UInt64 surface, ref VkBool32 pSupported);

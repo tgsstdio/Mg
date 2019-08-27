@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan.Functions.CommandBuffer
 {
-	public class VkCmdBindPipelineSection
+	public static class VkCmdBindPipelineSection
 	{
 		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static void vkCmdBindPipeline(IntPtr commandBuffer, MgPipelineBindPoint pipelineBindPoint, UInt64 pipeline);

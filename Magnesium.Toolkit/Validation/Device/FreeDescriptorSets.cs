@@ -1,7 +1,7 @@
 using System;
 namespace Magnesium.Toolkit.Validation.Device
 {
-	public class FreeDescriptorSets
+	public static class FreeDescriptorSets
 	{
 		public static void Validate(IMgDescriptorPool descriptorPool, IMgDescriptorSet[] pDescriptorSets)
 		{

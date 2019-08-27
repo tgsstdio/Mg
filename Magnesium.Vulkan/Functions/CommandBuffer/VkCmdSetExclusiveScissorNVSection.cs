@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan.Functions.CommandBuffer
 {
-	public class VkCmdSetExclusiveScissorNVSection
+	public static class VkCmdSetExclusiveScissorNVSection
 	{
 		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static unsafe void vkCmdSetExclusiveScissorNV(IntPtr commandBuffer, UInt32 firstExclusiveScissor, UInt32 exclusiveScissorCount, MgRect2D* pExclusiveScissors);

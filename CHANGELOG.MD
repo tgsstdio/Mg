@@ -16,6 +16,7 @@ Magnesium and its implementations uses [Semantic Versioning v2.0.0](http://semve
 	- Using one graphics device implementation for both Magnesium.Vulkan and Mg.OpenGL.DesktopGL 
 	- Removed OpenTKGraphicsDevice and its references from examples and tests 
 	- Added offscreen device for depth-map and g-buffer
+	- Added FxCop code analysis rule 
 
 
 ## Version 5.2.9

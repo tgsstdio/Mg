@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan.Functions.Instance
 {
-	public class VkSubmitDebugUtilsMessageEXTSection
+	public static class VkSubmitDebugUtilsMessageEXTSection
 	{
 		[DllImport(Interops.VULKAN_LIB_1, CallingConvention = CallingConvention.Winapi)]
         internal extern static void vkSubmitDebugUtilsMessageEXT(IntPtr instance, MgDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, MgDebugUtilsMessageTypeFlagBitsEXT messageTypes, [In, Out] VkDebugUtilsMessengerCallbackDataEXT pCallbackData);

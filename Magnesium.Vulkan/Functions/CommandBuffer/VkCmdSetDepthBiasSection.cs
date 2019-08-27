@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan.Functions.CommandBuffer
 {
-	public class VkCmdSetDepthBiasSection
+	public static class VkCmdSetDepthBiasSection
 	{
 		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static void vkCmdSetDepthBias(IntPtr commandBuffer, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor);

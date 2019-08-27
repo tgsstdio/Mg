@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan.Functions.Instance
 {
-	public class VkCreateWin32SurfaceKHRSection
+	public static class VkCreateWin32SurfaceKHRSection
 	{
 		[DllImport(Interops.VULKAN_LIB_1, CallingConvention = CallingConvention.Winapi)]
         internal extern static MgResult vkCreateWin32SurfaceKHR(IntPtr instance, ref VkWin32SurfaceCreateInfoKHR pCreateInfo, IntPtr pAllocator, ref UInt64 pSurface);

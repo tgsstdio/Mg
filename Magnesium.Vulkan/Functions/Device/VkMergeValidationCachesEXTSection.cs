@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan.Functions.Device
 {
-	public class VkMergeValidationCachesEXTSection
+	public static class VkMergeValidationCachesEXTSection
 	{
 		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
 		internal extern static MgResult vkMergeValidationCachesEXT(IntPtr device, UInt64 dstCache, UInt32 srcCacheCount, UInt64[] pSrcCaches);

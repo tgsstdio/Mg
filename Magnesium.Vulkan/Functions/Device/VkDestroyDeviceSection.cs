@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan.Functions.Device
 {
-	public class VkDestroyDeviceSection
+	public static class VkDestroyDeviceSection
 	{
         [DllImport(Interops.VULKAN_LIB_1, CallingConvention = CallingConvention.Winapi)]
         internal extern static void vkDestroyDevice(IntPtr device, IntPtr pAllocator);

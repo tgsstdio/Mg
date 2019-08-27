@@ -4,9 +4,19 @@ namespace Magnesium
 {
     public class MgDepthStencilNotSupportedException : Exception
     {
-        public MgDepthStencilNotSupportedException() : base("Depth stencil format not supported.")
+        private const string Message = "Depth stencil format not supported.";
+
+        public MgDepthStencilNotSupportedException() : base(message: Message)
         {
 
+        }
+
+        public MgDepthStencilNotSupportedException(string message) : base(message)
+        {
+        }
+
+        public MgDepthStencilNotSupportedException(string message, Exception innerException) : base(message, innerException)
+        {
         }
     }
 }

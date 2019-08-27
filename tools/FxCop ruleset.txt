@@ -1,0 +1,28 @@
+FxCop for redundant classes and variables
+For development:
+I have some reservations about migrating to .NET core 2.0 & standard 2.0 was that the new cproj file format (that automatically includes every .cs file) that was there was some unused classes in the solution.
+
+Therefore I'm using FxCop for to remove redundant classes (and variables)
+
+Steps:
+
+1) nuget Microsoft.CodeAnalysis.FxCopAnalyzers into all Mg projects
+i.e. Install-Package Microsoft.CodeAnalysis.FxCopAnalyzers
+
+2) Copy Tools/RuleSet1.ruleset into the project folder and then rename file to match assembly name with FxCop suffix i.e. Magnesium.FxCop.ruleset
+
+
+2a) For .net core & .net standard projects 
+e.g Magnesium, Magnesium.Toolkit, Magnesium.Vulkan
+
+Copy into .csproj file:
+
+<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  ...
+  <CodeAnalysisRuleSet>RuleSet1.ruleset</CodeAnalysisRuleSet>
+</PropertyGroup>
+
+2b) For .NET framework 
+
+See for more details
+https://docs.microsoft.com/en-us/visualstudio/code-quality/analyzer-rule-sets?view=vs-2019

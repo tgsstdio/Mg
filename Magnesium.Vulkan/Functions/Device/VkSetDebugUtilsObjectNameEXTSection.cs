@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan.Functions.Device
 {
-	public class VkSetDebugUtilsObjectNameEXTSection
+	public static class VkSetDebugUtilsObjectNameEXTSection
 	{
 		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
 		internal extern static MgResult vkSetDebugUtilsObjectNameEXT(IntPtr device, [In, Out] VkDebugUtilsObjectNameInfoEXT pNameInfo);

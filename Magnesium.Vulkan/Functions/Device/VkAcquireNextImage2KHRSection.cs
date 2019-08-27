@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan.Functions.Device
 {
-	public class VkAcquireNextImage2KHRSection
+	public static class VkAcquireNextImage2KHRSection
 	{
 		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static MgResult vkAcquireNextImage2KHR(IntPtr device, [In, Out] VkAcquireNextImageInfoKHR pAcquireInfo, ref UInt32 pImageIndex);

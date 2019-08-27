@@ -1,7 +1,7 @@
 using System;
 namespace Magnesium.Toolkit.Validation.Instance
 {
-	public class CreateDebugReportCallbackEXT
+	public static class CreateDebugReportCallbackEXT
 	{
 		public static void Validate(MgDebugReportCallbackCreateInfoEXT pCreateInfo, IMgAllocationCallbacks allocator)
 		{

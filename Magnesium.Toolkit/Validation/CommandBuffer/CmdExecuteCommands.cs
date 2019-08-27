@@ -1,7 +1,7 @@
 using System;
 namespace Magnesium.Toolkit.Validation.CommandBuffer
 {
-	public class CmdExecuteCommands
+	public static class CmdExecuteCommands
 	{
 		public static void Validate(IMgCommandBuffer[] pCommandBuffers)
 		{

@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan.Functions.PhysicalDevice
 {
-	public class VkReleaseDisplayEXTSection
+	public static class VkReleaseDisplayEXTSection
 	{
 		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static MgResult vkReleaseDisplayEXT(IntPtr physicalDevice, UInt64 display);

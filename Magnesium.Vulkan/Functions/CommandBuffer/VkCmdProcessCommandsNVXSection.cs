@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan.Functions.CommandBuffer
 {
-	public class VkCmdProcessCommandsNVXSection
+	public static class VkCmdProcessCommandsNVXSection
 	{
 		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static void vkCmdProcessCommandsNVX(IntPtr commandBuffer, VkCmdProcessCommandsInfoNVX pProcessCommandsInfo);

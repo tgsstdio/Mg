@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan.Functions.Device
 {
-	public class VkGetMemoryHostPointerPropertiesEXTSection
+	public static class VkGetMemoryHostPointerPropertiesEXTSection
 	{
 		//[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		//internal extern static unsafe MgResult vkGetMemoryHostPointerPropertiesEXT(IntPtr device, MgExternalMemoryHandleTypeFlagBits handleType, IntPtr pHostPointer, MgMemoryHostPointerPropertiesEXT* pMemoryHostPointerProperties);

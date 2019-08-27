@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan.Functions.Device
 {
-	public class VkGetDeviceGroupPresentCapabilitiesKHRSection
+	public static class VkGetDeviceGroupPresentCapabilitiesKHRSection
 	{
 		//[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		//internal extern static MgResult vkGetDeviceGroupPresentCapabilitiesKHR(IntPtr device, [In, Out] VkDeviceGroupPresentCapabilitiesKHR pDeviceGroupPresentCapabilities);

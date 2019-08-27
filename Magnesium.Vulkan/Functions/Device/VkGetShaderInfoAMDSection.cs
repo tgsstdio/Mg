@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan.Functions.Device
 {
-	public class VkGetShaderInfoAMDSection
+	public static class VkGetShaderInfoAMDSection
 	{
 		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
 		internal extern static MgResult vkGetShaderInfoAMD(IntPtr device, UInt64 pipeline, MgShaderStageFlagBits shaderStage, MgShaderInfoTypeAMD infoType, ref UIntPtr pInfoSize, IntPtr[] pInfo);

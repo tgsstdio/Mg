@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan.Functions.Device
 {
-	public class VkGetAccelerationStructureMemoryRequirementsNVSection
+	public static class VkGetAccelerationStructureMemoryRequirementsNVSection
 	{
 		//[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		//internal extern static unsafe void vkGetAccelerationStructureMemoryRequirementsNV(IntPtr device, VkAccelerationStructureMemoryRequirementsInfoNV pInfo, VkMemoryRequirements2KHR* pMemoryRequirements);

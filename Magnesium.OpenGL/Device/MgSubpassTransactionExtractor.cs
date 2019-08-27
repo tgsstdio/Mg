@@ -25,7 +25,7 @@ namespace Magnesium
     * If an attachment is not used by any subpass, then loadOp, storeOp, stencilStoreOp, and stencilLoadOp are ignored,
     * and the attachment’s memory contents will not be modified by execution of a render pass instance.
     **/
-    public class MgSubpassTransactionExtractor
+    public static class MgSubpassTransactionExtractor
     {
         private struct MapAttachment
         {

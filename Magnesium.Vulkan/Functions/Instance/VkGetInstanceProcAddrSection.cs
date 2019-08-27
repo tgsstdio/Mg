@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan.Functions.Instance
 {
-	public class VkGetInstanceProcAddrSection
+	public static class VkGetInstanceProcAddrSection
 	{
 		[DllImport(Interops.VULKAN_LIB_1, CallingConvention = CallingConvention.Winapi)]
         internal extern static IntPtr vkGetInstanceProcAddr(IntPtr instance, IntPtr pName);

@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan.Functions.Device
 {
-	public class VkGetFenceFdKHRSection
+	public static class VkGetFenceFdKHRSection
 	{
 		//[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		//internal extern static MgResult vkGetFenceFdKHR(IntPtr device, VkFenceGetFdInfoKHR pGetFdInfo, ref int pFd);

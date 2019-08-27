@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan.Functions.Device
 {
-	public class VkRegisterDeviceEventEXTSection
+	public static class VkRegisterDeviceEventEXTSection
 	{
 		//[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		//internal extern static unsafe MgResult vkRegisterDeviceEventEXT(IntPtr device, VkDeviceEventInfoEXT pDeviceEventInfo, IntPtr pAllocator, UInt64* pFence);

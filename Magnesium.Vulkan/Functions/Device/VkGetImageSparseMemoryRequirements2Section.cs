@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan.Functions.Device
 {
-	public class VkGetImageSparseMemoryRequirements2Section
+	public static class VkGetImageSparseMemoryRequirements2Section
 	{
 		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
 		internal extern static void vkGetImageSparseMemoryRequirements2(IntPtr device, MgImageSparseMemoryRequirementsInfo2 pInfo, ref UInt32 pSparseMemoryRequirementCount, [In, Out] MgSparseImageMemoryRequirements2[] pSparseMemoryRequirements);

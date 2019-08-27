@@ -1,7 +1,7 @@
 using System;
 namespace Magnesium.Toolkit.Validation.Device
 {
-	public class GetImageDrmFormatModifierPropertiesEXT
+	public static class GetImageDrmFormatModifierPropertiesEXT
 	{
 		public static void Validate(IMgImage image)
 		{

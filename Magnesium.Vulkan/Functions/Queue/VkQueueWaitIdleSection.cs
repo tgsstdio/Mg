@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan.Functions.Queue
 {
-	public class VkQueueWaitIdleSection
+	public static class VkQueueWaitIdleSection
 	{
 		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static MgResult vkQueueWaitIdle(IntPtr queue);

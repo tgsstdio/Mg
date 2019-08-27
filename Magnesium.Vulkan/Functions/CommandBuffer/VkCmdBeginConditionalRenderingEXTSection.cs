@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan.Functions.CommandBuffer
 {
-	public class VkCmdBeginConditionalRenderingEXTSection
+	public static class VkCmdBeginConditionalRenderingEXTSection
 	{
 		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static void vkCmdBeginConditionalRenderingEXT(IntPtr commandBuffer, ref VkConditionalRenderingBeginInfoEXT pConditionalRenderingBegin);

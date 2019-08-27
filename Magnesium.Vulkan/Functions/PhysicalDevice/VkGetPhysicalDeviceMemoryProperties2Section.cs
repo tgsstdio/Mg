@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan.Functions.PhysicalDevice
 {
-	public class VkGetPhysicalDeviceMemoryProperties2Section
+	public static class VkGetPhysicalDeviceMemoryProperties2Section
 	{
 		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static void vkGetPhysicalDeviceMemoryProperties2(IntPtr physicalDevice, ref VkPhysicalDeviceMemoryProperties2 pMemoryProperties);

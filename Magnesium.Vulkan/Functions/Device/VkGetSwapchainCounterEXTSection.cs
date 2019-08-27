@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan.Functions.Device
 {
-	public class VkGetSwapchainCounterEXTSection
+	public static class VkGetSwapchainCounterEXTSection
 	{
 		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
 		internal extern static MgResult vkGetSwapchainCounterEXT(IntPtr device, UInt64 swapchain, MgSurfaceCounterFlagBitsEXT counter, ref UInt64 pCounterValue);

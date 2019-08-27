@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan.Functions.Device
 {
-	public class VkGetDeviceQueue2Section
+	public static class VkGetDeviceQueue2Section
 	{
 		//[DllImport(Interops.VULKAN_LIB, CallingConvention=CallingConvention.Winapi)]
 		//internal extern static void vkGetDeviceQueue2(IntPtr device, [In, Out] VkDeviceQueueInfo2 pQueueInfo, ref IntPtr pQueue);

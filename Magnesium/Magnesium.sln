@@ -1,11 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.329
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29215.179
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Magnesium", "Magnesium.csproj", "{9F9AC448-9D17-43E5-8889-285426290891}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Magnesium", "Magnesium.csproj", "{9F9AC448-9D17-43E5-8889-285426290891}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Magnesium.Toolkit", "..\Magnesium.Toolkit\Magnesium.Toolkit.csproj", "{9FDD1E8F-31D5-44EB-B649-09B42EAF35AB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Magnesium.Toolkit", "..\Magnesium.Toolkit\Magnesium.Toolkit.csproj", "{9FDD1E8F-31D5-44EB-B649-09B42EAF35AB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Magnesium.Vulkan", "..\Magnesium.Vulkan\Magnesium.Vulkan.csproj", "{103F2AA9-70EF-4E37-B934-4ADF76B9C30E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Magnesium.OpenGL", "..\Magnesium.OpenGL\Magnesium.OpenGL.csproj", "{E663B4C9-9F73-409C-8E07-BAB9476D6B36}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Magnesium.OpenGL.DesktopGL", "..\Magnesium.OpenGL.DesktopGL\Magnesium.OpenGL.DesktopGL.csproj", "{156D7F9D-1243-4EDB-9E45-24FAF2F40A4C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Magnesium.PresentationSurfaces.OpenTK", "..\Magnesium.PresentationSurfaces.OpenTK\Magnesium.PresentationSurfaces.OpenTK.csproj", "{8CB19B88-8904-49E8-9C0C-AEDC01679864}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +29,22 @@ Global
 		{9FDD1E8F-31D5-44EB-B649-09B42EAF35AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9FDD1E8F-31D5-44EB-B649-09B42EAF35AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9FDD1E8F-31D5-44EB-B649-09B42EAF35AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{103F2AA9-70EF-4E37-B934-4ADF76B9C30E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{103F2AA9-70EF-4E37-B934-4ADF76B9C30E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{103F2AA9-70EF-4E37-B934-4ADF76B9C30E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{103F2AA9-70EF-4E37-B934-4ADF76B9C30E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E663B4C9-9F73-409C-8E07-BAB9476D6B36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E663B4C9-9F73-409C-8E07-BAB9476D6B36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E663B4C9-9F73-409C-8E07-BAB9476D6B36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E663B4C9-9F73-409C-8E07-BAB9476D6B36}.Release|Any CPU.Build.0 = Release|Any CPU
+		{156D7F9D-1243-4EDB-9E45-24FAF2F40A4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{156D7F9D-1243-4EDB-9E45-24FAF2F40A4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{156D7F9D-1243-4EDB-9E45-24FAF2F40A4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{156D7F9D-1243-4EDB-9E45-24FAF2F40A4C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CB19B88-8904-49E8-9C0C-AEDC01679864}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CB19B88-8904-49E8-9C0C-AEDC01679864}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CB19B88-8904-49E8-9C0C-AEDC01679864}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CB19B88-8904-49E8-9C0C-AEDC01679864}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

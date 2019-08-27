@@ -5,6 +5,22 @@
     <Description>Loads Khronos .ktx image file format in Magnesium.</Description>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <CodeAnalysisRuleSet />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <CodeAnalysisRuleSet />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Magnesium.ruleset" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <CodeAnalysisDictionary Include="Magnesium.ruleset" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Magnesium\Magnesium.csproj" />
   </ItemGroup>

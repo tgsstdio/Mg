@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan.Functions.Device
 {
-	public class VkBindAccelerationStructureMemoryNVSection
+	public static class VkBindAccelerationStructureMemoryNVSection
 	{
 		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static MgResult vkBindAccelerationStructureMemoryNV(IntPtr device, UInt32 bindInfoCount, [In, Out] VkBindAccelerationStructureMemoryInfoNV[] pBindInfos);

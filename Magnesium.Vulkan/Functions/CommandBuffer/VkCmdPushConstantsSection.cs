@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan.Functions.CommandBuffer
 {
-	public class VkCmdPushConstantsSection
+	public static class VkCmdPushConstantsSection
 	{
 		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static void vkCmdPushConstants(IntPtr commandBuffer, UInt64 layout, MgShaderStageFlagBits stageFlags, UInt32 offset, UInt32 size, IntPtr pValues);

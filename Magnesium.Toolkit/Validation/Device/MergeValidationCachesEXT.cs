@@ -1,7 +1,7 @@
 using System;
 namespace Magnesium.Toolkit.Validation.Device
 {
-	public class MergeValidationCachesEXT
+	public static class MergeValidationCachesEXT
 	{
 		public static void Validate(IMgValidationCacheEXT dstCache, IMgValidationCacheEXT[] pSrcCaches)
 		{

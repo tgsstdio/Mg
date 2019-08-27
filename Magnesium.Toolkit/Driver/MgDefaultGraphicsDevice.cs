@@ -107,17 +107,17 @@ namespace Magnesium.Toolkit
         {
             if (setupCmdBuffer == null)
             {
-                throw new ArgumentNullException("setupCmdBuffer");
+                throw new ArgumentNullException(nameof(setupCmdBuffer));
             }
 
             if (createInfo == null)
             {
-                throw new ArgumentNullException("createInfo");
+                throw new ArgumentNullException(nameof(createInfo));
             }
 
             if (imageCollection == null)
             {
-                throw new ArgumentNullException("imageCollection");
+                throw new ArgumentNullException(nameof(imageCollection));
             }
 
             if (createInfo.MinDepth < 0f || createInfo.MinDepth > 1f)

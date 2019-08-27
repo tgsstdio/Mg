@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan.Functions.Instance
 {
-	public class VkCreateDebugUtilsMessengerEXTSection
+	public static class VkCreateDebugUtilsMessengerEXTSection
 	{
 		[DllImport(Interops.VULKAN_LIB_1, CallingConvention = CallingConvention.Winapi)]
         internal extern static MgResult vkCreateDebugUtilsMessengerEXT(IntPtr instance, ref VkDebugUtilsMessengerCreateInfoEXT pCreateInfo, IntPtr pAllocator, ref UInt64 pMessenger);

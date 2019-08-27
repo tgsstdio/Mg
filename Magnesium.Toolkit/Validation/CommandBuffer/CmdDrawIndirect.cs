@@ -1,7 +1,7 @@
 using System;
 namespace Magnesium.Toolkit.Validation.CommandBuffer
 {
-	public class CmdDrawIndirect
+	public static class CmdDrawIndirect
 	{
 		public static void Validate(IMgBuffer buffer, UInt64 offset, UInt32 drawCount, UInt32 stride)
 		{

@@ -1,7 +1,7 @@
 using System;
 namespace Magnesium.Toolkit.Validation.Queue
 {
-	public class QueueBeginDebugUtilsLabelEXT
+	public static class QueueBeginDebugUtilsLabelEXT
 	{
 		public static void Validate(MgDebugUtilsLabelEXT labelInfo)
 		{

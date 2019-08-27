@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan.Functions.Device
 {
-	public class VkGetMemoryFdKHRSection
+	public static class VkGetMemoryFdKHRSection
 	{
 		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
 		internal extern static MgResult vkGetMemoryFdKHR(IntPtr device, MgMemoryGetFdInfoKHR pGetFdInfo, ref int pFd);

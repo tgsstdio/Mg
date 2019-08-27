@@ -1,7 +1,7 @@
 using System;
 namespace Magnesium.Toolkit.Validation.PhysicalDevice
 {
-	public class EnumerateDeviceExtensionProperties
+	public static class EnumerateDeviceExtensionProperties
 	{
 		public static void Validate(string layerName)
 		{

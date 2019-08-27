@@ -1,7 +1,7 @@
 using System;
 namespace Magnesium.Toolkit.Validation.Device
 {
-	public class BindAccelerationStructureMemoryNV
+	public static class BindAccelerationStructureMemoryNV
 	{
 		public static void Validate(MgBindAccelerationStructureMemoryInfoNV[] pBindInfos)
 		{

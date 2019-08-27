@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace Magnesium.Vulkan.Functions.Queue
 {
-    public class VkQueueUtility
+    public static class VkQueueUtility
     {
         public static IntPtr ExtractSemaphores(List<IntPtr> attachedItems, IMgSemaphore[] semaphores, out uint semaphoreCount)
         {

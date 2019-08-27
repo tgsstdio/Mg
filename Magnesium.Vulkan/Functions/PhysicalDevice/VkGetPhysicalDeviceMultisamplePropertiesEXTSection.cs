@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Magnesium.Vulkan.Functions.PhysicalDevice
 {
-	public class VkGetPhysicalDeviceMultisamplePropertiesEXTSection
+	public static class VkGetPhysicalDeviceMultisamplePropertiesEXTSection
 	{
 		[DllImport(Interops.VULKAN_LIB_1, CallingConvention=CallingConvention.Winapi)]
         internal extern static void vkGetPhysicalDeviceMultisamplePropertiesEXT(IntPtr physicalDevice, MgSampleCountFlagBits samples, ref VkMultisamplePropertiesEXT pMultisampleProperties);
