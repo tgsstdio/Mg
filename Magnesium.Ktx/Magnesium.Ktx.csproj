@@ -22,13 +22,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Magnesium.Toolkit\Magnesium.Toolkit.csproj" />
     <ProjectReference Include="..\Magnesium\Magnesium.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Magnesium.Toolkit">
-      <HintPath>..\Magnesium.Toolkit\bin\Debug\netstandard2.0\Magnesium.Toolkit.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>
