@@ -2,7 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>7.0.0</Version>
+    <Version>7.0.0-alpha</Version>
+    <AssemblyVersion>7.0.0</AssemblyVersion>
+    <FileVersion>7.0.0</FileVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>David Young</Authors>
+    <Copyright>Copyright (c) 2016  - 2019 David Young</Copyright>
+    <PackageTags>graphics, vulkan</PackageTags>
+    <PackageProjectUrl>https://github.com/tgsstdio/Mg</PackageProjectUrl>
+    <Description>C#/.net graphics frontend interface (to Vulkan or any graphics library)</Description>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

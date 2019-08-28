@@ -2,6 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>David Young</Authors>
+    <Description>Helper and utility classes for building Magnesium based applications
+Holds Validation rules for all Mg implementations</Description>
+    <PackageLicenseExpression></PackageLicenseExpression>
+    <Copyright>Copyright (c) 2016 - 2019 David Young</Copyright>
+    <PackageProjectUrl>https://github.com/tgsstdio/Mg</PackageProjectUrl>
+    <PackageTags>graphics vulkan</PackageTags>
+    <Version>7.0.0-alpha</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

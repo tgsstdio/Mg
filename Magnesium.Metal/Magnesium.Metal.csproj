@@ -7,7 +7,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Magnesium.Metal</RootNamespace>
     <AssemblyName>Magnesium.Metal</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <MonoMacResourcePrefix>Resources</MonoMacResourcePrefix>
     <UseXamMacFullFramework>true</UseXamMacFullFramework>
     <ReleaseVersion>5.1.0</ReleaseVersion>
@@ -230,6 +230,10 @@
     <Compile Include="Driver\AmtDepthStencilImageView.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Magnesium.Toolkit\Magnesium.Toolkit.csproj">
+      <Project>{9fdd1e8f-31d5-44eb-b649-09b42eaf35ab}</Project>
+      <Name>Magnesium.Toolkit</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Magnesium\Magnesium.csproj">
       <Project>{9f9ac448-9d17-43e5-8889-285426290891}</Project>
       <Name>Magnesium</Name>

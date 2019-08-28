@@ -3,6 +3,13 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Description>Loads Khronos .ktx image file format in Magnesium.</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>David Young</Authors>
+    <PackageTags>graphics, ktx</PackageTags>
+    <PackageProjectUrl>https://github.com/tgsstdio/Mg</PackageProjectUrl>
+    <Version>7.0.0-alpha</Version>
+    <AssemblyVersion>7.0.0</AssemblyVersion>
+    <FileVersion>7.0.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
