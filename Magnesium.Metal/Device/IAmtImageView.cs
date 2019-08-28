@@ -6,5 +6,6 @@ namespace Magnesium.Metal
 	public interface IAmtImageView : IMgImageView
 	{
 		IMTLTexture GetTexture();
+        MgFormat Format { get; }
 	}
 }

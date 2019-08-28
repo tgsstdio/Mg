@@ -1,9 +1,9 @@
 ﻿using System;
 using Metal;
 
-namespace Magnesium.Metal
+namespace Magnesium.Metal.Internals
 {
-	class AmtNullImageView : IAmtImageView, IAmtSwapchainImageView
+	class AmtDynamicBoundedImageView : IAmtImageView, IAmtSwapchainImageView
 	{
 		private bool mIsDisposed = false;
 		public void DestroyImageView(IMgDevice device, IMgAllocationCallbacks allocator)
@@ -14,6 +14,8 @@ namespace Magnesium.Metal
 
 			mIsDisposed = true;
 		}
+
+        public MgFormat Format { get; set; }
 
 		private IMTLTexture mTexture;
 		public IMTLTexture GetTexture()

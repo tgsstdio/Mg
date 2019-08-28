@@ -143,7 +143,6 @@ namespace Magnesium.Metal
 			MgPipelineBindPoint pipelineBindPoint,
 			IMgPipelineLayout layout,
 			uint firstSet,
-			uint descriptorSetCount,
 			IMgDescriptorSet[] pDescriptorSets,
 			uint[] pDynamicOffsets)
 		{
@@ -156,6 +155,8 @@ namespace Magnesium.Metal
 			//mRepository.DescriptorSets.Add(parameter);
 			if (pipelineBindPoint == MgPipelineBindPoint.GRAPHICS)
 			{
+                uint descriptorSetCount = pDescriptorSets != null 
+                    ? (uint) pDescriptorSets.Length : 0U;
 				mCommandEncoder.Graphics.BindDescriptorSets(layout,
 															firstSet,
 															descriptorSetCount,

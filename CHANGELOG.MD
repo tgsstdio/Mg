@@ -17,7 +17,8 @@ Magnesium and its implementations uses [Semantic Versioning v2.0.0](http://semve
 	- Removed OpenTKGraphicsDevice and its references from examples and tests 
 	- Added offscreen device for depth-map and g-buffer
 	- Added FxCop code analysis rule 
-
+	- Added MgFormatExtensions for common MgFormat functions e.g. IsStencilFormat
+	- Removed AmtGraphicsDevice one-for-all graphics device i.e. MgDefaultGraphicsDevice
 
 ## Version 5.2.9
  - Magnesium v5.2.9 - 10 Oct 2017 10 Oct 2017

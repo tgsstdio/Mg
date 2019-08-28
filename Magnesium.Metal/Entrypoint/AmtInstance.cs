@@ -45,7 +45,7 @@ namespace Magnesium.Metal
 			return Result.SUCCESS;
 		}
 
-		public PFN_vkVoidFunction GetInstanceProcAddr(string pName)
+		public IntPtr GetInstanceProcAddr(string pName)
 		{
 			throw new NotImplementedException();
 		}
