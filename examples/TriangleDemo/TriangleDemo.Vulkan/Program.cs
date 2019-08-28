@@ -1,5 +1,6 @@
 ﻿using LightInject;
 using Magnesium;
+using Magnesium.Toolkit;
 using OpenTK;
 using System;
 
@@ -32,7 +33,9 @@ namespace TriangleDemo.Vulkan
                     container.Register<Magnesium.IMgEntrypoint, Magnesium.Vulkan.VkEntrypoint>(new PerContainerLifetime());
 
                     // SCOPE
-                    container.Register<Magnesium.Toolkit.IMgGraphicsDevice, Magnesium.Toolkit.MgDefaultGraphicsDevice>(new PerScopeLifetime());
+                    container.Register<Magnesium.Toolkit.IMgGraphicsDevice, MgDefaultGraphicsDevice>(new PerScopeLifetime());
+                    container.Register<Magnesium.Toolkit.IMgGraphicsDeviceContext, MgDefaultGraphicsDeviceContext>(new PerScopeLifetime());
+
                     container.Register<VulkanExample>(new PerScopeLifetime());
                     container.Register<Magnesium.Toolkit.IMgPresentationBarrierEntrypoint, Magnesium.Toolkit.MgPresentationBarrierEntrypoint>(new PerScopeLifetime());
 
@@ -55,7 +58,7 @@ namespace TriangleDemo.Vulkan
                                 new MgApplicationInfo
                                 {
                                     ApplicationName = "Vulkan Example",
-                                    ApiVersion = Magnesium.MgApplicationInfo.GenerateApiVersion(1, 0, 37),
+                                    ApiVersion = Magnesium.MgApplicationInfo.GenerateApiVersion(1, 1, 114),
                                     ApplicationVersion = 1,
                                     EngineName = "Magnesium",
                                     EngineVersion = 1,

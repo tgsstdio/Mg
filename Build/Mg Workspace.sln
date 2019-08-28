@@ -45,6 +45,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Magnesium.Ktx", "..\Magnesi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Magnesium.Utilities", "..\examples\OffscreenDemo\Magnesium.Utilities\Magnesium.Utilities.csproj", "{443AD837-5A7B-44C4-BE5A-95431B7D4CA7}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Example 05 TextureDemo", "Example 05 TextureDemo", "{17B86852-3541-4DCF-9198-3811197F26F9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextureDemo", "..\examples\TextureDemo\TextureDemo.csproj", "{AFE28C8E-DC39-48D2-AD23-F155855EDB7A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -259,6 +263,18 @@ Global
 		{443AD837-5A7B-44C4-BE5A-95431B7D4CA7}.Release|x64.Build.0 = Release|Any CPU
 		{443AD837-5A7B-44C4-BE5A-95431B7D4CA7}.Release|x86.ActiveCfg = Release|Any CPU
 		{443AD837-5A7B-44C4-BE5A-95431B7D4CA7}.Release|x86.Build.0 = Release|Any CPU
+		{AFE28C8E-DC39-48D2-AD23-F155855EDB7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFE28C8E-DC39-48D2-AD23-F155855EDB7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFE28C8E-DC39-48D2-AD23-F155855EDB7A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AFE28C8E-DC39-48D2-AD23-F155855EDB7A}.Debug|x64.Build.0 = Debug|Any CPU
+		{AFE28C8E-DC39-48D2-AD23-F155855EDB7A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AFE28C8E-DC39-48D2-AD23-F155855EDB7A}.Debug|x86.Build.0 = Debug|Any CPU
+		{AFE28C8E-DC39-48D2-AD23-F155855EDB7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFE28C8E-DC39-48D2-AD23-F155855EDB7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFE28C8E-DC39-48D2-AD23-F155855EDB7A}.Release|x64.ActiveCfg = Release|Any CPU
+		{AFE28C8E-DC39-48D2-AD23-F155855EDB7A}.Release|x64.Build.0 = Release|Any CPU
+		{AFE28C8E-DC39-48D2-AD23-F155855EDB7A}.Release|x86.ActiveCfg = Release|Any CPU
+		{AFE28C8E-DC39-48D2-AD23-F155855EDB7A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -274,6 +290,7 @@ Global
 		{784707D6-5B32-4D5F-8908-4D1ACEE3F60C} = {2EA1AFE4-FA78-42CF-9AE0-90F503D49F1F}
 		{E78E8977-BAFA-47AA-B8DD-BDCD293CEE86} = {2EA1AFE4-FA78-42CF-9AE0-90F503D49F1F}
 		{443AD837-5A7B-44C4-BE5A-95431B7D4CA7} = {2EA1AFE4-FA78-42CF-9AE0-90F503D49F1F}
+		{AFE28C8E-DC39-48D2-AD23-F155855EDB7A} = {17B86852-3541-4DCF-9198-3811197F26F9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6D2131CD-44CC-4B4F-89D6-FD2F9FA97892}
